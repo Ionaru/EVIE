@@ -1,17 +1,18 @@
 import { Component } from '@angular/core';
-import {TranslateService} from 'ng2-translate';
+import { TranslateService } from 'ng2-translate';
 import { AppReadyEvent } from './app-ready-event';
 import { UserService } from './components/user/user.service';
 import { AccountService } from './components/account/account.service';
 import { CharacterService } from './components/character/character.service';
 import { Globals } from './globals';
 import { EndpointService } from './components/endpoint/endpoint.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['app.component.scss'],
-  providers: [AppReadyEvent, AccountService, UserService, CharacterService, Globals, EndpointService],
+  providers: [AppReadyEvent, AccountService, UserService, CharacterService, EndpointService],
 })
 export class AppComponent {
   static translate: TranslateService;
@@ -65,6 +66,9 @@ export class AppComponent {
     AppComponent.translate = translate;
 
     this.startUp();
+    globals.isLoggedIn.subscribe(() => {
+      console.log('Logged in!');
+    });
   }
 
   private startUp() {
@@ -72,32 +76,36 @@ export class AppComponent {
 
     }
     this.endpointService.getEndpointsAPI().subscribe(() => {
-      this.appReadyEvent.trigger();
+      // this.appReadyEvent.trigger();
     });
-    this.userService.getUser().subscribe(
-      ( user ) => {
-        localStorage.setItem('user', JSON.stringify(user));
-        this.globals.activeAccount = user.accounts[user.selectedAccount];
+    this.globals.isLoggedIn = Observable.create((o) => {
+      this.userService.getUser().subscribe(
+        (user) => {
+          localStorage.setItem('user', JSON.stringify(user));
+          this.globals.activeAccount = user.accounts[user.selectedAccount];
 
-        this.accountService.getAccountData(user.accounts[user.selectedAccount]).subscribe(
-          ( account ) => {
-            let selectedCharacter = 0;
-            this.globals.selectedCharacter = account.characters[selectedCharacter];
+          this.accountService.getAccountData(user.accounts[user.selectedAccount]).subscribe(
+            (account) => {
+              let selectedCharacter = 0;
+              this.globals.selectedCharacter = account.characters[selectedCharacter];
 
-            this.characterService.getCharacterData(account.characters[selectedCharacter]).subscribe(
-              ( character ) => {
-                console.log(character);
+              this.characterService.getCharacterData(account.characters[selectedCharacter]).subscribe(
+                (character) => {
+                  console.log(character);
+                  o.next(true);
+                  o.complete();
 
-                // Now that the core data has loaded, let's trigger the event that the
-                // pre-bootstrap loading screen is listening for. This will initiate
-                // the teardown of the loading screen.
-                // this.appReadyEvent.trigger();
-              }
-            );
-          }
-        );
-      }
-    );
+                  // Now that the core data has loaded, let's trigger the event that the
+                  // pre-bootstrap loading screen is listening for. This will initiate
+                  // the teardown of the loading screen.
+                  this.appReadyEvent.trigger();
+                }
+              );
+            }
+          );
+        }
+      );
+    }).share();
   }
 }
 

@@ -1,6 +1,5 @@
 <nav class="navbar-top">
-  <!--<a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand">-->
-  <a class="navbar-brand selected">
+  <a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand">
     {{ 'APP_NAME' | translate}}
   </a>
   <!--<a routerLink="dashboard" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.DASHBOARD' | translate}}</a>-->
@@ -41,10 +40,10 @@
      <!--[ngClass]="{'active': checkAccess()}">-->
     <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg">-->
   <!--</a>-->
-  <!--<a routerLink="wallet" routerLinkActive="selected" class="navbar-item"-->
-     <!--[ngClass]="{'active': checkAccess()}">-->
-    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg">-->
-  <!--</a>-->
+  <a routerLink="wallet" routerLinkActive="selected" class="navbar-item"
+     [ngClass]="{'active': checkAccess()}">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg">
+  </a>
   <!--<a routerLink="assets" routerLinkActive="selected" class="navbar-item"-->
      <!--[ngClass]="{'active': checkAccess()}">-->
     <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg">-->

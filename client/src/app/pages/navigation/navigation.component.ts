@@ -65,7 +65,8 @@ export class NavigationComponent implements OnInit {
   }
 
   checkAccess() {
-    return this.char !== 1;
+    // return this.char !== 1;
+    return true;
   }
 
   // changeLanguage(lang: string): void {

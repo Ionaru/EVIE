@@ -1,23 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Account } from './components/account/account';
 import { Character } from './components/character/character';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class Globals {
-  get isLoggedIn(): boolean {
+  get isLoggedIn(): Observable<boolean> {
     return this._isLoggedIn;
   }
 
-  set isLoggedIn(value: boolean) {
+  set isLoggedIn(value: Observable<boolean>) {
     this._isLoggedIn = value;
   }
+
   get DOMParser(): DOMParser {
     return this._DOMParser;
   }
 
-  set DOMParser(value: DOMParser) {
-    this._DOMParser = value;
-  }
   get activeAccount(): Account {
     return this._activeAccount;
   }
@@ -25,6 +24,7 @@ export class Globals {
   set activeAccount(value: Account) {
     this._activeAccount = value;
   }
+
   get selectedCharacter(): Character {
     return this._selectedCharacter;
   }
@@ -35,5 +35,5 @@ export class Globals {
   private _activeAccount: Account;
   private _selectedCharacter: Character;
   private _DOMParser: DOMParser = new DOMParser();
-  private _isLoggedIn: boolean;
+  private _isLoggedIn: Observable<boolean>;
 }

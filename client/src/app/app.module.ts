@@ -12,11 +12,20 @@ import {
 
 import { AppComponent } from './app.component';
 import { NavigationComponent } from './pages/navigation/navigation.component';
+import { IndexComponent } from './pages/index/index.component';
+import { router } from './app.router';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { WalletComponent } from './pages/evedata/wallet/wallet.component';
+import { CharacterGuard } from './pages/evedata/character.guard';
+import { Globals } from './globals';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavigationComponent,
+    IndexComponent,
+    DashboardComponent,
+    WalletComponent,
   ],
   imports: [
     BrowserModule,
@@ -27,13 +36,16 @@ import { NavigationComponent } from './pages/navigation/navigation.component';
       useFactory: (createTranslateLoader),
       deps: [Http]
     }),
+    router,
   ],
   providers: [
     {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
+    CharacterGuard, Globals
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
 
 export function createTranslateLoader(http: Http) {
   return new TranslateStaticLoader(http, '../assets/lang', '.json');
