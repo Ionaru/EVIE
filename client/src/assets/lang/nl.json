@@ -1,0 +1,13 @@
+{
+  "APP_NAME": "EVE Track",
+  "PAGES": {
+    "NAVIGATION": {
+      "PLAYERS": "Spelers"
+    },
+    "DASHBOARD": "Overzicht",
+    "API_KEYS": "API Sleutels",
+    "LOGOUT": "Log uit"
+  },
+  "HELLO": "tot ziens",
+  "CURRENT_BALANCE": "Huidig saldo"
+}

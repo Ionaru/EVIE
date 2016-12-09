@@ -1,0 +1,367 @@
+@import "app/variables";
+
+* {
+  // Set box-sizing: border-box on every element
+  box-sizing: border-box;
+
+  // Helper class that sets opacity of an element
+  @each $o in $opacity {
+    &.opacity-#{$o} {
+      opacity: calc(#{$o} / 100);
+    }
+  }
+}
+
+@font-face {
+  font-family: eve-font;
+  src: url(./assets/fonts/evesansneue-regular.otf);
+}
+
+@font-face {
+  font-family: eve-font-bold;
+  src: url(./assets/fonts/evesansneue-bold.otf);
+}
+
+html {
+  body {
+    app-root {
+      #loader {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    // Set some standard rendering as the defaults might vary between browsers and operating systems
+    font-family: "eve-font", sans-serif;
+    font-size: $standard-font-size;
+    line-height: $standard-line-height;
+    color: $eve_text_color;
+    background-color: $eve_ore_content;
+    margin: 0;
+
+    padding: ($navbar_top_height + $body_padding) $body_padding $body_padding ($navbar_side_width + $body_padding);
+
+    .error-div, footer {
+      text-align: center;
+    }
+
+    h1, h2, h3, h4, h5, h6, p {
+      margin: 0;
+      &.spacing {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      &.spacing-top {
+        margin-top: 1em;
+      }
+      &.spacing-bottom {
+        margin-bottom: 1em;
+      }
+    }
+
+    a {
+      color: $eve_skill_training;
+      text-decoration: none;
+      &.eve-link {
+        color: $eve_text_yellow;
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      &.disabled {
+        pointer-events: none;
+      }
+    }
+
+    .visible-lg, .visible-md, .visible-sm, .visible-xs {
+      display: none !important;
+    }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+      thead {
+        th {
+          border-left: $eve_ore_button_active solid 1px;
+          border-top: $eve_ore_button_active solid 1px;
+          border-bottom: $eve_ore_button_active solid 1px;
+          padding-left: 5px;
+          padding-right: 5px;
+          &:last-child {
+            border-right: $eve_ore_button_active solid 1px;
+          }
+        }
+      }
+      tbody {
+        tr {
+          transition: background-color 0.1s linear;
+          td {
+            border-left: $eve_ore_button_active solid 1px;
+            padding-left: 5px;
+            padding-right: 5px;
+            &:last-child {
+              border-right: $eve_ore_button_active solid 1px;
+            }
+          }
+          &:hover {
+            //background-color: darken($eve_ore_button_active, 9%);
+            background-color: darken($eve_ore_button_active, 20%);
+          }
+          &:last-child {
+            td {
+              border-bottom: $eve_ore_button_active solid 1px;
+            }
+          }
+        }
+      }
+    }
+
+    .left {
+      text-align: left;
+    }
+    .center {
+      text-align: center;
+    }
+    .right {
+      text-align: right;
+    }
+
+    #characterInfoWindow {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0, 0, 0); /* Fallback color */
+      background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+      .window-title {
+
+      }
+      .window-content {
+        //text-align: center;
+        box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.75);
+        background-color: $eve_ore_content;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 10px;
+        border: 1px solid #888;
+        width: 40%; /* Could be more or less, depending on screen size */
+        height: auto;
+        .window-title {
+          #close-button {
+            float: right;
+          }
+        }
+        #character-image {
+          float: left;
+          img {
+            width: 128px;
+          }
+        }
+        #character-info {
+          float: left;
+          width: 75%;
+          padding-left: 10px;
+          #corporation {
+            #corporation-image {
+              float: left;
+            }
+            #corporation-info {
+              float: left;
+              width: 75%;
+              padding-left: 10px;
+            }
+          }
+          #alliance {
+            #alliance-image {
+              float: left;
+            }
+            #alliance-info {
+              float: left;
+              width: 75%;
+              padding-left: 10px;
+            }
+          }
+        }
+      }
+    }
+
+    #entry-body {
+      #register-section, #login-section {
+        width: 50%;
+        float: left;
+        padding: 10px;
+      }
+      #temporary-section {
+        padding: 10px;
+      }
+    }
+
+    form {
+      .form-group {
+        margin-bottom: 15px;
+        label {
+          display: inline-block;
+          max-width: 100%;
+          margin-bottom: 5px;
+          font-weight: 700;
+        }
+        input {
+          display: block;
+          width: 100%;
+          height: 34px;
+          padding: 6px 12px;
+          font-size: 14px;
+          line-height: 1.42857143;
+          color: #555;
+          background-color: #fff;
+          background-image: none;
+          border: 1px solid #ccc;
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Styles for the pre-bootstrap sequence
+#pre-bootstrap {
+  background-color: $eve_ore_content;
+  bottom: 0;
+  left: 0;
+  opacity: 1.0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: all linear 300ms;
+  z-index: 999999;
+}
+
+#pre-bootstrap.loaded {
+  opacity: 0.0;
+}
+
+#pre-bootstrap div.messaging {
+  z-index: 2;
+  left: 0;
+  margin-top: -37px;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 50%;
+}
+
+#pre-bootstrap h1 {
+  font-size: 26px;
+  line-height: 35px;
+  margin: 0 0 20px 0;
+}
+
+#pre-bootstrap p {
+  font-size: 18px;
+  line-height: 14px;
+  margin: 0 0 0 0;
+}
+
+//Warp stuff
+.wall{
+  background: url(http://s.cdpn.io/18515/PIA09959-1280x800.jpg);
+  background-size: cover;
+}
+
+.scene{
+  display: inline-block;
+  perspective: 5px;
+  perspective-origin: 50% 50%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  animation: spin 60s linear infinite;
+  @keyframes spin {
+    100% {
+      transform:rotate(360deg);
+    }
+  }
+}
+
+.wrap{
+  position: absolute;
+  width: 1000px;
+  height: 1000px;
+  left: -500px;
+  top: -500px;
+  transform-style: preserve-3d;
+  animation: move 12s infinite linear;
+  animation-fill-mode: forwards;
+}
+
+.wrap:nth-child(2){
+  animation: move 12s infinite linear;
+  animation-delay: 6s;
+}
+
+.wall {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  opacity: 0;
+  animation: fade 12s infinite linear;
+  animation-delay: 0s;
+}
+
+.wrap:nth-child(2) .wall {
+  animation-delay: 6s;
+}
+
+.wall-right {
+  transform: rotateY(90deg) translateZ(500px);
+}
+
+.wall-left {
+  transform: rotateY(-90deg) translateZ(500px);
+}
+
+.wall-top {
+  transform: rotateX(90deg) translateZ(500px);
+}
+
+.wall-bottom {
+  transform: rotateX(-90deg) translateZ(500px);
+}
+
+.wall-back {
+  transform: rotateX(180deg) translateZ(500px);
+}
+
+@keyframes move {
+  0%{
+    transform: translateZ(-500px) rotate(0deg);
+  }
+  100%{
+    transform: translateZ(500px) rotate(0deg);
+  }
+}
+
+@keyframes fade {
+  0%{
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+  }
+}

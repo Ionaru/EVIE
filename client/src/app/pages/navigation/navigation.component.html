@@ -1,0 +1,64 @@
+<nav class="navbar-top">
+  <!--<a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand">-->
+  <a class="navbar-brand selected">
+    {{ 'APP_NAME' | translate}}
+  </a>
+  <!--<a routerLink="dashboard" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.DASHBOARD' | translate}}</a>-->
+  <a class="navbar-item">{{ 'PAGES.DASHBOARD' | translate}}</a>
+  <!--<a routerLink="api" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.API_KEYS' | translate}}</a>-->
+  <a class="navbar-item">{{ 'PAGES.API_KEYS' | translate}}</a>
+  <!--<a routerLink="logout" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>-->
+  <a class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>
+  <a class="navbar-item center disabled">
+    EVE <span class="{{ status }}">{{ status }}</span> -
+    {{ players }} {{ 'PAGES.NAVIGATION.PLAYERS' | translate | lowercase}}
+  </a>
+  <!--<a class="navbar-item right" (click)="changeLanguage('nl')">{{ translate.currentLang | uppercase }}</a>-->
+</nav>
+<!--<nav class="navbar-side" *ngIf="globals.isLoggedIn">-->
+<nav class="navbar-side">
+  <!--<a routerLink="account" routerLinkActive="selected" class="character-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//image.eveonline.com/Character/{{ char }}_50.jpg">-->
+  <!--</a>-->
+  <!--<a routerLink="charactersheet" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg">-->
+  <!--</a>-->
+  <!--<a routerLink="skills" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg">-->
+  <!--</a>-->
+  <!--<a routerLink="contacts" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/contacts.svg">-->
+  <!--</a>-->
+  <!--<a routerLink="mail" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg">-->
+  <!--</a>-->
+  <!--<a routerLink="market" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg">-->
+  <!--</a>-->
+  <!--<a routerLink="wallet" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg">-->
+  <!--</a>-->
+  <!--<a routerLink="assets" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg">-->
+  <!--</a>-->
+  <!--<a routerLink="planets" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg">-->
+  <!--</a>-->
+  <!--<a routerLink="industry" routerLinkActive="selected" class="navbar-item"-->
+     <!--[ngClass]="{'active': checkAccess()}">-->
+    <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg">-->
+  <!--</a>-->
+  <a class="navbar-item time"
+     [ngClass]="{'active': checkAccess()}">
+    <span id="EVETime_Hours">{{ hours }}</span>:<span id="EVETime_Minutes">{{ minutes }}</span>
+  </a>
+</nav>

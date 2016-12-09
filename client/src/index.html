@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>EVE Track</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+<app-root></app-root>
+<div id="pre-bootstrap-container">
+
+  <!--
+          In this approach, rather than putting the pre-bootstrap content inside
+          the <app-root> component content, we're leaving it external to the Angular 2
+          application entirely. This way, the content is not automatically removed when
+          the root component template is rendered. Instead, we'll leave this overlay in
+          place until the "appready" event bubbles up to the document, at which point,
+          we can gracefully fade it out of view.
+      -->
+
+  <script type="text/javascript">
+
+    // Listen for the "appready" event, which will be emitted by the application
+    // and bubble up (as far as we know) to the document root.
+    document.addEventListener("appready", handleAppReady);
+
+
+    // I handle the "appready" event and teardown the loading screen.
+    function handleAppReady(event) {
+
+      var preBootstrap = document.getElementById("pre-bootstrap");
+
+      // Add the class-name to initiate the transitions.
+      preBootstrap.className = "loaded";
+
+      // Remove the bootstrap container after the transition has
+      // completed (based on the known transition time).
+      setTimeout(
+        function removeLoadingScreen() {
+          preBootstrap.style["z-index"] = "-1";
+        }, 300);
+    }
+
+  </script>
+
+  <div id="pre-bootstrap">
+    <div class="messaging">
+      <h1>EVE Track</h1>
+      <p>Loading initial data...</p>
+    </div>
+    <!--<div class="scene">-->
+      <!--<div class="wrap">-->
+        <!--<div class="wall wall-right"></div>-->
+        <!--<div class="wall wall-left"></div>-->
+        <!--<div class="wall wall-top"></div>-->
+        <!--<div class="wall wall-bottom"></div>-->
+        <!--<div class="wall wall-back"></div>-->
+      <!--</div>-->
+      <!--<div class="wrap">-->
+        <!--<div class="wall wall-right"></div>-->
+        <!--<div class="wall wall-left"></div>-->
+        <!--<div class="wall wall-top"></div>-->
+        <!--<div class="wall wall-bottom"></div>-->
+        <!--<div class="wall wall-back"></div>-->
+      <!--</div>-->
+    <!--</div>-->
+  </div>
+</div>
+</body>
+</html>

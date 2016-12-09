@@ -1,0 +1,13 @@
+{
+  "APP_NAME": "EVE Track",
+  "PAGES": {
+    "NAVIGATION": {
+      "PLAYERS": "Players"
+    },
+    "DASHBOARD": "Dashboard",
+    "API_KEYS": "API Keys",
+    "LOGOUT": "Logout"
+  },
+  "HELLO": "hello",
+  "CURRENT_BALANCE": "Current balance"
+}

@@ -1,0 +1,14 @@
+# IDE files
+.idea/
+*.iml
+
+# Client files
+/client/dist/
+/client/node_modules/
+
+# Server files
+/server/node_modules/
+/server/src/config/*
+
+# System files
+*.db
