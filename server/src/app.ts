@@ -4,7 +4,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as path from 'path';
 import { logger } from './controllers/logger.service';
-import { Router, Response, Request, NextFunction } from 'express';
+import { Router, Response, Request } from 'express';
 import { db } from './controllers/db.service';
 import * as es from 'express-session';
 import * as ems from 'express-mysql-session';
@@ -40,7 +40,7 @@ export class App {
     await defineAccount().catch(console.error.bind(console));
 
     const apiRouter: Router = Router();
-    apiRouter.all('/*', async(request: Request, response: Response, next: NextFunction) => {
+    apiRouter.all('/*', async(request: Request, response: Response) => {
       let myUser = await User.findOne({
         attributes: ['username', 'email'],
         where: {
