@@ -22,7 +22,7 @@ export class App {
 
     const app: express.Application = express();
     app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({extended: true}));
+    app.use(bodyParser.urlencoded({ extended: true }));
 
     db.connect();
 
@@ -38,22 +38,6 @@ export class App {
 
     await defineUser().catch(console.error.bind(console));
     await defineAccount().catch(console.error.bind(console));
-
-    // let user = await User.findOne();
-    // console.log(user.username);
-
-    // Create a dummy router
-    const dummyRouter: Router = Router();
-    dummyRouter.all('/*', (request: Request, response: Response, next: NextFunction) => {
-      if (request.url.indexOf('/dist/') === -1
-        && request.url.indexOf('/app/') === -1
-        && request.url.indexOf('/assets/') === -1
-        && request.url.indexOf('/styles') === -1
-        && request.url.indexOf('/node_modules/') === -1) {
-        logger.info(request.ip + ' requested ' + request.url);
-      }
-      next();
-    });
 
     const apiRouter: Router = Router();
     apiRouter.all('/*', async(request: Request, response: Response, next: NextFunction) => {
@@ -71,12 +55,12 @@ export class App {
       response.json({
         username: myUser.username,
         email: myUser.email,
-        accounts: myUser.accounts.map(function (account) { return account.toJSON(); })
+        accounts: myUser.accounts.map(function (account) {
+          return account.toJSON();
+        })
       });
     });
 
-// Use this router for <site>/dummy
-    app.all('/*', dummyRouter);
     app.all('/api', apiRouter);
 
     app.use(express.static(path.join(__dirname, '../../client/dist')));
@@ -86,7 +70,7 @@ export class App {
       res.status(200).sendFile(path.join(__dirname, '../../client/dist/index.html'));
     });
 
-// Router for 404 errors
+    // Router for 404 errors
     app.use(function (err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
       // let error = new Error("Not Found");
       err.status = 404;
