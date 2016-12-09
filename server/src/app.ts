@@ -28,7 +28,7 @@ export class App {
 
     // Setup bodyParser
     app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(bodyParser.urlencoded({extended: true}));
 
     // Connect to database
     db.connect();
@@ -51,23 +51,41 @@ export class App {
     // Define routers in application
     const apiRouter: Router = Router();
     apiRouter.all('/*', async(request: Request, response: Response) => {
-      let myUser = await User.findOne({
-        attributes: ['username', 'email'],
-        where: {
-          username: 'testUser',
-        },
-        include: [{
-          model: Account,
-          attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
-        }]
-      });
+      let myUser;
+      if (request.session['user']) {
+        myUser = await User.findOne({
+          attributes: ['id', 'username', 'email'],
+          where: {
+            id: request.session['user'],
+          },
+          include: [{
+            model: Account,
+            attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
+          }]
+        });
+        request.session['user'] = myUser.id;
+      } else {
+        // DEBUG CODE, remove when login system is built
+        myUser = await User.findOne({
+          attributes: ['id', 'username', 'email'],
+          where: {
+            id: 1,
+          },
+          include: [{
+            model: Account,
+            attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
+          }]
+        });
+        request.session['user'] = myUser.id;
+        // END DEBUG CODE
+      }
 
       response.json({
         username: myUser.username,
         email: myUser.email,
         accounts: myUser.accounts.map(function (account) {
           return account.toJSON();
-        })
+        }),
       });
     });
 
