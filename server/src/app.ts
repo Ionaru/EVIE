@@ -17,15 +17,23 @@ export class App {
   app: express.Application;
   sessionStore: any;
 
+  /**
+   * The main startup function for the application
+   */
   async mainStartupSequence(): Promise<express.Application> {
     logger.info('Beginning app startup');
 
+    // Create the Express Application
     const app: express.Application = express();
+
+    // Setup bodyParser
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
 
+    // Connect to database
     db.connect();
 
+    // Setup MySQL Session Store
     let MySQLStore = ems(es);
     this.sessionStore = new MySQLStore({}, db.get());
     app.use(es({
@@ -36,9 +44,11 @@ export class App {
       saveUninitialized: true
     }));
 
+    // Define models in application
     await defineUser().catch(console.error.bind(console));
     await defineAccount().catch(console.error.bind(console));
 
+    // Define routers in application
     const apiRouter: Router = Router();
     apiRouter.all('/*', async(request: Request, response: Response) => {
       let myUser = await User.findOne({
@@ -61,24 +71,23 @@ export class App {
       });
     });
 
+    // Use routers
     app.all('/api', apiRouter);
 
+    // Use static client folder for serving assets
     app.use(express.static(path.join(__dirname, '../../client/dist')));
 
-    app.all('*', (req: any, res: any) => {
-      console.log(`[TRACE] Server 404 request: ${req.originalUrl}`);
-      res.status(200).sendFile(path.join(__dirname, '../../client/dist/index.html'));
+    // Re-route all other requests to the Angular app
+    app.all('*', (request: Request, response: Response) => {
+      response.status(200).sendFile(path.join(__dirname, '../../client/dist/index.html'));
     });
 
-    // Router for 404 errors
-    app.use(function (err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
-      // let error = new Error("Not Found");
-      err.status = 404;
-      next(err);
-    });
+    // Set the application as an attribute on this class, so we can access it later
+    this.app = app;
 
     logger.info('App startup done');
-    this.app = app;
-    return app;
+
+    // Forced return because this is an async function
+    return;
   }
 }

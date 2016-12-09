@@ -23,6 +23,10 @@ class Logger {
     this.logger.error(msg);
   }
 
+  public debug(msg: string) {
+    this.logger.debug(msg);
+  }
+
   private createTransports(): Array<TransportInstance> {
     let consoleLogLevel = 'info';
     let transports = [];

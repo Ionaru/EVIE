@@ -60,7 +60,7 @@ class Database {
           rejectUnauthorized: dbConfig.get('db_reject'),
         }
       },
-      // logging: null
+      logging: null
     });
   }
 

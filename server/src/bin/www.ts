@@ -9,19 +9,19 @@ import { db } from '../controllers/db.service';
 init().catch(console.error.bind(console));
 
 async function init() {
-  let appObject = new App;
-  let app = await appObject.mainStartupSequence();
+  let express = new App;
+  await express.mainStartupSequence();
 
   /**
    * Get port from environment and store in Express.
    */
   const port = normalizePort(process.env.PORT || 3000);
-  app.set('port', port);
+  express.app.set('port', port);
 
   /**
    * Create HTTP server.
    */
-  const server = http.createServer(app);
+  const server = http.createServer(express.app);
 
   /**
    * Listen on provided port, on all network interfaces.
@@ -37,7 +37,6 @@ async function init() {
   /**
    * Normalize a port into a number, string, or false.
    */
-
   function normalizePort(val): boolean | number {
 
     const normalizedPort = parseInt(val, 10);
@@ -58,7 +57,6 @@ async function init() {
   /**
    * Event listener for HTTP server 'error' event.
    */
-
   function onError(error) {
     if (error.syscall !== 'listen') {
       throw error;
@@ -84,7 +82,6 @@ async function init() {
   /**
    * Event listener for HTTP server 'listening' event.
    */
-
   function onListening() {
     const addr = server.address();
     const bind = typeof addr === 'string'
@@ -93,6 +90,9 @@ async function init() {
     logger.info('Listening on ' + bind);
   }
 
+  /**
+   * Function that gets executed when the app shuts down
+   */
   function exitHandler(options, err) {
     // Ensure the app shuts down when there is an exception during shutdown
     process.on('uncaughtException', () => {
@@ -102,7 +102,7 @@ async function init() {
       logger.info('Got shutdown command, executing cleanup tasks.');
       let cleanup = function (done) {
         // Destroy all sessions on server shutdown
-        appObject.sessionStore.clear((sessionStoreError) => {
+        express.sessionStore.clear((sessionStoreError) => {
           if (sessionStoreError) {
             logger.error('Error while clearing session store');
             logger.error(sessionStoreError);
