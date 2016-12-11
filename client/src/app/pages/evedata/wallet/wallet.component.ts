@@ -24,8 +24,8 @@ export class WalletComponent implements OnInit {
   ngOnInit() {
     this.title.setTitle('EVE Track - Wallet');
     this.showBalance();
-    // this.showJournal();
-    // this.showTransactions();
+    this.showJournal();
+    this.showTransactions();
   }
 
   getNumberColor(amount) {
@@ -58,13 +58,18 @@ export class WalletComponent implements OnInit {
       this.balanceData = balance;
     });
   }
-  //
-  // async showJournal() {
-  //   let refTypes = await this.reftypes.getRefTypes();
-  //   this.journalData = await this.journal.getJournal(refTypes);
-  // }
-  //
-  // async showTransactions() {
-  //   this.transactionData = await this.transactions.getTransactions();
-  // }
+
+  showJournal() {
+    this.reftypes.getRefTypes().subscribe((refTypes) => {
+      this.journal.getJournal(refTypes).subscribe((journalData) => {
+        this.journalData = journalData;
+      });
+    });
+  }
+
+  showTransactions() {
+    this.transactions.getTransactions().subscribe((transactions) => {
+      this.transactionData = transactions;
+    });
+  }
 }

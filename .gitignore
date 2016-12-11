@@ -12,3 +12,6 @@
 
 # System files
 *.db
+
+# Node/Npm files
+npm-debug.log

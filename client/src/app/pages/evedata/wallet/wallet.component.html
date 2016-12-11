@@ -16,7 +16,7 @@
     <tbody id="wallet-journal-body">
     <tr *ngFor="let entry of journalData">
       <td data-label="Date">{{ entry.date }}</td>
-      <td data-label="refType">{{ entry.refTypeID }}</td>
+      <td data-label="refType">{{ entry.refTypeName }}</td>
       <td data-label="From">{{ entry.ownerName1 }}</td>
       <td data-label="Amount" [ngClass]="getNumberColor(entry.amount)">{{ entry.amount }} ISK</td>
       <td data-label="Balance">{{ entry.balance }} ISK</td>

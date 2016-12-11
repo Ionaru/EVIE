@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
-import { xmlToJson, isCacheExpired, formatISK } from '../../../components/helperfunctions.component';
+import { isCacheExpired, formatISK, processXML } from '../../../components/helperfunctions.component';
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { Endpoint } from '../../../components/endpoint/endpoint';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class TransactionService {
@@ -16,30 +17,30 @@ export class TransactionService {
     this.storageTag = this.endpoint.name + this.globals.activeAccount.keyID + this.globals.selectedCharacter.id;
   }
 
-  // async getTransactions(expired = false) {
-  //   if (!expired && localStorage.getItem(this.storageTag)) {
-  //     let jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-  //     if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
-  //       return this.getTransactions(true);
-  //     } else {
-  //       return this.processTransactionData(jsonData);
-  //     }
-  //   } else {
-  //     let url = this.es.constructUrl(this.endpoint, [
-  //       'characterID=' + this.globals.selectedCharacter.id,
-  //       'rowCount=50'
-  //     ]);
-  //     let headers = new Headers();
-  //     headers.append('Accept', 'application/xml');
-  //     let res = await this.http.get(url, {headers: headers}).toPromise();
-  //     let xmlData = this.globals.DOMParser.parseFromString(res['_body'], 'application/xml');
-  //     let jsonData = xmlToJson(xmlData);
-  //     localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
-  //     return this.processTransactionData(jsonData);
-  //   }
-  // }
+  getTransactions(expired = false): Observable<Array<Object>> {
+    if (!expired && localStorage.getItem(this.storageTag)) {
+      let jsonData = JSON.parse(localStorage.getItem(this.storageTag));
+      if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
+        return this.getTransactions(true);
+      } else {
+        return Observable.of(TransactionService.processTransactionData(jsonData));
+      }
+    } else {
+      let url = this.es.constructUrl(this.endpoint, [
+        'characterID=' + this.globals.selectedCharacter.id,
+        'rowCount=50'
+      ]);
+      let headers = new Headers();
+      headers.append('Accept', 'application/xml');
+      return this.http.get(url, {headers: headers}).map((res) => {
+        let jsonData = processXML(res);
+        localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
+        return TransactionService.processTransactionData(jsonData);
+      });
+    }
+  }
 
-  private processTransactionData(jsonData: Object): Array<Object> {
+  private static processTransactionData(jsonData: Object): Array<Object> {
     let transactionData = [];
     for (let row of jsonData['eveapi']['result']['rowset']['row']) {
       let date = row['@attributes']['transactionDateTime'];
