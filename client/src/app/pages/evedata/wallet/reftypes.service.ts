@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { isCacheExpired, processXML } from '../../../components/helperfunctions.component';
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
-import { Globals } from '../../../globals';
 import { Endpoint } from '../../../components/endpoint/endpoint';
 import { Observable } from 'rxjs';
 

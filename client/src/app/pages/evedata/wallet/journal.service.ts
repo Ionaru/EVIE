@@ -11,7 +11,6 @@ export class JournalService {
 
   private endpoint: Endpoint;
   private storageTag: string;
-  private refTypes: Object;
 
   constructor(private http: Http, private es: EndpointService, private globals: Globals) {
     this.endpoint = this.es.getEndpoint('WalletJournal');
@@ -19,7 +18,6 @@ export class JournalService {
   }
 
   getJournal(refTypes: Array<Object>, expired: boolean = false): Observable<Array<Object>> {
-    // this.refTypes = refTypes['eveapi']['result']['rowset']['row'];
     if (localStorage.getItem(this.storageTag) && !expired) {
       let jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
