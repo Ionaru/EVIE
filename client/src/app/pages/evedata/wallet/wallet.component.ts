@@ -61,7 +61,8 @@ export class WalletComponent implements OnInit {
 
   showJournal() {
     this.reftypes.getRefTypes().subscribe((refTypes) => {
-      this.journal.getJournal(refTypes).subscribe((journalData) => {
+      let refTypeData = refTypes['eveapi']['result']['rowset']['row'];
+      this.journal.getJournal(refTypeData).subscribe((journalData) => {
         this.journalData = journalData;
       });
     });

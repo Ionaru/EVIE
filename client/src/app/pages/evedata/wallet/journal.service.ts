@@ -18,8 +18,8 @@ export class JournalService {
     this.storageTag = this.endpoint.name + this.globals.activeAccount.keyID + this.globals.selectedCharacter.id;
   }
 
-  getJournal(refTypes, expired = false): Observable<Array<Object>> {
-    this.refTypes = refTypes['eveapi']['result']['rowset']['row'];
+  getJournal(refTypes: Array<Object>, expired: boolean = false): Observable<Array<Object>> {
+    // this.refTypes = refTypes['eveapi']['result']['rowset']['row'];
     if (localStorage.getItem(this.storageTag) && !expired) {
       let jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {

@@ -17,7 +17,7 @@ export class BalanceService {
     this.storageTag = this.endpoint.name + this.globals.activeAccount.keyID + this.globals.selectedCharacter.id;
   }
 
-  getBalance(expired = false): Observable<string> {
+  getBalance(expired: boolean = false): Observable<string> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       let jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {

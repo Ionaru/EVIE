@@ -17,7 +17,7 @@ export class TransactionService {
     this.storageTag = this.endpoint.name + this.globals.activeAccount.keyID + this.globals.selectedCharacter.id;
   }
 
-  getTransactions(expired = false): Observable<Array<Object>> {
+  getTransactions(expired: boolean = false): Observable<Array<Object>> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       let jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
