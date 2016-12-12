@@ -36,13 +36,13 @@
     "@types/node": "^6.0.46",
     "@types/sequelize": "^4.0.39",
     "@types/winston": "0.0.32",
-    "codelyzer": "^2.0.0-beta.1",
-    "tslint": "^4.0.2"
+    "codelyzer": "~1.0.0-beta.3",
+    "tslint": "3.13.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./src/bin/start-server",
-    "lint": "tslint --type-check \"src/**/*.ts\""
+    "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\""
   },
   "author": "",
   "license": "ISC"

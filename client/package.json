@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build --prod --aot",
-    "lint": "tslint --type-check \"src/**/*.ts\"",
+    "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
     "test": "ng test --single-run",
     "pree2e": "webdriver-manager update",
     "e2e": "protractor"

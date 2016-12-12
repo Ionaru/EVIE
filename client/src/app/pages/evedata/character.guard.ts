@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Resolve } from '@angular/router';
-// import { UserService } from '../components/user/user.service';
+import { Resolve } from '@angular/router';
 import { Globals } from '../../globals';
 import { Observable } from 'rxjs';
 
@@ -8,7 +7,7 @@ import { Observable } from 'rxjs';
 export class CharacterGuard implements Resolve<boolean> {
   constructor(private globals: Globals) {}
 
-  resolve() {
+  resolve(): Observable<boolean> {
     if (this.globals.selectedCharacter) {
       return Observable.of(true);
     } else {

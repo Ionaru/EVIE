@@ -6,7 +6,7 @@ export class User {
   accounts: Array<Account>;
   selectedAccount: number = 0;
 
-  fillData(dataFromServer: Object) {
+  fillData(dataFromServer: Object): void {
     this.username = dataFromServer['username'];
     this.email = dataFromServer['email'];
     this.accounts = dataFromServer['accounts'];

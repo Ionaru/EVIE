@@ -34,7 +34,7 @@ export class NavigationComponent implements OnInit {
     this.syncClock();
   }
 
-  private syncClock() {
+  private syncClock(): void {
     this.clock.getTime().subscribe(
       (time) => {
         this.updateClock(time);
@@ -45,7 +45,7 @@ export class NavigationComponent implements OnInit {
     );
   }
 
-  private timeKeeper() {
+  private timeKeeper(): void {
     this.updateClock(ClockService.tickTime(this.time));
     let eveTime = setInterval(() => {
       this.updateClock(ClockService.tickTime(this.time));
@@ -64,7 +64,7 @@ export class NavigationComponent implements OnInit {
     this.players = time['players'];
   }
 
-  checkAccess() {
+  checkAccess(): boolean {
     // return this.char !== 1;
     return true;
   }
