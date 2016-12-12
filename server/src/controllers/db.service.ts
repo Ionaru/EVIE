@@ -1,8 +1,9 @@
+import fs = require('fs');
+import mysql = require('mysql');
+import Sequelize = require('sequelize');
+
 import { dbConfig } from './config.service';
-import * as fs from 'fs';
-import * as mysql from 'mysql';
 import { logger } from './logger.service';
-import * as Sequelize from 'sequelize';
 
 class Database {
 

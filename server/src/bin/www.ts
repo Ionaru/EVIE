@@ -1,15 +1,16 @@
 /**
  * Module dependencies.
  */
+import http = require('http');
+
 import { logger } from '../controllers/logger.service';
 import { App } from '../app';
-import * as http from 'http';
 import { db } from '../controllers/db.service';
 
 init().catch(console.error.bind(console));
 
 async function init() {
-  let express = new App;
+  let express = new App();
   await express.mainStartupSequence();
 
   /**

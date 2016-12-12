@@ -1,6 +1,7 @@
+import Sequelize = require('sequelize');
+
 import { db } from '../../controllers/db.service';
 import { logger } from '../../controllers/logger.service';
-import * as Sequelize from 'sequelize';
 
 export let User;
 
@@ -44,5 +45,5 @@ export async function defineUser() {
   //   email: 'mail@example.com',
   // });
 
-  logger.info('User model defined');
+  logger.info('Model defined: User');
 }

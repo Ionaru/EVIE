@@ -1,4 +1,5 @@
-import * as winston from 'winston';
+import winston = require('winston');
+
 import TransportInstance = winston.TransportInstance;
 import LoggerInstance = winston.LoggerInstance;
 

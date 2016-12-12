@@ -1,5 +1,6 @@
-import * as fs from 'fs';
-import * as ini from 'ini';
+import fs = require('fs');
+import ini = require('ini');
+
 import { logger } from './logger.service';
 
 class Config {

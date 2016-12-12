@@ -1,6 +1,7 @@
+import Sequelize = require('sequelize');
+
 import { db } from '../../controllers/db.service';
 import { logger } from '../../controllers/logger.service';
-import * as Sequelize from 'sequelize';
 import { User } from '../user/user';
 
 export let Account;
@@ -50,5 +51,5 @@ export async function defineAccount() {
   //   userId: 1,
   // });
 
-  logger.info('Account model defined');
+  logger.info('Model defined: Account');
 }
