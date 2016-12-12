@@ -47,12 +47,12 @@ import { Globals } from './globals';
 export class AppModule {
 }
 
-export function createTranslateLoader(http: Http) {
+export function createTranslateLoader(http: Http): TranslateStaticLoader {
   return new TranslateStaticLoader(http, '../assets/lang', '.json');
 }
 
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
-  handle(params: MissingTranslationHandlerParams) {
+  handle(params: MissingTranslationHandlerParams): string {
     return 'some value';
   }
 }

@@ -8,7 +8,7 @@ export class CharactersheetComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

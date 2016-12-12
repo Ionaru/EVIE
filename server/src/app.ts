@@ -7,6 +7,8 @@ import path = require('path');
 import helmet = require('helmet');
 import es = require('express-session');
 import ems = require('express-mysql-session');
+import Sequelize = require('sequelize');
+import Instance = Sequelize.Instance;
 
 // ES6 imports
 import { logger } from './controllers/logger.service';
@@ -15,6 +17,7 @@ import { db } from './controllers/db.service';
 import { mainConfig } from './controllers/config.service';
 import { defineUser, User } from './models/user/user';
 import { defineAccount, Account } from './models/account/account';
+
 
 export class App {
 
@@ -99,7 +102,7 @@ export class App {
       response.json({
         username: myUser.username,
         email: myUser.email,
-        accounts: myUser.accounts.map(function (account) {
+        accounts: myUser.accounts.map(function (account: Instance<Object>): Object {
           return account.toJSON();
         }),
       });

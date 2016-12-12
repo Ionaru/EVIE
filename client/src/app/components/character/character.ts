@@ -28,7 +28,7 @@ export class Character {
     // await this.getCharacterDetails(account.keyID, account.vCode, id);
   }
 
-  getCharacterDetails(keyID: number, vCode: string, id: number) {
+  getCharacterDetails(keyID: number, vCode: string, id: number): void {
     // console.log()
   }
 }

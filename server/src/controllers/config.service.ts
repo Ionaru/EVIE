@@ -8,12 +8,12 @@ class Config {
   config: Object;
   configName: string;
 
-  constructor(configName, allowedMissing = false) {
+  constructor(configName: string, allowedMissing: boolean = false) {
     this.configName = configName;
     this.config = ini.parse(fs.readFileSync(`./src/config/${configName}.ini`, 'utf-8'));
   }
 
-  get(property: string) {
+  get(property: string): any {
     if (this.config.hasOwnProperty(property)) {
       return this.config[property];
     } else {

@@ -5,7 +5,7 @@ import { logger } from '../../controllers/logger.service';
 
 export let User;
 
-export async function defineUser() {
+export async function defineUser(): Promise<void> {
   User = await db.seq.define('users', {
     pid: {
       type: Sequelize.STRING,

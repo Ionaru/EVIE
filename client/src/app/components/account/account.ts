@@ -19,7 +19,7 @@ export class Account {
     this.vCode = vCode;
   }
 
-  public addCharacter(character: Character) {
+  public addCharacter(character: Character): void {
     if (this.characters.length < this.maximumCharacters) {
       this.characters.push(character);
     } else {

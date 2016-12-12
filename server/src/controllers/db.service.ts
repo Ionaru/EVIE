@@ -4,6 +4,8 @@ import Sequelize = require('sequelize');
 
 import { dbConfig } from './config.service';
 import { logger } from './logger.service';
+import { IPool } from 'mysql';
+
 
 class Database {
 
@@ -13,11 +15,11 @@ class Database {
   constructor() {
     this.state = {
       pool: null,
-      mode: null
+      mode: null,
     };
   }
 
-  connect() {
+  connect(): void {
     let dbOptions = {};
     if (dbConfig.get('db_ca_f') && dbConfig.get('db_cc_f') && dbConfig.get('db_ck_f')) {
       dbOptions = {
@@ -65,7 +67,7 @@ class Database {
     });
   }
 
-  get() {
+  get(): IPool {
     return this.state['pool'];
   }
 }

@@ -17,9 +17,7 @@ import { Observable } from 'rxjs';
 export class AppComponent {
   static translate: TranslateService;
 
-  version = '2.0.0-ALPHA-1';
-  hours: string = '00';
-  minutes: string = '00';
+  version: string = '2.0.0-ALPHA-1';
   char: number;
   players: number;
 
@@ -71,8 +69,8 @@ export class AppComponent {
     });
   }
 
-  private startUp() {
-    if (localStorage.getItem('user')) {
+  private startUp(): void {
+    if (localStorage.getItem('User')) {
 
     }
     this.endpointService.getEndpointsAPI().subscribe(() => {
@@ -81,7 +79,7 @@ export class AppComponent {
     this.globals.isLoggedIn = Observable.create((o) => {
       this.userService.getUser().subscribe(
         (user) => {
-          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('User', JSON.stringify(user));
           this.globals.activeAccount = user.accounts[user.selectedAccount];
 
           this.accountService.getAccountData(user.accounts[user.selectedAccount]).subscribe(

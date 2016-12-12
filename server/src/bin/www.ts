@@ -9,7 +9,7 @@ import { db } from '../controllers/db.service';
 
 init().catch(console.error.bind(console));
 
-async function init() {
+async function init(): Promise<void> {
   let express = new App();
   await express.mainStartupSequence();
 
@@ -38,7 +38,7 @@ async function init() {
   /**
    * Normalize a port into a number, string, or false.
    */
-  function normalizePort(val): boolean | number {
+  function normalizePort(val: any): boolean | number {
 
     const normalizedPort = parseInt(val, 10);
 
@@ -58,7 +58,7 @@ async function init() {
   /**
    * Event listener for HTTP server 'error' event.
    */
-  function onError(error) {
+  function onError(error: any): void {
     if (error.syscall !== 'listen') {
       throw error;
     }
@@ -83,7 +83,7 @@ async function init() {
   /**
    * Event listener for HTTP server 'listening' event.
    */
-  function onListening() {
+  function onListening(): void {
     const addr = server.address();
     const bind = typeof addr === 'string'
       ? 'pipe ' + addr
@@ -94,14 +94,14 @@ async function init() {
   /**
    * Function that gets executed when the app shuts down
    */
-  function exitHandler(options, err) {
+  function exitHandler(options: Object, err: any): void {
     // Ensure the app shuts down when there is an exception during shutdown
     process.on('uncaughtException', () => {
       process.exit(0);
     });
     if (options['cleanup']) {
       logger.info('Got shutdown command, executing cleanup tasks.');
-      let cleanup = function (done) {
+      let cleanup = function (done: Function): void {
         // Destroy all sessions on server shutdown
         express.sessionStore.clear((sessionStoreError) => {
           if (sessionStoreError) {
@@ -124,7 +124,7 @@ async function init() {
           });
         });
       };
-      cleanup(function () {
+      cleanup(function (): void {
         logger.info('Cleanup tasks done');
         if (err) {
           logger.error('Shutdown was the result of an uncaught error, more details below');

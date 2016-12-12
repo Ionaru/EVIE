@@ -16,7 +16,7 @@ export class Endpoint {
     this.params = params;
   }
 
-  fillData(accessMask: number, type: string, groupID: number, description: string) {
+  fillData(accessMask: number, type: string, groupID: number, description: string): void {
     this.accessMask = accessMask;
     this.type = type;
     this.groupID = groupID;

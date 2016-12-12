@@ -21,14 +21,14 @@ export class WalletComponent implements OnInit {
               private reftypes: RefTypesService,
               private title: Title) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.title.setTitle('EVE Track - Wallet');
     this.showBalance();
     this.showJournal();
     this.showTransactions();
   }
 
-  getNumberColor(amount) {
+  getNumberColor(amount: string): string {
     if (amount.indexOf('-') > -1) {
       return 'negative';
     } else if (amount === '0,00') {
@@ -38,28 +38,28 @@ export class WalletComponent implements OnInit {
     }
   }
 
-  buyOrSell(value) {
+  buyOrSell(value: string): string {
     if (value === 'buy') {
       return 'negative';
     }
     return 'positive';
   }
 
-  getItemInfo(typeID: string) {
+  getItemInfo(typeID: string): void {
     // TODO: implement
   }
 
-  getPersonInfo(clientID: string) {
+  getPersonInfo(clientID: string): void {
     // TODO: implement
   }
 
-  showBalance() {
+  showBalance(): void {
     this.balance.getBalance().subscribe((balance) => {
       this.balanceData = balance;
     });
   }
 
-  showJournal() {
+  showJournal(): void {
     this.reftypes.getRefTypes().subscribe((refTypes) => {
       let refTypeData = refTypes['eveapi']['result']['rowset']['row'];
       this.journal.getJournal(refTypeData).subscribe((journalData) => {
@@ -68,7 +68,7 @@ export class WalletComponent implements OnInit {
     });
   }
 
-  showTransactions() {
+  showTransactions(): void {
     this.transactions.getTransactions().subscribe((transactions) => {
       this.transactionData = transactions;
     });

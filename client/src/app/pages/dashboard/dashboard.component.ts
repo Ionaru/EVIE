@@ -13,12 +13,12 @@ export class DashboardComponent implements OnInit {
   constructor(private title: Title) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.title.setTitle('EVE Track - Dashboard');
     // this.getFromAPI();
   }
 
-  getFromAPI() {
+  getFromAPI(): void {
     // this.api.getFromAPI().subscribe(result => this.result = result["result"]["rowset"]["row"])
   };
 

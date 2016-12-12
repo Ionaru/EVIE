@@ -6,7 +6,7 @@ import { User } from '../user/user';
 
 export let Account;
 
-export async function defineAccount() {
+export async function defineAccount(): Promise<void> {
   Account = await db.seq.define('accounts', {
     pid: {
       type: Sequelize.STRING,

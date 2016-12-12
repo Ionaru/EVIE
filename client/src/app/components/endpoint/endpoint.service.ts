@@ -4,8 +4,6 @@ import { Observable }     from 'rxjs/Observable';
 import { xmlToJson } from '../helperfunctions.component';
 import { Endpoint } from './endpoint';
 import { endpointList } from './endpoints';
-// import { Globals } from '../../globals';
-import construct = Reflect.construct;
 import { Globals } from '../../globals';
 
 @Injectable()

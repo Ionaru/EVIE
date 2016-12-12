@@ -12,19 +12,19 @@ class Logger {
     this.logger = new (winston.Logger)({transports: transports});
   }
 
-  public info(msg: string) {
+  public info(msg: string): void {
     this.logger.info(msg);
   }
 
-  public warn(msg: string) {
+  public warn(msg: string): void {
     this.logger.warn(msg);
   }
 
-  public error(msg: string) {
+  public error(msg: any): void {
     this.logger.error(msg);
   }
 
-  public debug(msg: string) {
+  public debug(msg: string): void {
     this.logger.debug(msg);
   }
 
@@ -34,7 +34,7 @@ class Logger {
     transports.push(
       new winston.transports.Console({
         level: consoleLogLevel,
-        timestamp: function () {
+        timestamp: function (): string {
           return Logger.getLogTimeStamp();
         },
         colorize: true
@@ -42,7 +42,7 @@ class Logger {
     return transports;
   }
 
-  private static getLogTimeStamp() {
+  private static getLogTimeStamp(): string {
     let now = new Date();
     let year = now.getFullYear();
     let month = ('0' + (now.getMonth() + 1)).slice(-2);

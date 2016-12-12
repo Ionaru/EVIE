@@ -19,7 +19,6 @@ export class ClockService {
     let url = this.es.constructUrl(this.endpoint);
     let headers = new Headers();
     headers.append('Accept', 'application/xml');
-    // let res = await this.http.get(url, {headers: headers}).toPromise();
     return this.http.get(url, {
       headers: headers
     }).map((res: Response) => {
