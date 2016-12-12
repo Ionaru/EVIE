@@ -1,13 +1,17 @@
 /// <reference path="types.d.ts" />
 
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import * as path from 'path';
+// NPM imports
+import express = require('express');
+import bodyParser = require('body-parser');
+import path = require('path');
+import helmet = require('helmet');
+import es = require('express-session');
+import ems = require('express-mysql-session');
+
+// ES6 imports
 import { logger } from './controllers/logger.service';
 import { Router, Response, Request } from 'express';
 import { db } from './controllers/db.service';
-import * as es from 'express-session';
-import * as ems from 'express-mysql-session';
 import { mainConfig } from './controllers/config.service';
 import { defineUser, User } from './models/user/user';
 import { defineAccount, Account } from './models/account/account';
@@ -26,6 +30,12 @@ export class App {
     // Create the Express Application
     const app: express.Application = express();
 
+    // Add a Helmet for protection
+    app.use(helmet());
+
+    // Additional security options
+    app.set('trust proxy', 1);
+
     // Setup bodyParser
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
@@ -36,12 +46,18 @@ export class App {
     // Setup MySQL Session Store
     let MySQLStore = ems(es);
     this.sessionStore = new MySQLStore({}, db.get());
+    let expiryDate = new Date(Date.now() + 60 * 60 * 1000);
     app.use(es({
       name: mainConfig.get('session_key'),
       secret: mainConfig.get('session_secret'),
       store: this.sessionStore,
       resave: true,
-      saveUninitialized: true
+      saveUninitialized: true,
+      cookie: {
+        // secure: true,
+        httpOnly: true,
+        expires: expiryDate
+      },
     }));
 
     // Define models in application
