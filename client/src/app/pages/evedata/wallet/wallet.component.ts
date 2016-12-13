@@ -4,7 +4,7 @@ import { BalanceService } from './balance.service';
 import { JournalService } from './journal.service';
 import { TransactionService } from './transactions.service';
 import { RefTypesService } from './reftypes.service';
-import { CountUp } from '../../../components/count-up';
+import { CountUp, CountUpOptions } from '../../../components/count-up';
 
 @Component({
   templateUrl: 'wallet.component.html',
@@ -56,10 +56,10 @@ export class WalletComponent implements OnInit {
 
   showBalance(): void {
     this.balance.getBalance().subscribe((balance) => {
-      let options = {
-        useEasing : false
+      let options: CountUpOptions = {
+        useEasing : false,
       };
-      let countUp = new CountUp('balance-number', 0, balance, 2, 1, options);
+      let countUp = new CountUp('balance-number', 0, Number(balance), 2, 1, options);
       countUp.start();
     });
   }

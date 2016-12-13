@@ -19,7 +19,7 @@ export class NavigationComponent implements OnInit {
   time: Object;
   char: number;
   players: number;
-  countup;
+  countup: CountUp;
 
   constructor(private clock: ClockService,
               private globals: Globals,
