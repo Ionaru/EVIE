@@ -3,6 +3,7 @@ import { ClockService } from './clock.service';
 import { Globals } from '../../globals';
 import { TranslateService } from 'ng2-translate';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
+import { CountUp } from '../../components/count-up';
 
 @Component({
   selector: 'app-navigation',
@@ -18,6 +19,7 @@ export class NavigationComponent implements OnInit {
   time: Object;
   char: number;
   players: number;
+  countup;
 
   constructor(private clock: ClockService,
               private globals: Globals,
@@ -31,6 +33,7 @@ export class NavigationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.countup = new CountUp('eve-players', 0, 0);
     this.syncClock();
   }
 
@@ -61,7 +64,7 @@ export class NavigationComponent implements OnInit {
     this.minutes = time['minutes'];
     this.status = time['status'];
     this.time = time;
-    this.players = time['players'];
+    this.countup.update(time['players']);
   }
 
   checkAccess(): boolean {

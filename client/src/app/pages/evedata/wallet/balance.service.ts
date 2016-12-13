@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
-import { isCacheExpired, formatISK, processXML } from '../../../components/helperfunctions.component';
+import { isCacheExpired, processXML } from '../../../components/helperfunctions.component';
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { Endpoint } from '../../../components/endpoint/endpoint';
@@ -40,6 +40,6 @@ export class BalanceService {
   }
 
   private static processBalance(jsonData: Object): string {
-    return formatISK(jsonData['eveapi']['result']['rowset']['row']['@attributes']['balance']);
+    return jsonData['eveapi']['result']['rowset']['row']['@attributes']['balance'];
   }
 }

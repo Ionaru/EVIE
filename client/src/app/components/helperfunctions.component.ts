@@ -48,7 +48,7 @@ export function xmlToJson(xml: Document | Node): Object {
   return obj;
 }
 
-export function formatISK(amount: number | string, c: number = 2, d: string = ',', t: string = '.'): string {
+export function formatISK(amount: number | string, c: number = 2, d: string = '.', t: string = ','): string {
   let i: any, j: any, n: any, s: any;
   n = Number(amount);
   s = n < 0 ? '-' : '';
