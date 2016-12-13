@@ -7,7 +7,7 @@ import { CharacterGuard } from './pages/evedata/character.guard';
 // import { LoggedInGuard } from './pages/logged-in.guard';
 // import { CharacterGuard } from './pages/evedata/character.guard';
 // import { IndustryComponent } from './pages/evedata/industry/industry.component';
-// import { AccountComponent } from './pages/evedata/account/account.component';
+import { AccountComponent } from './pages/evedata/account/account.component';
 // import { PlanetsComponent } from './pages/evedata/planets/planets.component';
 // import { AssetsComponent } from './pages/evedata/assets/assets.component';
 // import { MarketComponent } from './pages/evedata/market/market.component';
@@ -21,7 +21,7 @@ const routes: Routes = [
   {path: '', component: IndexComponent},
   {path: 'dashboard', component: DashboardComponent},
   // {path: 'api', component: ApikeysComponent},
-  // {path: 'account', component: AccountComponent, canActivate: [CharacterGuard]},
+  {path: 'account', component: AccountComponent, resolve: [CharacterGuard]},
   // {path: 'charactersheet', component: CharactersheetComponent, canActivate: [CharacterGuard]},
   // {path: 'skills', component: SkillsComponent, canActivate: [CharacterGuard]},
   // {path: 'contacts', component: ContactsComponent, canActivate: [CharacterGuard]},

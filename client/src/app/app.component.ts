@@ -74,8 +74,9 @@ export class AppComponent {
 
     }
     this.endpointService.getEndpointsAPI().subscribe(() => {
-      // this.appReadyEvent.trigger();
+      this.appReadyEvent.trigger();
     });
+
     this.globals.isLoggedIn = Observable.create((o) => {
       this.userService.getUser().subscribe(
         (user) => {
@@ -92,11 +93,6 @@ export class AppComponent {
                   console.log(character);
                   o.next(true);
                   o.complete();
-
-                  // Now that the core data has loaded, let's trigger the event that the
-                  // pre-bootstrap loading screen is listening for. This will initiate
-                  // the teardown of the loading screen.
-                  this.appReadyEvent.trigger();
                 }
               );
             }

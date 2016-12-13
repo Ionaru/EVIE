@@ -79,9 +79,14 @@
     img {
       transition: filter 0.2s linear;
     }
-    &:hover, &.selected {
+    &:hover {
       img {
         filter: brightness(150%);
+      }
+    }
+    &.selected {
+      img {
+
       }
     }
     &:not(.active) {

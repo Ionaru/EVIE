@@ -17,22 +17,19 @@ export class NavigationComponent implements OnInit {
   minutes: string = '00';
   status: string = 'Offline';
   time: Object;
-  char: number;
+  char: number = 1;
   players: number;
   countup: CountUp;
 
   constructor(private clock: ClockService,
               private globals: Globals,
               private translate: TranslateService,
-              private es: EndpointService) {
-    if (this.globals.activeAccount) {
-      this.char = globals.selectedCharacter.id;
-    } else {
-      this.char = 1;
-    }
-  }
+              private es: EndpointService) { }
 
   ngOnInit(): void {
+    this.globals.isLoggedIn.subscribe(() => {
+      this.char = this.globals.selectedCharacter.id;
+    });
     this.countup = new CountUp('eve-players', 0, 0);
     this.syncClock();
   }
@@ -60,11 +57,14 @@ export class NavigationComponent implements OnInit {
   }
 
   private updateClock(time: Object): void {
+    this.countup.reset();
     this.hours = time['hours'];
     this.minutes = time['minutes'];
     this.status = time['status'];
     this.time = time;
-    this.countup.update(time['players']);
+    setTimeout(() => {
+      this.countup.update(time['players']);
+    }, 400); // Compensate for pre-bootstrap-container fadeout
   }
 
   checkAccess(): boolean {

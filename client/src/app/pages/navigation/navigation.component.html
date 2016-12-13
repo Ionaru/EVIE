@@ -16,10 +16,10 @@
 </nav>
 <!--<nav class="navbar-side" *ngIf="globals.isLoggedIn">-->
 <nav class="navbar-side">
-  <!--<a routerLink="account" routerLinkActive="selected" class="character-item"-->
-     <!--[ngClass]="{'active': checkAccess()}">-->
-    <!--<img src="//image.eveonline.com/Character/{{ char }}_50.jpg">-->
-  <!--</a>-->
+  <a routerLink="account" routerLinkActive="selected" class="character-item"
+     [ngClass]="{'active': checkAccess()}">
+    <img src="//image.eveonline.com/Character/{{ char }}_50.jpg">
+  </a>
   <!--<a routerLink="charactersheet" routerLinkActive="selected" class="navbar-item"-->
      <!--[ngClass]="{'active': checkAccess()}">-->
     <!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg">-->
