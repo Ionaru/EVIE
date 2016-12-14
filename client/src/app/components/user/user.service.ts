@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { User } from './user';
 import { Observable } from 'rxjs';
+import { isEmpty } from '../helperfunctions.component';
 // import { Globals } from '../../globals';
 
 @Injectable()
@@ -13,11 +14,15 @@ export class UserService {
     let url = 'api';
     return this.http.get(url).map(
       (res: Response) => {
-        let user = new User();
         let jsonData = JSON.parse(res['_body']);
-        console.log(jsonData);
-        user.fillData(jsonData);
-        return user;
+        if (!isEmpty(jsonData)) {
+          let user = new User();
+          user.fillData(jsonData);
+          return user;
+        } else {
+          console.log('No User');
+          return null;
+        }
       }).retry(2).catch(() => {
       console.log('AAAAH');
       return Observable.empty();

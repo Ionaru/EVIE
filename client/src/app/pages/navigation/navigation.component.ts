@@ -20,6 +20,7 @@ export class NavigationComponent implements OnInit {
   char: number = 1;
   players: number;
   countup: CountUp;
+  disable: boolean = true;
 
   constructor(private clock: ClockService,
               private globals: Globals,
@@ -28,7 +29,10 @@ export class NavigationComponent implements OnInit {
 
   ngOnInit(): void {
     this.globals.isLoggedIn.subscribe(() => {
-      this.char = this.globals.selectedCharacter.id;
+      if (this.globals.selectedCharacter) {
+        this.char = this.globals.selectedCharacter.id;
+        this.disable = false;
+      }
     });
     this.countup = new CountUp('eve-players', 0, 0);
     this.syncClock();
@@ -68,6 +72,9 @@ export class NavigationComponent implements OnInit {
   }
 
   checkAccess(): boolean {
+    if (this.disable) {
+      return false;
+    }
     // return this.char !== 1;
     return true;
   }

@@ -7,6 +7,7 @@ import { CharacterService } from './components/character/character.service';
 import { Globals } from './globals';
 import { EndpointService } from './components/endpoint/endpoint.service';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,8 @@ export class AppComponent {
               private characterService: CharacterService,
               private appReadyEvent: AppReadyEvent,
               private endpointService: EndpointService,
-              private globals: Globals) {
+              private globals: Globals,
+              private router: Router) {
 
     // At this point, the application has "loaded" in so much as the assets have
     // loaded; but, the we're not going to consider the application "ready" until
@@ -80,24 +82,33 @@ export class AppComponent {
     this.globals.isLoggedIn = Observable.create((o) => {
       this.userService.getUser().subscribe(
         (user) => {
-          localStorage.setItem('User', JSON.stringify(user));
-          this.globals.activeAccount = user.accounts[user.selectedAccount];
+          console.log('DOING');
+          console.log(user);
+          if (user) {
+            localStorage.setItem('User', JSON.stringify(user));
+            this.globals.activeAccount = user.accounts[user.selectedAccount];
 
-          this.accountService.getAccountData(user.accounts[user.selectedAccount]).subscribe(
-            (account) => {
-              let selectedCharacter = 0;
-              this.globals.selectedCharacter = account.characters[selectedCharacter];
+            this.accountService.getAccountData(user.accounts[user.selectedAccount]).subscribe(
+              (account) => {
+                let selectedCharacter = 0;
+                this.globals.selectedCharacter = account.characters[selectedCharacter];
 
-              this.characterService.getCharacterData(account.characters[selectedCharacter]).subscribe(
-                (character) => {
-                  console.log(character);
-                  o.next(true);
-                  o.complete();
-                }
-              );
-            }
-          );
-        }
+                this.characterService.getCharacterData(account.characters[selectedCharacter]).subscribe(
+                  (character) => {
+                    console.log(character);
+                    o.next(true);
+                    o.complete();
+                  }
+                );
+              }
+            );
+          } else {
+            console.log('Navigating');
+            this.router.navigate(['/']);
+            o.next(false);
+            o.complete();
+          }
+        },
       );
     }).share();
   }

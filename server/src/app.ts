@@ -98,7 +98,8 @@ export class App {
         request.session['user'] = myUser.id;
         // END DEBUG CODE
       }
-
+      response.status(200);
+      // response.json({});
       response.json({
         username: myUser.username,
         email: myUser.email,
