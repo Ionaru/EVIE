@@ -6,8 +6,11 @@ import { AccountService } from './components/account/account.service';
 import { CharacterService } from './components/character/character.service';
 import { Globals } from './globals';
 import { EndpointService } from './components/endpoint/endpoint.service';
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 import { Router } from '@angular/router';
+import { User } from './components/user/user';
+import { Account } from './components/account/account';
+import { isEmpty } from './components/helperfunctions.component';
 
 @Component({
   selector: 'app-root',
@@ -67,50 +70,60 @@ export class AppComponent {
 
     this.startUp();
     globals.isLoggedIn.subscribe(() => {
-      console.log('Logged in!');
+      // console.log('Logged in!');
+      this.appReadyEvent.trigger();
     });
   }
 
   private startUp(): void {
-    if (localStorage.getItem('User')) {
-
-    }
     this.endpointService.getEndpointsAPI().subscribe(() => {
-      this.appReadyEvent.trigger();
+      // this.appReadyEvent.trigger();
     });
 
-    this.globals.isLoggedIn = Observable.create((o) => {
+    this.globals.isLoggedIn = Observable.create((o: Observer<boolean>) => {
       this.userService.getUser().subscribe(
-        (user) => {
-          console.log('DOING');
-          console.log(user);
+        (user: User) => {
           if (user) {
-            localStorage.setItem('User', JSON.stringify(user));
-            this.globals.activeAccount = user.accounts[user.selectedAccount];
-
-            this.accountService.getAccountData(user.accounts[user.selectedAccount]).subscribe(
-              (account) => {
-                let selectedCharacter = 0;
-                this.globals.selectedCharacter = account.characters[selectedCharacter];
-
-                this.characterService.getCharacterData(account.characters[selectedCharacter]).subscribe(
-                  (character) => {
-                    console.log(character);
-                    o.next(true);
-                    o.complete();
-                  }
-                );
-              }
-            );
+            // localStorage.setItem('User', JSON.stringify(user));
+            // console.log(user);
+            // console.log(user.accounts);
+            if (!isEmpty(user.accounts)) {
+              this.globals.activeAccount = user.accounts[user.selectedAccount];
+              this.getAccount(o);
+            } else {
+              // User has to add an EVE account
+              this.router.navigate(['/dashboard']).then();
+              o.next(false);
+              o.complete();
+            }
           } else {
-            console.log('Navigating');
-            this.router.navigate(['/']);
+            // User has to log in
+            this.router.navigate(['/']).then();
             o.next(false);
             o.complete();
           }
         },
       );
     }).share();
+  }
+
+  private getAccount(o: Observer<boolean>): void {
+    this.accountService.getAccountData(this.globals.activeAccount).subscribe(
+      (account: Account) => {
+        let selectedCharacter = 0;
+        this.globals.selectedCharacter = account.characters[selectedCharacter];
+        this.getCharacter(o);
+      }
+    );
+  }
+
+  private getCharacter(o: Observer<boolean>): void {
+    this.characterService.getCharacterData(this.globals.selectedCharacter).subscribe(
+      () => {
+        o.next(true);
+        o.complete();
+      }
+    );
   }
 }
 

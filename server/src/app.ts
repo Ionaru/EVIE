@@ -7,16 +7,16 @@ import path = require('path');
 import helmet = require('helmet');
 import es = require('express-session');
 import ems = require('express-mysql-session');
-import Sequelize = require('sequelize');
-import Instance = Sequelize.Instance;
+// import Sequelize = require('sequelize');
+// import Instance = Sequelize.Instance;
 
 // ES6 imports
 import { logger } from './controllers/logger.service';
 import { Router, Response, Request } from 'express';
 import { db } from './controllers/db.service';
 import { mainConfig } from './controllers/config.service';
-import { defineUser, User } from './models/user/user';
-import { defineAccount, Account } from './models/account/account';
+import { defineUser, User, UserInstance } from './models/user/user';
+import { defineAccount, Account, AccountInstance } from './models/account/account';
 
 
 export class App {
@@ -70,7 +70,7 @@ export class App {
     // Define routers in application
     const apiRouter: Router = Router();
     apiRouter.all('/*', async(request: Request, response: Response) => {
-      let myUser;
+      let myUser: UserInstance;
       if (request.session['user']) {
         myUser = await User.findOne({
           attributes: ['id', 'username', 'email'],
@@ -103,7 +103,9 @@ export class App {
       response.json({
         username: myUser.username,
         email: myUser.email,
-        accounts: myUser.accounts.map(function (account: Instance<Object>): Object {
+        // accounts: [],
+        accounts: myUser.accounts.map(function (account: AccountInstance): Object {
+          delete account.userId;
           return account.toJSON();
         }),
       });

@@ -1,10 +1,25 @@
 import Sequelize = require('sequelize');
+import Instance = Sequelize.Instance;
+import Model = Sequelize.Model;
 
 import { db } from '../../controllers/db.service';
 import { logger } from '../../controllers/logger.service';
 import { User } from '../user/user';
 
 export let Account;
+
+export interface AccountAttr {
+  id: number;
+  pid: string;
+  name: string;
+  keyID: number;
+  vCode: string;
+  isActive: boolean;
+  selectedCharacter: number;
+  userId: number;
+}
+export interface AccountInstance extends Instance<AccountAttr>, AccountAttr { }
+export interface AccountModel extends Model<AccountAttr, AccountAttr> { }
 
 export async function defineAccount(): Promise<void> {
   Account = await db.seq.define('accounts', {
@@ -29,6 +44,11 @@ export async function defineAccount(): Promise<void> {
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+    },
+    selectedCharacter: {
+      type: Sequelize.NUMBER,
+      allowNull: false,
+      defaultValue: 0,
     },
     userId: {
       type: Sequelize.INTEGER,

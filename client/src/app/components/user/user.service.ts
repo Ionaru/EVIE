@@ -20,11 +20,9 @@ export class UserService {
           user.fillData(jsonData);
           return user;
         } else {
-          console.log('No User');
           return null;
         }
       }).retry(2).catch(() => {
-      console.log('AAAAH');
       return Observable.empty();
     });
   }
