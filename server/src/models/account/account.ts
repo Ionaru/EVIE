@@ -46,7 +46,7 @@ export async function defineAccount(): Promise<void> {
       defaultValue: true,
     },
     selectedCharacter: {
-      type: Sequelize.NUMBER,
+      type: Sequelize.INTEGER,
       allowNull: false,
       defaultValue: 0,
     },
