@@ -7,16 +7,16 @@ import path = require('path');
 import helmet = require('helmet');
 import es = require('express-session');
 import ems = require('express-mysql-session');
-// import Sequelize = require('sequelize');
-// import Instance = Sequelize.Instance;
 
 // ES6 imports
 import { logger } from './controllers/logger.service';
-import { Router, Response, Request } from 'express';
 import { db } from './controllers/db.service';
 import { mainConfig } from './controllers/config.service';
-import { defineUser, User, UserInstance } from './models/user/user';
-import { defineAccount, Account, AccountInstance } from './models/account/account';
+import { defineUser } from './models/user/user';
+import { defineAccount } from './models/account/account';
+import { APIRouter } from './routers/api.router';
+import { SSORouter } from './routers/sso.router';
+import { AngularRedirectRouter } from './routers/angular.router';
 
 
 export class App {
@@ -27,7 +27,7 @@ export class App {
   /**
    * The main startup function for the application
    */
-  async mainStartupSequence(): Promise<express.Application> {
+  async mainStartupSequence(): Promise<void> {
     logger.info('Beginning app startup');
 
     // Create the Express Application
@@ -67,67 +67,18 @@ export class App {
     await defineUser().catch(console.error.bind(console));
     await defineAccount().catch(console.error.bind(console));
 
-    // Define routers in application
-    const apiRouter: Router = Router();
-    apiRouter.all('/*', async(request: Request, response: Response) => {
-      let myUser: UserInstance;
-      if (request.session['user']) {
-        myUser = await User.findOne({
-          attributes: ['id', 'username', 'email'],
-          where: {
-            id: request.session['user'],
-          },
-          include: [{
-            model: Account,
-            attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
-          }]
-        });
-        request.session['user'] = myUser.id;
-      } else {
-        // DEBUG CODE, remove when login system is built
-        myUser = await User.findOne({
-          attributes: ['id', 'username', 'email'],
-          where: {
-            id: 1,
-          },
-          include: [{
-            model: Account,
-            attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
-          }]
-        });
-        request.session['user'] = myUser.id;
-        // END DEBUG CODE
-      }
-      response.status(200);
-      // response.json({});
-      response.json({
-        username: myUser.username,
-        email: myUser.email,
-        // accounts: [],
-        accounts: myUser.accounts.map(function (account: AccountInstance): Object {
-          delete account.userId;
-          return account.toJSON();
-        }),
-      });
-    });
-
-    // Use routers
-    app.all('/api', apiRouter);
-
     // Use static client folder for serving assets
     app.use(express.static(path.join(__dirname, '../../client/dist')));
 
-    // Re-route all other requests to the Angular app
-    app.all('*', (request: Request, response: Response) => {
-      response.status(200).sendFile(path.join(__dirname, '../../client/dist/index.html'));
-    });
+    // Use routes
+    app.use('/api', (new APIRouter()).router);
+    app.use('/sso', (new SSORouter()).router);
+    // // Re-route all other requests to the Angular app
+    app.use('*', (new AngularRedirectRouter()).router);
 
     // Set the application as an attribute on this class, so we can access it later
     this.app = app;
 
     logger.info('App startup done');
-
-    // Forced return because this is an async function
-    return;
   }
 }
