@@ -1,8 +1,9 @@
 import fs = require('fs');
 import mysql = require('mysql');
+import path = require('path');
 import Sequelize = require('sequelize');
 
-import { dbConfig } from './config.service';
+import { dbConfig, configPath } from './config.service';
 import { logger } from './logger.service';
 import { IPool } from 'mysql';
 
@@ -29,9 +30,9 @@ class Database {
         password: dbConfig.get('db_pass'),
         database: dbConfig.get('db_name'),
         ssl: {
-          ca: fs.readFileSync('./src/config/' + dbConfig.get('db_ca_f')),
-          cert: fs.readFileSync('./src/config/' + dbConfig.get('db_cc_f')),
-          key: fs.readFileSync('./src/config/' + dbConfig.get('db_ck_f')),
+          ca: fs.readFileSync(path.join(configPath, dbConfig.get('db_ca_f'))),
+          cert: fs.readFileSync(path.join(configPath, dbConfig.get('db_cc_f'))),
+          key: fs.readFileSync(path.join(configPath, dbConfig.get('db_ck_f'))),
           rejectUnauthorized: dbConfig.get('db_reject'),
         }
       };
@@ -57,9 +58,9 @@ class Database {
       port: dbConfig.get('db_port'),
       dialectOptions: {
         ssl: {
-          ca: fs.readFileSync('./src/config/' + dbConfig.get('db_ca_f')),
-          cert: fs.readFileSync('./src/config/' + dbConfig.get('db_cc_f')),
-          key: fs.readFileSync('./src/config/' + dbConfig.get('db_ck_f')),
+          ca: fs.readFileSync(path.join(configPath, dbConfig.get('db_ca_f'))),
+          cert: fs.readFileSync(path.join(configPath, dbConfig.get('db_cc_f'))),
+          key: fs.readFileSync(path.join(configPath, dbConfig.get('db_ck_f'))),
           rejectUnauthorized: dbConfig.get('db_reject'),
         }
       },
