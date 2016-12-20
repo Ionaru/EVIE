@@ -1,5 +1,5 @@
 import { UserModel } from '../models/user/user';
-import { AccountModel } from '../models/account/account';
+import { CharacterModel } from '../models/character/character';
 
 export function generatePID(pidLength: number): string {
   let pid = '';
@@ -10,7 +10,7 @@ export function generatePID(pidLength: number): string {
   return pid;
 }
 
-export async function generateUniquePID(pidLength: number, model: UserModel | AccountModel): Promise<string> {
+export async function generateUniquePID(pidLength: number, model: UserModel | CharacterModel): Promise<string> {
   let pid = generatePID(pidLength);
   let search = await model.findOne(
     {

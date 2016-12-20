@@ -1,4 +1,4 @@
-import { AccountInstance, Account } from '../models/account/account';
+import { CharacterInstance, Character } from '../models/character/character';
 import { User, UserInstance } from '../models/user/user';
 import { Response, Request } from 'express';
 import { logger } from '../controllers/logger.service';
@@ -21,7 +21,7 @@ export class APIRouter extends BaseRouter {
           id: request.session['user'],
         },
         include: [{
-          model: Account,
+          model: Character,
           attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
         }]
       });
@@ -34,7 +34,7 @@ export class APIRouter extends BaseRouter {
           id: 1,
         },
         include: [{
-          model: Account,
+          model: Character,
           attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
         }]
       });
@@ -46,10 +46,10 @@ export class APIRouter extends BaseRouter {
     response.json({
       username: myUser.username,
       email: myUser.email,
-      // accounts: [],
-      accounts: myUser.accounts.map(function (account: AccountInstance): Object {
-        delete account.userId;
-        return account.toJSON();
+      // character: [],
+      character: myUser.characters.map(function (character: CharacterInstance): Object {
+        delete character.userId;
+        return character.toJSON();
       }),
     });
   }

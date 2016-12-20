@@ -13,7 +13,7 @@ import { logger } from './controllers/logger.service';
 import { db } from './controllers/db.service';
 import { mainConfig } from './controllers/config.service';
 import { defineUser } from './models/user/user';
-import { defineAccount } from './models/account/account';
+import { defineCharacter } from './models/character/character';
 import { APIRouter } from './routers/api.router';
 import { SSORouter } from './routers/sso.router';
 import { AngularRedirectRouter } from './routers/angular.router';
@@ -65,7 +65,7 @@ export class App {
 
     // Define models in application
     await defineUser().catch(console.error.bind(console));
-    await defineAccount().catch(console.error.bind(console));
+    await defineCharacter().catch(console.error.bind(console));
 
     // Use static client folder for serving assets
     app.use(express.static(path.join(__dirname, '../../client/dist')));

@@ -3,7 +3,7 @@ import { logger } from '../controllers/logger.service';
 import { BaseRouter } from './base.router';
 import { ssoConfig } from '../controllers/config.service';
 import https = require('https');
-import { Account, AccountInstance } from '../models/account/account';
+import { Character, CharacterInstance } from '../models/character/character';
 import { generateUniquePID } from '../controllers/pid.service';
 
 const scopes = ['characterWalletRead', 'characterAccountRead'];
@@ -52,7 +52,7 @@ export class SSORouter extends BaseRouter {
   private static async processCallBack(request: Request, response: Response): Promise<void> {
     if (request.query.state && ssoConfig.get('state') === request.query.state) {
 
-      let acc: AccountInstance = await Account.findOrCreate({
+      let acc: CharacterInstance = await Character.findOrCreate({
         where: {
           pid: request.session['characterPid']
         },
@@ -83,18 +83,18 @@ export class SSORouter extends BaseRouter {
 
     let authString = new Buffer(ssoConfig.get('client_ID') + ':' + ssoConfig.get('secret_key')).toString('base64');
 
-    let account: AccountInstance = await Account.findOne({
+    let character: CharacterInstance = await Character.findOne({
       attributes: ['id', 'pid', 'authToken', 'refreshToken'],
       where: {
         pid: request.session['characterPid']
       }
     });
 
-    if (account.refreshToken) {
+    if (character.refreshToken) {
       response.redirect('/sso/refresh');
     } else {
 
-      let postData = `grant_type=authorization_code&code=${account.authToken}`;
+      let postData = `grant_type=authorization_code&code=${character.authToken}`;
 
       let authRequestOptions = {
         host: oauthHost,
@@ -112,10 +112,10 @@ export class SSORouter extends BaseRouter {
           authResult.push(JSON.parse(chunk.toString()));
         });
         authReponse.on('end', async() => {
-          account.refreshToken = authResult[0]['refresh_token'];
-          account.accessToken = authResult[0]['access_token'];
-          account.tokenExpiry = new Date(Date.now() + (authResult[0]['expires_in'] * 1000));
-          account.authToken = null;
+          character.refreshToken = authResult[0]['refresh_token'];
+          character.accessToken = authResult[0]['access_token'];
+          character.tokenExpiry = new Date(Date.now() + (authResult[0]['expires_in'] * 1000));
+          character.authToken = null;
 
           let characterIdRequestOptions = {
             host: oauthHost,
@@ -133,21 +133,21 @@ export class SSORouter extends BaseRouter {
             });
             characterIdResponse.on('end', async() => {
 
-              // Set the account fields from the results
-              account.name = characterIdResult[0]['CharacterName'];
-              account.characterId = characterIdResult[0]['CharacterID'];
-              account.scopes = characterIdResult[0]['Scopes'];
-              account.ownerHash = characterIdResult[0]['CharacterOwnerHash'];
-              await account.save();
+              // Set the character fields from the results
+              character.name = characterIdResult[0]['CharacterName'];
+              character.characterId = characterIdResult[0]['CharacterID'];
+              character.scopes = characterIdResult[0]['Scopes'];
+              character.ownerHash = characterIdResult[0]['CharacterOwnerHash'];
+              await character.save();
 
-              let accountResponse = account.toJSON();
+              let characterResponse = character.toJSON();
 
               // Delete sensitive information from the response
-              delete accountResponse.id;
-              delete accountResponse.authToken;
-              delete accountResponse.refreshToken;
+              delete characterResponse.id;
+              delete characterResponse.authToken;
+              delete characterResponse.refreshToken;
 
-              response.json(accountResponse);
+              response.json(characterResponse);
             });
             characterIdResponse.on('error', (error) => {
               console.log(error);
@@ -170,10 +170,10 @@ export class SSORouter extends BaseRouter {
   private static async refreshToken(request: Request, response: Response): Promise<void> {
     let authString = new Buffer(ssoConfig.get('client_ID') + ':' + ssoConfig.get('secret_key')).toString('base64');
 
-    // let pid = await generateUniquePID(8, Account);
+    // let pid = await generateUniquePID(8, Character);
     // console.log(pid);
 
-    let acc: AccountInstance = await Account.findOne({
+    let acc: CharacterInstance = await Character.findOne({
       attributes: ['id', 'refreshToken'],
       where: {
         pid: request.session['characterPid']

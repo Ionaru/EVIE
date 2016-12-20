@@ -6,9 +6,9 @@ import { db } from '../../controllers/db.service';
 import { logger } from '../../controllers/logger.service';
 import { User } from '../user/user';
 
-export let Account;
+export let Character;
 
-export interface AccountAttr {
+export interface CharacterAttr {
   id: number;
   pid: string;
   name: string;
@@ -22,11 +22,11 @@ export interface AccountAttr {
   isActive: boolean;
   userId: number;
 }
-export interface AccountInstance extends Instance<AccountAttr>, AccountAttr { }
-export interface AccountModel extends Model<AccountAttr, AccountAttr> { }
+export interface CharacterInstance extends Instance<CharacterAttr>, CharacterAttr { }
+export interface CharacterModel extends Model<CharacterAttr, CharacterAttr> { }
 
-export async function defineAccount(): Promise<void> {
-  Account = await db.seq.define('accounts', {
+export async function defineCharacter(): Promise<void> {
+  Character = await db.seq.define('characters', {
     pid: {
       type: Sequelize.STRING,
       unique: true,
@@ -80,9 +80,9 @@ export async function defineAccount(): Promise<void> {
     }
   }).sync();
 
-  User.hasMany(Account);
+  User.hasMany(Character);
 
-  // await Account.create({
+  // await Character.create({
   //   pid: '1234abcd',
   //   name: 'myKey',
   //   keyID: **,
@@ -90,5 +90,5 @@ export async function defineAccount(): Promise<void> {
   //   userId: 1,
   // });
 
-  logger.info('Model defined: Account');
+  logger.info('Model defined: Character');
 }
