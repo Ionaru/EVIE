@@ -34,6 +34,9 @@ async function init(): Promise<void> {
   process.stdin.resume();
   process.on('SIGINT', exitHandler.bind(null, { cleanup: true }));
   process.on('uncaughtException', exitHandler.bind(null, { cleanup: true }));
+  process.on('unhandledRejection', function(reason, p) {
+    console.error("Unhandled Rejection at: Promise ", p, " reason: ", reason);
+  });
 
   /**
    * Normalize a port into a number, string, or false.

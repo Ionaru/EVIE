@@ -14,6 +14,10 @@ export interface AccountAttr {
   name: string;
   keyID: number;
   vCode: string;
+  authToken: string;
+  accessToken: string;
+  tokenExpiry: Date;
+  refreshToken: string;
   isActive: boolean;
   selectedCharacter: number;
   userId: number;
@@ -34,11 +38,27 @@ export async function defineAccount(): Promise<void> {
     },
     keyID: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     vCode: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
+    },
+    authToken: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    accessToken: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    tokenExpiry: {
+      type: Sequelize.DATE,
+      allowNull: true,
+    },
+    refreshToken: {
+      type: Sequelize.STRING,
+      allowNull: true,
     },
     isActive: {
       type: Sequelize.BOOLEAN,

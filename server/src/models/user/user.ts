@@ -15,7 +15,6 @@ export interface UserAttr {
   email: string;
   timesLogin: Date;
   lastLogin: Date;
-  userId: number;
   accounts: any;
 }
 export interface UserInstance extends Instance<UserAttr>, UserAttr { }
