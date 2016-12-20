@@ -12,14 +12,14 @@ export interface AccountAttr {
   id: number;
   pid: string;
   name: string;
-  keyID: number;
-  vCode: string;
+  characterId: number;
   authToken: string;
   accessToken: string;
   tokenExpiry: Date;
   refreshToken: string;
+  scopes: string;
+  ownerHash: string;
   isActive: boolean;
-  selectedCharacter: number;
   userId: number;
 }
 export interface AccountInstance extends Instance<AccountAttr>, AccountAttr { }
@@ -36,12 +36,8 @@ export async function defineAccount(): Promise<void> {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    keyID: {
+    characterId: {
       type: Sequelize.INTEGER,
-      allowNull: true,
-    },
-    vCode: {
-      type: Sequelize.STRING,
       allowNull: true,
     },
     authToken: {
@@ -60,15 +56,18 @@ export async function defineAccount(): Promise<void> {
       type: Sequelize.STRING,
       allowNull: true,
     },
+    scopes: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    ownerHash: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     isActive: {
       type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-    },
-    selectedCharacter: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
     },
     userId: {
       type: Sequelize.INTEGER,
