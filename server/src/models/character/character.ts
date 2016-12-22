@@ -67,7 +67,7 @@ export async function defineCharacter(): Promise<void> {
     isActive: {
       type: Sequelize.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: false,
     },
     userId: {
       type: Sequelize.INTEGER,

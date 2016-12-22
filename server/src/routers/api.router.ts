@@ -22,20 +22,20 @@ export class APIRouter extends BaseRouter {
         },
         include: [{
           model: Character,
-          attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
+          attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
         }]
       });
       request.session['user'] = myUser.id;
     } else {
       // DEBUG CODE, remove when login system is built
       myUser = await User.findOne({
-        attributes: ['id', 'username', 'email'],
+        attributes: ['id', 'pid', 'username', 'email'],
         where: {
           id: 1,
         },
         include: [{
           model: Character,
-          attributes: ['pid', 'keyID', 'vCode', 'name', 'isActive'],
+          attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
         }]
       });
       request.session['user'] = myUser.id;
@@ -44,6 +44,7 @@ export class APIRouter extends BaseRouter {
     response.status(200);
     // response.json({});
     response.json({
+      pid: myUser.pid,
       username: myUser.username,
       email: myUser.email,
       // character: [],
