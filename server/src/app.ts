@@ -49,7 +49,8 @@ export class App {
     // Setup MySQL Session Store
     let MySQLStore = ems(es);
     this.sessionStore = new MySQLStore({}, db.get());
-    let expiryDate = new Date(Date.now() + 60 * 60 * 1000);
+
+    // Configure Session Store
     app.use(es({
       name: mainConfig.get('session_key'),
       secret: mainConfig.get('session_secret'),
@@ -59,7 +60,7 @@ export class App {
       cookie: {
         // secure: true,
         httpOnly: true,
-        expires: expiryDate
+        maxAge: 2 * 60 * 60 * 1000 // 2 hours
       },
     }));
 
@@ -73,7 +74,7 @@ export class App {
     // Use routes
     app.use('/api', (new APIRouter()).router);
     app.use('/sso', (new SSORouter()).router);
-    // // Re-route all other requests to the Angular app
+    // Re-route all other requests to the Angular app
     app.use('*', (new AngularRedirectRouter()).router);
 
     // Set the application as an attribute on this class, so we can access it later

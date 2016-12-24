@@ -33,11 +33,18 @@ export class SSORouter extends BaseRouter {
   private static async startSSOProcess(request: Request, response: Response): Promise<void> {
 
     if (!request.session['user']) {
+
       // User is not logged in and can't initiate SSO process
       response.status(401);
       response.json({error: 'NotLoggedIn'});
+
     } else {
+      // User is logged in
+
       if (request.query.characterPid) {
+        // With a characterPid provided in the request, we initiate the re-authorize process
+
+        // Fetch the Character
         let character: CharacterInstance = await Character.findOne({
           attributes: ['pid'],
           where: {
@@ -45,7 +52,9 @@ export class SSORouter extends BaseRouter {
             userId: request.session['user'],
           },
         });
-        request.session['characterPid'] = character.pid;
+        if (character) {
+          request.session['characterPid'] = character.pid;
+        }
       }
 
       // Generate a random string and set it as the state of the request, we will later verify the response of the
@@ -67,16 +76,15 @@ export class SSORouter extends BaseRouter {
   }
 
   /**
-   * Process the callback from the SSO service, create/update character information before proceeding to Authorization
+   * Process the callback from the SSO service, create/update character information before proceeding to Authorization.
    * Params:
-   *  code <required>: The authorization token that will be used to get a Character's access code later in the process
-   *  state <required>: The random
-   *
+   *  code <required>: The authorization token that will be used to get a Character's access code later in the process.
+   *  state <required>: The random string that was generated and sent with the request.
    */
   private static async processCallBack(request: Request, response: Response): Promise<void> {
 
     if (!request.session['user']) {
-      // User is not logged in and can't initiate SSO callback
+      // User is not logged in and can't initiate SSO callback.
       // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
       // was linked directly to this page.
       response.status(401);
@@ -84,14 +92,15 @@ export class SSORouter extends BaseRouter {
     } else {
 
       if (request.query.state && request.session['state'] === request.query.state) {
-        // We're verifying the state returned by the EVE SSO service with the state saved earlier
+        // We're verifying the state returned by the EVE SSO service with the state saved earlier.
 
-        // The state has been verified and served its purpose, delete it
+        // The state has been verified and served its purpose, delete it.
         delete request.session['state'];
 
+        // Find a Character matching the characterPid saved in the session, create a new Character when none are found.
         let character: CharacterInstance = await Character.findOrCreate({
           where: {
-            pid: request.session['characterPid']
+            pid: request.session['characterPid'] // May be undefined, a new Character is then created.
           },
           defaults: {
             pid: await generateUniquePID(8, Character),
@@ -100,30 +109,45 @@ export class SSORouter extends BaseRouter {
           }
         });
 
+        // The 'findOrCreate' function returns an array, the first element is the Character, the second is whether
+        // a new Character was created or not. We only use the first element here.
         character = character[0];
 
-        request.session['characterPid'] = character.pid;
-
+        // Set the Characters authToken and clear the other fields for re-authorization.
         character.authToken = request.query.code;
         character.accessToken = null;
         character.tokenExpiry = null;
         character.refreshToken = null;
         await character.save();
 
+        // The characterPid may have changed due to the creation of a new Character, save this new pid so we can use it
+        // later.
+        request.session['characterPid'] = character.pid;
+
+        // Redirect the user to the next step in the SSO process.
         response.redirect('/sso/auth');
+
       } else {
-        logger.error('Returned state was not valid!');
-        response.status(400);
-        response.json({error: 'InvalidState'});
+        // The state got from the EVE SSO service did not match the one we expected.
+        if (request.query.state) {
+          logger.error(`Returned state was not valid, expected ${request.session['state']} 
+                        and got ${request.query.state}`);
+          response.status(400);
+          response.json({error: 'InvalidState'});
+        } else {
+          response.status(400);
+          response.json({error: 'BadCallback'});
+        }
       }
     }
   }
 
   /**
-   * Authorize the token gotten from the SSO service and get the character information
+   * Authorize the token gotten from the SSO service and get the character information.
    */
   private static async authorizeToken(request: Request, response: Response): Promise<void> {
 
+    // Fetch the Character matching the characterPid we saved in the session earlier.
     let character: CharacterInstance = await Character.findOne({
       attributes: ['id', 'pid', 'authToken', 'refreshToken'],
       where: {
@@ -132,6 +156,7 @@ export class SSORouter extends BaseRouter {
     });
 
     if (character && character.authToken) {
+      // A character is found and the authToken column is filled.
 
       let postData = `grant_type=authorization_code&code=${character.authToken}`;
 
@@ -153,11 +178,16 @@ export class SSORouter extends BaseRouter {
           authResult.push(JSON.parse(chunk.toString()));
         });
         authReponse.on('end', async() => {
+
+          // Set the Character fields from the results
           character.refreshToken = authResult[0]['refresh_token'];
           character.accessToken = authResult[0]['access_token'];
           character.tokenExpiry = new Date(Date.now() + (authResult[0]['expires_in'] * 1000));
+
+          // The authToken is no longer useful, remove it from the Character
           character.authToken = null;
 
+          // Prepare a new request to fetch required Character data
           let characterIdRequestOptions = {
             host: oauthHost,
             path: verifyPath,
@@ -174,9 +204,7 @@ export class SSORouter extends BaseRouter {
             });
             characterIdResponse.on('end', async() => {
 
-              // TODO: Duplicate characters should not be added, check on character ID, character name or owner hash
-
-              // Set the character fields from the results
+              // Set the Character fields from the results
               character.name = characterIdResult[0]['CharacterName'];
               character.characterId = characterIdResult[0]['CharacterID'];
               character.scopes = characterIdResult[0]['Scopes'];
@@ -206,9 +234,14 @@ export class SSORouter extends BaseRouter {
           console.log(error);
         });
       });
+
       authRequest.write(postData);
       authRequest.end();
+
     } else {
+      // Either no Character was found matching the characterPid or the authToken column was NULL, either way we can't
+      // authorize anything here.
+
       response.status(400);
       response.json({
         error: 'NothingToAuthorize'
@@ -216,11 +249,19 @@ export class SSORouter extends BaseRouter {
     }
   }
 
+  /**
+   * Refresh the access token by requesting a new one using the refresh token
+   * Params:
+   *  characterPid <required>: The Pid of the Character who's token to refresh
+   *  accessToken <required>: The Character's current access token
+   */
   private static async refreshToken(request: Request, response: Response): Promise<void> {
 
+    // Get the characterPid and accessToken from the request
     let characterPid = request.query.characterPid;
     let accessToken = request.query.accessToken;
 
+    // Fetch the Character who's accessToken we will refresh
     let character: CharacterInstance = await Character.findOne({
       attributes: ['id', 'accessToken', 'refreshToken'],
       where: {
@@ -229,7 +270,11 @@ export class SSORouter extends BaseRouter {
     });
 
     if (character) {
+      // A character was found in the database
+
       if (character.accessToken === accessToken) {
+        // The Character's accessToken matches the one sent with the request
+
         let postData = `grant_type=refresh_token&refresh_token=${character.refreshToken}`;
 
         let requestOptions = {
@@ -266,12 +311,14 @@ export class SSORouter extends BaseRouter {
         httpRequest.write(postData);
         httpRequest.end();
       } else {
+        // The access token sent with the request did not match with the fetched Character
         response.status(401);
         response.json({
           error: 'WrongAccessToken'
         });
       }
     } else {
+      // There was no Character found with the Pid provided in the request
       response.status(404);
       response.json({
         error: 'CharacterNotFound'
@@ -279,6 +326,9 @@ export class SSORouter extends BaseRouter {
     }
   }
 
+  /**
+   * Get a base64 string containing the client ID and secret key
+   */
   private static getSSOAuthString(): string {
     return new Buffer(ssoConfig.get('client_ID') + ':' + ssoConfig.get('secret_key')).toString('base64');
   }

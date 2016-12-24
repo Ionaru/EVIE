@@ -8,7 +8,7 @@ export class APIRouter extends BaseRouter {
 
   constructor() {
     super();
-    this.createAllRoute('/', APIRouter.debugAPI);
+    this.createGetRoute('/', APIRouter.debugAPI);
     logger.info('Route defined: API');
   }
 

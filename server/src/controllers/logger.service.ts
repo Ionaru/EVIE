@@ -6,31 +6,24 @@ import LoggerInstance = winston.LoggerInstance;
 class Logger {
 
   private logger: LoggerInstance;
+  public info;
+  public warn;
+  public error;
+  public debug;
 
   constructor() {
     let transports = this.createTransports();
     this.logger = new (winston.Logger)({transports: transports});
-  }
-
-  public info(msg: string): void {
-    this.logger.info(msg);
-  }
-
-  public warn(msg: string): void {
-    this.logger.warn(msg);
-  }
-
-  public error(msg: any): void {
-    this.logger.error(msg);
-  }
-
-  public debug(msg: string): void {
-    this.logger.debug(msg);
+    this.info = this.logger.info;
+    this.warn = this.logger.warn;
+    this.error = this.logger.error;
+    this.debug = this.logger.debug;
   }
 
   private createTransports(): Array<TransportInstance> {
     let consoleLogLevel = 'info';
     let transports = [];
+    //noinspection JSUnusedGlobalSymbols
     transports.push(
       new winston.transports.Console({
         level: consoleLogLevel,
