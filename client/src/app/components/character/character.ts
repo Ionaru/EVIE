@@ -1,6 +1,8 @@
 export class Character {
   id: number;
   name: string;
+  accessToken: string;
+  expiry: Date;
   corporation_id: number;
   corporation: string;
   alliance_id: number;

@@ -2,21 +2,19 @@ import { Component } from '@angular/core';
 import { TranslateService } from 'ng2-translate';
 import { AppReadyEvent } from './app-ready-event';
 import { UserService } from './components/user/user.service';
-import { AccountService } from './components/account/account.service';
 import { CharacterService } from './components/character/character.service';
 import { Globals } from './globals';
 import { EndpointService } from './components/endpoint/endpoint.service';
 import { Observable, Observer } from 'rxjs';
 import { Router } from '@angular/router';
 import { User } from './components/user/user';
-import { Account } from './components/account/account';
 import { isEmpty } from './components/helperfunctions.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['app.component.scss'],
-  providers: [AppReadyEvent, AccountService, UserService, CharacterService, EndpointService],
+  providers: [AppReadyEvent, UserService, CharacterService, EndpointService],
 })
 export class AppComponent {
   static translate: TranslateService;
@@ -27,7 +25,6 @@ export class AppComponent {
 
   constructor(translate: TranslateService,
               private userService: UserService,
-              private accountService: AccountService,
               private characterService: CharacterService,
               private appReadyEvent: AppReadyEvent,
               private endpointService: EndpointService,
@@ -87,9 +84,9 @@ export class AppComponent {
             // localStorage.setItem('User', JSON.stringify(user));
             // console.log(user);
             // console.log(user.accounts);
-            if (!isEmpty(user.accounts)) {
-              this.globals.activeAccount = user.accounts[user.selectedAccount];
-              this.getAccount(o);
+            if (!isEmpty(user.characters)) {
+              this.globals.activeAccount = user.characters[user.selectedAccount];
+              this.getCharacter(o);
             } else {
               // User has to add an EVE account
               this.router.navigate(['/dashboard']).then();
@@ -105,16 +102,6 @@ export class AppComponent {
         },
       );
     }).share();
-  }
-
-  private getAccount(o: Observer<boolean>): void {
-    this.accountService.getAccountData(this.globals.activeAccount).subscribe(
-      (account: Account) => {
-        let selectedCharacter = 0;
-        this.globals.selectedCharacter = account.characters[selectedCharacter];
-        this.getCharacter(o);
-      }
-    );
   }
 
   private getCharacter(o: Observer<boolean>): void {

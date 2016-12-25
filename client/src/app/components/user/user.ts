@@ -1,14 +1,14 @@
-import { Account } from '../account/account';
+import { Character } from '../character/character';
 
 export class User {
   username: string;
   email: string;
-  accounts: Array<Account>;
+  characters: Array<Character>;
   selectedAccount: number = 0;
 
   fillData(dataFromServer: Object): void {
     this.username = dataFromServer['username'];
     this.email = dataFromServer['email'];
-    this.accounts = dataFromServer['accounts'];
+    this.characters = dataFromServer['characters'];
   }
 }
