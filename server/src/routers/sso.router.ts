@@ -103,7 +103,7 @@ export class SSORouter extends BaseRouter {
             pid: request.session['characterPid'] // May be undefined, a new Character is then created.
           },
           defaults: {
-            pid: await generateUniquePID(8, Character),
+            pid: await generateUniquePID(10, Character),
             name: 'NAME',
             userId: request.session['user']
           }

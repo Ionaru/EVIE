@@ -1,4 +1,6 @@
 import Sequelize = require('sequelize');
+import bcrypt = require('bcrypt-nodejs');
+
 import Instance = Sequelize.Instance;
 import Model = Sequelize.Model;
 
@@ -13,7 +15,7 @@ export interface UserAttr {
   username: string;
   passwordHash: string;
   email: string;
-  timesLogin: Date;
+  timesLogin: number;
   lastLogin: Date;
   characters: any;
 }
@@ -56,7 +58,7 @@ export async function defineUser(): Promise<void> {
   // await User.create({
   //   pid: '1234abcd',
   //   username: 'testUser',
-  //   passwordHash: '000999888',
+  //   passwordHash: bcrypt.hashSync('000999888'),
   //   email: 'mail@example.com',
   // });
 
