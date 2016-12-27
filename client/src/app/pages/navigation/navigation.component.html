@@ -2,7 +2,7 @@
   <a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand">
     {{ 'APP_NAME' | translate}}
   </a>
-  <a *ngIf="checkAccess()" routerLink="dashboard" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.DASHBOARD' | translate}}</a>
+  <a routerLink="dashboard" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.DASHBOARD' | translate}}</a>
   <!--<a routerLink="api" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.API_KEYS' | translate}}</a>-->
   <!--<a routerLink="logout" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>-->
   <a *ngIf="checkAccess()" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Title } from '@angular/platform-browser';
+import { Globals } from '../../globals';
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -9,12 +10,18 @@ import { Title } from '@angular/platform-browser';
 })
 export class DashboardComponent implements OnInit {
   result: String;
+  username: string;
 
-  constructor(private title: Title) {
+  constructor(private title: Title, private globals: Globals) {
   }
 
   ngOnInit(): void {
     this.title.setTitle('EVE Track - Dashboard');
+    this.globals.isLoggedIn.subscribe(() => {
+      if (this.globals.user) {
+        this.username = this.globals.user.username;
+      }
+    });
     // this.getFromAPI();
   }
 

@@ -23,7 +23,7 @@ export class AppComponent {
   char: number;
   players: number;
 
-  constructor(translate: TranslateService,
+  constructor(private translate: TranslateService,
               private userService: UserService,
               private characterService: CharacterService,
               private appReadyEvent: AppReadyEvent,
@@ -34,34 +34,13 @@ export class AppComponent {
     // At this point, the application has "loaded" in so much as the assets have
     // loaded; but, the we're not going to consider the application "ready" until
     // the core "data" has loaded. As such, we won't trigger the "appready" event
-    // until the account has been loaded.
-
-
-    // if (localStorage.getItem('account')) {
-    //   let acc = JSON.parse(localStorage.getItem('account'));
-    //   globals.activeAccount = new Account(acc.name, acc.keyID, acc.vCode);
-    // } else {
-    //   globals.activeAccount = new Account('myAccount', ***, '***');
-    // }
-    // if (localStorage.getItem('character')) {
-    //   let char = JSON.parse(localStorage.getItem('character'));
-    //   globals.selectedCharacter = new Character(char.id, globals.activeAccount);
-    // } else {
-    //   globals.selectedCharacter = new Character(***, globals.activeAccount);
-    // }
-    //
-    // localStorage.setItem('account', JSON.stringify(globals.activeAccount));
-    // localStorage.setItem('character', JSON.stringify(globals.selectedCharacter));
-
-    // globals.DOMParser = new DOMParser();
-    // globals.activeAccount.addCharacter(globals.selectedCharacter);
-    // globals.selectedCharacter.balance = 5000;
+    // just yet
 
     // this language will be used as a fallback when a translation isn't found in the current language
     let defaultLang = 'en';
     translate.setDefaultLang(defaultLang);
 
-    // the lang to use, if the lang isn't available, it will use the current loader to get them
+    // the language to use, if the lang isn't available, it will use the current loader to get them
     translate.use(defaultLang);
     AppComponent.translate = translate;
 
@@ -77,38 +56,39 @@ export class AppComponent {
       // this.appReadyEvent.trigger();
     });
 
-    this.globals.isLoggedIn = Observable.create((o: Observer<boolean>) => {
+    this.globals.isLoggedIn = Observable.create((observer: Observer<boolean>) => {
       this.userService.getUser().subscribe(
         (user: User) => {
           if (user) {
+            this.globals.user = user;
             // localStorage.setItem('User', JSON.stringify(user));
             // console.log(user);
             // console.log(user.accounts);
             if (!isEmpty(user.characters)) {
               // this.globals.activeAccount = user.characters[user.selectedAccount];
-              this.getCharacter(o);
+              this.getCharacter(observer);
             } else {
               // User has to add an EVE character
               this.router.navigate(['/dashboard']).then();
-              o.next(false);
-              o.complete();
+              observer.next(false);
+              observer.complete();
             }
           } else {
             // User has to log in
             this.router.navigate(['/']).then();
-            o.next(false);
-            o.complete();
+            observer.next(false);
+            observer.complete();
           }
         },
       );
     }).share();
   }
 
-  private getCharacter(o: Observer<boolean>): void {
+  private getCharacter(observer: Observer<boolean>): void {
     this.characterService.getCharacterData(this.globals.selectedCharacter).subscribe(
       () => {
-        o.next(true);
-        o.complete();
+        observer.next(true);
+        observer.complete();
       }
     );
   }
