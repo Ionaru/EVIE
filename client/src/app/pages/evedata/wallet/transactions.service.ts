@@ -14,7 +14,7 @@ export class TransactionService {
 
   constructor(private http: Http, private es: EndpointService, private globals: Globals) {
     this.endpoint = this.es.getEndpoint('WalletTransactions');
-    this.storageTag = this.endpoint.name + this.globals.activeAccount.keyID + this.globals.selectedCharacter.id;
+    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.id;
   }
 
   getTransactions(expired: boolean = false): Observable<Array<Object>> {

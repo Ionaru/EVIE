@@ -14,7 +14,7 @@ export class BalanceService {
 
   constructor(private http: Http, private es: EndpointService, private globals: Globals) {
     this.endpoint = this.es.getEndpoint('AccountBalance');
-    this.storageTag = this.endpoint.name + this.globals.activeAccount.keyID + this.globals.selectedCharacter.id;
+    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.id;
   }
 
   getBalance(expired: boolean = false): Observable<string> {

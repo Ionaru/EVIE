@@ -61,8 +61,8 @@ export class EndpointService {
     url += '/';
     url += endpoint.name;
     url += '.xml.aspx?';
-    if (this.globals.activeAccount) {
-      url += `keyID=${this.globals.activeAccount.keyID}&vCode=${this.globals.activeAccount.vCode}`;
+    if (this.globals.selectedCharacter) {
+      url += `accessToken=${this.globals.selectedCharacter.accessToken}`;
     }
     if (params) {
       url += `&${params.join('&')}`;

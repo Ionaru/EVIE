@@ -18,7 +18,6 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { WalletComponent } from './pages/evedata/wallet/wallet.component';
 import { CharacterGuard } from './pages/evedata/character.guard';
 import { Globals } from './globals';
-import { AccountComponent } from './pages/evedata/account/account.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +26,6 @@ import { AccountComponent } from './pages/evedata/account/account.component';
     IndexComponent,
     DashboardComponent,
     WalletComponent,
-    AccountComponent,
   ],
   imports: [
     BrowserModule,

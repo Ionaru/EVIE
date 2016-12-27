@@ -85,10 +85,10 @@ export class AppComponent {
             // console.log(user);
             // console.log(user.accounts);
             if (!isEmpty(user.characters)) {
-              this.globals.activeAccount = user.characters[user.selectedAccount];
+              // this.globals.activeAccount = user.characters[user.selectedAccount];
               this.getCharacter(o);
             } else {
-              // User has to add an EVE account
+              // User has to add an EVE character
               this.router.navigate(['/dashboard']).then();
               o.next(false);
               o.complete();
