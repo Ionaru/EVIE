@@ -23,6 +23,7 @@ export class App {
 
   app: express.Application;
   sessionStore: any;
+  sessionParser: any;
 
   /**
    * The main startup function for the application
@@ -51,7 +52,7 @@ export class App {
     this.sessionStore = new MySQLStore({}, db.get());
 
     // Configure Session Store
-    app.use(es({
+    this.sessionParser = es({
       name: mainConfig.get('session_key'),
       secret: mainConfig.get('session_secret'),
       store: this.sessionStore,
@@ -59,10 +60,12 @@ export class App {
       saveUninitialized: true,
       cookie: {
         // secure: true,
-        httpOnly: true,
+        httpOnly: false,
         maxAge: 2 * 60 * 60 * 1000 // 2 hours
       },
-    }));
+    });
+
+    app.use(this.sessionParser);
 
     // Define models in application
     await defineUser().catch(console.error.bind(console));

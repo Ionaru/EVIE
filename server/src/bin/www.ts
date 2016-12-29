@@ -20,9 +20,18 @@ async function init(): Promise<void> {
   express.app.set('port', port);
 
   /**
-   * Create HTTP server.
+   * Create Express server.
    */
   const server = http.createServer(express.app);
+
+  let io = require('socket.io')(server);
+  io.use(require('express-socket.io-session')(express.sessionParser));
+
+  io.on('connection', async function (socket: any): Promise<void> {
+    socket.handshake.session.websocket = socket.id;
+    console.log(io.sockets.connected);
+    await socket.handshake.session.save();
+  });
 
   /**
    * Listen on provided port, on all network interfaces.
@@ -32,10 +41,10 @@ async function init(): Promise<void> {
   server.on('listening', onListening);
 
   process.stdin.resume();
-  process.on('SIGINT', exitHandler.bind(null, { cleanup: true }));
-  process.on('uncaughtException', exitHandler.bind(null, { cleanup: true }));
-  process.on('unhandledRejection', function(reason, p) {
-    console.error("Unhandled Rejection at: Promise ", p, " reason: ", reason);
+  process.on('SIGINT', exitHandler.bind(null, {cleanup: true}));
+  process.on('uncaughtException', exitHandler.bind(null, {cleanup: true}));
+  process.on('unhandledRejection', function (reason: string, p: Promise<any>): void {
+    console.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
   });
 
   /**

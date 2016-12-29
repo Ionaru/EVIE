@@ -1,8 +1,10 @@
+import https = require('https');
+import path = require('path');
+
 import { Response, Request } from 'express';
 import { logger } from '../controllers/logger.service';
 import { BaseRouter } from './base.router';
 import { ssoConfig } from '../controllers/config.service';
-import https = require('https');
 import { Character, CharacterInstance } from '../models/character/character';
 import { generateUniquePID, generateRandomString } from '../controllers/pid.service';
 
