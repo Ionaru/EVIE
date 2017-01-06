@@ -9,6 +9,7 @@ import { Observable, Observer } from 'rxjs';
 import { Router } from '@angular/router';
 import { User } from './components/user/user';
 import { isEmpty } from './components/helperfunctions.component';
+import * as socketIo from 'socket.io-client';
 
 @Component({
   selector: 'app-root',
@@ -52,6 +53,7 @@ export class AppComponent {
   }
 
   private startUp(): void {
+
     this.endpointService.getEndpointsAPI().subscribe(() => {
       // this.appReadyEvent.trigger();
     });
@@ -70,6 +72,12 @@ export class AppComponent {
             } else {
               // User has to add an EVE character
               this.router.navigate(['/dashboard']).then();
+              this.globals.socket = socketIo.connect('http://localhost:3000', {
+                reconnection: true
+              });
+              this.globals.socket.on('moo', (data) => {
+                console.log(data);
+              });
               observer.next(false);
               observer.complete();
             }

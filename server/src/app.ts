@@ -1,8 +1,9 @@
-/// <reference path="types.d.ts" />
+/// <reference path="ems.d.ts" />
 
 // NPM imports
 import express = require('express');
 import bodyParser = require('body-parser');
+import cookieParser = require('cookie-parser');
 import path = require('path');
 import helmet = require('helmet');
 import es = require('express-session');
@@ -24,6 +25,7 @@ export class App {
   app: express.Application;
   sessionStore: any;
   sessionParser: any;
+  cookieParser: any;
 
   /**
    * The main startup function for the application
@@ -43,6 +45,8 @@ export class App {
     // Setup bodyParser
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
+
+    app.use(cookieParser());
 
     // Connect to database
     db.connect();

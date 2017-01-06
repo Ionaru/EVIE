@@ -5,6 +5,14 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class Globals {
+  get socket(): SocketIOClient.Socket {
+    return this._socket;
+  }
+
+  set socket(value: SocketIOClient.Socket) {
+    this._socket = value;
+  }
+
   get user(): User {
     return this._user;
   }
@@ -37,4 +45,5 @@ export class Globals {
   private _DOMParser: DOMParser = new DOMParser();
   private _isLoggedIn: Observable<boolean>;
   private _user: User;
+  private _socket: SocketIOClient.Socket;
 }

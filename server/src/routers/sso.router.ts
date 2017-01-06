@@ -7,6 +7,7 @@ import { BaseRouter } from './base.router';
 import { ssoConfig } from '../controllers/config.service';
 import { Character, CharacterInstance } from '../models/character/character';
 import { generateUniquePID, generateRandomString } from '../controllers/pid.service';
+import { sockets } from '../bin/www';
 
 const scopes = ['characterWalletRead', 'characterAccountRead'];
 const oauthHost = 'login.eveonline.com';
@@ -221,7 +222,8 @@ export class SSORouter extends BaseRouter {
               delete characterResponse.refreshToken;
               delete request.session['characterPid'];
 
-              response.json(characterResponse);
+              let socket = sockets.filter(_ => _.id === request.session['socket'])[0];
+              socket.emit('newCharacter', characterResponse);
             });
             characterIdResponse.on('error', (error) => {
               console.log(error);
