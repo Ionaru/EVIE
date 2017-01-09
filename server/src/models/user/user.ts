@@ -1,5 +1,4 @@
 import Sequelize = require('sequelize');
-import bcrypt = require('bcrypt-nodejs');
 
 import Instance = Sequelize.Instance;
 import Model = Sequelize.Model;
@@ -55,6 +54,7 @@ export async function defineUser(): Promise<void> {
     },
   }).sync();
 
+  // let bcrypt = require('bcrypt-nodejs');
   // await User.create({
   //   pid: '1234abcd',
   //   username: 'testUser',

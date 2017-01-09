@@ -150,7 +150,7 @@ async function init(): Promise<void> {
           }
           // Close Sequelize DB pool
           db.seq.close();
-          // Close DB connection after session store is done
+          // Close DB connection pool after session store is done
           db.get().end((databaseError) => {
             if (databaseError) {
               logger.error('Error while closing Database connection');

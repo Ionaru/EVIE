@@ -1,4 +1,3 @@
-import Sequelize = require('sequelize');
 import bcrypt = require('bcrypt-nodejs');
 
 import { CharacterInstance, Character } from '../models/character/character';
@@ -14,20 +13,21 @@ export class APIRouter extends BaseRouter {
     super();
     this.createGetRoute('/', APIRouter.debugAPI);
     this.createPostRoute('/login', APIRouter.loginUser);
-    this.createPostRoute('/register', APIRouter.registerUser);
     this.createPostRoute('/logout', APIRouter.logoutUser);
+    this.createPostRoute('/register', APIRouter.registerUser);
     logger.info('Route defined: API');
   }
 
-  // TODO: Change password route
-  // TODO: Change username route
-  // TODO: Change email route
-  // TODO: Reset password route
+  // TODO: Route for changing a password
+  // TODO: Route for changing a username
+  // TODO: Route for changing an email address
+  // TODO: Route for resetting a password
+  // TODO: Route to delete a user
 
   private static async debugAPI(request: Request, response: Response): Promise<void> {
-    let myUser: UserInstance;
+    let user: UserInstance;
     if (request.session['user']) {
-      myUser = await User.findOne({
+      user = await User.findOne({
         attributes: ['id', 'username', 'email'],
         where: {
           id: request.session['user'],
@@ -37,10 +37,10 @@ export class APIRouter extends BaseRouter {
           attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
         }]
       });
-      request.session['user'] = myUser.id;
+      request.session['user'] = user.id;
     } else {
       // DEBUG CODE, remove when login system is built
-      myUser = await User.findOne({
+      user = await User.findOne({
         attributes: ['id', 'pid', 'username', 'email'],
         where: {
           id: 1,
@@ -50,16 +50,16 @@ export class APIRouter extends BaseRouter {
           attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
         }]
       });
-      request.session['user'] = myUser.id;
+      request.session['user'] = user.id;
       // END DEBUG CODE
     }
     // response.json({});
     response.json({
-      pid: myUser.pid,
-      username: myUser.username,
-      email: myUser.email,
+      pid: user.pid,
+      username: user.username,
+      email: user.email,
       // character: [],
-      character: myUser.characters.map(function (character: CharacterInstance): Object {
+      character: user.characters.map(function (character: CharacterInstance): Object {
         delete character.userId;
         return character.toJSON();
       }),
@@ -79,13 +79,17 @@ export class APIRouter extends BaseRouter {
     let password = request.body.password;
 
     let user: UserInstance = await User.findOne({
-      attributes: ['id', 'passwordHash', 'timesLogin'],
+      attributes: ['id', 'passwordHash', 'timesLogin', 'pid', 'username', 'email'],
       where: {
         $or: [
           {username: username},
           {email: username}
         ],
-      }
+      },
+      include: [{
+        model: Character,
+        attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
+      }]
     });
 
     if (user) {
@@ -95,18 +99,30 @@ export class APIRouter extends BaseRouter {
         user.lastLogin = new Date();
         await user.save();
         response.json({
-          success: "LoggedIn"
+          state: 'success',
+          message: 'LoggedIn',
+          data: {
+            pid: user.pid,
+            username: user.username,
+            email: user.email,
+            characters: user.characters.map(function (character: CharacterInstance): Object {
+              delete character.userId;
+              return character.toJSON();
+            }),
+          }
         });
       } else {
         response.status(400);
         response.json({
-          error: "BadPassword"
+          state: 'error',
+          message: 'IncorrectLogin'
         });
       }
     } else {
-      response.status(404);
+      response.status(400);
       response.json({
-        error: "UserDoesNotExist"
+        state: 'error',
+        message: 'IncorrectLogin'
       });
     }
   }
@@ -153,24 +169,37 @@ export class APIRouter extends BaseRouter {
         email: email,
       });
       response.json({
-        success: "Registered",
-        pid: user.pid
+        state: 'success',
+        message: 'Registered',
+        data: {
+          pid: user.pid,
+          username: user.username,
+          email: user.email,
+        }
       });
     } else {
       response.status(409);
-      if (user.username === username && user.email === email) {
+      let existingUsername = new RegExp(user.username, 'i');
+      let existingEmail = new RegExp(user.email, 'i');
+      if (username.match(existingUsername) && email.match(existingEmail)) {
         response.json({
-          error: "BothTaken"
+          state: 'error',
+          message: 'BothTaken'
         });
-      }
-      else if (user.username === username) {
+      } else if (username.match(existingUsername)) {
         response.json({
-          error: "UsernameTaken"
+          state: 'error',
+          message: 'UsernameTaken'
         });
-      }
-      else if (user.email === email) {
+      } else if (email.match(existingEmail)) {
         response.json({
-          error: "EmailTaken"
+          state: 'error',
+          message: 'EmailTaken'
+        });
+      } else {
+        response.json({
+          state: 'error',
+          message: 'Taken'
         });
       }
     }

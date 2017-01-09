@@ -11,13 +11,17 @@ export class UserService {
   constructor(private http: Http) { }
 
   getUser(): Observable<User> {
-    let url = 'api';
-    return this.http.get(url).map(
+    let url = 'api/login';
+    return this.http.post(url, {
+      username: 'testUser',
+      password: '000999888',
+    }).map(
       (res: Response) => {
         let jsonData = JSON.parse(res['_body']);
         if (!isEmpty(jsonData)) {
+          console.log(jsonData);
           let user = new User();
-          user.fillData(jsonData);
+          user.fillData(jsonData.data);
           return user;
         } else {
           return null;

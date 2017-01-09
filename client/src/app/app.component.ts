@@ -93,12 +93,14 @@ export class AppComponent {
   }
 
   private getCharacter(observer: Observer<boolean>): void {
-    this.characterService.getCharacterData(this.globals.selectedCharacter).subscribe(
-      () => {
-        observer.next(true);
-        observer.complete();
-      }
-    );
+    // this.characterService.getCharacterData(this.globals.selectedCharacter).subscribe(
+    //   () => {
+    //     observer.next(true);
+    //     observer.complete();
+    //   }
+    // );
+    observer.next(true);
+    observer.complete();
   }
 }
 

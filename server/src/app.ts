@@ -25,7 +25,6 @@ export class App {
   app: express.Application;
   sessionStore: any;
   sessionParser: any;
-  cookieParser: any;
 
   /**
    * The main startup function for the application
