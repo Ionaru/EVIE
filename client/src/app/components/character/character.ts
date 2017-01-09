@@ -1,8 +1,14 @@
+/// <reference path="./character.d.ts" />
+
 export class Character {
   id: number;
+  characterId: number;
+  pid: string;
   name: string;
   accessToken: string;
-  expiry: Date;
+  scopes: Array<string>;
+  tokenExpiry: Date;
+  ownerHash: string;
   corporation_id: number;
   corporation: string;
   alliance_id: number;
@@ -19,15 +25,14 @@ export class Character {
   planets: Array<Object> = [];
   mails: Array<Object> = [];
 
-  constructor(id: number, name: string) {
-    this.id = id;
-    this.name = name;
-    // let result;
-    // let service = new EveAPIService();
-    // service.getFromAPI(account.keyID, account.vCode, id).subscribe(result =>
-    //   console.log(result["result"]["rowset"]["row"])
-    // );
-    // await this.getCharacterDetails(account.keyID, account.vCode, id);
+  constructor(data: CharacterData) {
+    this.characterId = data.characterId;
+    this.name = data.name;
+    this.accessToken = data.accessToken;
+    this.ownerHash = data.ownerHash;
+    this.pid = data.pid;
+    this.scopes = data.scopes.split(' ');
+    this.tokenExpiry = new Date(data.tokenExpiry);
   }
 
   getCharacterDetails(keyID: number, vCode: string, id: number): void {

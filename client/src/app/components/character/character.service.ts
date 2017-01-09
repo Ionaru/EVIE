@@ -1,3 +1,5 @@
+/// <reference path="./character.d.ts" />
+
 import { Injectable } from '@angular/core';
 import { Character } from './character';
 import { Observable } from 'rxjs';
@@ -13,7 +15,7 @@ export class CharacterService {
 
   public getCharacterData(character: Character): Observable<Character> {
     let url: string = this.es.constructUrl(this.es.getEndpoint('CharacterSheet'), [
-      'characterID=' + this.globals.selectedCharacter.id
+      'characterID=' + ''
     ]);
     let headers: Headers = new Headers();
     headers.append('Accept', 'application/xml');
@@ -30,4 +32,23 @@ export class CharacterService {
     });
   }
 
+  public registerCharacter(data: CharacterData) {
+    let character = new Character(data);
+
+    setInterval(() => {
+      this.refreshToken(character);
+    }, 15 * 60 * 1000);
+
+    return character;
+  }
+
+  public refreshToken(character: Character){
+    let pid = character.pid;
+    let accessToken = character.accessToken;
+    let url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
+    this.http.get(url).map((res: Response) => {
+      console.log(res);
+      console.log(res['body']);
+    });
+  }
 }

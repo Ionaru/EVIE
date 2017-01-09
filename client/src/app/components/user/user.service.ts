@@ -10,7 +10,7 @@ export class UserService {
 
   constructor(private http: Http) { }
 
-  getUser(): Observable<User> {
+  getUser(): Observable<any> {
     let url = 'api/login';
     return this.http.post(url, {
       username: 'testUser',

@@ -136,10 +136,16 @@ export class SSORouter extends BaseRouter {
           logger.error(`Returned state was not valid, expected ${request.session['state']} 
                         and got ${request.query.state}`);
           response.status(400);
-          response.json({error: 'InvalidState'});
+          response.json({
+            state: 'error',
+            message: 'InvalidState'
+          });
         } else {
           response.status(400);
-          response.json({error: 'BadCallback'});
+          response.json({
+            state: 'error',
+            message: 'BadCallback'
+          });
         }
       }
     }
@@ -216,10 +222,11 @@ export class SSORouter extends BaseRouter {
 
               let characterResponse = character.toJSON();
 
-              // Delete sensitive information from the response
+              // Delete sensitive and useless information from the response
               delete characterResponse.id;
               delete characterResponse.authToken;
               delete characterResponse.refreshToken;
+              delete characterResponse['updatedAt'];
               delete request.session['characterPid'];
 
               let socket = sockets.filter(_ => _.id === request.session['socket'])[0];
@@ -302,7 +309,11 @@ export class SSORouter extends BaseRouter {
             character.tokenExpiry = new Date(Date.now() + (result[0]['expires_in'] * 1000));
             await character.save();
             response.json({
-              accessToken: result[0]['refresh_token'],
+              state: 'success',
+              message: 'TokenRefreshed',
+              data: {
+                token: result[0]['access_token']
+              }
             });
           });
           authReponse.on('error', (error) => {
