@@ -32,7 +32,7 @@ export class CharacterService {
     });
   }
 
-  public registerCharacter(data: CharacterData) {
+  registerCharacter(data: CharacterApiData): Character {
     let character = new Character(data);
 
     setInterval(() => {
@@ -42,13 +42,13 @@ export class CharacterService {
     return character;
   }
 
-  public refreshToken(character: Character){
+  refreshToken(character: Character): Observable<any> {
     let pid = character.pid;
     let accessToken = character.accessToken;
     let url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
-    this.http.get(url).map((res: Response) => {
-      console.log(res);
-      console.log(res['body']);
+    return this.http.get(url).map((res) => {
+      let response = JSON.parse(res['_body']);
+      character.accessToken = response.data.token;
     });
   }
 }

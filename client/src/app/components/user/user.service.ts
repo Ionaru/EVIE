@@ -19,7 +19,6 @@ export class UserService {
       (res: Response) => {
         let jsonData = JSON.parse(res['_body']);
         if (!isEmpty(jsonData)) {
-          console.log(jsonData);
           let user = new User();
           user.fillData(jsonData.data);
           return user;

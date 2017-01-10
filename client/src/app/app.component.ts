@@ -47,6 +47,9 @@ export class AppComponent {
 
     this.startUp();
     globals.isLoggedIn.subscribe(() => {
+      this.globals.socket = socketIo('http://localhost:3000', {
+        reconnection: true
+      });
       // console.log('Logged in!');
       this.appReadyEvent.trigger();
     });
@@ -67,17 +70,11 @@ export class AppComponent {
             // console.log(user);
             // console.log(user.accounts);
             if (!isEmpty(user.characters)) {
-              // this.globals.activeAccount = user.characters[user.selectedAccount];
+              this.globals.selectedCharacter = user.characters[user.selectedAccount];
               this.getCharacter(observer);
             } else {
               // User has to add an EVE character
               this.router.navigate(['/dashboard']).then();
-              this.globals.socket = socketIo.connect('http://localhost:3000', {
-                reconnection: true
-              });
-              this.globals.socket.on('moo', (data) => {
-                console.log(data);
-              });
               observer.next(false);
               observer.complete();
             }

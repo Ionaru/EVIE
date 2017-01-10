@@ -25,7 +25,7 @@ export class Character {
   planets: Array<Object> = [];
   mails: Array<Object> = [];
 
-  constructor(data: CharacterData) {
+  constructor(data: CharacterApiData) {
     this.characterId = data.characterId;
     this.name = data.name;
     this.accessToken = data.accessToken;

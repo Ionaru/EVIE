@@ -2,8 +2,13 @@ import { Component, OnInit } from '@angular/core';
 
 import { Title } from '@angular/platform-browser';
 import { Globals } from '../../globals';
-import { Character } from '../../components/character/character';
 import { CharacterService } from '../../components/character/character.service';
+
+interface SSOSocketResponse {
+  state: string;
+  message: string;
+  data: CharacterApiData | undefined;
+}
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -28,15 +33,23 @@ export class DashboardComponent implements OnInit {
 
     let w = window.open('/sso/start');
 
-    this.globals.socket.on('newCharacter', function (data) {
+    this.globals.socket.on('SSO_END', (response: SSOSocketResponse): void => {
       w.close();
-      // console.log(data);
-      let character = this.char.registerCharacter(data);
-      this.char.refreshToken(character);
-      console.log(character);
+      console.log(response);
+      if (response.state === 'success') {
+        let character = this.char.registerCharacter(response.data);
+        this.globals.selectedCharacter = character;
+        console.log(this.globals.selectedCharacter);
+      }
     });
 
     // setTimeout(w.close(), 3000);
+  }
+
+  refreshToken(): void {
+    this.char.refreshToken(this.globals.selectedCharacter).subscribe(() => {
+      console.log(this.globals.selectedCharacter);
+    });
   }
 
   getFromAPI(): void {

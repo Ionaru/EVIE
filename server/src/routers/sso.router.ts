@@ -1,5 +1,4 @@
 import https = require('https');
-import path = require('path');
 
 import { Response, Request } from 'express';
 import { logger } from '../controllers/logger.service';
@@ -107,7 +106,6 @@ export class SSORouter extends BaseRouter {
           },
           defaults: {
             pid: await generateUniquePID(10, Character),
-            name: 'NAME',
             userId: request.session['user']
           }
         });
@@ -155,6 +153,8 @@ export class SSORouter extends BaseRouter {
    * Authorize the token gotten from the SSO service and get the character information.
    */
   private static async authorizeToken(request: Request, response: Response): Promise<void> {
+
+    let socket = sockets.filter(_ => _.id === request.session['socket'])[0];
 
     // Fetch the Character matching the characterPid we saved in the session earlier.
     let character: CharacterInstance = await Character.findOne({
@@ -229,8 +229,11 @@ export class SSORouter extends BaseRouter {
               delete characterResponse['updatedAt'];
               delete request.session['characterPid'];
 
-              let socket = sockets.filter(_ => _.id === request.session['socket'])[0];
-              socket.emit('newCharacter', characterResponse);
+              socket.emit('SSO_END', {
+                state: 'success',
+                message: 'SSOSuccessful',
+                data: characterResponse,
+              });
             });
             characterIdResponse.on('error', (error) => {
               console.log(error);
@@ -252,10 +255,9 @@ export class SSORouter extends BaseRouter {
     } else {
       // Either no Character was found matching the characterPid or the authToken column was NULL, either way we can't
       // authorize anything here.
-
-      response.status(400);
-      response.json({
-        error: 'NothingToAuthorize'
+      socket.emit('SSO_END', {
+        state: 'error',
+        message: 'NothingToAuthorize',
       });
     }
   }
@@ -269,7 +271,7 @@ export class SSORouter extends BaseRouter {
   private static async refreshToken(request: Request, response: Response): Promise<void> {
 
     // Get the characterPid and accessToken from the request
-    let characterPid = request.query.characterPid;
+    let characterPid = request.query.pid;
     let accessToken = request.query.accessToken;
 
     // Fetch the Character who's accessToken we will refresh
@@ -329,14 +331,16 @@ export class SSORouter extends BaseRouter {
         // The access token sent with the request did not match with the fetched Character
         response.status(401);
         response.json({
-          error: 'WrongAccessToken'
+          state: 'error',
+          message: 'WrongAccessToken'
         });
       }
     } else {
       // There was no Character found with the Pid provided in the request
       response.status(404);
       response.json({
-        error: 'CharacterNotFound'
+        state: 'error',
+        message: 'CharacterNotFound'
       });
     }
   }

@@ -34,7 +34,7 @@ export async function defineCharacter(): Promise<void> {
     },
     name: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     characterId: {
       type: Sequelize.INTEGER,

@@ -107,6 +107,7 @@ export class APIRouter extends BaseRouter {
             email: user.email,
             characters: user.characters.map(function (character: CharacterInstance): Object {
               delete character.userId;
+              logger.info(user.username + ' logged in.');
               return character.toJSON();
             }),
           }
