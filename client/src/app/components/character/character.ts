@@ -1,7 +1,4 @@
-/// <reference path="./character.d.ts" />
-
 export class Character {
-  id: number;
   characterId: number;
   pid: string;
   name: string;
@@ -24,6 +21,8 @@ export class Character {
   assets: Array<Object> = [];
   planets: Array<Object> = [];
   mails: Array<Object> = [];
+  location: string;
+  currentShip: string;
 
   constructor(data: CharacterApiData) {
     this.characterId = data.characterId;
@@ -33,9 +32,5 @@ export class Character {
     this.pid = data.pid;
     this.scopes = data.scopes.split(' ');
     this.tokenExpiry = new Date(data.tokenExpiry);
-  }
-
-  getCharacterDetails(keyID: number, vCode: string, id: number): void {
-    // console.log()
   }
 }

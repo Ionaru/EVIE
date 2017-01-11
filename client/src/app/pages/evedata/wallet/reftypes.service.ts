@@ -25,7 +25,7 @@ export class RefTypesService {
         return Observable.of(jsonData);
       }
     } else {
-      let url = this.es.constructUrl(this.endpoint, []);
+      let url = this.es.constructXMLUrl(this.endpoint, []);
       let headers = new Headers();
       headers.append('Accept', 'application/xml');
       return this.http.get(url, {headers: headers}).map((res) => {

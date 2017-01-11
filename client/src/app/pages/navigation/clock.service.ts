@@ -4,7 +4,7 @@ import { Globals } from '../../globals';
 import { Observable } from 'rxjs';
 import { Endpoint } from '../../components/endpoint/endpoint';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
-import { xmlToJson } from '../../components/helperfunctions.component';
+import { processXML } from '../../components/helperfunctions.component';
 
 @Injectable()
 export class ClockService {
@@ -16,14 +16,13 @@ export class ClockService {
   }
 
   getTime(): Observable<Object> {
-    let url = this.es.constructUrl(this.endpoint);
+    let url = this.es.constructXMLUrl(this.endpoint);
     let headers = new Headers();
     headers.append('Accept', 'application/xml');
     return this.http.get(url, {
       headers: headers
     }).map((res: Response) => {
-      let xmlData = this.globals.DOMParser.parseFromString(res['_body'], 'application/xml');
-      let jsonData = xmlToJson(xmlData);
+      let jsonData = processXML(res);
       return ClockService.processTime(jsonData);
     });
   }

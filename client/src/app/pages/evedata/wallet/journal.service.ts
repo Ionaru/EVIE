@@ -15,7 +15,7 @@ export class JournalService {
 
   constructor(private http: Http, private es: EndpointService, private globals: Globals) {
     this.endpoint = this.es.getEndpoint('WalletJournal');
-    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.id;
+    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
   getJournal(refTypes: Array<Object>, expired: boolean = false): Observable<Array<Object>> {
@@ -27,8 +27,7 @@ export class JournalService {
         return Observable.of(JournalService.processJournalData(jsonData, refTypes));
       }
     } else {
-      let url = this.es.constructUrl(this.endpoint, [
-        'characterID=' + this.globals.selectedCharacter.id,
+      let url = this.es.constructXMLUrl(this.endpoint, [
         'rowCount=50'
       ]);
       let headers = new Headers();

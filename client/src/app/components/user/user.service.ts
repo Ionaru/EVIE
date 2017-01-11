@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { User } from './user';
 import { Observable } from 'rxjs';
-import { isEmpty } from '../helperfunctions.component';
+import { CharacterService } from '../character/character.service';
 // import { Globals } from '../../globals';
 
 @Injectable()
 export class UserService {
 
-  constructor(private http: Http) { }
+  constructor(private http: Http, private CharacterService: CharacterService) { }
 
   getUser(): Observable<any> {
     let url = 'api/login';
@@ -17,17 +17,17 @@ export class UserService {
       password: '000999888',
     }).map(
       (res: Response) => {
-        let jsonData = JSON.parse(res['_body']);
-        if (!isEmpty(jsonData)) {
-          let user = new User();
-          user.fillData(jsonData.data);
-          return user;
-        } else {
-          return null;
-        }
-      }).retry(2).catch(() => {
-      return Observable.empty();
-    });
+        let jsonData: LoginResponse = JSON.parse(res['_body']);
+        return this.registerUser(jsonData.data);
+      }).retry(2);
+  }
+
+  registerUser(data: UserApiData): User {
+    let user = new User(data);
+    for (let characterData of data.characters) {
+      user.characters.push(this.CharacterService.registerCharacter(characterData));
+    }
+    return user;
   }
 
   // private loggedIn = false;

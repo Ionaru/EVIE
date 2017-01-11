@@ -14,7 +14,7 @@ export class TransactionService {
 
   constructor(private http: Http, private es: EndpointService, private globals: Globals) {
     this.endpoint = this.es.getEndpoint('WalletTransactions');
-    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.id;
+    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
   getTransactions(expired: boolean = false): Observable<Array<Object>> {
@@ -26,8 +26,7 @@ export class TransactionService {
         return Observable.of(TransactionService.processTransactionData(jsonData));
       }
     } else {
-      let url = this.es.constructUrl(this.endpoint, [
-        'characterID=' + this.globals.selectedCharacter.id,
+      let url = this.es.constructXMLUrl(this.endpoint, [
         'rowCount=50'
       ]);
       let headers = new Headers();

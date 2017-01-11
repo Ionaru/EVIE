@@ -50,15 +50,20 @@ export class AppComponent {
       this.globals.socket = socketIo('http://localhost:3000', {
         reconnection: true
       });
-      // console.log('Logged in!');
       this.appReadyEvent.trigger();
     });
   }
 
   private startUp(): void {
 
-    this.endpointService.getEndpointsAPI().subscribe(() => {
-      // this.appReadyEvent.trigger();
+    this.endpointService.getXMLAPI().subscribe(() => {
+      let XMLVersion = this.endpointService.XML['eveapi']['@attributes']['version'];
+      this.version += ' / XML v' + XMLVersion;
+    });
+
+    this.endpointService.getESIAPI().subscribe((data) => {
+      let ESIVersion = data['info']['version'];
+      this.version += ' / ESI ' + ESIVersion;
     });
 
     this.globals.isLoggedIn = Observable.create((observer: Observer<boolean>) => {

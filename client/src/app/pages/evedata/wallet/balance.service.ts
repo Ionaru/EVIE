@@ -14,7 +14,7 @@ export class BalanceService {
 
   constructor(private http: Http, private es: EndpointService, private globals: Globals) {
     this.endpoint = this.es.getEndpoint('AccountBalance');
-    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.id;
+    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
   getBalance(expired: boolean = false): Observable<string> {
@@ -26,9 +26,7 @@ export class BalanceService {
         return Observable.of(BalanceService.processBalance(jsonData));
       }
     } else {
-      let url = this.es.constructUrl(this.endpoint, [
-        'characterID=' + this.globals.selectedCharacter.id
-      ]);
+      let url = this.es.constructXMLUrl(this.endpoint, []);
       let headers = new Headers();
       headers.append('Accept', 'application/xml');
       return this.http.get(url, {headers: headers}).map((res) => {

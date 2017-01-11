@@ -1,5 +1,3 @@
-/// <reference path="./character.d.ts" />
-
 import { Injectable } from '@angular/core';
 import { Character } from './character';
 import { Observable } from 'rxjs';
@@ -8,13 +6,15 @@ import { Globals } from '../../globals';
 import { Headers, Response, Http } from '@angular/http';
 import { processXML } from '../helperfunctions.component';
 
+const tokenRefreshInterval = 15 * 60 * 1000;
+
 @Injectable()
 export class CharacterService {
 
   constructor(private es: EndpointService, private globals: Globals, private http: Http) { }
 
   public getCharacterData(character: Character): Observable<Character> {
-    let url: string = this.es.constructUrl(this.es.getEndpoint('CharacterSheet'), [
+    let url: string = this.es.constructXMLUrl(this.es.getEndpoint('CharacterSheet'), [
       'characterID=' + ''
     ]);
     let headers: Headers = new Headers();
@@ -35,14 +35,19 @@ export class CharacterService {
   registerCharacter(data: CharacterApiData): Character {
     let character = new Character(data);
 
+    let tokenExpiryTime = character.tokenExpiry.getTime();
+    if (tokenExpiryTime <= (Date.now() + tokenRefreshInterval)) {
+      this.refreshToken(character).subscribe();
+    }
+
     setInterval(() => {
       this.refreshToken(character);
-    }, 15 * 60 * 1000);
+    }, tokenRefreshInterval);
 
     return character;
   }
 
-  refreshToken(character: Character): Observable<any> {
+  refreshToken(character: Character): Observable<void> {
     let pid = character.pid;
     let accessToken = character.accessToken;
     let url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;

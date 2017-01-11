@@ -30,7 +30,7 @@ export class NavigationComponent implements OnInit {
   ngOnInit(): void {
     this.globals.isLoggedIn.subscribe(() => {
       if (this.globals.selectedCharacter) {
-        this.char = this.globals.selectedCharacter.id;
+        this.char = this.globals.selectedCharacter.characterId;
         this.disable = false;
       }
     });
