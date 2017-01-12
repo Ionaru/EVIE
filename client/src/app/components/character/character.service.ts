@@ -41,7 +41,7 @@ export class CharacterService {
     }
 
     setInterval(() => {
-      this.refreshToken(character);
+      this.refreshToken(character).subscribe();
     }, tokenRefreshInterval);
 
     return character;
