@@ -158,6 +158,7 @@ async function init(): Promise<void> {
             } else {
               logger.info('Database connection closed');
             }
+            io.emit('STOP');
             return done();
           });
         });

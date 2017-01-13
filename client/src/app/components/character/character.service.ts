@@ -56,4 +56,19 @@ export class CharacterService {
       character.accessToken = response.data.token;
     });
   }
+
+  reAuthenticate(character: Character): void {
+    let w = window.open('/sso/start?characterPid=' + character.pid);
+
+    this.globals.socket.on('SSO_END', (response: SSOSocketResponse): void => {
+      w.close();
+      if (response.state === 'success') {
+        character.updateAuth(response.data);
+      }
+    });
+  }
+
+  dumpCharacter(character: Character): void {
+    console.log(character);
+  }
 }

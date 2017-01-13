@@ -50,6 +50,9 @@ export class AppComponent {
       this.globals.socket = socketIo('http://localhost:3000', {
         reconnection: true
       });
+      this.globals.socket.on('STOP', (): void => {
+        window.location.reload();
+      });
       this.appReadyEvent.trigger();
     });
   }

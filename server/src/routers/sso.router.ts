@@ -8,7 +8,10 @@ import { Character, CharacterInstance } from '../models/character/character';
 import { generateUniquePID, generateRandomString } from '../controllers/pid.service';
 import { sockets } from '../bin/www';
 
-const scopes = ['characterWalletRead', 'characterAccountRead'];
+const scopes = [
+  'characterWalletRead',
+  'characterAccountRead',
+];
 const oauthHost = 'login.eveonline.com';
 const oauthPath = '/oauth/authorize?';
 const tokenPath = '/oauth/token?';

@@ -33,4 +33,14 @@ export class Character {
     this.scopes = data.scopes.split(' ');
     this.tokenExpiry = new Date(data.tokenExpiry);
   }
+
+  updateAuth(data: CharacterApiData): void {
+    this.characterId = data.characterId;
+    this.name = data.name;
+    this.accessToken = data.accessToken;
+    this.ownerHash = data.ownerHash;
+    this.pid = data.pid;
+    this.scopes = data.scopes.split(' ');
+    this.tokenExpiry = new Date(data.tokenExpiry);
+  }
 }

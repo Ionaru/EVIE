@@ -4,12 +4,6 @@ import { Title } from '@angular/platform-browser';
 import { Globals } from '../../globals';
 import { CharacterService } from '../../components/character/character.service';
 
-interface SSOSocketResponse {
-  state: string;
-  message: string;
-  data: CharacterApiData | undefined;
-}
-
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss'],
@@ -19,7 +13,7 @@ export class DashboardComponent implements OnInit {
   result: String;
   username: string;
 
-  constructor(private title: Title, private globals: Globals, private char: CharacterService) {
+  constructor(private title: Title, private globals: Globals, private characterService: CharacterService) {
   }
 
   ngOnInit(): void {
@@ -37,8 +31,7 @@ export class DashboardComponent implements OnInit {
       w.close();
       console.log(response);
       if (response.state === 'success') {
-        let character = this.char.registerCharacter(response.data);
-        this.globals.selectedCharacter = character;
+        this.globals.selectedCharacter = this.characterService.registerCharacter(response.data);
         console.log(this.globals.selectedCharacter);
       }
     });
@@ -47,12 +40,14 @@ export class DashboardComponent implements OnInit {
   }
 
   refreshToken(): void {
-    this.char.refreshToken(this.globals.selectedCharacter).subscribe(() => {
-      console.log(this.globals.selectedCharacter);
-    });
+    this.characterService.refreshToken(this.globals.selectedCharacter).subscribe();
   }
 
-  getFromAPI(): void {
-    // this.api.getFromAPI().subscribe(result => this.result = result["result"]["rowset"]["row"])
+  reAuth(): void {
+    this.characterService.reAuthenticate(this.globals.selectedCharacter);
+  }
+
+  dumpCharacter(): void {
+    this.characterService.dumpCharacter(this.globals.selectedCharacter);
   };
 }

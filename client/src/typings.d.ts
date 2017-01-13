@@ -3,3 +3,9 @@
 
 /// <reference path="app/components/character/character.d.ts" />
 /// <reference path="app/components/user/user.d.ts" />
+
+interface SSOSocketResponse {
+  state: string;
+  message: string;
+  data: CharacterApiData | undefined;
+}
