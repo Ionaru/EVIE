@@ -41,7 +41,10 @@ export class SSORouter extends BaseRouter {
 
       // User is not logged in and can't initiate SSO process
       response.status(401);
-      response.json({error: 'NotLoggedIn'});
+      response.json({
+        state: 'error',
+        message: 'NotLoggedIn'
+      });
 
     } else {
       // User is logged in
@@ -54,7 +57,7 @@ export class SSORouter extends BaseRouter {
           attributes: ['pid'],
           where: {
             pid: request.query.characterPid,
-            userId: request.session['user'],
+            userId: request.session['user'].id,
           },
         });
         if (character) {
@@ -93,7 +96,10 @@ export class SSORouter extends BaseRouter {
       // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
       // was linked directly to this page.
       response.status(401);
-      response.json({error: 'NotLoggedIn'});
+      response.json({
+        state: 'error',
+        message: 'NotLoggedIn'
+      });
     } else {
 
       if (request.query.state && request.session['state'] === request.query.state) {
@@ -109,7 +115,7 @@ export class SSORouter extends BaseRouter {
           },
           defaults: {
             pid: await generateUniquePID(10, Character),
-            userId: request.session['user']
+            userId: request.session['user'].id,
           }
         });
 
