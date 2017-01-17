@@ -14,19 +14,28 @@ class Config {
   constructor(configName: string, allowedMissing: boolean = false) {
     this.configName = configName;
     try {
-      // this.config = ini.parse(fs.readFileSync(`../../../config/${configName}.ini`, 'utf-8'));
+      // Try to read the config file from the config folder in the project root directory
       this.config = ini.parse(fs.readFileSync(path.join(configPath, configName + '.ini'), 'utf-8'));
     } catch (error) {
+      // Config file was not found
       if (error.code === 'ENOENT' && allowedMissing) {
+        // Config file is allowed to be missing, but the application might miss functionality
         logger.warn(configName + '.ini was not found, some functionality will be disabled ' +
           'and application might misbehave.');
         this.config = {};
       } else {
+        // The config is essential for the application, throw an error
         throw error;
       }
     }
   }
 
+  /**
+   * Get a property from a config file
+   * params:
+   *  property: The name of the property to fetch
+   * returns: The value of the given config property
+  */
   get(property: string): any {
     if (this.config.hasOwnProperty(property)) {
       return this.config[property];
