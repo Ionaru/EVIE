@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Globals } from '../../globals';
 import { CharacterService } from '../../components/character/character.service';
+import { Character } from '../../components/character/character';
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -50,4 +51,8 @@ export class DashboardComponent implements OnInit {
   dumpCharacter(): void {
     this.characterService.dumpCharacter(this.globals.selectedCharacter);
   };
+
+  getCharacters(): Array<Character> {
+    return this.globals.user.characters;
+  }
 }

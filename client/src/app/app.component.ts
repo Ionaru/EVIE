@@ -47,6 +47,7 @@ export class AppComponent {
 
     this.startUp();
     globals.isLoggedIn.subscribe(() => {
+      this.globals.loggedIn = true;
       this.globals.socket = socketIo('http://localhost:3000', {
         reconnection: true
       });
@@ -70,7 +71,7 @@ export class AppComponent {
     });
 
     this.globals.isLoggedIn = Observable.create((observer: Observer<boolean>) => {
-      this.userService.getUser().subscribe(
+      this.userService.loginUser().subscribe(
         (user: User) => {
           if (user) {
             this.globals.user = user;

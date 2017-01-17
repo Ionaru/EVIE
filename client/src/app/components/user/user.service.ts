@@ -10,7 +10,7 @@ export class UserService {
 
   constructor(private http: Http, private CharacterService: CharacterService) { }
 
-  getUser(): Observable<any> {
+  loginUser(): Observable<any> {
     let url = 'api/login';
     return this.http.post(url, {
       username: 'testUser',
@@ -18,11 +18,23 @@ export class UserService {
     }).map(
       (res: Response) => {
         let jsonData: LoginResponse = JSON.parse(res['_body']);
-        return this.registerUser(jsonData.data);
-      }).retry(2);
+        return this.storeUser(jsonData.data);
+      });
   }
 
-  registerUser(data: UserApiData): User {
+  logoutUser(): void {
+    let url = 'api/logout';
+    console.log('Logout!');
+    this.http.post(url, {}).subscribe(() => {
+      window.location.reload();
+    });
+  }
+
+  registerUser(): void {
+
+  }
+
+  storeUser(data: UserApiData): User {
     let user = new User(data);
     for (let characterData of data.characters) {
       user.characters.push(this.CharacterService.registerCharacter(characterData));

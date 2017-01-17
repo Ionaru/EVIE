@@ -7,3 +7,7 @@
 <button (click)="refreshToken()">Refresh Token DEBUG</button>
 <button (click)="reAuth()">Re-authenticate DEBUG</button>
 <button (click)="dumpCharacter()">Dump character DEBUG</button>
+<div *ngFor="let character of getCharacters()">
+  <span>{{character.name}}</span>
+  <span>{{character.characterId}}</span>
+</div>

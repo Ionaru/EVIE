@@ -4,6 +4,8 @@ import { Globals } from '../../globals';
 import { TranslateService } from 'ng2-translate';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
 import { CountUp } from '../../components/count-up';
+import { UserService } from '../../components/user/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navigation',
@@ -23,9 +25,11 @@ export class NavigationComponent implements OnInit {
   disable: boolean = true;
 
   constructor(private clock: ClockService,
+              private router: Router,
               private globals: Globals,
               private translate: TranslateService,
-              private es: EndpointService) { }
+              private es: EndpointService,
+              private userService: UserService) { }
 
   ngOnInit(): void {
     this.globals.isLoggedIn.subscribe(() => {
@@ -77,6 +81,10 @@ export class NavigationComponent implements OnInit {
     }
     // return this.char !== 1;
     return true;
+  }
+
+  logout(): void {
+    this.userService.logoutUser();
   }
 
   // changeLanguage(lang: string): void {

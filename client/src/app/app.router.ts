@@ -4,6 +4,7 @@ import { IndexComponent } from './pages/index/index.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { WalletComponent } from './pages/evedata/wallet/wallet.component';
 import { CharacterGuard } from './pages/evedata/character.guard';
+import { AuthGuard } from './auth.guard';
 // import { LoggedInGuard } from './pages/logged-in.guard';
 // import { CharacterGuard } from './pages/evedata/character.guard';
 // import { IndustryComponent } from './pages/evedata/industry/industry.component';
@@ -18,7 +19,7 @@ import { CharacterGuard } from './pages/evedata/character.guard';
 
 const routes: Routes = [
   {path: '', component: IndexComponent},
-  {path: 'dashboard', component: DashboardComponent},
+  {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
   // {path: 'api', component: ApikeysComponent},
   // {path: 'charactersheet', component: CharactersheetComponent, canActivate: [CharacterGuard]},
   // {path: 'skills', component: SkillsComponent, canActivate: [CharacterGuard]},

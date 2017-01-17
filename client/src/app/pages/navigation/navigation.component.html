@@ -3,13 +3,11 @@
     {{ 'APP_NAME' | translate}}
   </a>
   <a routerLink="dashboard" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.DASHBOARD' | translate}}</a>
-  <!--<a routerLink="api" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.API_KEYS' | translate}}</a>-->
-  <!--<a routerLink="logout" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>-->
-  <a *ngIf="checkAccess()" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>
   <a class="navbar-item center disabled">
     EVE <span class="{{ status }}">{{ status }}</span> -
     <span id="eve-players">{{ players }}</span> {{ 'PAGES.NAVIGATION.PLAYERS' | translate | lowercase}}
   </a>
+  <a *ngIf="checkAccess()" (click)="logout()" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>
   <!--<a class="navbar-item right" (click)="changeLanguage('nl')">{{ translate.currentLang | uppercase }}</a>-->
 </nav>
 <!--<nav class="navbar-side" *ngIf="globals.isLoggedIn">-->

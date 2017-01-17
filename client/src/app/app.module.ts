@@ -18,6 +18,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { WalletComponent } from './pages/evedata/wallet/wallet.component';
 import { CharacterGuard } from './pages/evedata/character.guard';
 import { Globals } from './globals';
+import { AuthGuard } from './auth.guard';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,7 @@ import { Globals } from './globals';
   ],
   providers: [
     {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
-    CharacterGuard, Globals
+    CharacterGuard, Globals, AuthGuard,
   ],
   bootstrap: [AppComponent]
 })
