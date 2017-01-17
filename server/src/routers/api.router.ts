@@ -11,7 +11,6 @@ export class APIRouter extends BaseRouter {
 
   constructor() {
     super();
-    this.createGetRoute('/', APIRouter.debugAPI);
     this.createPostRoute('/login', APIRouter.loginUser);
     this.createPostRoute('/logout', APIRouter.logoutUser);
     this.createPostRoute('/register', APIRouter.registerUser);
@@ -23,48 +22,6 @@ export class APIRouter extends BaseRouter {
   // TODO: Route for changing an email address
   // TODO: Route for resetting a password
   // TODO: Route to delete a user
-
-  private static async debugAPI(request: Request, response: Response): Promise<void> {
-    let user: UserInstance;
-    if (request.session['user']) {
-      user = await User.findOne({
-        attributes: ['id', 'username', 'email'],
-        where: {
-          id: request.session['user'],
-        },
-        include: [{
-          model: Character,
-          attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
-        }]
-      });
-      request.session['user'] = user.id;
-    } else {
-      // DEBUG CODE, remove when login system is built
-      user = await User.findOne({
-        attributes: ['id', 'pid', 'username', 'email'],
-        where: {
-          id: 1,
-        },
-        include: [{
-          model: Character,
-          attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
-        }]
-      });
-      request.session['user'] = user.id;
-      // END DEBUG CODE
-    }
-    // response.json({});
-    response.json({
-      pid: user.pid,
-      username: user.username,
-      email: user.email,
-      // character: [],
-      character: user.characters.map(function (character: CharacterInstance): Object {
-        delete character.userId;
-        return character.toJSON();
-      }),
-    });
-  }
 
   /**
    * Check a User's username/email and password, then add the User id to the current session.
@@ -133,7 +90,7 @@ export class APIRouter extends BaseRouter {
    * path: /api/logout
    * method: POST
    */
-  private static async logoutUser(request: Request, response: Response): Promise<void> {
+  private static logoutUser(request: Request, response: Response): void {
     request.session.destroy(() => {
       response.redirect('/');
     });
