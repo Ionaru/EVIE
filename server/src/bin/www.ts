@@ -1,4 +1,3 @@
-/// <reference path="../ios.d.ts" />
 /**
  * Module dependencies.
  */
@@ -9,9 +8,6 @@ import ios = require('socket.io-express-session');
 import { logger } from '../controllers/logger.service';
 import { App } from '../app';
 import { db } from '../controllers/db.service';
-
-import Socket = SocketIO.Socket;
-import Session = Express.Session;
 
 init().catch(console.error.bind(console));
 
@@ -36,26 +32,12 @@ async function init(): Promise<void> {
 
   io.use(ios(express.sessionParser));
 
-  interface SessionSocket extends Socket {
-    handshake: {
-      session: Session;
-      headers: any;
-      time: string;
-      address: string;
-      xdomain: boolean;
-      secure: boolean;
-      issued: number;
-      url: string;
-      query: any;
-    };
-  }
-
-  io.on('connection', async function(socket: SessionSocket): Promise<void> {
+  io.on('connection', async function (socket: SessionSocket): Promise<void> {
 
     if (socket.handshake.session['user']) {
       socket.handshake.session['socket'] = socket.id;
       sockets.push(socket);
-      await socket.handshake.session.save((err) => {});
+      await socket.handshake.session.save(() => {});
     }
   });
 

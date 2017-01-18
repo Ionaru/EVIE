@@ -233,16 +233,9 @@ export class APIRouter extends BaseRouter {
    */
   private static async deleteUser(request: Request, response: Response): Promise<void> {
 
-    if (!request.session['user']) {
+    if (request.session['user']) {
+      // A user session is active
 
-      // User is not logged in
-      response.status(401);
-      response.json({
-        state: 'error',
-        message: 'NotLoggedIn'
-      });
-
-    } else {
       let pid = request.body.pid;
       let password = request.body.password;
 
@@ -253,33 +246,60 @@ export class APIRouter extends BaseRouter {
         }
       });
 
-      if (user && pid === request.session['user'].pid) {
+      if (user) {
+        // A user exists with this PID
 
-        if (bcrypt.compareSync(password, user.passwordHash)) {
+        if (pid === request.session['user'].pid) { // TODO: Administrator override
+          // The user from the session is the same as the one it is trying to delete, this is allowed
 
-          await user.destroy();
-          response.json({
-            state: 'success',
-            message: 'UserDeleted'
-          });
+          if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
+            // The user password was correct, we can now delete the user
+
+            await user.destroy();
+            response.json({
+              state: 'success',
+              message: 'UserDeleted'
+            });
+
+          } else {
+
+            // The password did not match the password of the user we want to delete.
+            response.status(401);
+            response.json({
+              state: 'error',
+              message: 'WrongPassword'
+            });
+          }
 
         } else {
 
+          // The user from the session does not match the user it is trying to delete, regular users cannot delete
+          // a user that is not their own.
           response.status(401);
           response.json({
             state: 'error',
-            message: 'WrongPassword'
+            message: 'NotYourUser'
           });
         }
 
       } else {
 
+        // The user PID was not found in the database
         response.status(404);
         response.json({
           state: 'error',
           message: 'UserNotFound'
         });
       }
+
+    } else {
+
+      // User is not logged in
+      response.status(401);
+      response.json({
+        state: 'error',
+        message: 'NotLoggedIn'
+      });
     }
   }
 }
