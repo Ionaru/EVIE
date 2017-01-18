@@ -32,6 +32,10 @@ export class APIRouter extends BaseRouter {
    * params:
    *  username: The username or email of the registered user
    *  password: The password matching the registered user
+   * returns:
+   *  200 LoggedIn: When the login was successful
+   *  400 IncorrectLogin: When the username was not found
+   *  400 IncorrectLogin: When the password did not match the found username
    */
   private static async loginUser(request: Request, response: Response): Promise<void> {
     // Extract the username/email and password from the request
@@ -109,6 +113,9 @@ export class APIRouter extends BaseRouter {
    *  username: The username the user wants to register with
    *  email: The email the user wants to register with
    *  password: The password this user wants to access their account with
+   * returns:
+   *  200 Registered: When the user was successfully created
+   *  409 Taken: When the username or email is already in use
    */
   private static async registerUser(request: Request, response: Response): Promise<void> {
     // Extract the form data from the request and trim the whitespace from the username and email.
@@ -151,25 +158,41 @@ export class APIRouter extends BaseRouter {
       // this is done to return an accurate error message.
       let existingUsername = new RegExp('^' + user.username + '$', 'i');
       let existingEmail = new RegExp('^' + user.email + '$', 'i');
-      let usernameAvailable = true;
-      let emailAvailable = true;
+      let usernameInUse = false;
+      let emailInUse = false;
       if (username.match(existingUsername) || username.match(existingEmail)) {
-        usernameAvailable = false;
+        usernameInUse = true;
       }
       if (email.match(existingEmail) || email.match(existingUsername)) {
-        emailAvailable = false;
+        emailInUse = true;
       }
       response.json({
         state: 'error',
         message: 'Taken',
         data: {
-          username_available: usernameAvailable,
-          email_available: emailAvailable,
+          username_in_use: usernameInUse,
+          email_in_use: emailInUse,
         }
       });
     }
   }
 
+  /**
+   * Change a password of a user
+   * path: /api/change/password
+   * method: POST
+   * params:
+   *  pid: The pid of the user
+   *  oldPassword: The current password of the user
+   *  newPassword: The new password
+   * returns:
+   *  200 PasswordChanged: The password was changed successfully
+   *  403 WrongPassword: The oldPassword parameter did not match the user's current password
+   *  401 NotYourUser: A user tried to change another user's password
+   *  404 UserNotFound: The PID did not match any known user
+   *  400 MissingParameters: One of the parameters was missing
+   *  401 NotLoggedIn: The user session was not found, possibly not logged in
+   */
   private static async changeUserPassword(request: Request, response: Response): Promise<void> {
 
     if (request.session['user']) {
@@ -272,6 +295,13 @@ export class APIRouter extends BaseRouter {
    * params:
    *  pid: The pid of the user to delete
    *  password: The password of the user to delete, for verification
+   * returns:
+   *  200 UserDeleted: The user was deleted successfully
+   *  403 WrongPassword: The oldPassword parameter did not match the user's current password
+   *  401 NotYourUser: A user tried to change another user's password
+   *  404 UserNotFound: The PID did not match any known user
+   *  400 MissingParameters: One of the parameters was missing
+   *  401 NotLoggedIn: The user session was not found, possibly not logged in
    */
   private static async deleteUser(request: Request, response: Response): Promise<void> {
 
