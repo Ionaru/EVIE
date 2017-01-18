@@ -14,14 +14,13 @@ export class APIRouter extends BaseRouter {
     this.createPostRoute('/login', APIRouter.loginUser);
     this.createPostRoute('/logout', APIRouter.logoutUser);
     this.createPostRoute('/register', APIRouter.registerUser);
-    // this.createPostRoute('/change/username', APIRouter.changeUserUsername);
+    this.createPostRoute('/change/username', APIRouter.changeUserUsername);
     this.createPostRoute('/change/password', APIRouter.changeUserPassword);
     this.createPostRoute('/change/email', APIRouter.changeUserEmail);
     this.createDeleteRoute('/delete', APIRouter.deleteUser);
     logger.info('Route defined: API');
   }
 
-  // TODO: Route for changing a username
   // TODO: Route for resetting a password
 
   /**
@@ -262,6 +261,7 @@ export class APIRouter extends BaseRouter {
   private static async changeUserEmail(request: Request, response: Response): Promise<void> {
 
     if (request.session['user']) {
+      // A user session is active
 
       let pid = request.body.pid;
       let password = request.body.password;
@@ -277,6 +277,7 @@ export class APIRouter extends BaseRouter {
         });
 
         if (user) {
+          // A user exists with this PID
 
           if (pid === request.session['user'].pid) { // TODO: Administrator override
             // The user from the session is the same as the one it is trying to modify, this is allowed
@@ -337,24 +338,106 @@ export class APIRouter extends BaseRouter {
       // User is not logged in and isn't allowed to change an email
       sendResponse(response, 401, 'NotLoggedIn');
     }
-
   }
 
-  // private static async changeUserUsername(request: Request, response: Response): Promise<void> {
-  //
-  //   if (!request.session['user']) {
-  //
-  //     // User is not logged in and isn't allowed to change a username
-  //     response.status(401);
-  //     response.json({state: 'error',
-  //       message: 'NotLoggedIn'});
-  //
-  //   } else {
-  //     let pid = request.body.pid;
-  //     let password = request.body.password;
-  //     let newUsername = request.body.newusername;
-  //   }
-  // }
+  /**
+   * Change the username of a user
+   * path: /api/change/username
+   * method: POST
+   * params:
+   *  pid: The pid of the user
+   *  password: The current password of the user
+   *  newUsername: The new username
+   * returns:
+   *  200 UsernameChanged: The username was changed successfully
+   *  409 UsernameInUse: The username is already in use by someone else
+   *  403 WrongPassword: The password parameter did not match the user's current password
+   *  401 NotYourUser: A user tried to change another user's password
+   *  404 UserNotFound: The PID did not match any known user
+   *  400 MissingParameters: One of the parameters was missing
+   *  401 NotLoggedIn: The user session was not found, possibly not logged in
+   */
+  private static async changeUserUsername(request: Request, response: Response): Promise<void> {
+
+    if (request.session['user']) {
+      // A user session is active
+
+        let pid = request.body.pid;
+        let password = request.body.password;
+        let newUsername = request.body.newusername;
+
+      if (pid && password && newUsername) { // TODO: Administrator override
+
+        let user: UserInstance = await User.findOne({
+          attributes: ['id', 'passwordHash', 'pid'],
+          where: {
+            pid: pid,
+          }
+        });
+
+        if (user) {
+          // A user exists with this PID
+
+          if (pid === request.session['user'].pid) { // TODO: Administrator override
+            // The user from the session is the same as the one it is trying to modify, this is allowed
+
+            if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
+              // The user password was correct, we can now try to change the user's username
+
+              let existingUser: UserInstance = await User.findOne({
+                attributes: ['id', 'username', 'email'],
+                where: {
+                  $or: [
+                    {username: newUsername},
+                    {email: newUsername},
+                  ],
+                }
+              });
+
+              if (!existingUser) {
+
+                // The new username is unique
+                user.username = newUsername;
+                await user.save();
+                sendResponse(response, 200, 'UsernameChanged');
+
+              } else {
+
+                // The username provided was already in use
+                sendResponse(response, 409, 'UsernameInUse');
+              }
+
+            } else {
+
+              // The password did not match the password of the user we want to modify.
+              sendResponse(response, 403, 'WrongPassword');
+            }
+
+          } else {
+
+            // The user from the session does not match the user it is trying to modify, regular users cannot delete
+            // a user that is not their own.
+            sendResponse(response, 401, 'NotYourUser');
+          }
+
+        } else {
+
+          // The user PID was not found in the database
+          sendResponse(response, 404, 'UserNotFound');
+        }
+
+      } else {
+
+        // Missing parameters
+        sendResponse(response, 400, 'MissingParameters');
+      }
+
+    } else {
+
+      // User is not logged in and isn't allowed to change a username
+      sendResponse(response, 401, 'NotLoggedIn');
+    }
+  }
 
   /**
    * Register a new user using a username, email and password.
