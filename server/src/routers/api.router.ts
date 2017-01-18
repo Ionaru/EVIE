@@ -16,13 +16,12 @@ export class APIRouter extends BaseRouter {
     this.createPostRoute('/register', APIRouter.registerUser);
     // this.createPostRoute('/change/username', APIRouter.changeUserUsername);
     this.createPostRoute('/change/password', APIRouter.changeUserPassword);
-    // this.createPostRoute('/change/email', APIRouter.changeUserEmail);
+    this.createPostRoute('/change/email', APIRouter.changeUserEmail);
     this.createDeleteRoute('/delete', APIRouter.deleteUser);
     logger.info('Route defined: API');
   }
 
   // TODO: Route for changing a username
-  // TODO: Route for changing an email address
   // TODO: Route for resetting a password
 
   /**
@@ -58,39 +57,33 @@ export class APIRouter extends BaseRouter {
 
     if (user) {
       if (bcrypt.compareSync(password, user.passwordHash)) {
-        request.session['user'] = user.toJSON();
+        request.session['user'].id = user.id;
+        request.session['user'].pid = user.pid;
         user.timesLogin++;
         user.lastLogin = new Date();
         await user.save();
         logger.info(user.username + ' logged in.');
-        response.json({
-          state: 'success',
-          message: 'LoggedIn',
-          data: {
-            pid: user.pid,
-            username: user.username,
-            email: user.email,
-            characters: user.characters.map(function (character: CharacterInstance): Object {
-              delete character.userId;
-              return character.toJSON();
-            }),
-          }
-        });
+        let userData = {
+          pid: user.pid,
+          username: user.username,
+          email: user.email,
+          characters: user.characters.map(function (character: CharacterInstance): Object {
+            delete character.userId;
+            return character.toJSON();
+          }),
+        };
+        sendResponse(response, 200, 'LoggedIn', userData);
+
       } else {
+
         // Password did not match the passwordHash
-        response.status(400);
-        response.json({
-          state: 'error',
-          message: 'IncorrectLogin'
-        });
+        sendResponse(response, 400, 'IncorrectLogin');
       }
+
     } else {
+
       // No user with that username was found
-      response.status(400);
-      response.json({
-        state: 'error',
-        message: 'IncorrectLogin'
-      });
+      sendResponse(response, 400, 'IncorrectLogin');
     }
   }
 
@@ -143,17 +136,15 @@ export class APIRouter extends BaseRouter {
         passwordHash: bcrypt.hashSync(password),
         email: email,
       });
-      response.json({
-        state: 'success',
-        message: 'Registered',
-        data: {
-          pid: user.pid,
-          username: user.username,
-          email: user.email,
-        }
+
+      sendResponse(response, 200, 'Registered', {
+        pid: user.pid,
+        username: user.username,
+        email: user.email,
       });
+
     } else {
-      response.status(409);
+
       // The regular expression checks if the username or email matched the one from the user in the database
       // this is done to return an accurate error message.
       let existingUsername = new RegExp('^' + user.username + '$', 'i');
@@ -166,13 +157,10 @@ export class APIRouter extends BaseRouter {
       if (email.match(existingEmail) || email.match(existingUsername)) {
         emailInUse = true;
       }
-      response.json({
-        state: 'error',
-        message: 'Taken',
-        data: {
-          username_in_use: usernameInUse,
-          email_in_use: emailInUse,
-        }
+
+      sendResponse(response, 409, 'Taken', {
+        username_in_use: usernameInUse,
+        email_in_use: emailInUse,
       });
     }
   }
@@ -213,10 +201,10 @@ export class APIRouter extends BaseRouter {
         if (user) {
 
           if (pid === request.session['user'].pid) { // TODO: Administrator override
-            // The user from the session is the same as the one it is trying to delete, this is allowed
+            // The user from the session is the same as the one it is trying to modify, this is allowed
 
             if (bcrypt.compareSync(oldPassword, user.passwordHash)) { // TODO: Administrator override
-              // The user password was correct, we can now delete the user
+              // The user password was correct, we can now change the user's password
 
               user.passwordHash = bcrypt.hashSync(newPassword);
               await user.save();
@@ -224,13 +212,13 @@ export class APIRouter extends BaseRouter {
 
             } else {
 
-              // The password did not match the password of the user we want to delete.
+              // The password did not match the password of the user we want to modify.
               sendResponse(response, 403, 'WrongPassword');
             }
 
           } else {
 
-            // The user from the session does not match the user it is trying to delete, regular users cannot delete
+            // The user from the session does not match the user it is trying to modify, regular users cannot modify
             // a user that is not their own.
             sendResponse(response, 401, 'NotYourUser');
           }
@@ -254,24 +242,104 @@ export class APIRouter extends BaseRouter {
     }
   }
 
-  // private static async changeUserEmail(request: Request, response: Response): Promise<void> {
-  //
-  //   if (!request.session['user']) {
-  //
-  //     // User is not logged in and isn't allowed to change an email
-  //     response.status(401);
-  //     response.json({state: 'error',
-  //       message: 'NotLoggedIn'});
-  //
-  //   } else {
-  //     let pid = request.body.pid;
-  //     let password = request.body.password;
-  //     let newEmail = request.body.newemail;
-  //   }
-  //
-  //
-  // }
-  //
+  /**
+   * Change the email address of a user
+   * path: /api/change/email
+   * method: POST
+   * params:
+   *  pid: The pid of the user
+   *  password: The current password of the user
+   *  newEmail: The new email address
+   * returns:
+   *  200 EmailChanged: The email was changed successfully
+   *  409 EmailInUse: The email address is already in use by someone else
+   *  403 WrongPassword: The password parameter did not match the user's current password
+   *  401 NotYourUser: A user tried to change another user's password
+   *  404 UserNotFound: The PID did not match any known user
+   *  400 MissingParameters: One of the parameters was missing
+   *  401 NotLoggedIn: The user session was not found, possibly not logged in
+   */
+  private static async changeUserEmail(request: Request, response: Response): Promise<void> {
+
+    if (request.session['user']) {
+
+      let pid = request.body.pid;
+      let password = request.body.password;
+      let newEmail = request.body.newemail;
+
+      if (pid && password && newEmail) { // TODO: Administrator override
+
+        let user: UserInstance = await User.findOne({
+          attributes: ['id', 'passwordHash', 'pid'],
+          where: {
+            pid: pid,
+          }
+        });
+
+        if (user) {
+
+          if (pid === request.session['user'].pid) { // TODO: Administrator override
+            // The user from the session is the same as the one it is trying to modify, this is allowed
+
+            if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
+              // The user password was correct, we can now try to change the user's email
+
+              let existingUser: UserInstance = await User.findOne({
+                attributes: ['id', 'username', 'email'],
+                where: {
+                  $or: [
+                    {username: newEmail},
+                    {email: newEmail},
+                  ],
+                }
+              });
+
+              if (!existingUser) {
+
+                // The new email is unique
+                user.email = newEmail;
+                await user.save();
+                sendResponse(response, 200, 'EmailChanged');
+
+              } else {
+
+                // The email provided was already in use
+                sendResponse(response, 409, 'EmailInUse');
+              }
+
+            } else {
+
+              // The password did not match the password of the user we want to modify.
+              sendResponse(response, 403, 'WrongPassword');
+            }
+
+          } else {
+
+            // The user from the session does not match the user it is trying to modify, regular users cannot delete
+            // a user that is not their own.
+            sendResponse(response, 401, 'NotYourUser');
+          }
+
+        } else {
+
+          // The user PID was not found in the database
+          sendResponse(response, 404, 'UserNotFound');
+        }
+
+      } else {
+
+        // Missing parameters
+        sendResponse(response, 400, 'MissingParameters');
+      }
+
+    } else {
+
+      // User is not logged in and isn't allowed to change an email
+      sendResponse(response, 401, 'NotLoggedIn');
+    }
+
+  }
+
   // private static async changeUserUsername(request: Request, response: Response): Promise<void> {
   //
   //   if (!request.session['user']) {
