@@ -4,7 +4,7 @@ import { CharacterInstance, Character } from '../models/character/character';
 import { User, UserInstance } from '../models/user/user';
 import { Response, Request } from 'express';
 import { logger } from '../controllers/logger.service';
-import { BaseRouter } from './base.router';
+import { BaseRouter, sendResponse } from './base.router';
 import { generateUniquePID } from '../controllers/pid.service';
 
 export class APIRouter extends BaseRouter {
@@ -15,17 +15,15 @@ export class APIRouter extends BaseRouter {
     this.createPostRoute('/logout', APIRouter.logoutUser);
     this.createPostRoute('/register', APIRouter.registerUser);
     // this.createPostRoute('/change/username', APIRouter.changeUserUsername);
-    // this.createPostRoute('/change/password', APIRouter.changeUserPassword);
+    this.createPostRoute('/change/password', APIRouter.changeUserPassword);
     // this.createPostRoute('/change/email', APIRouter.changeUserEmail);
     this.createDeleteRoute('/delete', APIRouter.deleteUser);
     logger.info('Route defined: API');
   }
 
-  // TODO: Route for changing a password
   // TODO: Route for changing a username
   // TODO: Route for changing an email address
   // TODO: Route for resetting a password
-  // TODO: Route to delete a user
 
   /**
    * Check a User's username/email and password, then add the User id to the current session.
@@ -172,23 +170,67 @@ export class APIRouter extends BaseRouter {
     }
   }
 
-  // private static async changeUserPassword(request: Request, response: Response): Promise<void> {
-  //
-  //   if (!request.session['user']) {
-  //
-  //     // User is not logged in and isn't allowed to change a password
-  //     response.status(401);
-  //     response.json({state: 'error',
-  //       message: 'NotLoggedIn'});
-  //
-  //   } else {
-  //
-  //     let pid = request.body.pid;
-  //     let oldPassword = request.body.oldpassword;
-  //     let newPassword = request.body.newpassword;
-  //   }
-  // }
-  //
+  private static async changeUserPassword(request: Request, response: Response): Promise<void> {
+
+    if (request.session['user']) {
+
+      let pid = request.body.pid;
+      let oldPassword = request.body.oldpassword;
+      let newPassword = request.body.newpassword;
+
+      if (pid && oldPassword && newPassword) { // TODO: Administrator override
+
+        let user: UserInstance = await User.findOne({
+          attributes: ['id', 'passwordHash', 'pid'],
+          where: {
+            pid: pid,
+          }
+        });
+
+        if (user) {
+
+          if (pid === request.session['user'].pid) { // TODO: Administrator override
+            // The user from the session is the same as the one it is trying to delete, this is allowed
+
+            if (bcrypt.compareSync(oldPassword, user.passwordHash)) { // TODO: Administrator override
+              // The user password was correct, we can now delete the user
+
+              user.passwordHash = bcrypt.hashSync(newPassword);
+              await user.save();
+              sendResponse(response, 200, 'PasswordChanged');
+
+            } else {
+
+              // The password did not match the password of the user we want to delete.
+              sendResponse(response, 403, 'WrongPassword');
+            }
+
+          } else {
+
+            // The user from the session does not match the user it is trying to delete, regular users cannot delete
+            // a user that is not their own.
+            sendResponse(response, 401, 'NotYourUser');
+          }
+
+        } else {
+
+          // The user PID was not found in the database
+          sendResponse(response, 404, 'UserNotFound');
+        }
+
+      } else {
+
+        // Missing parameters
+        sendResponse(response, 400, 'MissingParameters');
+      }
+
+    } else {
+
+      // User is not logged in and isn't allowed to change a password
+      sendResponse(response, 401, 'NotLoggedIn');
+    }
+  }
+
   // private static async changeUserEmail(request: Request, response: Response): Promise<void> {
   //
   //   if (!request.session['user']) {
@@ -239,67 +281,56 @@ export class APIRouter extends BaseRouter {
       let pid = request.body.pid;
       let password = request.body.password;
 
-      let user: UserInstance = await User.findOne({
-        attributes: ['id', 'passwordHash', 'pid'],
-        where: {
-          pid: pid,
-        }
-      });
+      if (pid && password) { // TODO: Administrator override
 
-      if (user) {
-        // A user exists with this PID
+        let user: UserInstance = await User.findOne({
+          attributes: ['id', 'passwordHash', 'pid'],
+          where: {
+            pid: pid,
+          }
+        });
 
-        if (pid === request.session['user'].pid) { // TODO: Administrator override
-          // The user from the session is the same as the one it is trying to delete, this is allowed
+        if (user) {
+          // A user exists with this PID
 
-          if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
-            // The user password was correct, we can now delete the user
+          if (pid === request.session['user'].pid) { // TODO: Administrator override
+            // The user from the session is the same as the one it is trying to delete, this is allowed
 
-            await user.destroy();
-            response.json({
-              state: 'success',
-              message: 'UserDeleted'
-            });
+            if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
+              // The user password was correct, we can now delete the user
+
+              await user.destroy();
+              sendResponse(response, 200, 'UserDeleted');
+
+            } else {
+
+              // The password did not match the password of the user we want to delete.
+              sendResponse(response, 403, 'WrongPassword');
+            }
 
           } else {
 
-            // The password did not match the password of the user we want to delete.
-            response.status(401);
-            response.json({
-              state: 'error',
-              message: 'WrongPassword'
-            });
+            // The user from the session does not match the user it is trying to delete, regular users cannot delete
+            // a user that is not their own.
+            sendResponse(response, 401, 'NotYourUser');
           }
 
         } else {
 
-          // The user from the session does not match the user it is trying to delete, regular users cannot delete
-          // a user that is not their own.
-          response.status(401);
-          response.json({
-            state: 'error',
-            message: 'NotYourUser'
-          });
+          // The user PID was not found in the database
+          sendResponse(response, 404, 'UserNotFound');
         }
 
       } else {
 
-        // The user PID was not found in the database
-        response.status(404);
-        response.json({
-          state: 'error',
-          message: 'UserNotFound'
-        });
+        // Missing parameters
+        sendResponse(response, 400, 'MissingParameters');
       }
 
     } else {
 
       // User is not logged in
-      response.status(401);
-      response.json({
-        state: 'error',
-        message: 'NotLoggedIn'
-      });
+      sendResponse(response, 401, 'NotLoggedIn');
     }
   }
 }
