@@ -8,6 +8,7 @@ import ios = require('socket.io-express-session');
 import { logger } from '../controllers/logger.service';
 import { App } from '../app';
 import { db } from '../controllers/db.service';
+import { mainConfig } from '../controllers/config.service';
 
 init().catch(console.error.bind(console));
 
@@ -20,7 +21,7 @@ async function init(): Promise<void> {
   /**
    * Get port from environment and store in Express.
    */
-  const port = normalizePort(process.env.PORT || 3000);
+  const port = normalizePort(process.env.PORT || mainConfig.get('backend_port') || 3000);
   express.app.set('port', port);
 
   /**
