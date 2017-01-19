@@ -16,6 +16,7 @@ import { defineCharacter } from './models/character/character';
 import { APIRouter } from './routers/api.router';
 import { SSORouter } from './routers/sso.router';
 import { AngularRedirectRouter } from './routers/angular.router';
+import { GlobalRouter } from './routers/global.router';
 
 
 export class App {
@@ -74,6 +75,9 @@ export class App {
 
     // Use static client folder for serving assets
     app.use(express.static(path.join(__dirname, '../../client/dist')));
+
+    // Put all requests through a global router first
+    app.use('*', (new GlobalRouter()).router);
 
     // Use routes
     app.use('/api', (new APIRouter()).router);

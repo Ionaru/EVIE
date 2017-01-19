@@ -1,6 +1,12 @@
-import { Router } from 'express';
+import { Router, Response, Request } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
-import { Response } from 'express';
+import { logger } from '../controllers/logger.service';
+
+interface RequestLogItem {
+  id;
+  request;
+}
+export let requestList: Array<RequestLogItem> = [];
 
 export class BaseRouter {
   public router: Router = Router();
@@ -32,6 +38,8 @@ export function sendResponse(response: Response, statusCode: number, message: st
     state = 'error';
   }
 
+  let request = requestList.filter(_ => _.id === response['id'])[0].request;
+
   let responseData = {
     state: state,
     message: message,
@@ -42,6 +50,14 @@ export function sendResponse(response: Response, statusCode: number, message: st
     delete responseData.data;
   }
 
+  logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${statusCode} ${message}`);
+
   response.status(statusCode);
   response.json(responseData);
+}
+
+export function getIp(request: Request): string {
+  return request.headers['x-forwarded-for'] ||
+    request.connection.remoteAddress ||
+    request.socket.remoteAddress;
 }
