@@ -2,6 +2,7 @@ import winston = require('winston');
 
 import TransportInstance = winston.TransportInstance;
 import LoggerInstance = winston.LoggerInstance;
+import { mainConfig } from './config.service';
 
 class Logger {
 
@@ -21,7 +22,7 @@ class Logger {
   }
 
   private createTransports(): Array<TransportInstance> {
-    let consoleLogLevel = 'info';
+    let consoleLogLevel = mainConfig.get('console_log_level');
     let transports = [];
     // noinspection JSUnusedGlobalSymbols
     transports.push(
