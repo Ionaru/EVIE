@@ -4,7 +4,7 @@ import { logger } from '../controllers/logger.service';
 
 interface RequestLogItem {
   id;
-  request;
+  request: Request;
 }
 export let requestList: Array<RequestLogItem> = [];
 
