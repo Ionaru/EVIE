@@ -35,7 +35,7 @@ class Config {
    * params:
    *  property: The name of the property to fetch
    * returns: The value of the given config property
-  */
+   */
   get(property: string): any {
     if (this.config.hasOwnProperty(property)) {
       return this.config[property];

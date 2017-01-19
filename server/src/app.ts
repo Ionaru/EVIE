@@ -61,9 +61,9 @@ export class App {
       resave: true,
       saveUninitialized: true,
       cookie: {
-        // secure: true,
+        secure: mainConfig.get('secure_only_cookies'),
         httpOnly: false,
-        maxAge: 2 * 60 * 60 * 1000 // 2 hours
+        maxAge: 6 * 60 * 60 * 1000 // 6 hours
       },
     });
 
