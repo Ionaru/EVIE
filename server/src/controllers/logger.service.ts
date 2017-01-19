@@ -50,14 +50,14 @@ class Logger {
       }
     }
 
-    let debugFilePath = logDirs.debug + '_plain.txt';
-    let logFilePath = logDirs.info + '_plain.txt';
-    let warnFilePath = logDirs.warn + '_plain.txt';
-    let errFilePath = logDirs.error + '_plain.txt';
-    let debugFileJSONPath = logDirs.debug + '_json.txt';
-    let logFileJSONPath = logDirs.info + '_json.txt';
-    let warnFileJSONPath = logDirs.warn + '_json.txt';
-    let errFileJSONPath = logDirs.error + '_json.txt';
+    let debugFilePath = logDirs.debug + '_plain.log';
+    let logFilePath = logDirs.info + '_plain.log';
+    let warnFilePath = logDirs.warn + '_plain.log';
+    let errFilePath = logDirs.error + '_plain.log';
+    let debugFileJSONPath = logDirs.debug + '_json.log';
+    let logFileJSONPath = logDirs.info + '_json.log';
+    let warnFileJSONPath = logDirs.warn + '_json.log';
+    let errFileJSONPath = logDirs.error + '_json.log';
 
     transports.push(
       new winstonDRF({
