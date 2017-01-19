@@ -32,3 +32,9 @@ declare module 'socket.io-express-session' {
   namespace ios {}
   export = ios;
 }
+
+declare module 'winston-daily-rotate-file' {
+  function winstonDRF(arg: Object): void;
+  namespace winstonDRF {}
+  export = winstonDRF;
+}

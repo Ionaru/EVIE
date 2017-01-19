@@ -12,6 +12,7 @@
 
 # Server files
 /server/node_modules/
+/server/logs
 
 # System files
 *.db
