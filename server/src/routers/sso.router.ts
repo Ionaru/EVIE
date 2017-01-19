@@ -2,7 +2,7 @@ import https = require('https');
 
 import { Response, Request } from 'express';
 import { logger } from '../controllers/logger.service';
-import { BaseRouter } from './base.router';
+import { BaseRouter, sendResponse } from './base.router';
 import { ssoConfig } from '../controllers/config.service';
 import { Character, CharacterInstance } from '../models/character/character';
 import { generateUniquePID, generateRandomString } from '../controllers/pid.service';
@@ -40,17 +40,13 @@ export class SSORouter extends BaseRouter {
     if (!request.session['user']) {
 
       // User is not logged in and can't initiate SSO process
-      response.status(401);
-      response.json({
-        state: 'error',
-        message: 'NotLoggedIn'
-      });
+      sendResponse(response, 401, 'NotLoggedIn');
 
     } else {
       // User is logged in
 
       if (request.query.characterPid) {
-        // With a characterPid provided in the request, we initiate the re-authorize process
+        // With a characterPid provided in the request, we initiate the re-authorization process
 
         // Fetch the Character
         let character: CharacterInstance = await Character.findOne({
@@ -77,9 +73,9 @@ export class SSORouter extends BaseRouter {
         'scope=' + scopes.join(' '),
         'state=' + request.session['state'],
       ];
-      let finalUrl = oauthHost + oauthPath + args.join('&');
+      let finalUrl = 'https://' + oauthHost + oauthPath + args.join('&');
 
-      response.redirect('https://' + finalUrl);
+      response.redirect(finalUrl);
     }
   }
 
@@ -95,11 +91,7 @@ export class SSORouter extends BaseRouter {
       // User is not logged in and can't initiate SSO callback.
       // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
       // was linked directly to this page.
-      response.status(401);
-      response.json({
-        state: 'error',
-        message: 'NotLoggedIn'
-      });
+      sendResponse(response, 401, 'NotLoggedIn');
     } else {
 
       if (request.query.state && request.session['state'] === request.query.state) {
@@ -142,17 +134,9 @@ export class SSORouter extends BaseRouter {
         if (request.query.state) {
           logger.error(`Returned state was not valid, expected ${request.session['state']} 
                         and got ${request.query.state}`);
-          response.status(400);
-          response.json({
-            state: 'error',
-            message: 'InvalidState'
-          });
+          sendResponse(response, 400, 'InvalidState');
         } else {
-          response.status(400);
-          response.json({
-            state: 'error',
-            message: 'BadCallback'
-          });
+          sendResponse(response, 400, 'BadCallback');
         }
       }
     }
@@ -236,6 +220,8 @@ export class SSORouter extends BaseRouter {
               delete characterResponse.authToken;
               delete characterResponse.refreshToken;
               delete characterResponse['updatedAt'];
+
+              // Remove the characterPid from the session as it is no longer needed
               delete request.session['characterPid'];
 
               socket.emit('SSO_END', {
@@ -243,6 +229,7 @@ export class SSORouter extends BaseRouter {
                 message: 'SSOSuccessful',
                 data: characterResponse,
               });
+              sendResponse(response, 200, 'AuthFinished');
             });
             characterIdResponse.on('error', (error) => {
               console.log(error);
@@ -268,6 +255,7 @@ export class SSORouter extends BaseRouter {
         state: 'error',
         message: 'NothingToAuthorize',
       });
+      sendResponse(response, 400, 'NothingToAuthorize');
     }
   }
 
@@ -319,12 +307,8 @@ export class SSORouter extends BaseRouter {
             character.accessToken = result[0]['access_token'];
             character.tokenExpiry = new Date(Date.now() + (result[0]['expires_in'] * 1000));
             await character.save();
-            response.json({
-              state: 'success',
-              message: 'TokenRefreshed',
-              data: {
-                token: result[0]['access_token']
-              }
+            sendResponse(response, 200, 'TokenRefreshed', {
+              token: result[0]['access_token']
             });
           });
           authReponse.on('error', (error) => {
@@ -338,19 +322,11 @@ export class SSORouter extends BaseRouter {
         httpRequest.end();
       } else {
         // The access token sent with the request did not match with the fetched Character
-        response.status(401);
-        response.json({
-          state: 'error',
-          message: 'WrongAccessToken'
-        });
+        sendResponse(response, 401, 'WrongAccessToken');
       }
     } else {
       // There was no Character found with the Pid provided in the request
-      response.status(404);
-      response.json({
-        state: 'error',
-        message: 'CharacterNotFound'
-      });
+      sendResponse(response, 404, 'CharacterNotFound');
     }
   }
 
