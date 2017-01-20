@@ -11,6 +11,7 @@ export class APIRouter extends BaseRouter {
 
   constructor() {
     super();
+    this.createGetRoute('/handshake', APIRouter.doHandShake);
     this.createPostRoute('/login', APIRouter.loginUser);
     this.createPostRoute('/logout', APIRouter.logoutUser);
     this.createPostRoute('/register', APIRouter.registerUser);
@@ -22,6 +23,37 @@ export class APIRouter extends BaseRouter {
   }
 
   // TODO: Route for resetting a password
+
+  private static async doHandShake(request: Request, response: Response): Promise<void> {
+    if (request.session['user'].id) {
+      let user: UserInstance = await User.findOne({
+        attributes: ['id', 'passwordHash', 'timesLogin', 'pid', 'username', 'email'],
+        where: {
+          id: request.session['user'].id,
+        },
+        include: [{
+          model: Character,
+          attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
+        }]
+      });
+      user.timesLogin++;
+      user.lastLogin = new Date();
+      await user.save();
+      logger.info(user.username + ' logged in.');
+      let userData = {
+        pid: user.pid,
+        username: user.username,
+        email: user.email,
+        characters: user.characters.map(function (character: CharacterInstance): Object {
+          delete character.userId;
+          return character.toJSON();
+        }),
+      };
+      sendResponse(response, 200, 'LoggedIn', userData);
+    } else {
+      sendResponse(response, 200, 'NotLoggedIn');
+    }
+  }
 
   /**
    * Check a User's username/email and password, then add the User id to the current session.
@@ -362,9 +394,9 @@ export class APIRouter extends BaseRouter {
     if (request.session['user']) {
       // A user session is active
 
-        let pid = request.body.pid;
-        let password = request.body.password;
-        let newUsername = request.body.newusername;
+      let pid = request.body.pid;
+      let password = request.body.password;
+      let newUsername = request.body.newusername;
 
       if (pid && password && newUsername) { // TODO: Administrator override
 

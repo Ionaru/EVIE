@@ -15,6 +15,9 @@
 </p>
 <hr>
 
+<button (click)="login()" *ngIf="!loggedIn">Login debug</button>
+<button (click)="logout()" *ngIf="loggedIn">Logout debug</button>
+
 <!--<form>-->
   <!--<input name="keyId" title="Key ID">-->
   <!--<input name="vCode" title="Verification Code">-->

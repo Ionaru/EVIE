@@ -3,12 +3,27 @@ import { Http, Response } from '@angular/http';
 import { User } from './user';
 import { Observable } from 'rxjs';
 import { CharacterService } from '../character/character.service';
+import { Globals } from '../../globals';
 // import { Globals } from '../../globals';
 
 @Injectable()
 export class UserService {
 
-  constructor(private http: Http, private CharacterService: CharacterService) { }
+  constructor(private http: Http, private CharacterService: CharacterService, private globals: Globals) { }
+
+  shakeHands(): Observable<any> {
+    let url = 'api/handshake';
+    return this.http.get(url).map(
+      (res: Response) => {
+        let jsonData: LoginResponse = JSON.parse(res['_body']);
+        if (jsonData.message === 'LoggedIn') {
+          this.globals.loggedIn = true;
+          this.storeUser(jsonData.data);
+        } else if (jsonData.message === 'NotLoggedIn') {
+          // Something
+        }
+      });
+  }
 
   loginUser(): Observable<any> {
     let url = 'api/login';
@@ -36,6 +51,7 @@ export class UserService {
 
   storeUser(data: UserApiData): User {
     let user = new User(data);
+    this.globals.user = user;
     for (let characterData of data.characters) {
       user.characters.push(this.CharacterService.registerCharacter(characterData));
     }

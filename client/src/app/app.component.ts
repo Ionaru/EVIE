@@ -47,7 +47,6 @@ export class AppComponent {
 
     this.startUp();
     globals.isLoggedIn.subscribe(() => {
-      this.globals.loggedIn = true;
       this.globals.socket = socketIo('http://localhost:3000', {
         reconnection: true
       });
@@ -71,30 +70,34 @@ export class AppComponent {
     });
 
     this.globals.isLoggedIn = Observable.create((observer: Observer<boolean>) => {
-      this.userService.loginUser().subscribe(
-        (user: User) => {
-          if (user) {
-            this.globals.user = user;
-            // localStorage.setItem('User', JSON.stringify(user));
-            // console.log(user);
-            // console.log(user.accounts);
-            if (!isEmpty(user.characters)) {
-              this.globals.selectedCharacter = user.characters[user.selectedAccount];
-              this.getCharacter(observer);
-            } else {
-              // User has to add an EVE character
-              this.router.navigate(['/dashboard']).then();
-              observer.next(false);
-              observer.complete();
-            }
-          } else {
-            // User has to log in
-            this.router.navigate(['/']).then();
-            observer.next(false);
-            observer.complete();
-          }
-        },
-      );
+      this.userService.shakeHands().subscribe(() => {
+        observer.next(false);
+        observer.complete();
+      });
+      // this.userService.loginUser().subscribe(
+      //   (user: User) => {
+      //     if (user) {
+      //       this.globals.user = user;
+      //       // localStorage.setItem('User', JSON.stringify(user));
+      //       // console.log(user);
+      //       // console.log(user.accounts);
+      //       if (!isEmpty(user.characters)) {
+      //         this.globals.selectedCharacter = user.characters[user.selectedAccount];
+      //         this.getCharacter(observer);
+      //       } else {
+      //         // User has to add an EVE character
+      //         this.router.navigate(['/dashboard']).then();
+      //         observer.next(false);
+      //         observer.complete();
+      //       }
+      //     } else {
+      //       // User has to log in
+      //       this.router.navigate(['/']).then();
+      //       observer.next(false);
+      //       observer.complete();
+      //     }
+      //   },
+      // );
     }).share();
   }
 

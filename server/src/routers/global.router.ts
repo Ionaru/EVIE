@@ -25,12 +25,13 @@ export class GlobalRouter extends BaseRouter {
 
     // Log the request
     let id = generateRandomString(5);
-    let log = {
+    requestList.push({
       id: id,
       request: request
-    };
+    });
+
+    // Store the log ID in the response, so we can refer to it later when we send the response
     response['id'] = id;
-    requestList.push(log);
 
     // Continue to the other routes
     next();

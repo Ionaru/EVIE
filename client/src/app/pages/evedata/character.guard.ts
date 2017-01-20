@@ -8,10 +8,15 @@ export class CharacterGuard implements Resolve<boolean> {
   constructor(private globals: Globals) {}
 
   resolve(): Observable<boolean> {
-    if (this.globals.selectedCharacter) {
+    if (this.globals.user) {
       return Observable.of(true);
     } else {
       return this.globals.isLoggedIn;
     }
+    // if (this.globals.selectedCharacter) {
+    //   return Observable.of(true);
+    // } else {
+    //   return this.globals.isLoggedIn;
+    // }
   }
 }
