@@ -31,22 +31,19 @@ export class NavigationComponent implements OnInit {
               private translate: TranslateService,
               private es: EndpointService,
               private userService: UserService,
-              private characterService: CharacterService) { }
+              private characterService: CharacterService) {
+    this.characterService.characterChange.subscribe(character => {
+      if (character) {
+        this.char = character.characterId;
+        this.disable = false;
+      } else {
+        this.char = 1;
+        this.disable = true;
+      }
+    });
+  }
 
   ngOnInit(): void {
-    this.globals.startUpObservable.subscribe(() => {
-      if (this.globals.selectedCharacter) {
-        // this.char = this.globals.selectedCharacter.characterId;
-        this.disable = false;
-      }
-      this.characterService.characterChange.subscribe(character => {
-        if (character) {
-          this.char = character.characterId;
-        } else {
-          this.char = 1;
-        }
-      });
-    });
     this.countup = new CountUp('eve-players', 0, 0);
     this.syncClock();
   }
