@@ -61,14 +61,16 @@ export class JournalService {
 
   private static processJournalData(jsonData: Object, refTypes: Array<Object>): Array<Object> {
     let journalData = [];
-    for (let row of jsonData['eveapi']['result']['rowset']['row']) {
-      journalData.push({
-        date: row['@attributes']['date'],
-        refTypeName: refTypes[row['@attributes']['refTypeID']]['@attributes']['refTypeName'],
-        ownerName1: row['@attributes']['ownerName1'],
-        amount: formatISK(row['@attributes']['amount']),
-        balance: formatISK(row['@attributes']['balance']),
-      });
+    if (jsonData['eveapi']['result']['rowset']['row']) {
+      for (let row of jsonData['eveapi']['result']['rowset']['row']) {
+        journalData.push({
+          date: row['@attributes']['date'],
+          refTypeName: refTypes[row['@attributes']['refTypeID']]['@attributes']['refTypeName'],
+          ownerName1: row['@attributes']['ownerName1'],
+          amount: formatISK(row['@attributes']['amount']),
+          balance: formatISK(row['@attributes']['balance']),
+        });
+      }
     }
     return journalData;
   }

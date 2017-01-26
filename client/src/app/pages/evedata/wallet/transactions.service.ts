@@ -41,28 +41,30 @@ export class TransactionService {
 
   private static processTransactionData(jsonData: Object): Array<Object> {
     let transactionData = [];
-    for (let row of jsonData['eveapi']['result']['rowset']['row']) {
-      let date = row['@attributes']['transactionDateTime'];
-      let ppi = row['@attributes']['price'];
-      let quantity = row['@attributes']['quantity'];
-      let typeName = row['@attributes']['typeName'];
-      let typeID = row['@attributes']['typeID'];
-      let clientName = row['@attributes']['clientName'];
-      let clientID = row['@attributes']['clientID'];
-      let transactionType = row['@attributes']['transactionType'];
-      let transactionID = row['@attributes']['transactionID'];
-      transactionData.push({
-        date: date,
-        price: formatISK(ppi * quantity),
-        quantity: quantity,
-        transactionType: transactionType,
-        transactionID: transactionID,
-        ppi: formatISK(ppi),
-        typeName: typeName,
-        typeID: typeID,
-        clientName: clientName,
-        clientID: clientID,
-      });
+    if (jsonData['eveapi']['result']['rowset']['row']) {
+      for (let row of jsonData['eveapi']['result']['rowset']['row']) {
+        let date = row['@attributes']['transactionDateTime'];
+        let ppi = row['@attributes']['price'];
+        let quantity = row['@attributes']['quantity'];
+        let typeName = row['@attributes']['typeName'];
+        let typeID = row['@attributes']['typeID'];
+        let clientName = row['@attributes']['clientName'];
+        let clientID = row['@attributes']['clientID'];
+        let transactionType = row['@attributes']['transactionType'];
+        let transactionID = row['@attributes']['transactionID'];
+        transactionData.push({
+          date: date,
+          price: formatISK(ppi * quantity),
+          quantity: quantity,
+          transactionType: transactionType,
+          transactionID: transactionID,
+          ppi: formatISK(ppi),
+          typeName: typeName,
+          typeID: typeID,
+          clientName: clientName,
+          clientID: clientID,
+        });
+      }
     }
     return transactionData;
   }
