@@ -21,7 +21,7 @@ export class NavigationComponent implements OnInit {
   status: string = 'Offline';
   time: Object;
   char: number = 1;
-  players: number;
+  players: number = 0;
   countup: CountUp;
   disable: boolean = true;
 
@@ -76,9 +76,13 @@ export class NavigationComponent implements OnInit {
     this.minutes = time['minutes'];
     this.status = time['status'];
     this.time = time;
-    setTimeout(() => {
+    if (this.globals.startUp) {
       this.countup.update(time['players']);
-    }, 400); // Compensate for pre-bootstrap-container fadeout
+    } else {
+      this.globals.startUpObservable.subscribe(() => {
+        this.countup.update(time['players']);
+      })
+    }
   }
 
   checkAccess(): boolean {
