@@ -24,6 +24,14 @@ export class APIRouter extends BaseRouter {
 
   // TODO: Route for resetting a password
 
+  /**
+   * Request that will return the user session, this is used when the client first loads.
+   * path: /api/handshake
+   * method: GET
+   * returns:
+   *  200 LoggedIn: The client has an active session
+   *  200 NotLoggedIn: No client session was found
+   */
   private static async doHandShake(request: Request, response: Response): Promise<void> {
     if (request.session['user'].id) {
       let user: UserInstance = await User.findOne({
