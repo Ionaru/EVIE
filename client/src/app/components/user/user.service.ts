@@ -52,6 +52,7 @@ export class UserService {
   storeUser(data: UserApiData): User {
     let user = new User(data);
     this.globals.user = user;
+    console.log('storeUser');
     for (let characterData of data.characters) {
       user.characters.push(this.CharacterService.registerCharacter(characterData));
     }

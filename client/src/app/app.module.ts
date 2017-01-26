@@ -19,6 +19,7 @@ import { WalletComponent } from './pages/evedata/wallet/wallet.component';
 import { CharacterGuard } from './pages/evedata/character.guard';
 import { Globals } from './globals';
 import { AuthGuard } from './auth.guard';
+import { AppGuard } from './app.guard';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,7 @@ import { AuthGuard } from './auth.guard';
   ],
   providers: [
     {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
-    CharacterGuard, Globals, AuthGuard,
+    CharacterGuard, Globals, AuthGuard, AppGuard
   ],
   bootstrap: [AppComponent]
 })

@@ -7,8 +7,6 @@ import { Globals } from './globals';
 import { EndpointService } from './components/endpoint/endpoint.service';
 import { Observable, Observer } from 'rxjs';
 import { Router } from '@angular/router';
-import { User } from './components/user/user';
-import { isEmpty } from './components/helperfunctions.component';
 import * as socketIo from 'socket.io-client';
 
 @Component({
@@ -20,9 +18,9 @@ import * as socketIo from 'socket.io-client';
 export class AppComponent {
   static translate: TranslateService;
 
-  version: string = '2.0.0-ALPHA-1';
-  char: number;
-  players: number;
+  appVersion: string = '2.0.0-ALPHA-1';
+  XMLVersion: string;
+  ESIVersion: string;
 
   constructor(private translate: TranslateService,
               private userService: UserService,
@@ -45,8 +43,9 @@ export class AppComponent {
     translate.use(defaultLang);
     AppComponent.translate = translate;
 
-    this.startUp();
-    globals.isLoggedIn.subscribe(() => {
+    this.boot();
+
+    globals.startUpObservable.subscribe(() => {
       this.globals.socket = socketIo('http://localhost:3000', {
         reconnection: true
       });
@@ -57,59 +56,24 @@ export class AppComponent {
     });
   }
 
-  private startUp(): void {
+  private boot(): void {
 
     this.endpointService.getXMLAPI().subscribe(() => {
-      let XMLVersion = this.endpointService.XML['eveapi']['@attributes']['version'];
-      this.version += ' / XML v' + XMLVersion;
+      this.XMLVersion = this.endpointService.XML['eveapi']['@attributes']['version'];
     });
 
     this.endpointService.getESIAPI().subscribe((data) => {
-      let ESIVersion = data['info']['version'];
-      this.version += ' / ESI ' + ESIVersion;
+      this.ESIVersion = data['info']['version'];
     });
 
-    this.globals.isLoggedIn = Observable.create((observer: Observer<boolean>) => {
+    this.globals.startUpObservable = Observable.create((observer: Observer<boolean>) => {
       this.userService.shakeHands().subscribe(() => {
-        observer.next(false);
+        console.log('shakeHands');
+        this.globals.startUp = true;
+        observer.next(true);
         observer.complete();
       });
-      // this.userService.loginUser().subscribe(
-      //   (user: User) => {
-      //     if (user) {
-      //       this.globals.user = user;
-      //       // localStorage.setItem('User', JSON.stringify(user));
-      //       // console.log(user);
-      //       // console.log(user.accounts);
-      //       if (!isEmpty(user.characters)) {
-      //         this.globals.selectedCharacter = user.characters[user.selectedAccount];
-      //         this.getCharacter(observer);
-      //       } else {
-      //         // User has to add an EVE character
-      //         this.router.navigate(['/dashboard']).then();
-      //         observer.next(false);
-      //         observer.complete();
-      //       }
-      //     } else {
-      //       // User has to log in
-      //       this.router.navigate(['/']).then();
-      //       observer.next(false);
-      //       observer.complete();
-      //     }
-      //   },
-      // );
     }).share();
-  }
-
-  private getCharacter(observer: Observer<boolean>): void {
-    // this.characterService.getCharacterData(this.globals.selectedCharacter).subscribe(
-    //   () => {
-    //     observer.next(true);
-    //     observer.complete();
-    //   }
-    // );
-    observer.next(true);
-    observer.complete();
   }
 }
 

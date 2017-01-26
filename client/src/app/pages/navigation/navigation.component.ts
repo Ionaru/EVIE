@@ -6,6 +6,7 @@ import { EndpointService } from '../../components/endpoint/endpoint.service';
 import { CountUp } from '../../components/count-up';
 import { UserService } from '../../components/user/user.service';
 import { Router } from '@angular/router';
+import { CharacterService } from '../../components/character/character.service';
 
 @Component({
   selector: 'app-navigation',
@@ -29,14 +30,22 @@ export class NavigationComponent implements OnInit {
               private globals: Globals,
               private translate: TranslateService,
               private es: EndpointService,
-              private userService: UserService) { }
+              private userService: UserService,
+              private characterService: CharacterService) { }
 
   ngOnInit(): void {
-    this.globals.isLoggedIn.subscribe(() => {
+    this.globals.startUpObservable.subscribe(() => {
       if (this.globals.selectedCharacter) {
-        this.char = this.globals.selectedCharacter.characterId;
+        // this.char = this.globals.selectedCharacter.characterId;
         this.disable = false;
       }
+      this.characterService.characterChange.subscribe(character => {
+        if (character) {
+          this.char = character.characterId;
+        } else {
+          this.char = 1;
+        }
+      });
     });
     this.countup = new CountUp('eve-players', 0, 0);
     this.syncClock();

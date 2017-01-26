@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { Character } from './character';
 import { Observable } from 'rxjs';
 import { EndpointService } from '../endpoint/endpoint.service';
@@ -33,7 +33,9 @@ export class CharacterService {
   }
 
   registerCharacter(data: CharacterApiData): Character {
+
     let character = new Character(data);
+    this.setActiveCharacter(character);
 
     let tokenExpiryTime = character.tokenExpiry.getTime();
     if (tokenExpiryTime <= (Date.now() + tokenRefreshInterval)) {
@@ -66,6 +68,17 @@ export class CharacterService {
         character.updateAuth(response.data);
       }
     });
+  }
+
+  characterChange: EventEmitter<Character> = new EventEmitter<Character>();
+
+  setActiveCharacter(character: Character): void {
+    this.globals.selectedCharacter = character;
+    this.characterChange.next(character);
+  }
+
+  activeCharacter(): Observable<Character> {
+    return Observable.of(this.globals.selectedCharacter);
   }
 
   dumpCharacter(character: Character): void {

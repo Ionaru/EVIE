@@ -5,6 +5,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { WalletComponent } from './pages/evedata/wallet/wallet.component';
 import { CharacterGuard } from './pages/evedata/character.guard';
 import { AuthGuard } from './auth.guard';
+import { AppGuard } from './app.guard';
 // import { LoggedInGuard } from './pages/logged-in.guard';
 // import { CharacterGuard } from './pages/evedata/character.guard';
 // import { IndustryComponent } from './pages/evedata/industry/industry.component';
@@ -18,15 +19,15 @@ import { AuthGuard } from './auth.guard';
 // import { ApikeysComponent } from './pages/apikeys/apikeys.component';
 
 const routes: Routes = [
-  {path: '', component: IndexComponent},
-  {path: 'dashboard', component: DashboardComponent, resolve: [CharacterGuard], canActivate: [AuthGuard]},
+  {path: '', component: IndexComponent, resolve: [AppGuard]},
+  {path: 'dashboard', component: DashboardComponent, resolve: [AppGuard], canActivate: [AuthGuard]},
   // {path: 'api', component: ApikeysComponent},
   // {path: 'charactersheet', component: CharactersheetComponent, canActivate: [CharacterGuard]},
   // {path: 'skills', component: SkillsComponent, canActivate: [CharacterGuard]},
   // {path: 'contacts', component: ContactsComponent, canActivate: [CharacterGuard]},
   // {path: 'mail', component: MailComponent, canActivate: [CharacterGuard]},
   // {path: 'market', component: MarketComponent, canActivate: [CharacterGuard]},
-  {path: 'wallet', component: WalletComponent, resolve: [CharacterGuard], canActivate: [AuthGuard]},
+  {path: 'wallet', component: WalletComponent, resolve: [AppGuard, CharacterGuard], canActivate: [AuthGuard]},
   // {path: 'assets', component: AssetsComponent, canActivate: [CharacterGuard]},
   // {path: 'planets', component: PlanetsComponent, canActivate: [CharacterGuard]},
   // {path: 'industry', component: IndustryComponent, canActivate: [CharacterGuard]},

@@ -5,6 +5,22 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class Globals {
+  get startUpObservable(): Observable<boolean> {
+    return this._startUpObservable;
+  }
+
+  set startUpObservable(value: Observable<boolean>) {
+    this._startUpObservable = value;
+  }
+
+  get startUp(): boolean {
+    return this._startUp;
+  }
+
+  set startUp(value: boolean) {
+    this._startUp = value;
+  }
+
   get loggedIn(): boolean {
     return this._loggedIn;
   }
@@ -29,14 +45,6 @@ export class Globals {
     this._user = value;
   }
 
-  get isLoggedIn(): Observable<boolean> {
-    return this._isLoggedIn;
-  }
-
-  set isLoggedIn(value: Observable<boolean>) {
-    this._isLoggedIn = value;
-  }
-
   get DOMParser(): DOMParser {
     return this._DOMParser;
   }
@@ -51,8 +59,9 @@ export class Globals {
 
   private _selectedCharacter: Character;
   private _DOMParser: DOMParser = new DOMParser();
-  private _isLoggedIn: Observable<boolean>;
-  private _loggedIn: boolean;
+  private _loggedIn: boolean = false;
   private _user: User;
   private _socket: SocketIOClient.Socket;
+  private _startUp: boolean = false;
+  private _startUpObservable: Observable<boolean>;
 }

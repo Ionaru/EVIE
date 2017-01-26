@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { UserService } from '../../components/user/user.service';
 import { User } from '../../components/user/user';
@@ -10,18 +10,25 @@ import { Router } from '@angular/router';
   templateUrl: 'index.component.html',
   styleUrls: ['index.component.scss']
 })
-export class IndexComponent {
+export class IndexComponent implements OnInit {
 
-  loggedIn: boolean = this.globals.loggedIn;
+  loggedIn: boolean;
 
   constructor(title: Title, private userService: UserService, private globals: Globals, private router: Router) {
     title.setTitle('EVE Track - Home');
+
     // this.loggedIn = this.globals.loggedIn;
+  }
+
+  ngOnInit(): void {
+    console.log(this.globals.loggedIn);
+    this.loggedIn = this.globals.loggedIn;
   }
 
   login(): void {
     this.userService.loginUser().subscribe(
       (user: User) => {
+        this.loggedIn = true;
         if (user) {
           this.globals.loggedIn = true;
           // this.loggedIn = true;
@@ -41,6 +48,7 @@ export class IndexComponent {
   }
 
   logout(): void {
+    this.loggedIn = false;
     this.userService.logoutUser();
   }
 }
