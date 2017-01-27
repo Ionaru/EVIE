@@ -22,7 +22,7 @@ export class NavigationComponent implements OnInit {
   time: Object;
   char: number = 1;
   players: number = 0;
-  countup: CountUp;
+  playersCountup: CountUp;
   disable: boolean = true;
 
   constructor(private clock: ClockService,
@@ -44,7 +44,7 @@ export class NavigationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.countup = new CountUp('eve-players', 0, 0);
+    this.playersCountup = new CountUp('eve-players', 0, 0);
     this.syncClock();
   }
 
@@ -71,16 +71,16 @@ export class NavigationComponent implements OnInit {
   }
 
   private updateClock(time: Object): void {
-    this.countup.reset();
+    this.playersCountup.reset();
     this.hours = time['hours'];
     this.minutes = time['minutes'];
     this.status = time['status'];
     this.time = time;
     if (this.globals.startUp) {
-      this.countup.update(time['players']);
+      this.playersCountup.update(time['players']);
     } else {
       this.globals.startUpObservable.subscribe(() => {
-        this.countup.update(time['players']);
+        this.playersCountup.update(time['players']);
       })
     }
   }
