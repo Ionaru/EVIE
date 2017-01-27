@@ -20,6 +20,7 @@ import { CharacterGuard } from './pages/evedata/character.guard';
 import { Globals } from './globals';
 import { AuthGuard } from './auth.guard';
 import { AppGuard } from './app.guard';
+import { Angular2FontawesomeModule } from 'angular2-fontawesome';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { AppGuard } from './app.guard';
       deps: [Http]
     }),
     router,
+    Angular2FontawesomeModule
   ],
   providers: [
     {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
