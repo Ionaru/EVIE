@@ -5,7 +5,7 @@
   <a routerLink="dashboard" routerLinkActive="selected" class="navbar-item">{{ 'PAGES.DASHBOARD' | translate}}</a>
   <a class="navbar-item center disabled">
     EVE <span class="{{ status }}">{{ status }}</span> -
-    <span id="eve-players">{{ players }}</span> {{ 'PAGES.NAVIGATION.PLAYERS' | translate | lowercase}}
+    <span id="eve-players"></span> {{ 'PAGES.NAVIGATION.PLAYERS' | translate | lowercase}}
   </a>
   <a *ngIf="checkAccess()" (click)="logout()" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>
   <!--<a class="navbar-item right" (click)="changeLanguage('nl')">{{ translate.currentLang | uppercase }}</a>-->

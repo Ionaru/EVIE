@@ -1,6 +1,6 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Character } from './character';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { EndpointService } from '../endpoint/endpoint.service';
 import { Globals } from '../../globals';
 import { Headers, Response, Http } from '@angular/http';
@@ -10,6 +10,9 @@ const tokenRefreshInterval = 15 * 60 * 1000;
 
 @Injectable()
 export class CharacterService {
+
+  characterChangeSource: Subject<Character> = new Subject<Character>();
+  characterChange: Observable<Character> = this.characterChangeSource.asObservable();
 
   constructor(private es: EndpointService, private globals: Globals, private http: Http) { }
 
@@ -70,11 +73,9 @@ export class CharacterService {
     });
   }
 
-  characterChange: EventEmitter<Character> = new EventEmitter<Character>();
-
   setActiveCharacter(character: Character): void {
     this.globals.selectedCharacter = character;
-    this.characterChange.next(character);
+    this.characterChangeSource.next(character);
   }
 
   activeCharacter(): Observable<Character> {

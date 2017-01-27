@@ -19,8 +19,8 @@ export class AppComponent {
   static translate: TranslateService;
 
   appVersion: string = '2.0.0-ALPHA-1';
-  XMLVersion: string;
-  ESIVersion: string;
+  XMLVersion: string = '?';
+  ESIVersion: string = '?';
 
   constructor(private translate: TranslateService,
               private userService: UserService,
