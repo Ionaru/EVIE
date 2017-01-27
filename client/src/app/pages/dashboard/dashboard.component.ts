@@ -4,24 +4,37 @@ import { Title } from '@angular/platform-browser';
 import { Globals } from '../../globals';
 import { CharacterService } from '../../components/character/character.service';
 import { Character } from '../../components/character/character';
+import { ShipService } from './ship.service';
 
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss'],
-  providers: [CharacterService]
+  providers: [CharacterService, ShipService]
 })
 export class DashboardComponent implements OnInit {
   result: String;
   username: string;
+  currentShip: {
+    name;
+    ship;
+  } = {
+    name: 'test',
+    ship: 'test'
+  };
 
-  constructor(private title: Title, private globals: Globals, private characterService: CharacterService) {
-  }
+  constructor(private title: Title,
+              private globals: Globals,
+              private characterService: CharacterService,
+              private shipService: ShipService) { }
 
   ngOnInit(): void {
     this.title.setTitle('EVE Track - Dashboard');
-    if (this.globals.user) {
-      this.username = this.globals.user.username;
-    }
+    this.username = this.globals.user.username;
+    this.shipService.getCurrentShip().subscribe((da) => {
+      da.subscribe((da2) => {
+        this.currentShip = da2;
+      });
+    });
   }
 
   startSSO(): void {

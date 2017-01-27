@@ -11,6 +11,8 @@ import { sockets } from '../bin/www';
 const scopes = [
   'characterWalletRead',
   'characterAccountRead',
+  'esi-location.read_location.v1',
+  'esi-location.read_ship_type.v1',
 ];
 const oauthHost = 'login.eveonline.com';
 const oauthPath = '/oauth/authorize?';
