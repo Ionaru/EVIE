@@ -47,7 +47,6 @@ export class APIRouter extends BaseRouter {
       user.timesLogin++;
       user.lastLogin = new Date();
       await user.save();
-      logger.info(user.username + ' logged in.');
       let userData = {
         pid: user.pid,
         username: user.username,
