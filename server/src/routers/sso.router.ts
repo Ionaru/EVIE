@@ -2,7 +2,7 @@ import https = require('https');
 
 import { Response, Request } from 'express';
 import { logger } from '../controllers/logger.service';
-import { BaseRouter, sendResponse } from './base.router';
+import { BaseRouter, sendResponse, sendTextResponse } from './base.router';
 import { ssoConfig } from '../controllers/config.service';
 import { Character, CharacterInstance } from '../models/character/character';
 import { generateUniquePID, generateRandomString } from '../controllers/pid.service';
@@ -231,7 +231,7 @@ export class SSORouter extends BaseRouter {
                 message: 'SSOSuccessful',
                 data: characterResponse,
               });
-              sendResponse(response, 200, 'AuthFinished');
+              sendTextResponse(response, 200, '<h2>You may now close this window.</h2>');
             });
             characterIdResponse.on('error', (error) => {
               console.log(error);

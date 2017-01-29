@@ -7,7 +7,7 @@
     EVE <span class="{{ status }}">{{ status }}</span> -
     <span id="eve-players"></span> {{ 'PAGES.NAVIGATION.PLAYERS' | translate | lowercase}}
   </a>
-  <a *ngIf="checkAccess()" (click)="logout()" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>
+  <a *ngIf="isLoggedIn" (click)="logout()" class="navbar-item right">{{ 'PAGES.LOGOUT' | translate}}</a>
   <!--<a class="navbar-item right" (click)="changeLanguage('nl')">{{ translate.currentLang | uppercase }}</a>-->
 </nav>
 <!--<nav class="navbar-side" *ngIf="globals.isLoggedIn">-->

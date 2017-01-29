@@ -22,7 +22,10 @@ export class Character {
   planets: Array<Object> = [];
   mails: Array<Object> = [];
   location: string;
-  currentShip: string;
+  currentShip: {
+    shipName?;
+    shipType?;
+  } = {};
 
   constructor(data: CharacterApiData) {
     this.characterId = data.characterId;

@@ -21,7 +21,6 @@ export class IndexComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.globals.loggedIn);
     this.loggedIn = this.globals.loggedIn;
   }
 

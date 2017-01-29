@@ -14,43 +14,46 @@ import { ShipService } from './ship.service';
 export class DashboardComponent implements OnInit {
   result: String;
   username: string;
-  currentShip: {
-    name;
-    ship;
-  } = {
-    name: 'test',
-    ship: 'test'
-  };
+  characters: Array<Character>;
+  selectedCharacter;
 
   constructor(private title: Title,
               private globals: Globals,
               private characterService: CharacterService,
-              private shipService: ShipService) { }
+              private shipService: ShipService) {
+  }
 
   ngOnInit(): void {
     this.title.setTitle('EVE Track - Dashboard');
     this.username = this.globals.user.username;
-    this.shipService.getCurrentShip().subscribe((da) => {
-      da.subscribe((da2) => {
-        this.currentShip = da2;
-      });
+    this.displayCharacters();
+    this.globals.characterChangeEvent.subscribe(() => {
+      console.log('Triggered');
+      this.displayCharacters();
     });
   }
 
+  displayCharacters(): void {
+    this.selectedCharacter = this.globals.selectedCharacter;
+    this.characters = this.globals.user.characters;
+    for (let character of this.globals.user.characters){
+      this.shipService.getCurrentShip(character).first().subscribe((data) => {
+        data.first().subscribe((shipData) => {
+          character.currentShip = {
+            shipName: shipData['name'],
+            shipType: shipData['ship']
+          };
+        });
+      });
+    }
+  }
+
+  setActiveCharacter(character: Character): void {
+    this.characterService.setActiveCharacter(character);
+  }
+
   startSSO(): void {
-
-    let w = window.open('/sso/start');
-
-    this.globals.socket.on('SSO_END', (response: SSOSocketResponse): void => {
-      w.close();
-      console.log(response);
-      if (response.state === 'success') {
-        this.globals.selectedCharacter = this.characterService.registerCharacter(response.data);
-        console.log(this.globals.selectedCharacter);
-      }
-    });
-
-    // setTimeout(w.close(), 3000);
+    this.characterService.startAuthProcess();
   }
 
   refreshToken(): void {
@@ -58,14 +61,10 @@ export class DashboardComponent implements OnInit {
   }
 
   reAuth(): void {
-    this.characterService.reAuthenticate(this.globals.selectedCharacter);
+    this.characterService.startAuthProcess(this.globals.selectedCharacter);
   }
 
   dumpCharacter(): void {
     this.characterService.dumpCharacter(this.globals.selectedCharacter);
   };
-
-  getCharacters(): Array<Character> {
-    return this.globals.user.characters;
-  }
 }

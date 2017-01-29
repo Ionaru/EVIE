@@ -7,9 +7,11 @@
 <button (click)="refreshToken()">Refresh Token DEBUG</button>
 <button (click)="reAuth()">Re-authenticate DEBUG</button>
 <button (click)="dumpCharacter()">Dump character DEBUG</button>
-<div *ngFor="let character of getCharacters()">
+<div *ngFor="let character of characters">
+  <button *ngIf="selectedCharacter.characterId !== character.characterId"
+          (click)="setActiveCharacter(character)">Set Active</button>
   <span>{{character.name}}</span>
   <span>{{character.characterId}}</span>
-  <span>{{currentShip.ship}}</span>
-  <span>{{currentShip.name}}</span>
+  <span>{{character.currentShip.shipName}}</span>
+  <span>{{character.currentShip.shipType}}</span>
 </div>

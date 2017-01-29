@@ -24,6 +24,7 @@ export class NavigationComponent implements OnInit {
   players: number;
   playersCountUp: CountUp;
   disable: boolean = true;
+  isLoggedIn = false;
 
   constructor(private clock: ClockService,
               private router: Router,
@@ -32,7 +33,10 @@ export class NavigationComponent implements OnInit {
               private es: EndpointService,
               private userService: UserService,
               private characterService: CharacterService) {
-    this.characterService.characterChange.subscribe(character => {
+  }
+
+  ngOnInit(): void {
+    this.globals.characterChangeEvent.subscribe(character => {
       if (character) {
         this.char = character.characterId;
         this.disable = false;
@@ -41,9 +45,10 @@ export class NavigationComponent implements OnInit {
         this.disable = true;
       }
     });
-  }
 
-  ngOnInit(): void {
+    this.globals.userChangeEvent.subscribe((user) => {
+      this.isLoggedIn = !!user;
+    });
     this.playersCountUp = new CountUp('eve-players', 0, 0);
     this.syncClock();
   }

@@ -56,6 +56,15 @@ export function sendResponse(response: Response, statusCode: number, message: st
   response.json(responseData);
 }
 
+export function sendTextResponse(response: Response, statusCode: number, message: string): void {
+  let request = requestList.filter(_ => _.id === response['id'])[0].request;
+
+  logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${statusCode}`);
+
+  response.status(statusCode);
+  response.send(message);
+}
+
 export function getIp(request: Request): string {
   return request.headers['x-forwarded-for'] ||
     request.connection.remoteAddress ||

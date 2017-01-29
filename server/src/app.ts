@@ -1,7 +1,6 @@
 // NPM imports
 import express = require('express');
 import bodyParser = require('body-parser');
-import cookieParser = require('cookie-parser');
 import path = require('path');
 import helmet = require('helmet');
 import es = require('express-session');
@@ -44,8 +43,6 @@ export class App {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
 
-    app.use(cookieParser());
-
     // Connect to database
     db.connect();
 
@@ -61,7 +58,7 @@ export class App {
       resave: true,
       saveUninitialized: true,
       cookie: {
-        secure: mainConfig.get('secure_only_cookies'),
+        secure: mainConfig.get('secure_only_cookies') || false,
         httpOnly: false,
         maxAge: 6 * 60 * 60 * 1000 // 6 hours
       },

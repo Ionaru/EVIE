@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Character } from './character';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { EndpointService } from '../endpoint/endpoint.service';
 import { Globals } from '../../globals';
 import { Headers, Response, Http } from '@angular/http';
@@ -10,9 +10,6 @@ const tokenRefreshInterval = 15 * 60 * 1000;
 
 @Injectable()
 export class CharacterService {
-
-  characterChangeSource: Subject<Character> = new Subject<Character>();
-  characterChange: Observable<Character> = this.characterChangeSource.asObservable();
 
   constructor(private es: EndpointService, private globals: Globals, private http: Http) { }
 
@@ -38,6 +35,7 @@ export class CharacterService {
   registerCharacter(data: CharacterApiData): Character {
 
     let character = new Character(data);
+    this.globals.user.characters.push(character);
     this.setActiveCharacter(character);
 
     let tokenExpiryTime = character.tokenExpiry.getTime();
@@ -62,20 +60,29 @@ export class CharacterService {
     });
   }
 
-  reAuthenticate(character: Character): void {
-    let w = window.open('/sso/start?characterPid=' + character.pid);
+  startAuthProcess(character?: Character): void {
+    let url = '/sso/start';
+    if (character) {
+      url += '?characterPid=' + character.pid;
+    }
+
+    let w = window.open(url, '_blank', 'width=600,height=600');
 
     this.globals.socket.on('SSO_END', (response: SSOSocketResponse): void => {
       w.close();
       if (response.state === 'success') {
-        character.updateAuth(response.data);
+        if(character) {
+          character.updateAuth(response.data);
+        } else {
+          this.registerCharacter(response.data);
+        }
       }
     });
   }
 
   setActiveCharacter(character: Character): void {
     this.globals.selectedCharacter = character;
-    this.characterChangeSource.next(character);
+    this.globals.characterChangeEvent.next(character);
   }
 
   activeCharacter(): Observable<Character> {

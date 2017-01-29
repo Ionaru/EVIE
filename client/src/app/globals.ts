@@ -1,10 +1,18 @@
 import { Injectable } from '@angular/core';
 import { User } from './components/user/user';
 import { Character } from './components/character/character';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class Globals {
+  get userChangeEvent(): Subject<User> {
+    return this._userChangeEvent;
+  }
+
+  get characterChangeEvent(): Subject<Character> {
+    return this._characterChangeEvent;
+  }
+
   get startUpObservable(): Observable<boolean> {
     return this._startUpObservable;
   }
@@ -64,4 +72,6 @@ export class Globals {
   private _socket: SocketIOClient.Socket;
   private _startUp: boolean = false;
   private _startUpObservable: Observable<boolean>;
+  private _characterChangeEvent: Subject<Character> = new Subject<Character>();
+  private _userChangeEvent: Subject<User> = new Subject<User>();
 }
