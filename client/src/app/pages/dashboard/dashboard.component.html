@@ -2,14 +2,17 @@
 
 <p>Please add or choose a character below.</p>
 <hr>
-<span>CHARACTER LIST HERE</span>
-<button (click)="startSSO()">Connect Websocket DEBUG</button>
+
+<button (click)="startSSO()">Add character DEBUG</button>
 <button (click)="refreshToken()">Refresh Token DEBUG</button>
 <button (click)="reAuth()">Re-authenticate DEBUG</button>
 <button (click)="dumpCharacter()">Dump character DEBUG</button>
+<br>
+<span>CHARACTER LIST:</span>
 <div *ngFor="let character of characters">
-  <button *ngIf="selectedCharacter.characterId !== character.characterId"
+  <button *ngIf="!isActive(character)"
           (click)="setActiveCharacter(character)">Set Active</button>
+  <button (click)="deleteCharacter(character)">Delete</button>
   <span>{{character.name}}</span>
   <span>{{character.characterId}}</span>
   <span>{{character.currentShip.shipName}}</span>

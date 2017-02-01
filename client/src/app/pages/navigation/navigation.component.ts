@@ -2,11 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ClockService } from './clock.service';
 import { Globals } from '../../globals';
 import { TranslateService } from 'ng2-translate';
-import { EndpointService } from '../../components/endpoint/endpoint.service';
 import { CountUp } from '../../components/count-up';
 import { UserService } from '../../components/user/user.service';
-import { Router } from '@angular/router';
-import { CharacterService } from '../../components/character/character.service';
 
 @Component({
   selector: 'app-navigation',
@@ -24,18 +21,12 @@ export class NavigationComponent implements OnInit {
   players: number;
   playersCountUp: CountUp;
   disable: boolean = true;
-  isLoggedIn = false;
+  isLoggedIn: boolean = false;
 
   constructor(private clock: ClockService,
-              private router: Router,
               private globals: Globals,
               private translate: TranslateService,
-              private es: EndpointService,
-              private userService: UserService,
-              private characterService: CharacterService) {
-  }
-
-  ngOnInit(): void {
+              private userService: UserService) {
     this.globals.characterChangeEvent.subscribe(character => {
       if (character) {
         this.char = character.characterId;
@@ -49,6 +40,9 @@ export class NavigationComponent implements OnInit {
     this.globals.userChangeEvent.subscribe((user) => {
       this.isLoggedIn = !!user;
     });
+  }
+
+  ngOnInit(): void {
     this.playersCountUp = new CountUp('eve-players', 0, 0);
     this.syncClock();
   }

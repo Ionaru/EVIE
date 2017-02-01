@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
-import { Globals } from '../../globals';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
 import { Observable } from 'rxjs';
 import { Character } from '../../components/character/character';
 
 @Injectable()
 export class ShipService {
-  constructor(private http: Http) {
+  constructor(private http: Http, private endpointService: EndpointService) {
   }
 
   getCurrentShip(character: Character, expired?: boolean): Observable<any> {
@@ -21,14 +20,13 @@ export class ShipService {
     //     return Observable.of(Observable.of(jsonData));
     //   }
     // } else {
-    let url = `https://esi.tech.ccp.is/latest/characters/${character.characterId}/ship/`;
-    url += '?datasource=tranquility';
+    let url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'ship');
     let headers = new Headers();
     headers.append('Authorization', 'Bearer ' + character.accessToken);
     return this.http.get(url, {headers: headers}).map((response) => {
       let rep = JSON.parse(response['_body']);
-      let url2 = 'https://esi.tech.ccp.is/latest/universe/names/';
-      return this.http.post(url2, {'ids': [rep['ship_type_id']]}, {headers: headers}).map((response2) => {
+      let url2 = this.endpointService.constructESIUrl('v2/universe/names');
+      return this.http.post(url2, [rep['ship_type_id']], {headers: headers}).map((response2) => {
         let repJSON = JSON.parse(response2['_body']);
         let jsonData = {
           ship: rep['ship_name'],

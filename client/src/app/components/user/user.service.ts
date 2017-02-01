@@ -4,6 +4,7 @@ import { User } from './user';
 import { Observable } from 'rxjs';
 import { CharacterService } from '../character/character.service';
 import { Globals } from '../../globals';
+import { isEmpty } from '../helperfunctions.component';
 // import { Globals } from '../../globals';
 
 @Injectable()
@@ -39,7 +40,6 @@ export class UserService {
 
   logoutUser(): void {
     let url = 'api/logout';
-    console.log('Logout!');
     this.http.post(url, {}).subscribe(() => {
       window.location.reload();
     });
@@ -53,9 +53,13 @@ export class UserService {
     let user = new User(data);
     this.globals.userChangeEvent.next(user);
     this.globals.user = user;
-    console.log('storeUser');
     for (let characterData of data.characters) {
-      this.CharacterService.registerCharacter(characterData);
+      if (characterData.scopes) {
+        this.CharacterService.registerCharacter(characterData);
+      }
+    }
+    if (!isEmpty(user.characters) && !this.globals.selectedCharacter) {
+      this.CharacterService.setActiveCharacter(user.characters[0]);
     }
     return user;
   }

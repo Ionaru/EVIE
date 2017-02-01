@@ -1,3 +1,5 @@
+import Timer = NodeJS.Timer;
+
 export class Character {
   characterId: number;
   pid: string;
@@ -26,6 +28,7 @@ export class Character {
     shipName?;
     shipType?;
   } = {};
+  refreshTimer: Timer;
 
   constructor(data: CharacterApiData) {
     this.characterId = data.characterId;

@@ -15,28 +15,29 @@ export class DashboardComponent implements OnInit {
   result: String;
   username: string;
   characters: Array<Character>;
-  selectedCharacter;
+  selectedCharacter: Character;
 
   constructor(private title: Title,
               private globals: Globals,
               private characterService: CharacterService,
               private shipService: ShipService) {
+    this.globals.characterChangeEvent.subscribe(() => {
+      if (this.globals.startUp) {
+        this.displayCharacters();
+      }
+    });
   }
 
   ngOnInit(): void {
     this.title.setTitle('EVE Track - Dashboard');
     this.username = this.globals.user.username;
     this.displayCharacters();
-    this.globals.characterChangeEvent.subscribe(() => {
-      console.log('Triggered');
-      this.displayCharacters();
-    });
   }
 
   displayCharacters(): void {
     this.selectedCharacter = this.globals.selectedCharacter;
     this.characters = this.globals.user.characters;
-    for (let character of this.globals.user.characters){
+    for (let character of this.globals.user.characters) {
       this.shipService.getCurrentShip(character).first().subscribe((data) => {
         data.first().subscribe((shipData) => {
           character.currentShip = {
@@ -46,6 +47,13 @@ export class DashboardComponent implements OnInit {
         });
       });
     }
+  }
+
+  isActive(character: Character): boolean {
+    if (!this.selectedCharacter) {
+      return false;
+    }
+    return this.selectedCharacter.pid === character.pid;
   }
 
   setActiveCharacter(character: Character): void {
@@ -67,4 +75,8 @@ export class DashboardComponent implements OnInit {
   dumpCharacter(): void {
     this.characterService.dumpCharacter(this.globals.selectedCharacter);
   };
+
+  deleteCharacter(character: Character): void {
+    this.characterService.deleteCharacter(character);
+  }
 }

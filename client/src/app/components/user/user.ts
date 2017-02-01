@@ -5,7 +5,6 @@ export class User {
   username: string;
   email: string;
   characters: Array<Character> = [];
-  selectedAccount: number = 0;
 
   constructor(data: UserApiData) {
     this.pid = data.pid;

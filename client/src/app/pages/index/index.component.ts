@@ -16,8 +16,6 @@ export class IndexComponent implements OnInit {
 
   constructor(title: Title, private userService: UserService, private globals: Globals, private router: Router) {
     title.setTitle('EVE Track - Home');
-
-    // this.loggedIn = this.globals.loggedIn;
   }
 
   ngOnInit(): void {
@@ -30,24 +28,12 @@ export class IndexComponent implements OnInit {
         this.loggedIn = true;
         if (user) {
           this.globals.loggedIn = true;
-          // this.loggedIn = true;
           this.globals.user = user;
-          // localStorage.setItem('User', JSON.stringify(user));
-          // console.log(user);
-          // console.log(user.accounts);
-          if (!isEmpty(user.characters)) {
-            this.globals.selectedCharacter = user.characters[user.selectedAccount];
-          } else {
-            // User has to add an EVE character
+          if (isEmpty(user.characters)) {
             this.router.navigate(['/dashboard']).then();
           }
         }
       },
     );
-  }
-
-  logout(): void {
-    this.loggedIn = false;
-    this.userService.logoutUser();
   }
 }

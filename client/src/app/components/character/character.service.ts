@@ -3,8 +3,7 @@ import { Character } from './character';
 import { Observable } from 'rxjs';
 import { EndpointService } from '../endpoint/endpoint.service';
 import { Globals } from '../../globals';
-import { Headers, Response, Http } from '@angular/http';
-import { processXML } from '../helperfunctions.component';
+import { Http } from '@angular/http';
 
 const tokenRefreshInterval = 15 * 60 * 1000;
 
@@ -13,38 +12,38 @@ export class CharacterService {
 
   constructor(private es: EndpointService, private globals: Globals, private http: Http) { }
 
-  public getCharacterData(character: Character): Observable<Character> {
-    let url: string = this.es.constructXMLUrl(this.es.getEndpoint('CharacterSheet'), [
-      'characterID=' + ''
-    ]);
-    let headers: Headers = new Headers();
-    headers.append('Accept', 'application/xml');
-    return this.http.get(url, {
-      headers: headers
-    }).map((res: Response) => {
-      let data: Object = processXML(res)['eveapi'];
-      console.log(data);
-      character.corporation = data['result']['corporationName']['#text'];
-      character.corporation_id = data['result']['corporationID']['#text'];
-      character.alliance = data['result']['allianceName']['#text'];
-      character.alliance_id = data['result']['allianceID']['#text'];
-      return character;
-    });
-  }
+  // public getCharacterData(character: Character): Observable<Character> {
+  //   let url: string = this.es.constructXMLUrl(this.es.getEndpoint('CharacterSheet'), [
+  //     'characterID=' + ''
+  //   ]);
+  //   let headers: Headers = new Headers();
+  //   headers.append('Accept', 'application/xml');
+  //   return this.http.get(url, {
+  //     headers: headers
+  //   }).map((res: Response) => {
+  //     let data: Object = processXML(res)['eveapi'];
+  //     character.corporation = data['result']['corporationName']['#text'];
+  //     character.corporation_id = data['result']['corporationID']['#text'];
+  //     character.alliance = data['result']['allianceName']['#text'];
+  //     character.alliance_id = data['result']['allianceID']['#text'];
+  //     return character;
+  //   });
+  // }
 
   registerCharacter(data: CharacterApiData): Character {
 
     let character = new Character(data);
     this.globals.user.characters.push(character);
-    this.setActiveCharacter(character);
-
+    if (data.isActive) {
+      this.setActiveCharacter(character, true);
+    }
     let tokenExpiryTime = character.tokenExpiry.getTime();
     if (tokenExpiryTime <= (Date.now() + tokenRefreshInterval)) {
-      this.refreshToken(character).subscribe();
+      this.refreshToken(character).first().subscribe();
     }
 
-    setInterval(() => {
-      this.refreshToken(character).subscribe();
+    character.refreshTimer = setInterval(() => {
+      this.refreshToken(character).first().subscribe();
     }, tokenRefreshInterval);
 
     return character;
@@ -66,30 +65,62 @@ export class CharacterService {
       url += '?characterPid=' + character.pid;
     }
 
-    let w = window.open(url, '_blank', 'width=600,height=600');
+    let w = window.open(url, '_blank', 'width=600,height=700');
 
-    this.globals.socket.on('SSO_END', (response: SSOSocketResponse): void => {
+    this.globals.socket.once('SSO_END', (response: SSOSocketResponse) => {
       w.close();
       if (response.state === 'success') {
-        if(character) {
+        if (character) {
           character.updateAuth(response.data);
         } else {
-          this.registerCharacter(response.data);
+          let newCharacter = this.registerCharacter(response.data);
+          this.setActiveCharacter(newCharacter);
         }
       }
     });
   }
 
-  setActiveCharacter(character: Character): void {
-    this.globals.selectedCharacter = character;
-    this.globals.characterChangeEvent.next(character);
-  }
+  setActiveCharacter(character?: Character, alreadyActive?: boolean): void {
 
-  activeCharacter(): Observable<Character> {
-    return Observable.of(this.globals.selectedCharacter);
+    let characterPid;
+    if (character) {
+      characterPid = character.pid;
+    }
+
+    if (!alreadyActive) {
+      this.http.post('/sso/activate', {characterPid: characterPid}).subscribe((response) => {
+        let responseBody = JSON.parse(response['_body']);
+        if (responseBody.state === 'success') {
+          this.globals.selectedCharacter = character;
+          this.globals.characterChangeEvent.next(character);
+        }
+      });
+    } else {
+      this.globals.selectedCharacter = character;
+      this.globals.characterChangeEvent.next(character);
+    }
   }
 
   dumpCharacter(character: Character): void {
     console.log(character);
+  }
+
+  deleteCharacter(character: Character): void {
+    let url = '/sso/delete';
+    let data = {
+      characterPid: character.pid
+    };
+    this.http.post(url, data).subscribe((response) => {
+      let responseBody = JSON.parse(response['_body']);
+      if (responseBody.state === 'success') {
+        clearInterval(character.refreshTimer);
+
+        if (this.globals.selectedCharacter && this.globals.selectedCharacter.pid === character.pid) {
+          this.setActiveCharacter();
+        }
+        let index = this.globals.user.characters.indexOf(character);
+        this.globals.user.characters.splice(index, 1);
+      }
+    });
   }
 }

@@ -18,7 +18,7 @@ export class APIRouter extends BaseRouter {
     this.createPostRoute('/change/username', APIRouter.changeUserUsername);
     this.createPostRoute('/change/password', APIRouter.changeUserPassword);
     this.createPostRoute('/change/email', APIRouter.changeUserEmail);
-    this.createDeleteRoute('/delete', APIRouter.deleteUser);
+    this.createPostRoute('/delete', APIRouter.deleteUser);
     logger.info('Route defined: API');
   }
 
@@ -479,9 +479,9 @@ export class APIRouter extends BaseRouter {
   }
 
   /**
-   * Register a new user using a username, email and password.
+   * Delete a user
    * path: /api/delete
-   * method: DELETE
+   * method: POST
    * params:
    *  pid: The pid of the user to delete
    *  password: The password of the user to delete, for verification

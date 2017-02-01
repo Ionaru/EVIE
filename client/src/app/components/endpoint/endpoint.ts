@@ -1,12 +1,8 @@
 import { Param } from './endpoint.param';
 
 export class Endpoint {
-  accessMask: number;
   directory: string;
-  type: string;
   name: string;
-  groupID: number;
-  description: string;
   params: Array<Param>;
   url: string;
 
@@ -14,12 +10,5 @@ export class Endpoint {
     this.directory = directory;
     this.name = name;
     this.params = params;
-  }
-
-  fillData(accessMask: number, type: string, groupID: number, description: string): void {
-    this.accessMask = accessMask;
-    this.type = type;
-    this.groupID = groupID;
-    this.description = description;
   }
 }

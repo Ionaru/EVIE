@@ -7,6 +7,7 @@ import { ssoConfig } from '../controllers/config.service';
 import { Character, CharacterInstance } from '../models/character/character';
 import { generateUniquePID, generateRandomString } from '../controllers/pid.service';
 import { sockets } from '../bin/www';
+import { UserInstance, User } from '../models/user/user';
 
 const scopes = [
   'characterWalletRead',
@@ -27,6 +28,8 @@ export class SSORouter extends BaseRouter {
     this.createGetRoute('/callback', SSORouter.processCallBack);
     this.createGetRoute('/auth', SSORouter.authorizeToken);
     this.createGetRoute('/refresh', SSORouter.refreshToken);
+    this.createPostRoute('/delete', SSORouter.deleteCharacter);
+    this.createPostRoute('/activate', SSORouter.activateCharacter);
     logger.info('Route defined: SSO');
   }
 
@@ -103,7 +106,7 @@ export class SSORouter extends BaseRouter {
         delete request.session['state'];
 
         // Find a Character matching the characterPid saved in the session, create a new Character when none are found.
-        let character: CharacterInstance = await Character.findOrCreate({
+        let characters: CharacterInstance = await Character.findOrCreate({
           where: {
             pid: request.session['characterPid'] // May be undefined, a new Character is then created.
           },
@@ -115,7 +118,7 @@ export class SSORouter extends BaseRouter {
 
         // The 'findOrCreate' function returns an array, the first element is the Character, the second is whether
         // a new Character was created or not. We only use the first element here.
-        character = character[0];
+        let character = characters[0];
 
         // Set the Characters authToken and clear the other fields for re-authorization.
         character.authToken = request.query.code;
@@ -127,9 +130,10 @@ export class SSORouter extends BaseRouter {
         // The characterPid may have changed due to the creation of a new Character, save this new pid so we can use it
         // later.
         request.session['characterPid'] = character.pid;
-
-        // Redirect the user to the next step in the SSO process.
-        response.redirect('/sso/auth');
+        request.session.save(() => {
+          // Redirect the user to the next step in the SSO process.
+          response.redirect('/sso/auth');
+        });
 
       } else {
         // The state got from the EVE SSO service did not match the one we expected.
@@ -176,12 +180,12 @@ export class SSORouter extends BaseRouter {
 
       // TODO: Use a request module instead of this mess below
 
-      let authRequest = https.request(authRequestOptions, (authReponse) => {
+      let authRequest = https.request(authRequestOptions, (authResponse) => {
         let authResult = [];
-        authReponse.on('data', (chunk: Buffer) => {
+        authResponse.on('data', (chunk: Buffer) => {
           authResult.push(JSON.parse(chunk.toString()));
         });
-        authReponse.on('end', async() => {
+        authResponse.on('end', async() => {
 
           // Set the Character fields from the results
           character.refreshToken = authResult[0]['refresh_token'];
@@ -238,7 +242,7 @@ export class SSORouter extends BaseRouter {
             });
             characterIdRequest.end();
           });
-          authReponse.on('error', (error) => {
+          authResponse.on('error', (error) => {
             console.log(error);
           });
         });
@@ -253,7 +257,7 @@ export class SSORouter extends BaseRouter {
     } else {
       // Either no Character was found matching the characterPid or the authToken column was NULL, either way we can't
       // authorize anything here.
-      socket.emit('SSO_END', {
+      await socket.emit('SSO_END', {
         state: 'error',
         message: 'NothingToAuthorize',
       });
@@ -329,6 +333,154 @@ export class SSORouter extends BaseRouter {
     } else {
       // There was no Character found with the Pid provided in the request
       sendResponse(response, 404, 'CharacterNotFound');
+    }
+  }
+
+  /**
+   * Delete a character
+   * Params:
+   *  characterPid <required>: The Pid of the Character to delete
+   */
+  private static async deleteCharacter(request: Request, response: Response): Promise<void> {
+
+    if (request.session['user']) {
+
+      let pid = request.body.characterPid;
+
+      if (pid) {
+
+        let user: UserInstance = await User.findOne({
+          attributes: ['id'],
+          where: {
+            id: request.session['user'].id
+          },
+          include: [{
+            model: Character,
+            attributes: ['id', 'pid', 'userId'],
+          }]
+        });
+
+        let characters = user.characters.map(function (character: CharacterInstance): Object {
+          return character;
+        });
+
+        let characterToDeleteList = characters.filter(_ => _.pid === pid);
+
+        if (characterToDeleteList.length > 0) {
+
+          let characterToDelete = characterToDeleteList[0];
+
+          if (user.id === characterToDelete.userId) {
+
+            await characterToDelete.destroy();
+            sendResponse(response, 200, 'CharacterDeleted');
+
+          } else {
+
+            // That character does not belong to the user who initiated the request
+            sendResponse(response, 401, 'NotYourCharacter');
+          }
+
+        } else {
+
+          // That character does not exist
+          sendResponse(response, 404, 'NoCharacterFound');
+        }
+
+      } else {
+
+        // Missing parameters
+        sendResponse(response, 400, 'MissingParameters');
+      }
+
+    } else {
+
+      // User is not logged in
+      sendResponse(response, 401, 'NotLoggedIn');
+    }
+  }
+
+  /**
+   * Activate a character
+   * Params:
+   *  characterPid <required>: The Pid of the Character to set as active
+   */
+  private static async activateCharacter(request: Request, response: Response): Promise<void> {
+
+    if (request.session['user']) {
+
+      let pid = request.body.characterPid;
+
+      if (pid) {
+
+        let user: UserInstance = await User.findOne({
+          attributes: ['id'],
+          where: {
+            id: request.session['user'].id
+          },
+          include: [{
+            model: Character,
+            attributes: ['id', 'pid', 'userId'],
+          }]
+        });
+
+        let characters = user.characters.map(function (character: CharacterInstance): Object {
+          return character;
+        });
+        let characterToActivateList = characters.filter(_ => _.pid === pid);
+
+        if (characterToActivateList.length > 0) {
+
+          await Character.update(
+            {
+              isActive: false
+            },
+            {
+              where: {
+                userId: request.session['user'].id
+              }
+            });
+
+          let characterToActivate = characterToActivateList[0];
+
+          if (user.id === characterToActivate.userId) {
+
+            characterToActivate.isActive = true;
+            await characterToActivate.save();
+            sendResponse(response, 200, 'CharacterActivated');
+
+        } else {
+
+            // That character does not belong to the user who initiated the request
+            sendResponse(response, 401, 'NotYourCharacter');
+          }
+
+        } else {
+
+          // That character does not exist
+          sendResponse(response, 404, 'NoCharacterFound');
+        }
+
+      } else {
+
+        await Character.update(
+          {
+            isActive: false
+          },
+          {
+            where: {
+              userId: request.session['user'].id
+            }
+          });
+
+        // Missing parameters
+        sendResponse(response, 200, 'AllCharactersDeactivated');
+      }
+
+    } else {
+
+      // User is not logged in
+      sendResponse(response, 401, 'NotLoggedIn');
     }
   }
 

@@ -31,15 +31,15 @@ async function init(): Promise<void> {
 
   let io: any = sio.listen(server);
 
-  io.use(ios(express.sessionParser));
-
-  io.on('connection', async function (socket: SessionSocket): Promise<void> {
-
-    if (socket.handshake.session['user']) {
-      socket.handshake.session['socket'] = socket.id;
-      sockets.push(socket);
-      await socket.handshake.session.save(() => {});
-    }
+  let socketServer = io.of('/');
+  socketServer.use(ios(express.sessionParser));
+  socketServer.on('connection', async (socket: SessionSocket) => {
+    socket.handshake.session['socket'] = socket.id;
+    await socket.handshake.session.save(() => {});
+    sockets.push(socket);
+    socket.on('disconnect', () => {
+      sockets.splice(sockets.indexOf(socket), 1);
+    });
   });
 
   /**
@@ -141,7 +141,7 @@ async function init(): Promise<void> {
             } else {
               logger.info('Database connection closed');
             }
-            io.emit('STOP');
+            socketServer.emit('STOP');
             return done();
           });
         });

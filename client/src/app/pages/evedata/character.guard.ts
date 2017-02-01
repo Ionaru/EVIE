@@ -13,10 +13,5 @@ export class CharacterGuard implements Resolve<boolean> {
     } else {
       return this.globals.startUpObservable;
     }
-    // if (this.globals.selectedCharacter) {
-    //   return Observable.of(true);
-    // } else {
-    //   return this.globals.isLoggedIn;
-    // }
   }
 }

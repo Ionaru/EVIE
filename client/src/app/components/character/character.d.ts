@@ -6,4 +6,5 @@ interface CharacterApiData {
   pid: string;
   scopes: string;
   tokenExpiry: string;
+  isActive: boolean;
 }
