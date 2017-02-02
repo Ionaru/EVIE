@@ -1,8 +1,7 @@
 {
-  "name": "ng2-track",
-  "version": "0.0.0",
-  "license": "MIT",
-  "angular-cli": {},
+  "name": "eve-track-client",
+  "version": "1.0.0",
+  "description": "",
   "scripts": {
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build --prod --aot",
@@ -11,7 +10,6 @@
     "pree2e": "webdriver-manager update",
     "e2e": "protractor"
   },
-  "private": true,
   "dependencies": {
     "@angular/common": "2.2.1",
     "@angular/compiler": "2.2.1",
@@ -51,5 +49,6 @@
     "tslint": "3.13.0",
     "typescript": "~2.0.10",
     "webdriver-manager": "10.2.5"
-  }
+  },
+  "license": "ISC"
 }

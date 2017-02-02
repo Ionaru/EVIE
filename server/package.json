@@ -1,8 +1,12 @@
 {
-  "name": "node-typescript",
+  "name": "eve-track-server",
   "version": "1.0.0",
   "description": "",
-  "main": "bin/www",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/bin/start-server",
+    "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\""
+  },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.16.0",
@@ -43,11 +47,5 @@
     "@types/winston": "2.2.0",
     "tslint": "4.4.2"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/bin/start-server",
-    "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\""
-  },
-  "author": "",
   "license": "ISC"
 }
