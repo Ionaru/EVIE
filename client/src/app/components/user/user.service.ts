@@ -33,16 +33,21 @@ export class UserService {
     });
   }
 
-  loginUser(): Observable<any> {
+  loginUser(username: string, password: string): Observable<any> {
     let url = 'api/login';
     return this.http.post(url, {
-      username: 'testUser',
-      password: '000999888',
+      username: username,
+      password: password,
     }).map(
       (res: Response) => {
         let jsonData: LoginResponse = JSON.parse(res['_body']);
-        return this.storeUser(jsonData.data);
-      });
+        return [jsonData.message, this.storeUser(jsonData.data)];
+      }).catch((err): Observable<any> => {
+      if (err['_body']) {
+        let errBody = JSON.parse(err['_body']);
+        return Observable.of([errBody['message']]);
+      }
+    });
   }
 
   logoutUser(): void {
