@@ -7,8 +7,8 @@ node_js:
 - '5'
 - '4.2.6'
 env:
-  - SUB_DIR=tilt-client
-  - SUB_DIR=tilt-server
+  - SUB_DIR=client
+  - SUB_DIR=server
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash
   - export PATH=$HOME/.yarn/bin:$PATH
