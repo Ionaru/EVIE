@@ -1,0 +1,21 @@
+os:
+- linux
+language: node_js
+node_js:
+- '7'
+- '6'
+- '5'
+- '4.2.6'
+env:
+  - SUB_DIR=tilt-client
+  - SUB_DIR=tilt-server
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH=$HOME/.yarn/bin:$PATH
+script:
+- cd $SUB_DIR
+- yarn install
+- yarn run "lint"
+cache:
+  directories:
+  - $HOME/.cache/yarn
