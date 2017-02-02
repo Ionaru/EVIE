@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, Response } from '@angular/http';
-import { Globals } from '../../globals';
 import { Observable } from 'rxjs';
 import { Endpoint } from '../../components/endpoint/endpoint';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
