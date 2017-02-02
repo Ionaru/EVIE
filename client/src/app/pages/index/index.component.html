@@ -14,8 +14,22 @@
   creating an account, using the 'temporary key' section.
 </p>
 <hr>
+<div *ngIf="!loggedIn">
+  <form #f="ngForm" (ngSubmit)="login(f.value)">
+    <p>
+      <label for="username-input">Username or email</label>
+      <input id="username-input" type="text" required ngModel name="username">
+    </p>
+    <p>
+      <label for="password-input">Password</label>
+      <input id="password-input" type="password" required ngModel name="password">
+    </p>
 
-<button (click)="login()" *ngIf="!loggedIn">Login debug</button>
+  <button type="submit" [disabled]="!f.valid">Login</button>
+  </form>
+  <button (click)="loginDebug()" >Login debug</button>
+</div>
+
 
 <!--<form>-->
   <!--<input name="keyId" title="Key ID">-->
