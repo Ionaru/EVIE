@@ -24,11 +24,6 @@ export class AppComponent {
               private appReadyEvent: AppReadyEvent,
               private globals: Globals) {
 
-    // At this point, the application has "loaded" in so much as the assets have
-    // loaded; but, the we're not going to consider the application "ready" until
-    // the core "data" has loaded. As such, we won't trigger the "appready" event
-    // just yet
-
     // this language will be used as a fallback when a translation isn't found in the current language
     let defaultLang = 'en';
     translate.setDefaultLang(defaultLang);
@@ -53,10 +48,14 @@ export class AppComponent {
   private boot(): void {
 
     this.globals.startUpObservable = Observable.create((observer: Observer<boolean>) => {
-      this.userService.shakeHands().subscribe(() => {
-        this.globals.startUp = true;
-        observer.next(true);
-        observer.complete();
+      this.userService.shakeHands().subscribe((error) => {
+        if (!error) {
+          this.globals.startUp = true;
+          observer.next(true);
+          observer.complete();
+        } else {
+          throw error;
+        }
       });
     }).share();
   }

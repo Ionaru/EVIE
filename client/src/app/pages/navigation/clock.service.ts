@@ -11,7 +11,7 @@ export class ClockService {
 
   private endpoint: Endpoint;
 
-  constructor(private http: Http, private es: EndpointService, private globals: Globals) {
+  constructor(private http: Http, private es: EndpointService) {
     this.endpoint = this.es.getEndpoint('ServerStatus');
   }
 

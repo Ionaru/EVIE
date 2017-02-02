@@ -5,12 +5,16 @@ import { Observable } from 'rxjs';
 import { CharacterService } from '../character/character.service';
 import { Globals } from '../../globals';
 import { isEmpty } from '../helperfunctions.component';
+import { AppReadyEvent } from '../../app-ready-event';
 // import { Globals } from '../../globals';
 
 @Injectable()
 export class UserService {
 
-  constructor(private http: Http, private CharacterService: CharacterService, private globals: Globals) { }
+  constructor(private http: Http,
+              private CharacterService: CharacterService,
+              private globals: Globals,
+              private appReadyEvent: AppReadyEvent) { }
 
   shakeHands(): Observable<any> {
     let url = 'api/handshake';
@@ -23,7 +27,10 @@ export class UserService {
         } else if (jsonData.message === 'NotLoggedIn') {
           // Something
         }
-      });
+      }).catch((err): Observable<any> => {
+      this.appReadyEvent.triggerFailed();
+      return Observable.of(new Error('Could not shake hands with server'));
+    });
   }
 
   loginUser(): Observable<any> {
