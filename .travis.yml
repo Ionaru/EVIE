@@ -4,6 +4,9 @@ language: node_js
 node_js:
 - '7'
 - '6'
+branches:
+  only:
+    - master
 env:
   - SUB_DIR=client
   - SUB_DIR=server
