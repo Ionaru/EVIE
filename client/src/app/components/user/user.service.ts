@@ -17,10 +17,10 @@ export class UserService {
               private appReadyEvent: AppReadyEvent) { }
 
   shakeHands(): Observable<any> {
-    let url = 'api/handshake';
+    const url = 'api/handshake';
     return this.http.get(url).map(
       (res: Response) => {
-        let jsonData: LoginResponse = JSON.parse(res['_body']);
+        const jsonData: LoginResponse = JSON.parse(res['_body']);
         if (jsonData.message === 'LoggedIn') {
           this.globals.loggedIn = true;
           this.storeUser(jsonData.data);
@@ -34,24 +34,24 @@ export class UserService {
   }
 
   loginUser(username: string, password: string): Observable<any> {
-    let url = 'api/login';
+    const url = 'api/login';
     return this.http.post(url, {
       username: username,
       password: password,
     }).map(
       (res: Response) => {
-        let jsonData: LoginResponse = JSON.parse(res['_body']);
+        const jsonData: LoginResponse = JSON.parse(res['_body']);
         return [jsonData.message, this.storeUser(jsonData.data)];
       }).catch((err): Observable<any> => {
       if (err['_body']) {
-        let errBody = JSON.parse(err['_body']);
+        const errBody = JSON.parse(err['_body']);
         return Observable.of([errBody['message']]);
       }
     });
   }
 
   logoutUser(): void {
-    let url = 'api/logout';
+    const url = 'api/logout';
     this.http.post(url, {}).subscribe(() => {
       window.location.reload();
     });
@@ -62,10 +62,10 @@ export class UserService {
   }
 
   storeUser(data: UserApiData): User {
-    let user = new User(data);
+    const user = new User(data);
     this.globals.userChangeEvent.next(user);
     this.globals.user = user;
-    for (let characterData of data.characters) {
+    for (const characterData of data.characters) {
       if (characterData.scopes) {
         this.CharacterService.registerCharacter(characterData);
       }

@@ -34,7 +34,7 @@ export class APIRouter extends BaseRouter {
    */
   private static async doHandShake(request: Request, response: Response): Promise<void> {
     if (request.session['user'].id) {
-      let user: UserInstance = await User.findOne({
+      const user: UserInstance = await User.findOne({
         attributes: ['id', 'passwordHash', 'timesLogin', 'pid', 'username', 'email'],
         where: {
           id: request.session['user'].id,
@@ -47,7 +47,7 @@ export class APIRouter extends BaseRouter {
       user.timesLogin++;
       user.lastLogin = new Date();
       await user.save();
-      let userData = {
+      const userData = {
         pid: user.pid,
         username: user.username,
         email: user.email,
@@ -76,10 +76,10 @@ export class APIRouter extends BaseRouter {
    */
   private static async loginUser(request: Request, response: Response): Promise<void> {
     // Extract the username/email and password from the request
-    let username = request.body.username;
-    let password = request.body.password;
+    const username = request.body.username;
+    const password = request.body.password;
 
-    let user: UserInstance = await User.findOne({
+    const user: UserInstance = await User.findOne({
       attributes: ['id', 'passwordHash', 'timesLogin', 'pid', 'username', 'email'],
       where: {
         $or: [
@@ -101,7 +101,7 @@ export class APIRouter extends BaseRouter {
         user.lastLogin = new Date();
         await user.save();
         logger.info(user.username + ' logged in.');
-        let userData = {
+        const userData = {
           pid: user.pid,
           username: user.username,
           email: user.email,
@@ -150,9 +150,9 @@ export class APIRouter extends BaseRouter {
    */
   private static async registerUser(request: Request, response: Response): Promise<void> {
     // Extract the form data from the request and trim the whitespace from the username and email.
-    let username = request.body.username.trim();
-    let email = request.body.email.trim();
-    let password = request.body.password;
+    const username = request.body.username.trim();
+    const email = request.body.email.trim();
+    const password = request.body.password;
 
     let user: UserInstance = await User.findOne({
       where: {
@@ -185,8 +185,8 @@ export class APIRouter extends BaseRouter {
 
       // The regular expression checks if the username or email matched the one from the user in the database
       // this is done to return an accurate error message.
-      let existingUsername = new RegExp('^' + user.username + '$', 'i');
-      let existingEmail = new RegExp('^' + user.email + '$', 'i');
+      const existingUsername = new RegExp('^' + user.username + '$', 'i');
+      const existingEmail = new RegExp('^' + user.email + '$', 'i');
       let usernameInUse = false;
       let emailInUse = false;
       if (username.match(existingUsername) || username.match(existingEmail)) {
@@ -223,13 +223,13 @@ export class APIRouter extends BaseRouter {
 
     if (request.session['user']) {
 
-      let pid = request.body.pid;
-      let oldPassword = request.body.oldpassword;
-      let newPassword = request.body.newpassword;
+      const pid = request.body.pid;
+      const oldPassword = request.body.oldpassword;
+      const newPassword = request.body.newpassword;
 
       if (pid && oldPassword && newPassword) { // TODO: Administrator override
 
-        let user: UserInstance = await User.findOne({
+        const user: UserInstance = await User.findOne({
           attributes: ['id', 'passwordHash', 'pid'],
           where: {
             pid: pid,
@@ -302,13 +302,13 @@ export class APIRouter extends BaseRouter {
     if (request.session['user']) {
       // A user session is active
 
-      let pid = request.body.pid;
-      let password = request.body.password;
-      let newEmail = request.body.newemail;
+      const pid = request.body.pid;
+      const password = request.body.password;
+      const newEmail = request.body.newemail;
 
       if (pid && password && newEmail) { // TODO: Administrator override
 
-        let user: UserInstance = await User.findOne({
+        const user: UserInstance = await User.findOne({
           attributes: ['id', 'passwordHash', 'pid'],
           where: {
             pid: pid,
@@ -324,7 +324,7 @@ export class APIRouter extends BaseRouter {
             if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
               // The user password was correct, we can now try to change the user's email
 
-              let existingUser: UserInstance = await User.findOne({
+              const existingUser: UserInstance = await User.findOne({
                 attributes: ['id', 'username', 'email'],
                 where: {
                   $or: [
@@ -401,13 +401,13 @@ export class APIRouter extends BaseRouter {
     if (request.session['user']) {
       // A user session is active
 
-      let pid = request.body.pid;
-      let password = request.body.password;
-      let newUsername = request.body.newusername;
+      const pid = request.body.pid;
+      const password = request.body.password;
+      const newUsername = request.body.newusername;
 
       if (pid && password && newUsername) { // TODO: Administrator override
 
-        let user: UserInstance = await User.findOne({
+        const user: UserInstance = await User.findOne({
           attributes: ['id', 'passwordHash', 'pid'],
           where: {
             pid: pid,
@@ -423,7 +423,7 @@ export class APIRouter extends BaseRouter {
             if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
               // The user password was correct, we can now try to change the user's username
 
-              let existingUser: UserInstance = await User.findOne({
+              const existingUser: UserInstance = await User.findOne({
                 attributes: ['id', 'username', 'email'],
                 where: {
                   $or: [
@@ -498,12 +498,12 @@ export class APIRouter extends BaseRouter {
     if (request.session['user']) {
       // A user session is active
 
-      let pid = request.body.pid;
-      let password = request.body.password;
+      const pid = request.body.pid;
+      const password = request.body.password;
 
       if (pid && password) { // TODO: Administrator override
 
-        let user: UserInstance = await User.findOne({
+        const user: UserInstance = await User.findOne({
           attributes: ['id', 'passwordHash', 'pid'],
           where: {
             pid: pid,

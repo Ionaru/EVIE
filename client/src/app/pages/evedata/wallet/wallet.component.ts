@@ -56,17 +56,17 @@ export class WalletComponent implements OnInit {
 
   showBalance(): void {
     this.balance.getBalance().subscribe((balance) => {
-      let options: CountUpOptions = {
+      const options: CountUpOptions = {
         useEasing : false,
       };
-      let countUp = new CountUp('balance-number', 0, Number(balance), 2, 1, options);
+      const countUp = new CountUp('balance-number', 0, Number(balance), 2, 1, options);
       countUp.start();
     });
   }
 
   showJournal(): void {
     this.reftypes.getRefTypes().subscribe((refTypes) => {
-      let refTypeData = refTypes['eveapi']['result']['rowset']['row'];
+      const refTypeData = refTypes['eveapi']['result']['rowset']['row'];
       this.journal.getJournal(refTypeData).subscribe((journalData) => {
         this.journalData = journalData;
       });

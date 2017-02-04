@@ -37,8 +37,8 @@ export class AppReadyEvent {
     if (this.isAppReady) {
       return;
     }
-    let bubbles = true;
-    let cancelable = false;
+    const bubbles = true;
+    const cancelable = false;
     this.doc.dispatchEvent(this.createEvent('StartupSuccess', bubbles, cancelable));
     this.isAppReady = true;
   }
@@ -47,8 +47,8 @@ export class AppReadyEvent {
     if (this.isAppReady) {
       return;
     }
-    let bubbles = true;
-    let cancelable = false;
+    const bubbles = true;
+    const cancelable = false;
     this.doc.dispatchEvent(this.createEvent('StartupFailed', bubbles, cancelable));
   }
 

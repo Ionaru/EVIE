@@ -37,15 +37,17 @@ export class DashboardComponent implements OnInit {
   displayCharacters(): void {
     this.selectedCharacter = this.globals.selectedCharacter;
     this.characters = this.globals.user.characters;
-    for (let character of this.globals.user.characters) {
-      this.shipService.getCurrentShip(character).first().subscribe((data) => {
-        data.first().subscribe((shipData) => {
-          character.currentShip = {
-            shipName: shipData['name'],
-            shipType: shipData['ship']
-          };
+    if (this.characters) {
+      for (const character of this.characters) {
+        this.shipService.getCurrentShip(character).first().subscribe((data) => {
+          data.first().subscribe((shipData) => {
+            character.currentShip = {
+              shipName: shipData['name'],
+              shipType: shipData['ship']
+            };
+          });
         });
-      });
+      }
     }
   }
 
@@ -71,10 +73,6 @@ export class DashboardComponent implements OnInit {
   reAuth(): void {
     this.characterService.startAuthProcess(this.globals.selectedCharacter);
   }
-
-  dumpCharacter(): void {
-    this.characterService.dumpCharacter(this.globals.selectedCharacter);
-  };
 
   deleteCharacter(character: Character): void {
     this.characterService.deleteCharacter(character);

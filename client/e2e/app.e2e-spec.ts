@@ -1,10 +1,10 @@
-import { Ng2TrackPage } from './app.po';
+import { EveTrackPage } from './app.po';
 
-describe('ng2-track App', function() {
-  let page: Ng2TrackPage;
+describe('client App', function() {
+  let page: EveTrackPage;
 
   beforeEach(() => {
-    page = new Ng2TrackPage();
+    page = new EveTrackPage();
   });
 
   it('should display message saying app works', () => {

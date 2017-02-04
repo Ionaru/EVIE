@@ -1,6 +1,6 @@
 import { browser, element, by } from 'protractor';
 
-export class Ng2TrackPage {
+export class EveTrackPage {
   navigateTo() {
     return browser.get('/');
   }

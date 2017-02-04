@@ -38,9 +38,9 @@ export function sendResponse(response: Response, statusCode: number, message: st
     state = 'error';
   }
 
-  let request = requestList.filter(_ => _.id === response['id'])[0].request;
+  const request = requestList.filter(_ => _.id === response['id'])[0].request;
 
-  let responseData = {
+  const responseData = {
     state: state,
     message: message,
     data: data,
@@ -57,7 +57,7 @@ export function sendResponse(response: Response, statusCode: number, message: st
 }
 
 export function sendTextResponse(response: Response, statusCode: number, message: string): void {
-  let request = requestList.filter(_ => _.id === response['id'])[0].request;
+  const request = requestList.filter(_ => _.id === response['id'])[0].request;
 
   logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${statusCode}`);
 

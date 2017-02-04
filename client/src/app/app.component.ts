@@ -17,7 +17,7 @@ import * as socketIo from 'socket.io-client';
 export class AppComponent {
   static translate: TranslateService;
 
-  appVersion: string = '2.0.0-ALPHA-1';
+  appVersion = '2.0.0-ALPHA-1';
 
   constructor(private translate: TranslateService,
               private userService: UserService,
@@ -25,12 +25,14 @@ export class AppComponent {
               private globals: Globals) {
 
     // this language will be used as a fallback when a translation isn't found in the current language
-    let defaultLang = 'en';
+    const defaultLang = 'en';
     translate.setDefaultLang(defaultLang);
 
     // the language to use, if the lang isn't available, it will use the current loader to get them
     translate.use(defaultLang);
     AppComponent.translate = translate;
+
+    // this.appReadyEvent.trigger();
 
     this.boot();
 

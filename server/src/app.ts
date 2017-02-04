@@ -47,7 +47,7 @@ export class App {
     db.connect();
 
     // Setup MySQL Session Store
-    let MySQLStore = ems(es);
+    const MySQLStore = ems(es);
     this.sessionStore = new MySQLStore({}, db.get());
 
     // Configure Session Store

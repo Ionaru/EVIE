@@ -11,7 +11,7 @@ class Config {
   config: Object;
   configName: string;
 
-  constructor(configName: string, allowedMissing: boolean = false) {
+  constructor(configName: string, allowedMissing = false) {
     this.configName = configName;
     try {
       // Try to read the config file from the config folder in the project root directory
@@ -46,7 +46,7 @@ class Config {
   }
 }
 
-let mainConfig = new Config('main');
-let dbConfig = new Config('database');
-let ssoConfig = new Config('sso');
+const mainConfig = new Config('main');
+const dbConfig = new Config('database');
+const ssoConfig = new Config('sso');
 export { mainConfig, dbConfig, ssoConfig };
