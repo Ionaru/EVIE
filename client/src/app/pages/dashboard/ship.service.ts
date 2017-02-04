@@ -20,15 +20,15 @@ export class ShipService {
     //     return Observable.of(Observable.of(jsonData));
     //   }
     // } else {
-    let url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'ship');
-    let headers = new Headers();
+    const url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'ship');
+    const headers = new Headers();
     headers.append('Authorization', 'Bearer ' + character.accessToken);
     return this.http.get(url, {headers: headers}).map((response) => {
-      let rep = JSON.parse(response['_body']);
-      let url2 = this.endpointService.constructESIUrl('v2/universe/names');
+      const rep = JSON.parse(response['_body']);
+      const url2 = this.endpointService.constructESIUrl('v2/universe/names');
       return this.http.post(url2, [rep['ship_type_id']], {headers: headers}).map((response2) => {
-        let repJSON = JSON.parse(response2['_body']);
-        let jsonData = {
+        const repJSON = JSON.parse(response2['_body']);
+        const jsonData = {
           ship: rep['ship_name'],
           name: repJSON[0]['name'],
           timestamp: new Date().getTime()

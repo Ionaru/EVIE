@@ -73,5 +73,5 @@ class Database {
   }
 }
 
-let db = new Database();
+const db = new Database();
 export { db };

@@ -1,13 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule, Http } from '@angular/http';
+import { Http, HttpModule } from '@angular/http';
 import {
-  TranslateModule,
-  TranslateLoader,
-  TranslateStaticLoader,
   MissingTranslationHandler,
-  MissingTranslationHandlerParams
+  MissingTranslationHandlerParams,
+  TranslateLoader,
+  TranslateModule,
+  TranslateStaticLoader
 } from 'ng2-translate';
 
 import { AppComponent } from './app.component';
@@ -21,6 +21,14 @@ import { Globals } from './globals';
 import { AuthGuard } from './auth.guard';
 import { AppGuard } from './app.guard';
 import { Angular2FontawesomeModule } from 'angular2-fontawesome';
+import { AssetsComponent } from './pages/evedata/assets/assets.component';
+import { CharactersheetComponent } from './pages/evedata/charactersheet/charactersheet.component';
+import { ContactsComponent } from './pages/evedata/contacts/contacts.component';
+import { IndustryComponent } from './pages/evedata/industry/industry.component';
+import { MailComponent } from './pages/evedata/mail/mail.component';
+import { MarketComponent } from './pages/evedata/market/market.component';
+import { PlanetsComponent } from './pages/evedata/planets/planets.component';
+import { SkillsComponent } from './pages/evedata/skills/skills.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +36,14 @@ import { Angular2FontawesomeModule } from 'angular2-fontawesome';
     NavigationComponent,
     IndexComponent,
     DashboardComponent,
+    AssetsComponent,
+    CharactersheetComponent,
+    ContactsComponent,
+    IndustryComponent,
+    MailComponent,
+    MarketComponent,
+    SkillsComponent,
+    PlanetsComponent,
     WalletComponent,
   ],
   imports: [

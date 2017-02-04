@@ -16,20 +16,20 @@ export class RefTypesService {
     this.storageTag = this.endpoint.name;
   }
 
-  getRefTypes(expired: boolean = false): Observable<Object> {
+  getRefTypes(expired = false): Observable<Object> {
     if (!expired && localStorage.getItem(this.storageTag)) {
-      let jsonData = JSON.parse(localStorage.getItem(this.storageTag));
+      const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
         return this.getRefTypes(true);
       } else {
         return Observable.of(jsonData);
       }
     } else {
-      let url = this.es.constructXMLUrl(this.endpoint, []);
-      let headers = new Headers();
+      const url = this.es.constructXMLUrl(this.endpoint, []);
+      const headers = new Headers();
       headers.append('Accept', 'application/xml');
       return this.http.get(url, {headers: headers}).map((res) => {
-        let jsonData = processXML(res);
+        const jsonData = processXML(res);
         localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
         return jsonData;
       });

@@ -1,4 +1,4 @@
-import { Injectable }     from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Endpoint } from './endpoint';
 import { endpointList } from './endpoints';
 import { Globals } from '../../globals';
@@ -6,8 +6,8 @@ import { Globals } from '../../globals';
 @Injectable()
 export class EndpointService {
 
-  XMLBaseUrl: string = 'https://api.eveonline.com/';
-  ESIBaseUrl: string = 'https://esi.tech.ccp.is/';
+  XMLBaseUrl = 'https://api.eveonline.com/';
+  ESIBaseUrl = 'https://esi.tech.ccp.is/';
 
   constructor(private globals: Globals) { }
 
@@ -32,7 +32,7 @@ export class EndpointService {
 
   constructESIUrl(...params: Array<string | number>): string {
     let url = this.ESIBaseUrl;
-    for (let param of params) {
+    for (const param of params) {
       url += param + '/';
     }
     url += '?datasource=tranquility';

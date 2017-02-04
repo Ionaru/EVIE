@@ -15,7 +15,7 @@ init().catch(console.error.bind(console));
 export let sockets: Array<any> = [];
 
 async function init(): Promise<void> {
-  let express = new App();
+  const express = new App();
   await express.mainStartupSequence();
 
   /**
@@ -29,9 +29,9 @@ async function init(): Promise<void> {
    */
   const server = http.createServer(express.app);
 
-  let io: any = sio.listen(server);
+  const io: any = sio.listen(server);
 
-  let socketServer = io.of('/');
+  const socketServer = io.of('/');
   socketServer.use(ios(express.sessionParser));
   socketServer.on('connection', async (socket: SessionSocket) => {
     socket.handshake.session['socket'] = socket.id;
@@ -122,7 +122,7 @@ async function init(): Promise<void> {
     });
     if (options['cleanup']) {
       logger.info('Got shutdown command, executing cleanup tasks.');
-      let cleanup = function (done: Function): void {
+      const cleanup = function (done: Function): void {
         // Destroy all sessions on server shutdown
         express.sessionStore.clear((sessionStoreError) => {
           if (sessionStoreError) {

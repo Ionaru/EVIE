@@ -23,25 +23,14 @@ export class IndexComponent implements OnInit {
   }
 
   loginDebug(): void {
-    this.userService.loginUser('testUser', '000999888').subscribe(
-      (user: User) => {
-        this.loggedIn = true;
-        if (user) {
-          this.globals.loggedIn = true;
-          this.globals.user = user;
-          if (isEmpty(user.characters)) {
-            this.router.navigate(['/dashboard']).then();
-          }
-        }
-      },
-    );
+    this.login({username: 'testUser', password: '000999888'});
   }
 
-  login(formValues: {username, password}): void {
+  login(formValues: {username: string, password: string}): void {
     this.userService.loginUser(formValues.username, formValues.password).subscribe(
       (response: [string, User]) => {
         if (response[0] === 'LoggedIn') {
-          let user = response[1];
+          const user = response[1];
           this.loggedIn = true;
           this.globals.loggedIn = true;
           if (isEmpty(user.characters)) {
