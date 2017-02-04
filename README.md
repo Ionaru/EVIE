@@ -1,4 +1,6 @@
-# EVE-Track
+# EVE-Track 
+
+[![Build Status](https://travis-ci.org/Ionaru/EVE-Track.svg?branch=master)](https://travis-ci.org/Ionaru/EVE-Track)
 
 This project started as a practise exercise for me to get myself more familiar with Angular 2 and Typescript.
 ...it's grown a bit beyond that, oops!
