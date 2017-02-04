@@ -5,6 +5,7 @@
 
 # Main files
 /config/*
+*.log
 
 # Client files
 /client/dist/

@@ -67,10 +67,10 @@ export class Globals {
 
   private _selectedCharacter: Character;
   private _DOMParser: DOMParser = new DOMParser();
-  private _loggedIn: boolean = false;
+  private _loggedIn = false;
   private _user: User;
   private _socket: SocketIOClient.Socket;
-  private _startUp: boolean = false;
+  private _startUp = false;
   private _startUpObservable: Observable<boolean>;
   private _characterChangeEvent: Subject<Character> = new Subject<Character>();
   private _userChangeEvent: Subject<User> = new Subject<User>();

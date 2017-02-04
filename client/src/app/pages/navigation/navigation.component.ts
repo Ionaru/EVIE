@@ -13,15 +13,15 @@ import { UserService } from '../../components/user/user.service';
 })
 export class NavigationComponent implements OnInit {
 
-  hours: string = '00';
-  minutes: string = '00';
-  status: string = 'Offline';
+  hours = '00';
+  minutes = '00';
+  status = 'Offline';
   time: Object;
-  char: number = 1;
+  char = 1;
   players: number;
   playersCountUp: CountUp;
-  disable: boolean = true;
-  isLoggedIn: boolean = false;
+  disable = true;
+  isLoggedIn = false;
 
   constructor(private clock: ClockService,
               private globals: Globals,
@@ -60,7 +60,7 @@ export class NavigationComponent implements OnInit {
 
   private timeKeeper(): void {
     this.updateClock(ClockService.tickTime(this.time));
-    let eveTime = setInterval(() => {
+    const eveTime = setInterval(() => {
       this.updateClock(ClockService.tickTime(this.time));
     }, 60000);
     setTimeout(() => {

@@ -49,7 +49,7 @@ export class CountUp {
   private dec: number;
   private startTime: number;
 
-  constructor(target: string, startVal: number, endVal: number, decimals: number = 0, duration: number = 1,
+  constructor(target: string, startVal: number, endVal: number, decimals = 0, duration = 1,
               options?: CountUpOptions) {
 
     // target = id of html element or var of previously selected html element where counting occurs
@@ -65,7 +65,7 @@ export class CountUp {
     this.decimals = decimals;
     this.duration = duration;
 
-    for (let key in options) {
+    for (const key in options) {
       if (options.hasOwnProperty(key)) {
         this.options[key] = options[key];
       }
@@ -93,7 +93,7 @@ export class CountUp {
 
   private init(): void {
     let lastTime = 0;
-    let vendors = ['webkit', 'moz', 'ms', 'o'];
+    const vendors = ['webkit', 'moz', 'ms', 'o'];
     for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
       window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
       window.cancelAnimationFrame =
@@ -101,9 +101,9 @@ export class CountUp {
     }
     if (!window.requestAnimationFrame) {
       window.requestAnimationFrame = function (callback: Function): number {
-        let currTime = new Date().getTime();
-        let timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        let id = window.setTimeout(function (): void { callback(currTime + timeToCall); },
+        const currTime = new Date().getTime();
+        const timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        const id = window.setTimeout(function (): void { callback(currTime + timeToCall); },
           timeToCall);
         lastTime = currTime + timeToCall;
         return id;
@@ -141,7 +141,7 @@ export class CountUp {
     if (!this.startTime) {
       this.startTime = timestamp;
     }
-    let progress = timestamp - this.startTime;
+    const progress = timestamp - this.startTime;
     this.remaining = this.duration - progress;
 
     // To ease or not to ease
@@ -183,7 +183,7 @@ export class CountUp {
   }
 
   private printValue(value: number): void {
-    let result: string = this.formattingFn(value);
+    const result: string = this.formattingFn(value);
 
     if (this.targetElement.tagName === 'INPUT') {
       (<HTMLInputElement>this.targetElement).value = result;

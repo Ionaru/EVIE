@@ -17,22 +17,22 @@ export class TransactionService {
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
-  getTransactions(expired: boolean = false): Observable<Array<Object>> {
+  getTransactions(expired = false): Observable<Array<Object>> {
     if (!expired && localStorage.getItem(this.storageTag)) {
-      let jsonData = JSON.parse(localStorage.getItem(this.storageTag));
+      const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
         return this.getTransactions(true);
       } else {
         return Observable.of(TransactionService.processTransactionData(jsonData));
       }
     } else {
-      let url = this.es.constructXMLUrl(this.endpoint, [
+      const url = this.es.constructXMLUrl(this.endpoint, [
         'rowCount=50'
       ]);
-      let headers = new Headers();
+      const headers = new Headers();
       headers.append('Accept', 'application/xml');
       return this.http.get(url, {headers: headers}).map((res) => {
-        let jsonData = processXML(res);
+        const jsonData = processXML(res);
         localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
         return TransactionService.processTransactionData(jsonData);
       });
@@ -40,18 +40,18 @@ export class TransactionService {
   }
 
   private static processTransactionData(jsonData: Object): Array<Object> {
-    let transactionData = [];
+    const transactionData = [];
     if (jsonData['eveapi']['result']['rowset']['row']) {
-      for (let row of jsonData['eveapi']['result']['rowset']['row']) {
-        let date = row['@attributes']['transactionDateTime'];
-        let ppi = row['@attributes']['price'];
-        let quantity = row['@attributes']['quantity'];
-        let typeName = row['@attributes']['typeName'];
-        let typeID = row['@attributes']['typeID'];
-        let clientName = row['@attributes']['clientName'];
-        let clientID = row['@attributes']['clientID'];
-        let transactionType = row['@attributes']['transactionType'];
-        let transactionID = row['@attributes']['transactionID'];
+      for (const row of jsonData['eveapi']['result']['rowset']['row']) {
+        const date = row['@attributes']['transactionDateTime'];
+        const ppi = row['@attributes']['price'];
+        const quantity = row['@attributes']['quantity'];
+        const typeName = row['@attributes']['typeName'];
+        const typeID = row['@attributes']['typeID'];
+        const clientName = row['@attributes']['clientName'];
+        const clientID = row['@attributes']['clientID'];
+        const transactionType = row['@attributes']['transactionType'];
+        const transactionID = row['@attributes']['transactionID'];
         transactionData.push({
           date: date,
           price: formatISK(ppi * quantity),

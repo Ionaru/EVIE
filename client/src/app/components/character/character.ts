@@ -15,10 +15,10 @@ export class Character {
   race: string;
   bloodline: string;
   ancestory: string;
-  balance: number = 0;
+  balance = 0;
   walletJournal: Array<Object> = [];
   walletTransactions: Array<Object> = [];
-  currentlyTraining: number = 0;
+  currentlyTraining = 0;
   skillQueue: Array<number> = [];
   assets: Array<Object> = [];
   planets: Array<Object> = [];

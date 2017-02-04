@@ -32,12 +32,12 @@ export class CharacterService {
 
   registerCharacter(data: CharacterApiData): Character {
 
-    let character = new Character(data);
+    const character = new Character(data);
     this.globals.user.characters.push(character);
     if (data.isActive) {
       this.setActiveCharacter(character, true);
     }
-    let tokenExpiryTime = character.tokenExpiry.getTime();
+    const tokenExpiryTime = character.tokenExpiry.getTime();
     if (tokenExpiryTime <= (Date.now() + tokenRefreshInterval)) {
       this.refreshToken(character).first().subscribe();
     }
@@ -50,11 +50,11 @@ export class CharacterService {
   }
 
   refreshToken(character: Character): Observable<void> {
-    let pid = character.pid;
-    let accessToken = character.accessToken;
-    let url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
+    const pid = character.pid;
+    const accessToken = character.accessToken;
+    const url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
     return this.http.get(url).map((res) => {
-      let response = JSON.parse(res['_body']);
+      const response = JSON.parse(res['_body']);
       character.accessToken = response.data.token;
     });
   }
@@ -65,7 +65,7 @@ export class CharacterService {
       url += '?characterPid=' + character.pid;
     }
 
-    let w = window.open(url, '_blank', 'width=600,height=700');
+    const w = window.open(url, '_blank', 'width=600,height=700');
 
     this.globals.socket.once('SSO_END', (response: SSOSocketResponse) => {
       w.close();
@@ -73,7 +73,7 @@ export class CharacterService {
         if (character) {
           character.updateAuth(response.data);
         } else {
-          let newCharacter = this.registerCharacter(response.data);
+          const newCharacter = this.registerCharacter(response.data);
           this.setActiveCharacter(newCharacter);
         }
       }
@@ -89,7 +89,7 @@ export class CharacterService {
 
     if (!alreadyActive) {
       this.http.post('/sso/activate', {characterPid: characterPid}).subscribe((response) => {
-        let responseBody = JSON.parse(response['_body']);
+        const responseBody = JSON.parse(response['_body']);
         if (responseBody.state === 'success') {
           this.globals.selectedCharacter = character;
           this.globals.characterChangeEvent.next(character);
@@ -101,24 +101,20 @@ export class CharacterService {
     }
   }
 
-  dumpCharacter(character: Character): void {
-    console.log(character);
-  }
-
   deleteCharacter(character: Character): void {
-    let url = '/sso/delete';
-    let data = {
+    const url = '/sso/delete';
+    const data = {
       characterPid: character.pid
     };
     this.http.post(url, data).subscribe((response) => {
-      let responseBody = JSON.parse(response['_body']);
+      const responseBody = JSON.parse(response['_body']);
       if (responseBody.state === 'success') {
         clearInterval(character.refreshTimer);
 
         if (this.globals.selectedCharacter && this.globals.selectedCharacter.pid === character.pid) {
           this.setActiveCharacter();
         }
-        let index = this.globals.user.characters.indexOf(character);
+        const index = this.globals.user.characters.indexOf(character);
         this.globals.user.characters.splice(index, 1);
       }
     });
