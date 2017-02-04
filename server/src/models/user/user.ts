@@ -18,8 +18,11 @@ export interface UserAttr {
   lastLogin: Date;
   characters: any;
 }
+
+/* tslint:disable:no-empty-interface */
 export interface UserInstance extends Instance<UserAttr>, UserAttr { }
 export interface UserModel extends Model<UserAttr, UserAttr> { }
+/* tslint:enable:no-empty-interface */
 
 export async function defineUser(): Promise<void> {
   User = await db.seq.define('users', {

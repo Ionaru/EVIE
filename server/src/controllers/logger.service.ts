@@ -16,7 +16,7 @@ class Logger {
   public debug: any;
 
   constructor() {
-    let transports = this.createTransports();
+    const transports = this.createTransports();
     this.logger = new (winston.Logger)({transports: transports});
     this.info = this.logger.info;
     this.warn = this.logger.warn;
@@ -25,8 +25,8 @@ class Logger {
   }
 
   private createTransports(): Array<TransportInstance> {
-    let consoleLogLevel = mainConfig.get('console_log_level');
-    let transports = [];
+    const consoleLogLevel = mainConfig.get('console_log_level');
+    const transports = [];
 
     transports.push(
       new winston.transports.Console({
@@ -37,27 +37,27 @@ class Logger {
         colorize: true
       }));
 
-    let logDirs = {
+    const logDirs = {
       debug: path.join(__dirname, '../../logs/debug/'),
       info: path.join(__dirname, '../../logs/info/'),
       warn: path.join(__dirname, '../../logs/warning/'),
       error: path.join(__dirname, '../../logs/error/'),
     };
 
-    for (let dirKey in logDirs) {
+    for (const dirKey in logDirs) {
       if (logDirs[dirKey]) {
         mkdirp.sync(logDirs[dirKey]);
       }
     }
 
-    let debugFilePath = logDirs.debug + '_plain.log';
-    let logFilePath = logDirs.info + '_plain.log';
-    let warnFilePath = logDirs.warn + '_plain.log';
-    let errFilePath = logDirs.error + '_plain.log';
-    let debugFileJSONPath = logDirs.debug + '_json.log';
-    let logFileJSONPath = logDirs.info + '_json.log';
-    let warnFileJSONPath = logDirs.warn + '_json.log';
-    let errFileJSONPath = logDirs.error + '_json.log';
+    const debugFilePath = logDirs.debug + '_plain.log';
+    const logFilePath = logDirs.info + '_plain.log';
+    const warnFilePath = logDirs.warn + '_plain.log';
+    const errFilePath = logDirs.error + '_plain.log';
+    const debugFileJSONPath = logDirs.debug + '_json.log';
+    const logFileJSONPath = logDirs.info + '_json.log';
+    const warnFileJSONPath = logDirs.warn + '_json.log';
+    const errFileJSONPath = logDirs.error + '_json.log';
 
     transports.push(
       new winstonDRF({
@@ -163,19 +163,19 @@ class Logger {
   }
 
   private static getLogTimeStamp(): string {
-    let now = new Date();
-    let year = now.getFullYear();
-    let month = ('0' + (now.getMonth() + 1)).slice(-2);
-    let day = ('0' + now.getDate()).slice(-2);
-    let hour = ('0' + now.getHours()).slice(-2);
-    let minute = ('0' + now.getMinutes()).slice(-2);
-    let second = ('0' + now.getSeconds()).slice(-2);
-    let date = [year, month, day].join('-');
-    let time = [hour, minute, second].join(':');
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = ('0' + (now.getMonth() + 1)).slice(-2);
+    const day = ('0' + now.getDate()).slice(-2);
+    const hour = ('0' + now.getHours()).slice(-2);
+    const minute = ('0' + now.getMinutes()).slice(-2);
+    const second = ('0' + now.getSeconds()).slice(-2);
+    const date = [year, month, day].join('-');
+    const time = [hour, minute, second].join(':');
     return [date, time].join(' ');
   };
 }
 
-let logger = new Logger();
+const logger = new Logger();
 logger.info('Winston logger enabled');
 export { logger };

@@ -22,8 +22,11 @@ export interface CharacterAttr {
   isActive: boolean;
   userId: number;
 }
+
+/* tslint:disable:no-empty-interface */
 export interface CharacterInstance extends Instance<CharacterAttr>, CharacterAttr { }
 export interface CharacterModel extends Model<CharacterAttr, CharacterAttr> { }
+/* tslint:enable:no-unused-variable */
 
 export async function defineCharacter(): Promise<void> {
   Character = await db.seq.define('characters', {

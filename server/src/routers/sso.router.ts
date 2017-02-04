@@ -54,7 +54,7 @@ export class SSORouter extends BaseRouter {
         // With a characterPid provided in the request, we initiate the re-authorization process
 
         // Fetch the Character
-        let character: CharacterInstance = await Character.findOne({
+        const character: CharacterInstance = await Character.findOne({
           attributes: ['pid'],
           where: {
             pid: request.query.characterPid,
@@ -71,14 +71,14 @@ export class SSORouter extends BaseRouter {
       // see: http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
       request.session['state'] = generateRandomString(15);
 
-      let args = [
+      const args = [
         'response_type=code',
         'redirect_uri=' + ssoConfig.get('redirect_uri'),
         'client_id=' + ssoConfig.get('client_ID'),
         'scope=' + scopes.join(' '),
         'state=' + request.session['state'],
       ];
-      let finalUrl = 'https://' + oauthHost + oauthPath + args.join('&');
+      const finalUrl = 'https://' + oauthHost + oauthPath + args.join('&');
 
       response.redirect(finalUrl);
     }
@@ -106,7 +106,7 @@ export class SSORouter extends BaseRouter {
         delete request.session['state'];
 
         // Find a Character matching the characterPid saved in the session, create a new Character when none are found.
-        let characters: CharacterInstance = await Character.findOrCreate({
+        const characters: CharacterInstance = await Character.findOrCreate({
           where: {
             pid: request.session['characterPid'] // May be undefined, a new Character is then created.
           },
@@ -118,7 +118,7 @@ export class SSORouter extends BaseRouter {
 
         // The 'findOrCreate' function returns an array, the first element is the Character, the second is whether
         // a new Character was created or not. We only use the first element here.
-        let character = characters[0];
+        const character = characters[0];
 
         // Set the Characters authToken and clear the other fields for re-authorization.
         character.authToken = request.query.code;
@@ -153,10 +153,10 @@ export class SSORouter extends BaseRouter {
    */
   private static async authorizeToken(request: Request, response: Response): Promise<void> {
 
-    let socket = sockets.filter(_ => _.id === request.session['socket'])[0];
+    const socket = sockets.filter(_ => _.id === request.session['socket'])[0];
 
     // Fetch the Character matching the characterPid we saved in the session earlier.
-    let character: CharacterInstance = await Character.findOne({
+    const character: CharacterInstance = await Character.findOne({
       attributes: ['id', 'pid', 'authToken', 'refreshToken'],
       where: {
         pid: request.session['characterPid']
@@ -166,9 +166,9 @@ export class SSORouter extends BaseRouter {
     if (character && character.authToken) {
       // A character is found and the authToken column is filled.
 
-      let postData = `grant_type=authorization_code&code=${character.authToken}`;
+      const postData = `grant_type=authorization_code&code=${character.authToken}`;
 
-      let authRequestOptions = {
+      const authRequestOptions = {
         host: oauthHost,
         path: tokenPath,
         method: 'POST',
@@ -180,8 +180,8 @@ export class SSORouter extends BaseRouter {
 
       // TODO: Use a request module instead of this mess below
 
-      let authRequest = https.request(authRequestOptions, (authResponse) => {
-        let authResult = [];
+      const authRequest = https.request(authRequestOptions, (authResponse) => {
+        const authResult = [];
         authResponse.on('data', (chunk: Buffer) => {
           authResult.push(JSON.parse(chunk.toString()));
         });
@@ -196,7 +196,7 @@ export class SSORouter extends BaseRouter {
           character.authToken = null;
 
           // Prepare a new request to fetch required Character data
-          let characterIdRequestOptions = {
+          const characterIdRequestOptions = {
             host: oauthHost,
             path: verifyPath,
             headers: {
@@ -205,8 +205,8 @@ export class SSORouter extends BaseRouter {
             }
           };
 
-          let characterIdRequest = https.get(characterIdRequestOptions, (characterIdResponse) => {
-            let characterIdResult = [];
+          const characterIdRequest = https.get(characterIdRequestOptions, (characterIdResponse) => {
+            const characterIdResult = [];
             characterIdResponse.on('data', (chunk: Buffer) => {
               characterIdResult.push(JSON.parse(chunk.toString()));
             });
@@ -219,7 +219,7 @@ export class SSORouter extends BaseRouter {
               character.ownerHash = characterIdResult[0]['CharacterOwnerHash'];
               await character.save();
 
-              let characterResponse = character.toJSON();
+              const characterResponse = character.toJSON();
 
               // Delete sensitive and useless information from the response
               delete characterResponse.id;
@@ -238,16 +238,16 @@ export class SSORouter extends BaseRouter {
               sendTextResponse(response, 200, '<h2>You may now close this window.</h2>');
             });
             characterIdResponse.on('error', (error) => {
-              console.log(error);
+              logger.error(error);
             });
             characterIdRequest.end();
           });
           authResponse.on('error', (error) => {
-            console.log(error);
+            logger.error(error);
           });
         });
         authRequest.on('error', (error) => {
-          console.log(error);
+          logger.error(error);
         });
       });
 
@@ -274,11 +274,11 @@ export class SSORouter extends BaseRouter {
   private static async refreshToken(request: Request, response: Response): Promise<void> {
 
     // Get the characterPid and accessToken from the request
-    let characterPid = request.query.pid;
-    let accessToken = request.query.accessToken;
+    const characterPid = request.query.pid;
+    const accessToken = request.query.accessToken;
 
     // Fetch the Character who's accessToken we will refresh
-    let character: CharacterInstance = await Character.findOne({
+    const character: CharacterInstance = await Character.findOne({
       attributes: ['id', 'accessToken', 'refreshToken'],
       where: {
         pid: characterPid,
@@ -291,9 +291,9 @@ export class SSORouter extends BaseRouter {
       if (character.accessToken === accessToken) {
         // The Character's accessToken matches the one sent with the request
 
-        let postData = `grant_type=refresh_token&refresh_token=${character.refreshToken}`;
+        const postData = `grant_type=refresh_token&refresh_token=${character.refreshToken}`;
 
-        let requestOptions = {
+        const requestOptions = {
           host: oauthHost,
           path: tokenPath,
           method: 'POST',
@@ -303,8 +303,8 @@ export class SSORouter extends BaseRouter {
           }
         };
 
-        let httpRequest = https.request(requestOptions, (authReponse) => {
-          let result = [];
+        const httpRequest = https.request(requestOptions, (authReponse) => {
+          const result = [];
           authReponse.on('data', (chunk: Buffer) => {
             result.push(JSON.parse(chunk.toString()));
           });
@@ -318,11 +318,11 @@ export class SSORouter extends BaseRouter {
             });
           });
           authReponse.on('error', (error) => {
-            console.log(error);
+            logger.error(error);
           });
         });
         httpRequest.on('error', (error) => {
-          console.log(error);
+          logger.error(error);
         });
         httpRequest.write(postData);
         httpRequest.end();
@@ -345,11 +345,11 @@ export class SSORouter extends BaseRouter {
 
     if (request.session['user']) {
 
-      let pid = request.body.characterPid;
+      const pid = request.body.characterPid;
 
       if (pid) {
 
-        let user: UserInstance = await User.findOne({
+        const user: UserInstance = await User.findOne({
           attributes: ['id'],
           where: {
             id: request.session['user'].id
@@ -360,15 +360,15 @@ export class SSORouter extends BaseRouter {
           }]
         });
 
-        let characters = user.characters.map(function (character: CharacterInstance): Object {
+        const characters = user.characters.map(function (character: CharacterInstance): Object {
           return character;
         });
 
-        let characterToDeleteList = characters.filter(_ => _.pid === pid);
+        const characterToDeleteList = characters.filter(_ => _.pid === pid);
 
         if (characterToDeleteList.length > 0) {
 
-          let characterToDelete = characterToDeleteList[0];
+          const characterToDelete = characterToDeleteList[0];
 
           if (user.id === characterToDelete.userId) {
 
@@ -409,11 +409,11 @@ export class SSORouter extends BaseRouter {
 
     if (request.session['user']) {
 
-      let pid = request.body.characterPid;
+      const pid = request.body.characterPid;
 
       if (pid) {
 
-        let user: UserInstance = await User.findOne({
+        const user: UserInstance = await User.findOne({
           attributes: ['id'],
           where: {
             id: request.session['user'].id
@@ -424,10 +424,10 @@ export class SSORouter extends BaseRouter {
           }]
         });
 
-        let characters = user.characters.map(function (character: CharacterInstance): Object {
+        const characters = user.characters.map(function (character: CharacterInstance): Object {
           return character;
         });
-        let characterToActivateList = characters.filter(_ => _.pid === pid);
+        const characterToActivateList = characters.filter(_ => _.pid === pid);
 
         if (characterToActivateList.length > 0) {
 
@@ -441,7 +441,7 @@ export class SSORouter extends BaseRouter {
               }
             });
 
-          let characterToActivate = characterToActivateList[0];
+          const characterToActivate = characterToActivateList[0];
 
           if (user.id === characterToActivate.userId) {
 

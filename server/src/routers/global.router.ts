@@ -24,7 +24,7 @@ export class GlobalRouter extends BaseRouter {
     }
 
     // Log the request
-    let id = generateRandomString(5);
+    const id = generateRandomString(5);
     requestList.push({
       id: id,
       request: request
