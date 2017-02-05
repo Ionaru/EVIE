@@ -5,11 +5,12 @@ import { Globals } from '../../globals';
 import { CharacterService } from '../../components/character/character.service';
 import { Character } from '../../components/character/character';
 import { ShipService } from './ship.service';
+import { LocationService } from './location.service';
 
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss'],
-  providers: [CharacterService, ShipService]
+  providers: [CharacterService, ShipService, LocationService]
 })
 export class DashboardComponent implements OnInit {
   result: String;
@@ -20,7 +21,8 @@ export class DashboardComponent implements OnInit {
   constructor(private title: Title,
               private globals: Globals,
               private characterService: CharacterService,
-              private shipService: ShipService) {
+              private shipService: ShipService,
+              private locationService: LocationService) {
     this.globals.characterChangeEvent.subscribe(() => {
       if (this.globals.startUp) {
         this.displayCharacters();
@@ -47,6 +49,11 @@ export class DashboardComponent implements OnInit {
             };
           });
         });
+        this.locationService.getLocation(character).first().subscribe((locationData) => {
+          locationData.first().subscribe((locationName) => {
+            character.location = locationName;
+          });
+        });
       }
     }
   }
@@ -66,12 +73,8 @@ export class DashboardComponent implements OnInit {
     this.characterService.startAuthProcess();
   }
 
-  refreshToken(): void {
-    this.characterService.refreshToken(this.globals.selectedCharacter).subscribe();
-  }
-
-  reAuth(): void {
-    this.characterService.startAuthProcess(this.globals.selectedCharacter);
+  reAuth(character: Character): void {
+    this.characterService.startAuthProcess(character);
   }
 
   deleteCharacter(character: Character): void {

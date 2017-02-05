@@ -88,17 +88,10 @@ export class CharacterService {
     }
 
     if (!alreadyActive) {
-      this.http.post('/sso/activate', {characterPid: characterPid}).subscribe((response) => {
-        const responseBody = JSON.parse(response['_body']);
-        if (responseBody.state === 'success') {
-          this.globals.selectedCharacter = character;
-          this.globals.characterChangeEvent.next(character);
-        }
-      });
-    } else {
-      this.globals.selectedCharacter = character;
-      this.globals.characterChangeEvent.next(character);
+      this.http.post('/sso/activate', {characterPid: characterPid}).first().subscribe();
     }
+    this.globals.selectedCharacter = character;
+    this.globals.characterChangeEvent.next(character);
   }
 
   deleteCharacter(character: Character): void {
