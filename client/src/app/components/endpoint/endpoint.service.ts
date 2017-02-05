@@ -35,7 +35,7 @@ export class EndpointService {
     for (const param of params) {
       url += param + '/';
     }
-    url += '?datasource=tranquility';
+    // url += '?datasource=tranquility';
     return url;
   }
 }

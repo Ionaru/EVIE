@@ -25,9 +25,9 @@ export class Character {
   mails: Array<Object> = [];
   location: string;
   currentShip: {
-    shipName?;
-    shipType?;
-  } = {};
+    shipName;
+    shipType;
+  };
   refreshTimer: Timer;
 
   constructor(data: CharacterApiData) {

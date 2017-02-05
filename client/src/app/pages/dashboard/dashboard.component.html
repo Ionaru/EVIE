@@ -1,19 +1,24 @@
 <h1>Hello {{username}}</h1>
-
 <p>Please add or choose a character below.</p>
 <hr>
 
-<button (click)="startSSO()">Add character DEBUG</button>
-<button (click)="refreshToken()">Refresh Token DEBUG</button>
-<button (click)="reAuth()">Re-authenticate DEBUG</button>
-<br>
-<span>CHARACTER LIST:</span>
+<h2>Character list:</h2>
 <div *ngFor="let character of characters">
   <button *ngIf="!isActive(character)"
-          (click)="setActiveCharacter(character)">Set Active</button>
+          (click)="setActiveCharacter(character)">Set Active
+  </button>
+  <button (click)="reAuth(character)">Re-authenticate</button>
   <button (click)="deleteCharacter(character)">Delete</button>
-  <span>{{character.name}}</span>
-  <span>{{character.characterId}}</span>
-  <span>{{character.currentShip.shipName}}</span>
-  <span>{{character.currentShip.shipType}}</span>
+  <span>| <fa [name]="'user'" title="Name"></fa> {{character.name}}</span>
+  <span>| <fa [name]="'id-card'" title="Character ID"></fa> {{character.characterId}}</span>
+  <span>| <fa [name]="'rocket'" title="Current ship"></fa>
+      <span *ngIf="character.currentShip">{{character.currentShip.shipName}} ({{character.currentShip.shipType}})</span>
+      <span *ngIf="!character.currentShip"><fa [name]="'circle-o-notch'" [spin]=true title="Loading..."></fa></span>
+  </span>
+  <span>| <fa [name]="'map'" title="Current location"></fa>
+      <span *ngIf="character.location">{{character.location}}</span>
+      <span *ngIf="!character.location"><fa [name]="'circle-o-notch'" [spin]=true title="Loading..."></fa></span>
+  </span>
 </div>
+<hr>
+<button (click)="startSSO()">Add character</button>
