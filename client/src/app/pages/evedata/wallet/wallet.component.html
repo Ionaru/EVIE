@@ -55,7 +55,7 @@
       <a (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
     </td>
     <td data-label="price" [ngClass]="buyOrSell(entry.transactionType)">
-      <span>{{ entry.price }} ISK</span> (<span>{{ entry.ppi }} ISK</span> per item)
+      <span>{{ entry.price }} ISK</span><span *ngIf="entry.quantity > 1"> ({{ entry.ppi }} ISK per item)</span>
     </td>
   </tr>
   </tbody>
