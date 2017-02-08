@@ -1343,9 +1343,9 @@ send@0.14.2:
     range-parser "~1.2.0"
     statuses "~1.3.1"
 
-sequelize@^3.30.0:
-  version "3.30.1"
-  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-3.30.1.tgz#7ddd0157625c4d9becc9268de965983ba74bf9c1"
+sequelize@^3.30.2:
+  version "3.30.2"
+  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-3.30.2.tgz#8fb5a5769a01777451593924092f9d3061eb935f"
   dependencies:
     bluebird "^3.3.4"
     depd "^1.1.0"
