@@ -41,7 +41,7 @@
     "@types/jsesc": "^0.4.29",
     "@types/mkdirp": "^0.3.29",
     "@types/mysql": "0.0.31",
-    "@types/node": "^7.0.4",
+    "@types/node": "^7.0.5",
     "@types/sequelize": "^4.0.39",
     "@types/socket.io": "^1.4.27",
     "@types/winston": "2.2.0",
