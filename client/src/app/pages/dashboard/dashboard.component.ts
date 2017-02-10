@@ -6,6 +6,7 @@ import { CharacterService } from '../../components/character/character.service';
 import { Character } from '../../components/character/character';
 import { ShipService } from './ship.service';
 import { LocationService } from './location.service';
+import { EndpointService } from '../../components/endpoint/endpoint.service';
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -20,6 +21,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(private title: Title,
               private globals: Globals,
+              private endpointService: EndpointService,
               private characterService: CharacterService,
               private shipService: ShipService,
               private locationService: LocationService) {
@@ -41,21 +43,30 @@ export class DashboardComponent implements OnInit {
     this.characters = this.globals.user.characters;
     if (this.characters) {
       for (const character of this.characters) {
-        this.shipService.getCurrentShip(character).first().subscribe((data) => {
-          data.first().subscribe((shipData) => {
-            character.currentShip = {
-              shipName: shipData['name'],
-              shipType: shipData['ship']
+        this.shipService.getCurrentShip(character).first().subscribe((shipData) => {
+          character.currentShip = {
+            id: shipData.id,
+            name: shipData.name,
+            type: null,
+          };
+          this.locationService.getLocation(character).first().subscribe((locationID) => {
+            // character.location.id = locationID;
+            character.location = {
+              id: locationID,
+              name: null,
             };
-          });
-        });
-        this.locationService.getLocation(character).first().subscribe((locationData) => {
-          locationData.first().subscribe((locationName) => {
-            character.location = locationName;
+            this.endpointService.getNames(character.location.id, character.currentShip.id).first().subscribe((nameData) => {
+              character.location.name = nameData.filter(_ => _.id === character.location.id)[0]['name'];
+              character.currentShip.type = nameData.filter(_ => _.id === character.currentShip.id)[0]['name'];
+            });
           });
         });
       }
     }
+  }
+
+  getCharacterData(character: Character): void {
+    this.characterService.getCharacterData(character).subscribe();
   }
 
   isActive(character: Character): boolean {

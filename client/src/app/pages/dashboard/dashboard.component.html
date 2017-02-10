@@ -8,16 +8,17 @@
           (click)="setActiveCharacter(character)">Set Active
   </button>
   <button (click)="reAuth(character)">Re-authenticate</button>
+  <button (click)="getCharacterData(character)">Get Data</button>
   <button (click)="deleteCharacter(character)">Delete</button>
   <span>| <fa [name]="'user'" title="Name"></fa> {{character.name}}</span>
   <span>| <fa [name]="'id-card'" title="Character ID"></fa> {{character.characterId}}</span>
   <span>| <fa [name]="'rocket'" title="Current ship"></fa>
-      <span *ngIf="character.currentShip">{{character.currentShip.shipName}} ({{character.currentShip.shipType}})</span>
-      <span *ngIf="!character.currentShip"><fa [name]="'circle-o-notch'" [spin]=true title="Loading..."></fa></span>
+      <span *ngIf="character.currentShip?.type">{{character.currentShip.name}} ({{character.currentShip.type}})</span>
+      <span *ngIf="!character.currentShip?.type"><fa [name]="'circle-o-notch'" [spin]=true title="Loading..."></fa></span>
   </span>
   <span>| <fa [name]="'map'" title="Current location"></fa>
-      <span *ngIf="character.location">{{character.location}}</span>
-      <span *ngIf="!character.location"><fa [name]="'circle-o-notch'" [spin]=true title="Loading..."></fa></span>
+      <span *ngIf="character.location?.name">{{character.location.name}}</span>
+      <span *ngIf="!character.location?.name"><fa [name]="'circle-o-notch'" [spin]=true title="Loading..."></fa></span>
   </span>
 </div>
 <hr>
