@@ -1,4 +1,5 @@
 import https = require('https');
+import fetch from 'node-fetch';
 
 import { Response, Request } from 'express';
 import { logger } from '../controllers/logger.service';
@@ -15,6 +16,7 @@ const scopes = [
   'esi-location.read_location.v1',
   'esi-location.read_ship_type.v1',
 ];
+const protocol = 'https://';
 const oauthHost = 'login.eveonline.com';
 const oauthPath = '/oauth/authorize?';
 const tokenPath = '/oauth/token?';
@@ -273,66 +275,65 @@ export class SSORouter extends BaseRouter {
    */
   private static async refreshToken(request: Request, response: Response): Promise<void> {
 
-    // Get the characterPid and accessToken from the request
-    const characterPid = request.query.pid;
-    const accessToken = request.query.accessToken;
+    try {
 
-    // Fetch the Character who's accessToken we will refresh
-    const character: CharacterInstance = await Character.findOne({
-      attributes: ['id', 'accessToken', 'refreshToken'],
-      where: {
-        pid: characterPid,
-      }
-    });
+      // Get the characterPid and accessToken from the request
+      const characterPid = request.query.pid;
+      const accessToken = request.query.accessToken;
 
-    if (character) {
-      // A character was found in the database
+      // Fetch the Character who's accessToken we will refresh
+      const character: CharacterInstance = await Character.findOne({
+        attributes: ['id', 'accessToken', 'refreshToken'],
+        where: {
+          pid: characterPid,
+        }
+      });
 
-      if (character.accessToken === accessToken) {
-        // The Character's accessToken matches the one sent with the request
+      if (character) {
+        // A character was found in the database
 
-        const postData = `grant_type=refresh_token&refresh_token=${character.refreshToken}`;
+        if (character.accessToken === accessToken) {
+          // The Character's accessToken matches the one sent with the request
 
-        const requestOptions = {
-          host: oauthHost,
-          path: tokenPath,
-          method: 'POST',
-          headers: {
-            'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
-            'Content-Type': 'application/x-www-form-urlencoded',
+          const postData = `grant_type=refresh_token&refresh_token=${character.refreshToken}`;
+
+          const requestOptions = {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: postData,
+          };
+
+          const refreshResponse = await fetch(protocol + oauthHost + tokenPath, requestOptions);
+          const refreshResult = await refreshResponse.json();
+          if (refreshResult.error) {
+            logger.error(refreshResult);
+            sendResponse(response, 500, 'RefreshRequestError');
+            return;
           }
-        };
+          character.refreshToken = refreshResult['refresh_token'];
+          character.accessToken = refreshResult['access_token'];
+          character.tokenExpiry = new Date(Date.now() + (refreshResult['expires_in'] * 1000));
+          await character.save();
+          sendResponse(response, 200, 'TokenRefreshed', {
+            token: refreshResult['access_token']
+          });
 
-        const httpRequest = https.request(requestOptions, (authReponse) => {
-          const result = [];
-          authReponse.on('data', (chunk: Buffer) => {
-            result.push(JSON.parse(chunk.toString()));
-          });
-          authReponse.on('end', async() => {
-            character.refreshToken = result[0]['refresh_token'];
-            character.accessToken = result[0]['access_token'];
-            character.tokenExpiry = new Date(Date.now() + (result[0]['expires_in'] * 1000));
-            await character.save();
-            sendResponse(response, 200, 'TokenRefreshed', {
-              token: result[0]['access_token']
-            });
-          });
-          authReponse.on('error', (error) => {
-            logger.error(error);
-          });
-        });
-        httpRequest.on('error', (error) => {
-          logger.error(error);
-        });
-        httpRequest.write(postData);
-        httpRequest.end();
+        } else {
+          // The access token sent with the request did not match with the fetched Character
+          sendResponse(response, 401, 'WrongAccessToken');
+        }
+
       } else {
-        // The access token sent with the request did not match with the fetched Character
-        sendResponse(response, 401, 'WrongAccessToken');
+        // There was no Character found with the Pid provided in the request
+        sendResponse(response, 404, 'CharacterNotFound');
       }
-    } else {
-      // There was no Character found with the Pid provided in the request
-      sendResponse(response, 404, 'CharacterNotFound');
+
+    } catch (error) {
+      logger.error(error);
+      sendResponse(response, 500, 'RefreshRequestError');
     }
   }
 
@@ -449,7 +450,7 @@ export class SSORouter extends BaseRouter {
             await characterToActivate.save();
             sendResponse(response, 200, 'CharacterActivated');
 
-        } else {
+          } else {
 
             // That character does not belong to the user who initiated the request
             sendResponse(response, 401, 'NotYourCharacter');
