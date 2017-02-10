@@ -3,32 +3,24 @@ import { Character } from './character';
 import { Observable } from 'rxjs';
 import { EndpointService } from '../endpoint/endpoint.service';
 import { Globals } from '../../globals';
-import { Http } from '@angular/http';
+import { Http, Headers, Response } from '@angular/http';
 
 const tokenRefreshInterval = 15 * 60 * 1000;
 
 @Injectable()
 export class CharacterService {
 
-  constructor(private es: EndpointService, private globals: Globals, private http: Http) { }
+  constructor(private endpointService: EndpointService, private globals: Globals, private http: Http) { }
 
-  // public getCharacterData(character: Character): Observable<Character> {
-  //   let url: string = this.es.constructXMLUrl(this.es.getEndpoint('CharacterSheet'), [
-  //     'characterID=' + ''
-  //   ]);
-  //   let headers: Headers = new Headers();
-  //   headers.append('Accept', 'application/xml');
-  //   return this.http.get(url, {
-  //     headers: headers
-  //   }).map((res: Response) => {
-  //     let data: Object = processXML(res)['eveapi'];
-  //     character.corporation = data['result']['corporationName']['#text'];
-  //     character.corporation_id = data['result']['corporationID']['#text'];
-  //     character.alliance = data['result']['allianceName']['#text'];
-  //     character.alliance_id = data['result']['allianceID']['#text'];
-  //     return character;
-  //   });
-  // }
+  public getCharacterData(character: Character): Observable<any> {
+    const url = this.endpointService.constructESIUrl('v4/characters', character.characterId);
+    const headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + character.accessToken);
+    return this.http.get(url, {headers: headers}).map((response: Response) => {
+      const rep = JSON.parse(response.text());
+      return true;
+    });
+  }
 
   registerCharacter(data: CharacterApiData): Character {
 
@@ -39,21 +31,21 @@ export class CharacterService {
     }
     const tokenExpiryTime = character.tokenExpiry.getTime();
     if (tokenExpiryTime <= (Date.now() + tokenRefreshInterval)) {
-      this.refreshToken(character).first().subscribe();
+      this.refreshToken(character);
     }
 
     character.refreshTimer = setInterval(() => {
-      this.refreshToken(character).first().subscribe();
+      this.refreshToken(character);
     }, tokenRefreshInterval);
 
     return character;
   }
 
-  refreshToken(character: Character): Observable<void> {
+  refreshToken(character: Character): void {
     const pid = character.pid;
     const accessToken = character.accessToken;
     const url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
-    return this.http.get(url).map((res) => {
+    this.http.get(url).first().subscribe((res) => {
       const response = JSON.parse(res['_body']);
       character.accessToken = response.data.token;
     });

@@ -14,15 +14,10 @@ export class ShipService {
     headers.append('Authorization', 'Bearer ' + character.accessToken);
     return this.http.get(url, {headers: headers}).map((response) => {
       const rep = JSON.parse(response['_body']);
-      const url2 = this.endpointService.constructESIUrl('v2/universe/names');
-      return this.http.post(url2, [rep['ship_type_id']], {headers: headers}).map((response2) => {
-        const repJSON = JSON.parse(response2['_body']);
-        return {
-          name: rep['ship_name'],
-          ship: repJSON[0]['name'],
-          timestamp: new Date().getTime()
-        };
-      });
+      return {
+        id: rep['ship_type_id'],
+        name: rep['ship_name'],
+      };
     });
   }
 }
