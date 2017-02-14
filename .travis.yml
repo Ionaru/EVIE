@@ -11,8 +11,11 @@ cache: yarn
 env:
 - SUB_DIR=client
 - SUB_DIR=server
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH=$HOME/.yarn/bin:$PATH
 install:
-- sudo yarn global add @angular/cli
+- if [[ "$SUB_DIR" == "client" ]]; then yarn global add @angular/cli; fi
 - tar xvf travis.tar
 - cd $SUB_DIR
 - yarn install
