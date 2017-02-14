@@ -2,6 +2,7 @@
 "use strict";
 
 require('ts-node').register({
-    project: './src/'
+  project: './src/'
 });
-require('./www');
+var application = require('./www');
+application.init().catch(console.error.bind(console));

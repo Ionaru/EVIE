@@ -16,7 +16,19 @@ class Logger {
   public debug: any;
 
   constructor() {
-    const transports = this.createTransports();
+    let transports = this.createTransports();
+    if (process.env.SILENT === 'true') {
+      transports = [
+        new winston.transports.Console({
+          level: 'error',
+          timestamp: function (): string {
+            return Logger.getLogTimeStamp();
+          },
+          colorize: true
+        })
+      ];
+    }
+
     this.logger = new (winston.Logger)({transports: transports});
     this.info = this.logger.info;
     this.warn = this.logger.warn;
