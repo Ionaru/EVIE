@@ -6,19 +6,20 @@ node_js:
 - '6'
 branches:
   only:
-    - master
+  - master
+cache: yarn
 env:
-  - SUB_DIR=client
-  - SUB_DIR=server
+- SUB_DIR=client
+- SUB_DIR=server
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash
   - export PATH=$HOME/.yarn/bin:$PATH
+  - openssl aes-256-cbc -K $encrypted_170d92a4e5a8_key -iv $encrypted_170d92a4e5a8_iv
+    -in travis.tar.enc -out travis.tar -d
 install:
-- yarn global add @angular/cli
+- if [[ "$SUB_DIR" == "client" ]]; then yarn global add @angular/cli; fi
+- tar xvf travis.tar
 - cd $SUB_DIR
 - yarn install
 script:
 - yarn run autotest
-cache:
-  directories:
-  - $HOME/.cache/yarn

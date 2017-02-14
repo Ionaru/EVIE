@@ -16,13 +16,15 @@ import { APIRouter } from './routers/api.router';
 import { SSORouter } from './routers/sso.router';
 import { AngularRedirectRouter } from './routers/angular.router';
 import { GlobalRouter } from './routers/global.router';
+import { Store } from 'express-session';
+import { RequestHandler } from 'express-serve-static-core';
 
 
 export class App {
 
   app: express.Application;
-  sessionStore: any;
-  sessionParser: any;
+  sessionStore: Store;
+  sessionParser: RequestHandler;
 
   /**
    * The main startup function for the application

@@ -9,13 +9,15 @@ import { logger } from '../controllers/logger.service';
 import { App } from '../app';
 import { db } from '../controllers/db.service';
 import { mainConfig } from '../controllers/config.service';
+import { Server } from 'http';
 
-init().catch(console.error.bind(console));
+export let sockets: Array<SessionSocket> = [];
+let express: App;
+let server: Server;
+let io: SocketIO.Server;
 
-export let sockets: Array<any> = [];
-
-async function init(): Promise<void> {
-  const express = new App();
+export async function init(): Promise<void> {
+  express = new App();
   await express.mainStartupSequence();
 
   /**
@@ -27,13 +29,13 @@ async function init(): Promise<void> {
   /**
    * Create Express server.
    */
-  const server = http.createServer(express.app);
+  server = http.createServer(express.app);
 
-  const io: any = sio.listen(server);
+  io = sio.listen(server);
 
   const socketServer = io.of('/');
   socketServer.use(ios(express.sessionParser));
-  socketServer.on('connection', async (socket: SessionSocket) => {
+  socketServer.on('connection', async(socket: SessionSocket) => {
     socket.handshake.session['socket'] = socket.id;
     await socket.handshake.session.save(() => {});
     sockets.push(socket);
@@ -50,8 +52,10 @@ async function init(): Promise<void> {
   server.on('listening', onListening);
 
   process.stdin.resume();
-  process.on('SIGINT', exitHandler.bind(null, {cleanup: true}));
-  process.on('uncaughtException', exitHandler.bind(null, {cleanup: true}));
+  process.on('SIGINT', exit.bind(null, {cleanup: true}));
+  if (process.env.TEST !== 'true') {
+    process.on('uncaughtException', exit.bind(null, {cleanup: true}));
+  }
   process.on('unhandledRejection', function (reason: string, p: Promise<any>): void {
     console.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
   });
@@ -111,51 +115,71 @@ async function init(): Promise<void> {
       : 'port ' + addr.port;
     logger.info('Listening on ' + bind);
   }
+}
 
-  /**
-   * Function that gets executed when the app shuts down
-   */
-  function exitHandler(options: Object, err: any): void {
-    // Ensure the app shuts down when there is an exception during shutdown
-    process.on('uncaughtException', () => {
-      process.exit(0);
-    });
-    if (options['cleanup']) {
-      logger.info('Got shutdown command, executing cleanup tasks.');
-      const cleanup = function (done: Function): void {
-        // Destroy all sessions on server shutdown
-        express.sessionStore.clear((sessionStoreError) => {
-          if (sessionStoreError) {
-            logger.error('Error while clearing session store');
-            logger.error(sessionStoreError);
-          } else {
-            logger.info('Session store closed');
-          }
-          // Close Sequelize DB pool
-          db.seq.close();
-          // Close DB connection pool after session store is done
-          db.get().end((databaseError) => {
-            if (databaseError) {
-              logger.error('Error while closing Database connection');
-              logger.error(databaseError);
-            } else {
-              logger.info('Database connection closed');
-            }
-            socketServer.emit('STOP');
-            return done();
-          });
-        });
-      };
-      cleanup(function (): void {
-        logger.info('Cleanup tasks done');
-        if (err) {
-          logger.error('Shutdown was the result of an uncaught error, more details below');
-          logger.error(err);
-        } else {
-          logger.info('Shutdown complete, goodbye!');
-        }
-        process.exit(0);
-      });
+/**
+ * This function will ensure everything is shut down gracefully
+ */
+export function cleanup(callback: Function): void {
+  logger.info('Executing cleanup tasks.');
+
+  express.sessionStore.clear((sessionStoreError) => {
+    if (sessionStoreError) {
+      logger.error('Error while clearing session store');
+      logger.error(sessionStoreError);
+    } else {
+      logger.info('Session store closed');
     }
+    db.seq.close();
+    db.get().end((databaseError) => {
+      if (databaseError) {
+        logger.error('Error while closing Database connection');
+        logger.error(databaseError);
+      } else {
+        logger.info('Database connection closed');
+      }
+      io.emit('STOP');
+      io.close();
+      server.close(() => {
+        logger.info(`Http server closed`);
+        callback();
+      });
+    });
+  });
+}
+
+/**
+ * Function that gets executed when the app shuts down
+ */
+function exit(options: Object, err?: any): void {
+  logger.info('Got shutdown event, starting shutdown sequence');
+
+  // Ensure the app shuts down when there is an exception during shutdown
+  process.on('uncaughtException', () => {
+    process.exit(0);
+  });
+  process.on('unhandledRejection', (reason: string, p: Promise<any>): void => {
+    console.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
+    process.exit(0);
+  });
+
+  if (options['cleanup']) {
+    cleanup(() => {
+      logger.info('Cleanup tasks done');
+      shutdown(err);
+    });
+  } else {
+    shutdown(err);
   }
 }
+
+function shutdown(err?: any): void {
+  if (err) {
+    logger.error('Shutdown was the result of an uncaught error, more details below');
+    logger.error(err);
+  } else {
+    logger.info('Shutdown complete, goodbye!');
+  }
+  process.exit(0);
+}
+
