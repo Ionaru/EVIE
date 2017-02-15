@@ -5,9 +5,10 @@ import path = require('path');
 
 import TransportInstance = winston.TransportInstance;
 import LoggerInstance = winston.LoggerInstance;
-import { mainConfig } from './config.service';
 
-class Logger {
+export let logger: Logger;
+
+export class Logger {
 
   private logger: LoggerInstance;
   public info: any;
@@ -34,10 +35,12 @@ class Logger {
     this.warn = this.logger.warn;
     this.error = this.logger.error;
     this.debug = this.logger.debug;
+
+    this.info('Winston logger enabled');
   }
 
   private createTransports(): Array<TransportInstance> {
-    const consoleLogLevel = mainConfig.get('console_log_level');
+    const consoleLogLevel = process.env.LEVEL || 'info';
     const transports = [];
 
     transports.push(
@@ -187,7 +190,3 @@ class Logger {
     return [date, time].join(' ');
   };
 }
-
-const logger = new Logger();
-logger.info('Winston logger enabled');
-export { logger };

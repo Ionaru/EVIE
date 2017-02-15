@@ -5,11 +5,13 @@ import path = require('path');
 import helmet = require('helmet');
 import es = require('express-session');
 import ems = require('express-mysql-session');
+import configservice = require('./controllers/config.service');
+import loggerservice = require('./controllers/logger.service');
 
 // ES6 imports
-import { logger } from './controllers/logger.service';
+import { logger, Logger } from './controllers/logger.service';
 import { db } from './controllers/db.service';
-import { mainConfig } from './controllers/config.service';
+import { Config, mainConfig } from './controllers/config.service';
 import { defineUser } from './models/user/user';
 import { defineCharacter } from './models/character/character';
 import { APIRouter } from './routers/api.router';
@@ -30,6 +32,14 @@ export class App {
    * The main startup function for the application
    */
   async mainStartupSequence(): Promise<void> {
+    // Create the logger, now we can use Winston for logging
+    loggerservice.logger = new Logger();
+
+    // Load the configuration files
+    configservice.mainConfig = new Config('main');
+    configservice.dbConfig = new Config('database');
+    configservice.ssoConfig = new Config('sso');
+
     logger.info('Beginning app startup');
 
     // Create the Express Application

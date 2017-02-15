@@ -1,7 +1,11 @@
 import assert = require('assert');
 import sinon = require('sinon');
 import www = require('../bin/www');
+import fetch from 'node-fetch';
+
 import { db } from '../controllers/db.service';
+import { logger } from '../controllers/logger.service';
+import { mainConfig, dbConfig, ssoConfig } from '../controllers/config.service';
 
 describe('Mocha', function () {
   describe('sanity', function () {
@@ -54,8 +58,13 @@ describe('Mocha', function () {
 });
 
 describe('Application', function () {
+
   this.timeout(10000);
-  describe('main', function () {
+  process.env['SILENT'] = true;
+  process.env['TEST'] = true;
+  process.env['PORT'] = 3001;
+
+  describe('control', function () {
     it('should be able to start', async function () {
       await www.init().catch(console.error.bind(console));
     });
@@ -92,6 +101,78 @@ describe('Application', function () {
         assert.equal(db.get()['_closed'], true);
         done();
       });
+    });
+  });
+
+  describe('logger', function () {
+    before(async function () {
+      await www.init().catch(console.error.bind(console));
+    });
+
+    after(function (done) {
+      www.cleanup(() => {
+        done();
+      });
+    });
+
+    it('should be able to use the logger', async function () {
+      logger.info('Test message please ignore');
+      logger.warn('Test message please ignore');
+      logger.debug('Test message please ignore');
+    });
+  });
+
+  describe('configuration', function () {
+    before(async function () {
+      await www.init().catch(console.error.bind(console));
+    });
+
+    after(function (done) {
+      www.cleanup(() => {
+        done();
+      });
+    });
+
+    it('should be able read from a config file', async function () {
+      mainConfig.get('testValueDoesNotExist');
+      dbConfig.get('testValueDoesNotExist');
+      ssoConfig.get('testValueDoesNotExist');
+    });
+
+    it('should\'t be empty', async function () {
+      assert.notDeepEqual(mainConfig.config, {});
+      assert.notDeepEqual(dbConfig.config, {});
+      assert.notDeepEqual(ssoConfig.config, {});
+    });
+  });
+});
+
+describe('API route', function () {
+
+  this.timeout(10000);
+  process.env['SILENT'] = true;
+  process.env['TEST'] = true;
+  process.env['PORT'] = 3001;
+
+  const url = `http://127.0.0.1:${process.env['PORT']}/api`;
+
+  before(async function () {
+    await www.init().catch(console.error.bind(console));
+  });
+
+  after(function (done) {
+    www.cleanup(() => {
+      done();
+    });
+  });
+
+  describe('handshake', function () {
+
+    it('should should return NotLoggedIn on first call', async function () {
+      const handshakeResponse = await fetch(url + '/handshake');
+      const handshakeResult = await handshakeResponse.json();
+      assert.equal(handshakeResult['state'], 'success');
+      assert.equal(handshakeResult['message'], 'NotLoggedIn');
     });
   });
 });
