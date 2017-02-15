@@ -4,9 +4,13 @@ import path = require('path');
 
 import { logger } from './logger.service';
 
-export let configPath = path.join(__dirname, '../../../config/');
+export const configPath = path.join(__dirname, '../../../config/');
 
-class Config {
+export let mainConfig: Config;
+export let dbConfig: Config;
+export let ssoConfig: Config;
+
+export class Config {
 
   config: Object;
   configName: string;
@@ -16,6 +20,7 @@ class Config {
     try {
       // Try to read the config file from the config folder in the project root directory
       this.config = ini.parse(fs.readFileSync(path.join(configPath, configName + '.ini'), 'utf-8'));
+      logger.info(`Config loaded: ${configName + '.ini'}`);
     } catch (error) {
       // Config file was not found
       if (error.code === 'ENOENT' && allowedMissing) {
@@ -45,8 +50,3 @@ class Config {
     }
   }
 }
-
-const mainConfig = new Config('main');
-const dbConfig = new Config('database');
-const ssoConfig = new Config('sso');
-export { mainConfig, dbConfig, ssoConfig };

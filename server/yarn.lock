@@ -82,9 +82,9 @@
   version "7.0.5"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.5.tgz#96a0f0a618b7b606f1ec547403c00650210bfbb7"
 
-"@types/sequelize@^4.0.39":
-  version "4.0.40"
-  resolved "https://registry.yarnpkg.com/@types/sequelize/-/sequelize-4.0.40.tgz#008d1289e1a24629e225cc199f338ee4b90d8896"
+"@types/sequelize@^4.0.41":
+  version "4.0.41"
+  resolved "https://registry.yarnpkg.com/@types/sequelize/-/sequelize-4.0.41.tgz#8857c9c9f1c8ea0248e428cf93ab2cfe37e2e771"
   dependencies:
     "@types/bluebird" "*"
     "@types/lodash" "*"
@@ -476,13 +476,13 @@ debug@2.2.0, debug@~2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@2.3.3, debug@^2.2.0:
+debug@2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.3.3.tgz#40c453e67e6e13c901ddec317af8986cda9eff8c"
   dependencies:
     ms "0.7.2"
 
-debug@2.6.1, debug@~2.6.0:
+debug@2.6.1, debug@^2.2.0, debug@~2.6.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.1.tgz#79855090ba2c4e3115cc7d8769491d58f0491351"
   dependencies:

@@ -12,52 +12,65 @@ import { mainConfig } from '../controllers/config.service';
 import { Server } from 'http';
 
 export let sockets: Array<SessionSocket> = [];
-let express: App;
-let server: Server;
-let io: SocketIO.Server;
+export let express: App;
+export let server: Server;
+export let io: SocketIO.Server;
 
+/**
+ * This function initialises the entire server
+ */
 export async function init(): Promise<void> {
+  // Create the express application and fire the main startup sequence
   express = new App();
   await express.mainStartupSequence();
 
-  /**
-   * Get port from environment and store in Express.
-   */
+  // Get port from environment || config || default and store in Express.
   const port = normalizePort(process.env.PORT || mainConfig.get('backend_port') || 3000);
   express.app.set('port', port);
 
-  /**
-   * Create Express server.
-   */
+  // Create the HTTP server and give it the Express application for settings
   server = http.createServer(express.app);
 
+  // Start a websocket server using the HTTP server for settings
   io = sio.listen(server);
 
+  // The websocket server listens on '/'
   const socketServer = io.of('/');
+
+  // The websocket server needs the sessionParser to parse... sessions!
   socketServer.use(ios(express.sessionParser));
+
+  // On connection with a client, save the socket ID to the client session and add it to the list of connected sockets
   socketServer.on('connection', async(socket: SessionSocket) => {
     socket.handshake.session['socket'] = socket.id;
     await socket.handshake.session.save(() => {});
     sockets.push(socket);
-    socket.on('disconnect', () => {
+
+    // Remove the socket from the socket list when a client disconnects
+    socket.on('disconnect', async() => {
       sockets.splice(sockets.indexOf(socket), 1);
     });
   });
 
-  /**
-   * Listen on provided port, on all network interfaces.
-   */
+  // Listen on provided port, on all network interfaces.
   server.listen(port);
+
+  // The 'listen' function call above returns 'error' or 'listening', we act on those events
   server.on('error', onError);
   server.on('listening', onListening);
 
+  // When a signal is sent that would normally stop the application, resume instead shut the application down gracefully
   process.stdin.resume();
   process.on('SIGINT', exit.bind(null, {cleanup: true}));
+
+  // Also perform a graceful shutdown when an uncaught exception is thrown, expect when in a testing environment
   if (process.env.TEST !== 'true') {
     process.on('uncaughtException', exit.bind(null, {cleanup: true}));
   }
+
+  // Promises that fail should not cause the application to stop, instead we print the error
   process.on('unhandledRejection', function (reason: string, p: Promise<any>): void {
-    console.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
+    logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
   });
 
   /**
@@ -156,11 +169,11 @@ function exit(options: Object, err?: any): void {
 
   // Ensure the app shuts down when there is an exception during shutdown
   process.on('uncaughtException', () => {
-    process.exit(0);
+    process.exit(1);
   });
   process.on('unhandledRejection', (reason: string, p: Promise<any>): void => {
     console.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
-    process.exit(0);
+    process.exit(1);
   });
 
   if (options['cleanup']) {
@@ -182,4 +195,3 @@ function shutdown(err?: any): void {
   }
   process.exit(0);
 }
-
