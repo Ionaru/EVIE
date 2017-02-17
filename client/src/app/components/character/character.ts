@@ -24,13 +24,13 @@ export class Character {
   planets: Array<Object> = [];
   mails: Array<Object> = [];
   location: {
-    id;
-    name;
+    id: number;
+    name: string | null;
   };
   currentShip: {
-    id;
-    name;
-    type;
+    id: number;
+    name: string;
+    type: string | null;
   };
   refreshTimer: Timer;
 
