@@ -11,15 +11,19 @@ cache: yarn
 env:
 - SUB_DIR=client
 - SUB_DIR=server
+before_script:
+- if [[ "$SUB_DIR" == "client" ]]; then export CHROME_BIN=chromium-browser; fi
+- if [[ "$SUB_DIR" == "client" ]]; then export DISPLAY=:99.0; fi
+- if [[ "$SUB_DIR" == "client" ]]; then sh -e /etc/init.d/xvfb start; fi
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH=$HOME/.yarn/bin:$PATH
-  - openssl aes-256-cbc -K $encrypted_170d92a4e5a8_key -iv $encrypted_170d92a4e5a8_iv
-    -in travis.tar.enc -out travis.tar -d
+- curl -o- -L https://yarnpkg.com/install.sh | bash
+- export PATH=$HOME/.yarn/bin:$PATH
+- openssl aes-256-cbc -K $encrypted_170d92a4e5a8_key -iv $encrypted_170d92a4e5a8_iv
+  -in travis.tar.enc -out travis.tar -d
 install:
 - if [[ "$SUB_DIR" == "client" ]]; then yarn global add @angular/cli; fi
 - tar xvf travis.tar
 - cd $SUB_DIR
-- yarn install
+- yarn
 script:
 - yarn run autotest
