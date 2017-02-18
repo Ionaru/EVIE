@@ -4,21 +4,21 @@ import { Character } from '../../components/character/character';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
 import { Globals } from '../../globals';
-import { ShipService } from './ship.service';
+import { LocationService } from './location.service';
 
 describe('Dashboard', () => {
   describe('Services', () => {
-    describe('ShipService', () => {
+    describe('LocationService', () => {
 
       let mockBackend: MockBackend;
-      let shipService: ShipService;
+      let locationService: LocationService;
 
       beforeEach(async(() => {
         TestBed.configureTestingModule({
           providers: [
             BaseRequestOptions,
             MockBackend,
-            ShipService,
+            LocationService,
             EndpointService,
             Globals,
             {
@@ -36,7 +36,7 @@ describe('Dashboard', () => {
 
         const testbed = getTestBed();
         mockBackend = testbed.get(MockBackend);
-        shipService = testbed.get(ShipService);
+        locationService = testbed.get(LocationService);
 
       }));
 
@@ -48,9 +48,9 @@ describe('Dashboard', () => {
         });
       }
 
-      it('should be able to process ship data', () => {
+      it('should be able to process location data', () => {
         setupConnections(mockBackend, {
-          body: JSON.stringify({'ship_type_id': 596, 'ship_item_id': 1002943704843, 'ship_name': 'Dummy\'s Impairor'}),
+          body: JSON.stringify({'solar_system_id': 1000100}),
           status: 200
         });
         const dummyData: CharacterApiData = {
@@ -65,13 +65,9 @@ describe('Dashboard', () => {
         };
         const dummy = new Character(dummyData);
 
-        shipService.getCurrentShip(dummy).subscribe((shipData: Object) => {
-          expect(typeof shipData).toBe('object');
-          expect(Object.keys(shipData).length).toBe(2);
-          expect(typeof shipData['id']).toBe('number');
-          expect(shipData['id']).toBe(596);
-          expect(typeof shipData['name']).toBe('string');
-          expect(shipData['name']).toBe('Dummy\'s Impairor');
+        locationService.getLocation(dummy).subscribe((locationID: number) => {
+          expect(typeof locationID).toBe('number');
+          expect(locationID).toBe(1000100);
         });
       });
 
@@ -92,13 +88,9 @@ describe('Dashboard', () => {
         };
         const dummy = new Character(dummyData);
 
-        shipService.getCurrentShip(dummy).subscribe((shipData: Object) => {
-          expect(typeof shipData).toBe('object');
-          expect(Object.keys(shipData).length).toBe(2);
-          expect(typeof shipData['id']).toBe('number');
-          expect(shipData['id']).toBe(-1);
-          expect(typeof shipData['name']).toBe('string');
-          expect(shipData['name']).toBe('Error');
+        locationService.getLocation(dummy).subscribe((locationID: number) => {
+          expect(typeof locationID).toBe('number');
+          expect(locationID).toBe(-1);
         });
       });
     });

@@ -43,21 +43,20 @@ export class DashboardComponent implements OnInit {
     this.characters = this.globals.user.characters;
     if (this.characters) {
       for (const character of this.characters) {
-        this.shipService.getCurrentShip(character).first().subscribe((shipData) => {
+        this.shipService.getCurrentShip(character).first().subscribe((shipData: {id: number, name: string}) => {
           character.currentShip = {
             id: shipData.id,
             name: shipData.name,
             type: null,
           };
-          this.locationService.getLocation(character).first().subscribe((locationID) => {
-            // character.location.id = locationID;
+          this.locationService.getLocation(character).first().subscribe((locationID: number) => {
             character.location = {
               id: locationID,
               name: null,
             };
             this.endpointService.getNames(character.location.id, character.currentShip.id).first().subscribe((nameData) => {
-              character.location.name = nameData.filter(_ => _.id === character.location.id)[0]['name'];
-              character.currentShip.type = nameData.filter(_ => _.id === character.currentShip.id)[0]['name'];
+              character.location.name = nameData.filter(_ => _.id === character.location.id)[0]['name'] || 'Error';
+              character.currentShip.type = nameData.filter(_ => _.id === character.currentShip.id)[0]['name'] || 'Error';
             });
           });
         });
