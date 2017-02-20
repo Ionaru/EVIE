@@ -32,19 +32,7 @@ export class AppComponent {
     translate.use(defaultLang);
     AppComponent.translate = translate;
 
-    // this.appReadyEvent.trigger();
-
     this.boot();
-
-    globals.startUpObservable.subscribe(() => {
-      this.globals.socket = socketIo('http://localhost:3000/', {
-        reconnection: true
-      });
-      this.globals.socket.on('STOP', (): void => {
-        window.location.reload();
-      });
-      this.appReadyEvent.trigger();
-    });
   }
 
   private boot(): void {
@@ -56,10 +44,21 @@ export class AppComponent {
           observer.next(true);
           observer.complete();
         } else {
+          document.getElementById('error-info').innerHTML = error.stack;
           throw error;
         }
       });
     }).share();
+
+    this.globals.startUpObservable.subscribe(() => {
+      this.globals.socket = socketIo('http://localhost:3000/', {
+        reconnection: true
+      });
+      this.globals.socket.on('STOP', (): void => {
+        window.location.reload();
+      });
+      this.appReadyEvent.trigger();
+    });
   }
 }
 

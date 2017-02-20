@@ -6,7 +6,6 @@ import { CharacterService } from '../character/character.service';
 import { Globals } from '../../globals';
 import { isEmpty } from '../helperfunctions.component';
 import { AppReadyEvent } from '../../app-ready-event';
-// import { Globals } from '../../globals';
 
 @Injectable()
 export class UserService {
@@ -24,12 +23,10 @@ export class UserService {
         if (jsonData.message === 'LoggedIn') {
           this.globals.loggedIn = true;
           this.storeUser(jsonData.data);
-        } else if (jsonData.message === 'NotLoggedIn') {
-          // Something
         }
       }).catch((err): Observable<any> => {
       this.appReadyEvent.triggerFailed();
-      return Observable.of(new Error('Could not shake hands with server'));
+      return Observable.of(new Error(err));
     });
   }
 
@@ -75,36 +72,4 @@ export class UserService {
     }
     return user;
   }
-
-  // private loggedIn = false;
-
-  // constructor(private http: Http, private global: Globals) {
-  //   // this.loggedIn = !!localStorage.getItem('auth_token');
-  // }
-  //
-  // login(email, password) {
-  //   let headers = new Headers();
-  //   headers.append('Content-Type', 'application/json');
-  //
-  //   return this.http
-  //     .post(
-  //       '/login',
-  //       JSON.stringify({ email, password }),
-  //       { headers }
-  //     )
-  //     .map(res => res.json())
-  //     .map((res) => {
-  //       if (res.success) {
-  //         localStorage.setItem('auth_token', res.auth_token);
-  //         this.global.isLoggedIn = true;
-  //       }
-  //
-  //       return res.success;
-  //     });
-  // }
-  //
-  // logout() {
-  //   localStorage.removeItem('auth_token');
-  //   this.global.isLoggedIn = false;
-  // }
 }
