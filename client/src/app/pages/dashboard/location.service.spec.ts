@@ -48,24 +48,24 @@ describe('Dashboard', () => {
         });
       }
 
+      const dummyCharacter = new Character({
+        characterId: 123,
+        name: 'Dummy',
+        accessToken: 'abc',
+        ownerHash: 'aaa',
+        pid: '123',
+        scopes: 'all',
+        tokenExpiry: '',
+        isActive: true
+      });
+
       it('should be able to process location data', () => {
         setupConnections(mockBackend, {
           body: JSON.stringify({'solar_system_id': 1000100}),
           status: 200
         });
-        const dummyData: CharacterApiData = {
-          characterId: 123,
-          name: 'Dummy',
-          accessToken: 'abc',
-          ownerHash: 'aaa',
-          pid: '123',
-          scopes: 'all',
-          tokenExpiry: '',
-          isActive: true
-        };
-        const dummy = new Character(dummyData);
 
-        locationService.getLocation(dummy).subscribe((locationID: number) => {
+        locationService.getLocation(dummyCharacter).subscribe((locationID: number) => {
           expect(typeof locationID).toBe('number');
           expect(locationID).toBe(1000100);
         });
@@ -76,19 +76,8 @@ describe('Dashboard', () => {
           body: '',
           status: 500
         });
-        const dummyData: CharacterApiData = {
-          characterId: 123,
-          name: 'Dummy',
-          accessToken: 'abc',
-          ownerHash: 'aaa',
-          pid: '123',
-          scopes: 'all',
-          tokenExpiry: '',
-          isActive: true
-        };
-        const dummy = new Character(dummyData);
 
-        locationService.getLocation(dummy).subscribe((locationID: number) => {
+        locationService.getLocation(dummyCharacter).subscribe((locationID: number) => {
           expect(typeof locationID).toBe('number');
           expect(locationID).toBe(-1);
         });

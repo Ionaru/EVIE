@@ -23,9 +23,9 @@ export class ShipService {
         throw new Error();
       }
 
-    }).retry(1).catch((error) => {
+    }).retry(1).catch(() => {
       const response = {id: -1, name: 'Error'};
-      return Observable.of( response );
+      return Observable.of(response);
     });
   }
 }
