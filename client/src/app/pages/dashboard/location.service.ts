@@ -20,9 +20,9 @@ export class LocationService {
         throw new Error();
       }
 
-    }).retry(1).catch((error) => {
+    }).retry(1).catch(() => {
       const response = -1;
-      return Observable.of( response );
+      return Observable.of(response);
     });
   }
 }

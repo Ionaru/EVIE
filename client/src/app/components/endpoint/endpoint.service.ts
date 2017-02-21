@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Endpoint } from './endpoint';
 import { endpointList } from './endpoints';
 import { Globals } from '../../globals';
-import { Http } from '@angular/http';
+import { Http, Response } from '@angular/http';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class EndpointService {
@@ -35,17 +36,20 @@ export class EndpointService {
     let url = this.ESIBaseUrl;
     url += params.join('/');
     url += '/';
-    // for (const param of params) {
-    //   url += param + '/';
-    // }
-    // url += '?datasource=tranquility';
     return url;
   }
 
   getNames(...ids: Array<string | number>) {
     const url = this.constructESIUrl('v2/universe/names');
-    return this.http.post(url, ids).map((response2) => {
-      return JSON.parse(response2['_body']);
+    return this.http.post(url, ids).map((response: Response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error();
+      }
+    }).retry(1).catch(() => {
+      const response = [];
+      return Observable.of(response);
     });
   }
 }

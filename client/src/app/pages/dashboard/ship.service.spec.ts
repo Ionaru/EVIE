@@ -48,24 +48,25 @@ describe('Dashboard', () => {
         });
       }
 
+      const dummyData: CharacterApiData = {
+        characterId: 123,
+        name: 'Dummy',
+        accessToken: 'abc',
+        ownerHash: 'aaa',
+        pid: '123',
+        scopes: 'all',
+        tokenExpiry: '',
+        isActive: true
+      };
+      const dummyCharacter = new Character(dummyData);
+
       it('should be able to process ship data', () => {
         setupConnections(mockBackend, {
           body: JSON.stringify({'ship_type_id': 596, 'ship_item_id': 1002943704843, 'ship_name': 'Dummy\'s Impairor'}),
           status: 200
         });
-        const dummyData: CharacterApiData = {
-          characterId: 123,
-          name: 'Dummy',
-          accessToken: 'abc',
-          ownerHash: 'aaa',
-          pid: '123',
-          scopes: 'all',
-          tokenExpiry: '',
-          isActive: true
-        };
-        const dummy = new Character(dummyData);
 
-        shipService.getCurrentShip(dummy).subscribe((shipData: Object) => {
+        shipService.getCurrentShip(dummyCharacter).subscribe((shipData: Object) => {
           expect(typeof shipData).toBe('object');
           expect(Object.keys(shipData).length).toBe(2);
           expect(typeof shipData['id']).toBe('number');
@@ -80,19 +81,8 @@ describe('Dashboard', () => {
           body: '',
           status: 500
         });
-        const dummyData: CharacterApiData = {
-          characterId: 123,
-          name: 'Dummy',
-          accessToken: 'abc',
-          ownerHash: 'aaa',
-          pid: '123',
-          scopes: 'all',
-          tokenExpiry: '',
-          isActive: true
-        };
-        const dummy = new Character(dummyData);
 
-        shipService.getCurrentShip(dummy).subscribe((shipData: Object) => {
+        shipService.getCurrentShip(dummyCharacter).subscribe((shipData: Object) => {
           expect(typeof shipData).toBe('object');
           expect(Object.keys(shipData).length).toBe(2);
           expect(typeof shipData['id']).toBe('number');
