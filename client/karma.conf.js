@@ -32,7 +32,7 @@ module.exports = function (config) {
       }
     },
     angularCli: {
-      config: './angular-cli.json',
+      config: './.angular-cli.json',
       environment: 'dev'
     },
     reporters: config.angularCli && config.angularCli.codeCoverage
@@ -158,7 +158,7 @@ module.exports = function (config) {
 
   if (process.env['TRAVIS'] === 'true') {
     configuration.customLaunchers = travisBrowsers;
-    configuration.browsers = ['Chrome_travis_ci', 'PhantomJS', 'Firefox'];
+    configuration.browsers = ['Chrome_Travis_CI', 'PhantomJS', 'Firefox'];
   }
 
   if (process.env['SAUCELABS'] === 'true') {
