@@ -8,8 +8,6 @@ module.exports = function (config) {
     frameworks: ['jasmine', '@angular/cli'],
     plugins: [
       require('karma-jasmine'),
-      require('karma-chrome-launcher'),
-      require('karma-firefox-launcher'),
       require('karma-phantomjs-launcher'),
       require('karma-sauce-launcher'),
       require('karma-mocha-reporter'),
@@ -41,17 +39,10 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
+    autoWatch: false,
     browsers: ['PhantomJS'],
     singleRun: true,
     captureTimeout: 120000
-  };
-
-  var travisBrowsers = {
-    Chrome_Travis_CI: {
-      base: 'Chrome',
-      flags: ['--no-sandbox']
-    }
   };
 
   var saucelabsBrowsers = {
@@ -155,11 +146,6 @@ module.exports = function (config) {
       version: 'latest'
     }
   };
-
-  if (process.env['TRAVIS'] === 'true') {
-    configuration.customLaunchers = travisBrowsers;
-    configuration.browsers = ['Chrome_Travis_CI', 'PhantomJS', 'Firefox'];
-  }
 
   if (process.env['SAUCELABS'] === 'true') {
     configuration.browserNoActivityTimeout = 120000;
