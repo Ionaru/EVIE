@@ -13,8 +13,10 @@ import { CountUp, CountUpOptions } from '../../../components/count-up';
 })
 export class WalletComponent implements OnInit {
   balanceData: string;
-  journalData: Array<Object>;
-  transactionData: Array<Object>;
+  journalData: Array<Object> = [];
+  journalDataRequestDone = false;
+  transactionData: Array<Object> = [];
+  transactionDataRequestDone = false;
 
   constructor(private balance: BalanceService,
               private journal: JournalService,
@@ -69,6 +71,7 @@ export class WalletComponent implements OnInit {
       const refTypeData = refTypes['eveapi']['result']['rowset']['row'];
       this.journal.getJournal(refTypeData).subscribe((journalData) => {
         this.journalData = journalData;
+        this.journalDataRequestDone = true;
       });
     });
   }
@@ -76,6 +79,7 @@ export class WalletComponent implements OnInit {
   showTransactions(): void {
     this.transactions.getTransactions().subscribe((transactions) => {
       this.transactionData = transactions;
+      this.transactionDataRequestDone = true;
     });
   }
 }
