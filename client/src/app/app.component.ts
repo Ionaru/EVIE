@@ -44,6 +44,7 @@ export class AppComponent {
           observer.next(true);
           observer.complete();
         } else {
+          this.appReadyEvent.triggerFailed();
           document.getElementById('error-info').innerHTML = error.stack;
           throw error;
         }

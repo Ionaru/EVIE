@@ -5,15 +5,13 @@ import { Observable } from 'rxjs';
 import { CharacterService } from '../character/character.service';
 import { Globals } from '../../globals';
 import { isEmpty } from '../helperfunctions.component';
-import { AppReadyEvent } from '../../app-ready-event';
 
 @Injectable()
 export class UserService {
 
   constructor(private http: Http,
               private CharacterService: CharacterService,
-              private globals: Globals,
-              private appReadyEvent: AppReadyEvent) { }
+              private globals: Globals) { }
 
   shakeHands(): Observable<any> {
     const url = 'api/handshake';
@@ -25,7 +23,6 @@ export class UserService {
           this.storeUser(jsonData.data);
         }
       }).catch((err): Observable<any> => {
-      this.appReadyEvent.triggerFailed();
       return Observable.of(new Error(err));
     });
   }

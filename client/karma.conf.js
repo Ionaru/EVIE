@@ -41,8 +41,7 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: false,
     browsers: ['PhantomJS'],
-    singleRun: true,
-    captureTimeout: 120000
+    singleRun: true
   };
 
   var saucelabsBrowsers = {
@@ -148,7 +147,9 @@ module.exports = function (config) {
   };
 
   if (process.env['SAUCELABS'] === 'true') {
-    configuration.browserNoActivityTimeout = 120000;
+    var timeout = 15 * 60 * 1000; // 15 minutes
+    configuration.browserNoActivityTimeout = timeout;
+    configuration.captureTimeout = timeout;
     configuration.customLaunchers = saucelabsBrowsers;
     configuration.browsers = Object.keys(saucelabsBrowsers);
     configuration.sauceLabs = {
