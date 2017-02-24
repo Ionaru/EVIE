@@ -361,7 +361,7 @@ export class SSORouter extends BaseRouter {
           }]
         });
 
-        const characters = user.characters.map(function (character: CharacterInstance): Object {
+        const characters = user.characters.map(function (character: CharacterInstance): object {
           return character;
         });
 
@@ -425,7 +425,7 @@ export class SSORouter extends BaseRouter {
           }]
         });
 
-        const characters = user.characters.map(function (character: CharacterInstance): Object {
+        const characters = user.characters.map(function (character: CharacterInstance): object {
           return character;
         });
         const characterToActivateList = characters.filter(_ => _.pid === pid);
