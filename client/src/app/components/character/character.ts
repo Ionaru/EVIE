@@ -8,6 +8,7 @@ export class Character {
   scopes: Array<string>;
   tokenExpiry: Date;
   ownerHash: string;
+  gender: string;
   corporation_id: number;
   corporation: string;
   alliance_id: number;
@@ -24,17 +25,17 @@ export class Character {
   planets: Array<Object> = [];
   mails: Array<Object> = [];
   location: {
-    id: number;
-    name: string | null;
-  };
+    id?: number;
+    name?: string | null;
+  } = {};
   currentShip: {
-    id: number;
-    name: string;
-    type: string | null;
-  };
+    id?: number;
+    name?: string;
+    type?: string | null;
+  } = {};
   refreshTimer: Timer;
 
-  constructor(data: CharacterApiData) {
+  constructor(data: ApiCharacterData) {
     this.characterId = data.characterId;
     this.name = data.name;
     this.accessToken = data.accessToken;
@@ -44,7 +45,7 @@ export class Character {
     this.tokenExpiry = new Date(data.tokenExpiry);
   }
 
-  updateAuth(data: CharacterApiData): void {
+  updateAuth(data: ApiCharacterData): void {
     this.characterId = data.characterId;
     this.name = data.name;
     this.accessToken = data.accessToken;

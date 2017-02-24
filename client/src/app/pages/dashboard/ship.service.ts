@@ -14,10 +14,10 @@ export class ShipService {
     headers.append('Authorization', 'Bearer ' + character.accessToken);
     return this.http.get(url, {headers: headers}).map((response: Response) => {
       if (response.status === 200) {
-        const rep = response.json();
+        const shipData: ShipData = response.json();
         return {
-          id: rep['ship_type_id'],
-          name: rep['ship_name'],
+          id: shipData.ship_type_id,
+          name: shipData.ship_name,
         };
       } else {
         throw new Error();

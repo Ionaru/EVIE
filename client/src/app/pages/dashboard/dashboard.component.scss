@@ -1,6 +1,13 @@
-@import "../../variables";
-
-.navbar-item.dashboard {
-  color: $eve_text_color_bold;
-  background-position: 0 100%;
+#dashboard {
+  #character-list {
+    #current-ship, #location {
+      &:hover {
+        color: lightblue;
+      }
+      cursor: pointer;
+      .error {
+        color: yellow;
+      }
+    }
+  }
 }

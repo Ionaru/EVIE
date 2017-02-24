@@ -50,7 +50,7 @@ describe('Endpoint', () => {
         });
       }
 
-      const dummyData: CharacterApiData = {
+      const dummyData: ApiCharacterData = {
         characterId: 123,
         name: 'Dummy',
         accessToken: 'abc',

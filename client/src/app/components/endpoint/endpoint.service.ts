@@ -5,6 +5,12 @@ import { Globals } from '../../globals';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs';
 
+export interface EveNameData {
+  category: string;
+  id: number;
+  name: string;
+}
+
 @Injectable()
 export class EndpointService {
 
