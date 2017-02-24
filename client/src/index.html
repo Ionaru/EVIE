@@ -74,8 +74,7 @@
       // Add the class-name to initiate the transitions.
       preBootstrapContainer.className = 'loaded';
 
-      // Delete the bootstrap container after the transition has
-      // completed (based on the known transition time).
+      // Delete the bootstrap container after the transition has completed (based on the known transition time).
       setTimeout(
         function removeLoadingScreen() {
           var body = document.getElementsByTagName('body')[0];
