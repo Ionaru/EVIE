@@ -12,17 +12,17 @@ export class CharacterService {
 
   constructor(private endpointService: EndpointService, private globals: Globals, private http: Http) { }
 
-  public getCharacterData(character: Character): Observable<any> {
+  public getCharacterData(character: Character): Observable<void> {
     const url = this.endpointService.constructESIUrl('v4/characters', character.characterId);
     const headers = new Headers();
     headers.append('Authorization', 'Bearer ' + character.accessToken);
     return this.http.get(url, {headers: headers}).map((response: Response) => {
-      const rep = JSON.parse(response.text());
-      return true;
+      const characterData: EveCharacterData = JSON.parse(response.text());
+      character.gender = characterData.gender;
     });
   }
 
-  registerCharacter(data: CharacterApiData): Character {
+  registerCharacter(data: ApiCharacterData): Character {
 
     const character = new Character(data);
     this.globals.user.characters.push(character);

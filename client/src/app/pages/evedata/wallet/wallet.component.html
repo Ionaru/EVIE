@@ -1,71 +1,67 @@
-<h2 class="balance">{{ 'CURRENT_BALANCE' | translate }}: <span id="balance-number">{{ balanceData }}</span> ISK</h2>
-<a class="anchor" name="Journal"></a>
-<div id="wallet-section">
-  <h2 class="walletHead">Journal</h2>
-  <!--<a fragment="#Transactions"> Jump to Transactions</a>-->
-  <table class="journal-table table">
-    <thead>
-    <tr>
-      <th class="left">Date (EVE Time)</th>
-      <th class="left">Type</th>
-      <th class="left">From</th>
-      <th class="left">Amount</th>
-      <th class="left">Balance</th>
-    </tr>
-    </thead>
-    <tbody id="wallet-journal-body">
-    <tr *ngFor="let entry of journalData">
-      <td data-label="Date">{{ entry.date }}</td>
-      <td data-label="refType">{{ entry.refTypeName }}</td>
-      <td data-label="From">{{ entry.ownerName1 }}</td>
-      <td data-label="Amount" [ngClass]="getNumberColor(entry.amount)">{{ entry.amount }} ISK</td>
-      <td data-label="Balance">{{ entry.balance }} ISK</td>
-    </tr>
-    </tbody>
-  </table>
-
-  <!--<span id="moreJournal">Load more entries-->
-  <!--<a id="moreJournal50">50</a>-->
-  <!--<a id="moreJournal100">100</a>-->
-  <!--<a id="moreJournal250">250</a>-->
-  <!--<a id="moreJournal1000">1000</a>-->
-  <!--<a id="moreJournalAll">Max</a>-->
-  <!--</span>-->
-  <!--<span id="loadingiconW"></span>-->
+<div id="balance-section">
+  <h2 class="balance">{{ 'CURRENT_BALANCE' | translate }}: <span id="balance-number"></span> ISK</h2>
 </div>
-<hr class="opacity-20">
-<!--<a class="anchor" name="Transactions"></a>-->
-<h2 class="walletHead">Transactions</h2>
-<!--<a href="#Journal"> Jump to Journal</a>-->
-<table class="transactions-table table">
-  <thead>
-  <tr>
-    <th class="left">Date (EVE Time)</th>
-    <th class="left">Information</th>
-    <th class="left">Price</th>
-  </tr>
-  </thead>
-  <tbody id="WalletTransactionsBody">
-  <tr *ngFor="let entry of transactionData">
-    <td data-label="date">{{ entry.date }}</td>
-    <td data-label="info">
-      {{ entry.quantity }} x <a (click)="getItemInfo(entry.typeID)">{{ entry.typeName }}</a>
-      <span *ngIf="entry.transactionType === 'buy'">bought from</span>
-      <span *ngIf="entry.transactionType === 'sell'">sold to</span>
-      <a (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
-    </td>
-    <td data-label="price" [ngClass]="buyOrSell(entry.transactionType)">
-      <span>{{ entry.price }} ISK</span><span *ngIf="entry.quantity > 1"> ({{ entry.ppi }} ISK per item)</span>
-    </td>
-  </tr>
-  </tbody>
-</table>
-<!--<span id="moreTransactions">Load more entries-->
-<!--<a id="moreTransactions50">50</a>-->
-<!--<a id="moreTransactions100">100</a>-->
-<!--<a id="moreTransactions250">250</a>-->
-<!--<a id="moreTransactions1000">1000</a>-->
-<!--<a id="moreTransactionsAll">Max</a>-->
-<!--</span>-->
-<!--<span id="loadingiconT"></span>-->
-<a href="#" class="back-to-top"></a>
+<div id="wallet-section">
+
+  <div id="journal-section">
+    <h2 class="journal-head">Journal</h2>
+    <fa *ngIf="!journalDataRequestDone" [name]="'circle-o-notch'" [spin]=true></fa>
+    <div id="journal-data" *ngIf="journalDataRequestDone">
+      <p *ngIf="!journalData.length">There is no journal data available.</p>
+      <table *ngIf="journalData.length" class="journal-table table">
+        <thead>
+        <tr>
+          <th class="left">Date (EVE Time)</th>
+          <th class="left">Type</th>
+          <th class="left">From</th>
+          <th class="left">Amount</th>
+          <th class="left">Balance</th>
+        </tr>
+        </thead>
+        <tbody id="wallet-journal-body">
+        <tr *ngFor="let entry of journalData">
+          <td data-label="Date">{{ entry.date }}</td>
+          <td data-label="refType">{{ entry.refTypeName }}</td>
+          <td data-label="From">{{ entry.ownerName1 }}</td>
+          <td data-label="Amount" [ngClass]="getNumberColor(entry.amount)">{{ entry.amount }} ISK</td>
+          <td data-label="Balance">{{ entry.balance }} ISK</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="opacity-20">
+
+  <div id="transactions-section">
+    <h2 class="transactions-head">Transactions</h2>
+    <fa *ngIf="!transactionDataRequestDone" [name]="'circle-o-notch'" [spin]=true></fa>
+    <div *ngIf="transactionDataRequestDone" id="transactions-data">
+      <p *ngIf="!transactionData.length">There is no transaction data available.</p>
+      <table *ngIf="transactionData.length" class="transactions-table table">
+        <thead>
+        <tr>
+          <th class="left">Date (EVE Time)</th>
+          <th class="left">Information</th>
+          <th class="left">Price</th>
+        </tr>
+        </thead>
+        <tbody id="WalletTransactionsBody">
+        <tr *ngFor="let entry of transactionData">
+          <td data-label="date">{{ entry.date }}</td>
+          <td data-label="info">
+            {{ entry.quantity }} x <a (click)="getItemInfo(entry.typeID)">{{ entry.typeName }}</a>
+            <span *ngIf="entry.transactionType === 'buy'">bought from</span>
+            <span *ngIf="entry.transactionType === 'sell'">sold to</span>
+            <a (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
+          </td>
+          <td data-label="price" [ngClass]="buyOrSell(entry.transactionType)">
+            {{ entry.price }} ISK<span
+            *ngIf="entry.quantity > 1"> ({{ entry.ppi }} ISK per item)</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

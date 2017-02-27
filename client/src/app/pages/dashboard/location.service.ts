@@ -14,8 +14,8 @@ export class LocationService {
     headers.append('Authorization', 'Bearer ' + character.accessToken);
     return this.http.get(url, {headers: headers}).map((response: Response) => {
       if (response.status === 200) {
-        const rep = response.json();
-        return rep['solar_system_id'];
+        const locationData: LocationData = response.json();
+        return locationData.solar_system_id;
       } else {
         throw new Error();
       }

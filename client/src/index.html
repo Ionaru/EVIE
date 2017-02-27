@@ -7,6 +7,58 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <style id="pre-bootstrap-container-style">
+    /* Styles for the pre-bootstrap sequence */
+
+    @font-face {
+      font-family: eve-font;
+      src: url(./assets/fonts/evesansneue-regular.otf);
+    }
+
+    #pre-bootstrap-container {
+      font-family: "eve-font", sans-serif;
+      font-size: 14px;
+      line-height: 1.42857143;
+      color: #C2C4C5;
+      background-color: #151D23;
+      bottom: 0;
+      left: 0;
+      opacity: 1.0;
+      position: fixed;
+      right: 0;
+      top: 0;
+      transition: all linear 300ms;
+      z-index: 999999;
+    }
+
+    /*noinspection CssUnusedSymbol*/
+    #pre-bootstrap-container.loaded {
+      opacity: 0.0;
+    }
+
+    #pre-bootstrap div.messaging {
+      z-index: 2;
+      left: 0;
+      margin-top: -37px;
+      position: absolute;
+      right: 0;
+      text-align: center;
+      top: 50%;
+    }
+
+    #pre-bootstrap h1 {
+      font-size: 26px;
+      line-height: 35px;
+      margin: 0 0 20px 0;
+    }
+
+    #pre-bootstrap p {
+      font-size: 18px;
+      line-height: 14px;
+      margin: 0 0 0 0;
+    }
+  </style>
 </head>
 <body>
 <app-root></app-root>
@@ -16,17 +68,19 @@
 
     document.addEventListener('StartupSuccess', function () {
 
-      var body = document.getElementsByTagName('body')[0];
       var preBootstrapContainer = document.getElementById('pre-bootstrap-container');
+      var preBootstrapContainerStyle = document.getElementById('pre-bootstrap-container-style');
 
       // Add the class-name to initiate the transitions.
       preBootstrapContainer.className = 'loaded';
 
-      // Delete the bootstrap container after the transition has
-      // completed (based on the known transition time).
+      // Delete the bootstrap container after the transition has completed (based on the known transition time).
       setTimeout(
         function removeLoadingScreen() {
+          var body = document.getElementsByTagName('body')[0];
+          var head = document.getElementsByTagName('head')[0];
           body.removeChild(preBootstrapContainer);
+          head.removeChild(preBootstrapContainerStyle);
         }, 300);
     });
 

@@ -19,4 +19,4 @@
 *.db
 
 # Node/Npm files
-npm-debug.log
+npm-debug.log*

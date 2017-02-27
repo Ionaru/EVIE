@@ -51,7 +51,7 @@ export class APIRouter extends BaseRouter {
         pid: user.pid,
         username: user.username,
         email: user.email,
-        characters: user.characters.map((character: CharacterInstance): Object => {
+        characters: user.characters.map((character: CharacterInstance): object => {
           delete character.userId;
           return character.toJSON();
         }),
@@ -105,7 +105,7 @@ export class APIRouter extends BaseRouter {
           pid: user.pid,
           username: user.username,
           email: user.email,
-          characters: user.characters.map((character: CharacterInstance): Object => {
+          characters: user.characters.map((character: CharacterInstance): object => {
             delete character.userId;
             return character.toJSON();
           }),

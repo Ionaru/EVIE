@@ -1,57 +1,62 @@
 @import "../../../variables";
 
-h2.balance {
-  float: right;
+#balance-section {
+  width: 100%;
+  .balance {
+    text-align: right;
+  }
 }
 
-table {
-  width: 100%;
-  border-spacing: 0;
-  thead {
-    th {
-      border-left: $eve_ore_button_active solid 1px;
-      border-top: $eve_ore_button_active solid 1px;
-      border-bottom: $eve_ore_button_active solid 1px;
-      padding-left: 5px;
-      padding-right: 5px;
-      &:last-child {
-        border-right: $eve_ore_button_active solid 1px;
-      }
-    }
-  }
-  tbody {
-    tr {
-      transition: background-color 0.1s linear;
-      td {
+#journal-section, #wallet-section {
+  table {
+    width: 100%;
+    border-spacing: 0;
+    thead {
+      th {
         border-left: $eve_ore_button_active solid 1px;
+        border-top: $eve_ore_button_active solid 1px;
+        border-bottom: $eve_ore_button_active solid 1px;
         padding-left: 5px;
         padding-right: 5px;
-        &.positive {
-          color: green;
-        }
-        &.negative {
-          color: red;
-        }
-
         &:last-child {
           border-right: $eve_ore_button_active solid 1px;
         }
-        a {
-          //cursor: pointer;
-          cursor: not-allowed;
-          user-select: none;
-          &:hover {
-            text-decoration: underline;
+      }
+    }
+    tbody {
+      tr {
+        transition: background-color 0.1s linear;
+        td {
+          border-left: $eve_ore_button_active solid 1px;
+          padding-left: 5px;
+          padding-right: 5px;
+          &.positive {
+            color: green;
+          }
+          &.negative {
+            color: red;
+          }
+
+          &:last-child {
+            border-right: $eve_ore_button_active solid 1px;
+          }
+          a {
+            //cursor: pointer;
+            cursor: not-allowed;
+            user-select: none;
+            &:hover {
+              text-decoration: underline;
+            }
           }
         }
-      }
-      &:hover {
-        //background-color: darken($eve_ore_button_active, 9%);
-        background-color: darken($eve_ore_button_active, 20%);
-      }
-      &:last-child {
-        td {
-          border-bottom: $eve_ore_button_active solid 1px;
+        &:hover {
+          //background-color: darken($eve_ore_button_active, 9%);
+          background-color: darken($eve_ore_button_active, 20%);
+        }
+        &:last-child {
+          td {
+            border-bottom: $eve_ore_button_active solid 1px;
+          }
         }
       }
     }

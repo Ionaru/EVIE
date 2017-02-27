@@ -1,6 +1,20 @@
-@import "../../variables";
+#dashboard {
+  #character-list {
+    #current-ship, #location {
+      pointer-events: none;
 
-.navbar-item.dashboard {
-  color: $eve_text_color_bold;
-  background-position: 0 100%;
+      &:hover {
+        color: lightblue;
+      }
+      .success {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+      .error {
+        pointer-events: auto;
+        cursor: pointer;
+        color: yellow;
+      }
+    }
+  }
 }

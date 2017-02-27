@@ -10,7 +10,7 @@ import { IPool } from 'mysql';
 
 class Database {
 
-  state: Object;
+  state: object;
   seq: any;
 
   constructor() {

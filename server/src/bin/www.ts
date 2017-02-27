@@ -164,7 +164,7 @@ export function cleanup(callback: Function): void {
 /**
  * Function that gets executed when the app shuts down
  */
-function exit(options: Object, err?: any): void {
+function exit(options: object, err?: any): void {
   logger.info('Got shutdown event, starting shutdown sequence');
 
   // Ensure the app shuts down when there is an exception during shutdown

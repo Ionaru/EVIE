@@ -1,4 +1,4 @@
-interface CharacterApiData {
+interface ApiCharacterData {
   accessToken: string;
   characterId: number;
   name: string;

@@ -2,7 +2,7 @@ interface UserApiData {
   username: string;
   pid: string;
   email: string;
-  characters: Array<CharacterApiData>;
+  characters: Array<ApiCharacterData>;
 }
 
 interface LoginResponse {

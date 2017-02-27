@@ -1,25 +1,41 @@
-<h1>Hello {{username}}</h1>
-<p>Please add or choose a character below.</p>
-<hr>
+<div id="dashboard">
+  <h1>Hello {{username}}</h1>
+  <p>Please add or choose a character below.</p>
+  <hr>
 
-<h2>Character list:</h2>
-<div *ngFor="let character of characters">
-  <button *ngIf="!isActive(character)"
-          (click)="setActiveCharacter(character)">Set Active
-  </button>
-  <button (click)="reAuth(character)">Re-authenticate</button>
-  <button (click)="getCharacterData(character)">Get Data</button>
-  <button (click)="deleteCharacter(character)">Delete</button>
-  <span>| <fa [name]="'user'" title="Name"></fa> {{character.name}}</span>
-  <span>| <fa [name]="'id-card'" title="Character ID"></fa> {{character.characterId}}</span>
-  <span>| <fa [name]="'rocket'" title="Current ship"></fa>
-      <span *ngIf="character.currentShip?.type">{{character.currentShip.name}} ({{character.currentShip.type}})</span>
-      <span *ngIf="!character.currentShip?.type"><fa [name]="'circle-o-notch'" [spin]=true title="Loading..."></fa></span>
-  </span>
-  <span>| <fa [name]="'map'" title="Current location"></fa>
-      <span *ngIf="character.location?.name">{{character.location.name}}</span>
-      <span *ngIf="!character.location?.name"><fa [name]="'circle-o-notch'" [spin]=true title="Loading..."></fa></span>
-  </span>
+  <h2>Character list:</h2>
+  <div id="character-list" *ngFor="let character of characters">
+    <button *ngIf="!isActive(character)"
+            (click)="setActiveCharacter(character)">Set Active
+    </button>
+    <button (click)="reAuth(character)">Re-authenticate</button>
+    <button (click)="getCharacterData(character)">Get Data</button>
+    <button (click)="deleteCharacter(character)">Delete</button>
+    |
+    <span title="Character name" *ngIf="character.gender === 'male'">
+       <fa [name]="'male'"></fa> {{character.name}}</span>
+    <span title="Character name" *ngIf="character.gender === 'female'">| <fa [name]="'female'"></fa> {{character.name}}</span>
+    <span title="Character name" *ngIf="!character.gender">| <fa [name]="'circle-o-notch'" [spin]=true></fa> {{character.name}}</span>
+    <span title="Character ID">| <fa [name]="'id-card'"></fa> {{character.characterId}}</span>
+    |
+    <span id="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">
+      <span class="success" *ngIf="character.currentShip?.type && character.currentShip?.type !== 'Error'">
+        <fa [name]="'rocket'"></fa>{{character.currentShip.name}} ({{character.currentShip.type}})</span>
+      <span class="loading" *ngIf="!character.currentShip?.type"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
+      <span class="error" *ngIf="character.currentShip?.type === 'Error'">
+        <fa [name]="'exclamation-triangle'"></fa> Error
+      </span>
+    </span>
+    |
+    <span id="location" title="Current location, click to refresh" (click)="refreshLocation(character)">
+      <span class="success" *ngIf="character.location?.name && character.location?.name !== 'Error'">
+        <fa [name]="'map'"></fa>{{character.location.name}}</span>
+      <span class="loading" *ngIf="!character.location?.name"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
+      <span class="error" *ngIf="character.location?.name === 'Error'">
+        <fa [name]="'exclamation-triangle'"></fa> Error
+      </span>
+    </span>
+  </div>
+  <hr>
+  <button (click)="startSSO()">Add character</button>
 </div>
-<hr>
-<button (click)="startSSO()">Add character</button>
