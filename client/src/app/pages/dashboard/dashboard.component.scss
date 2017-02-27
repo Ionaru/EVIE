@@ -1,11 +1,18 @@
 #dashboard {
   #character-list {
     #current-ship, #location {
+      pointer-events: none;
+
       &:hover {
         color: lightblue;
       }
-      cursor: pointer;
+      .success {
+        pointer-events: auto;
+        cursor: pointer;
+      }
       .error {
+        pointer-events: auto;
+        cursor: pointer;
         color: yellow;
       }
     }

@@ -12,16 +12,15 @@ import { CountUp, CountUpOptions } from '../../../components/count-up';
   providers: [BalanceService, JournalService, TransactionService, RefTypesService],
 })
 export class WalletComponent implements OnInit {
-  balanceData: string;
   journalData: Array<Object> = [];
   journalDataRequestDone = false;
   transactionData: Array<Object> = [];
   transactionDataRequestDone = false;
 
-  constructor(private balance: BalanceService,
-              private journal: JournalService,
-              private transactions: TransactionService,
-              private reftypes: RefTypesService,
+  constructor(private balanceService: BalanceService,
+              private journalService: JournalService,
+              private transactionService: TransactionService,
+              private refTypesService: RefTypesService,
               private title: Title) { }
 
   ngOnInit(): void {
@@ -57,9 +56,9 @@ export class WalletComponent implements OnInit {
   }
 
   showBalance(): void {
-    this.balance.getBalance().subscribe((balance) => {
+    this.balanceService.getBalance().subscribe((balance) => {
       const options: CountUpOptions = {
-        useEasing : false,
+        useEasing: false,
       };
       const countUp = new CountUp('balance-number', 0, Number(balance), 2, 1, options);
       countUp.start();
@@ -67,9 +66,9 @@ export class WalletComponent implements OnInit {
   }
 
   showJournal(): void {
-    this.reftypes.getRefTypes().subscribe((refTypes) => {
+    this.refTypesService.getRefTypes().subscribe((refTypes) => {
       const refTypeData = refTypes['eveapi']['result']['rowset']['row'];
-      this.journal.getJournal(refTypeData).subscribe((journalData) => {
+      this.journalService.getJournal(refTypeData).subscribe((journalData) => {
         this.journalData = journalData;
         this.journalDataRequestDone = true;
       });
@@ -77,7 +76,7 @@ export class WalletComponent implements OnInit {
   }
 
   showTransactions(): void {
-    this.transactions.getTransactions().subscribe((transactions) => {
+    this.transactionService.getTransactions().subscribe((transactions) => {
       this.transactionData = transactions;
       this.transactionDataRequestDone = true;
     });

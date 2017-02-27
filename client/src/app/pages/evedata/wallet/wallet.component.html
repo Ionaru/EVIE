@@ -1,21 +1,14 @@
 <div id="balance-section">
-  <h2 class="balance">{{ 'CURRENT_BALANCE' | translate }}: <span id="balance-number">{{ balanceData }}</span> ISK</h2>
+  <h2 class="balance">{{ 'CURRENT_BALANCE' | translate }}: <span id="balance-number"></span> ISK</h2>
 </div>
 <div id="wallet-section">
 
-  <div *ngIf="!journalDataRequestDone">
-    <fa [name]="'circle-o-notch'" [spin]=true></fa>
-  </div>
-  <div *ngIf="journalDataRequestDone">
-
-    <div *ngIf="!journalData.length">
-      <!--<a class="anchor" name="Journal"></a>-->
-      <h2 class="walletHead">Journal</h2>
-      <p>There is no journal data available.</p>
-    </div>
-    <div id="journal-section" *ngIf="journalData.length">
-      <!--<a fragment="#Transactions"> Jump to Transactions</a>-->
-      <table class="journal-table table">
+  <div id="journal-section">
+    <h2 class="journal-head">Journal</h2>
+    <fa *ngIf="!journalDataRequestDone" [name]="'circle-o-notch'" [spin]=true></fa>
+    <div id="journal-data" *ngIf="journalDataRequestDone">
+      <p *ngIf="!journalData.length">There is no journal data available.</p>
+      <table *ngIf="journalData.length" class="journal-table table">
         <thead>
         <tr>
           <th class="left">Date (EVE Time)</th>
@@ -38,31 +31,14 @@
     </div>
   </div>
 
-  <!--<span id="moreJournal">Load more entries-->
-  <!--<a id="moreJournal50">50</a>-->
-  <!--<a id="moreJournal100">100</a>-->
-  <!--<a id="moreJournal250">250</a>-->
-  <!--<a id="moreJournal1000">1000</a>-->
-  <!--<a id="moreJournalAll">Max</a>-->
-  <!--</span>-->
-  <!--<span id="loadingiconW"></span>-->
-
   <hr class="opacity-20">
 
-  <div *ngIf="!transactionDataRequestDone">
-    <fa [name]="'circle-o-notch'" [spin]=true></fa>
-  </div>
-  <div *ngIf="transactionDataRequestDone">
-
-    <div *ngIf="!transactionData.length">
-      <h2 class="walletHead">Transactions</h2>
-      <p>There is no transaction data available.</p>
-    </div>
-    <div id="transactions-section" *ngIf="transactionData.length">
-      <!--<a class="anchor" name="Transactions"></a>-->
-
-      <!--<a href="#Journal"> Jump to Journal</a>-->
-      <table class="transactions-table table">
+  <div id="transactions-section">
+    <h2 class="transactions-head">Transactions</h2>
+    <fa *ngIf="!transactionDataRequestDone" [name]="'circle-o-notch'" [spin]=true></fa>
+    <div *ngIf="transactionDataRequestDone" id="transactions-data">
+      <p *ngIf="!transactionData.length">There is no transaction data available.</p>
+      <table *ngIf="transactionData.length" class="transactions-table table">
         <thead>
         <tr>
           <th class="left">Date (EVE Time)</th>
@@ -80,20 +56,12 @@
             <a (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
           </td>
           <td data-label="price" [ngClass]="buyOrSell(entry.transactionType)">
-            <span>{{ entry.price }} ISK</span><span *ngIf="entry.quantity > 1"> ({{ entry.ppi }} ISK per item)</span>
+            {{ entry.price }} ISK<span
+            *ngIf="entry.quantity > 1"> ({{ entry.ppi }} ISK per item)</span>
           </td>
         </tr>
         </tbody>
       </table>
     </div>
   </div>
-  <!--<span id="moreTransactions">Load more entries-->
-  <!--<a id="moreTransactions50">50</a>-->
-  <!--<a id="moreTransactions100">100</a>-->
-  <!--<a id="moreTransactions250">250</a>-->
-  <!--<a id="moreTransactions1000">1000</a>-->
-  <!--<a id="moreTransactionsAll">Max</a>-->
-  <!--</span>-->
-  <!--<span id="loadingiconT"></span>-->
-  <!--<a href="#" class="back-to-top"></a>-->
 </div>

@@ -78,9 +78,15 @@ export class DashboardComponent implements OnInit {
 
   refreshLocation(character: Character): void {
     character.location = {};
+
     this.getLocationData(character).first().subscribe(() => {
       this.endpointService.getNames(character.location.id).first().subscribe((nameData: Array<EveNameData>) => {
-        character.location.name = nameData.filter(_ => _.id === character.location.id)[0].name || 'Error';
+        try {
+          character.location.name = nameData.filter(_ => _.id === character.location.id)[0].name || 'Error';
+        } catch (err) {
+          console.error(err);
+          character.location.name = 'Error';
+        }
       });
     });
   }
@@ -89,11 +95,11 @@ export class DashboardComponent implements OnInit {
     character.currentShip = {};
 
     this.getShipData(character).first().subscribe(() => {
-      this.endpointService.getNames(character.location.id).first().subscribe((nameData: Array<EveNameData>) => {
+      this.endpointService.getNames(character.currentShip.id).first().subscribe((nameData: Array<EveNameData>) => {
         try {
           character.currentShip.type = nameData.filter(_ => _.id === character.currentShip.id)[0].name || 'Error';
         } catch (err) {
-          console.error(err);
+          console.error(err, character.currentShip.id);
           character.currentShip.type = 'Error';
         }
       });

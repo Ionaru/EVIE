@@ -11,28 +11,30 @@
     <button (click)="reAuth(character)">Re-authenticate</button>
     <button (click)="getCharacterData(character)">Get Data</button>
     <button (click)="deleteCharacter(character)">Delete</button>
-    <span title="Character name" *ngIf="character.gender === 'male'">| <fa
-      [name]="'male'"></fa> {{character.name}}</span>
+    |
+    <span title="Character name" *ngIf="character.gender === 'male'">
+       <fa [name]="'male'"></fa> {{character.name}}</span>
     <span title="Character name" *ngIf="character.gender === 'female'">| <fa [name]="'female'"></fa> {{character.name}}</span>
     <span title="Character name" *ngIf="!character.gender">| <fa [name]="'circle-o-notch'" [spin]=true></fa> {{character.name}}</span>
     <span title="Character ID">| <fa [name]="'id-card'"></fa> {{character.characterId}}</span>
-    <span id="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">|
-    <span class="success" *ngIf="character.currentShip?.type && character.currentShip?.type !== 'Error'">
-      <fa [name]="'rocket'"></fa>{{character.currentShip.name}} ({{character.currentShip.type}})</span>
-    <span class="loading" *ngIf="!character.currentShip?.type"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
-    <span class="error" *ngIf="character.currentShip?.type === 'Error'">
-      <fa [name]="'exclamation-triangle'"></fa>
-      Error
+    |
+    <span id="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">
+      <span class="success" *ngIf="character.currentShip?.type && character.currentShip?.type !== 'Error'">
+        <fa [name]="'rocket'"></fa>{{character.currentShip.name}} ({{character.currentShip.type}})</span>
+      <span class="loading" *ngIf="!character.currentShip?.type"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
+      <span class="error" *ngIf="character.currentShip?.type === 'Error'">
+        <fa [name]="'exclamation-triangle'"></fa> Error
+      </span>
     </span>
-  </span>
-    <span id="location" title="Current location, click to refresh" (click)="refreshLocation(character)">| <fa
-      [name]="'map'"></fa>
-    <span class="success" *ngIf="character.location?.name && character.location?.name !== 'Error'">{{character.location.name}}</span>
-    <span class="loading" *ngIf="!character.location?.name"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
-    <span class="error" *ngIf="character.location?.name === 'Error'">
-      <fa [name]="'exclamation-triangle'"></fa> Error
+    |
+    <span id="location" title="Current location, click to refresh" (click)="refreshLocation(character)">
+      <span class="success" *ngIf="character.location?.name && character.location?.name !== 'Error'">
+        <fa [name]="'map'"></fa>{{character.location.name}}</span>
+      <span class="loading" *ngIf="!character.location?.name"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
+      <span class="error" *ngIf="character.location?.name === 'Error'">
+        <fa [name]="'exclamation-triangle'"></fa> Error
+      </span>
     </span>
-  </span>
   </div>
   <hr>
   <button (click)="startSSO()">Add character</button>
