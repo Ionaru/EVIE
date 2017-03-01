@@ -1,59 +1,62 @@
 <nav class="navbar-top">
-  <a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-brand">
-    {{ 'APP_NAME' | translate}}
+  <a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-item big">
+    <i fa class="brand-icon" [name]="'rocket'"></i> Track
   </a>
   <a *ngIf="isLoggedIn" routerLink="dashboard" routerLinkActive="selected" class="navbar-item">
-    {{ 'PAGES.DASHBOARD' | translate}}</a>
+    Dashboard
+  </a>
   <a class="navbar-item center disabled">
-    EVE <span class="{{ status }}">{{ status }}</span> -
-    <span id="eve-players"></span> {{ 'PAGES.NAVIGATION.PLAYERS' | translate | lowercase}}
+    EVE <span class="{{ status }}">{{ status }}</span> - <span id="eve-players"></span> Players
   </a>
+
   <a *ngIf="isLoggedIn" (click)="logout()" class="navbar-item right">
-    {{ 'PAGES.LOGOUT' | translate}}
+    Logout
   </a>
-  <!--<a class="navbar-item right" (click)="changeLanguage('nl')">{{ translate.currentLang | uppercase }}</a>-->
+  <a class="navbar-item big right" href="https://github.com/Ionaru/EVE-Track" target="_blank">
+    <fa [name]="'github'"></fa>
+  </a>
 </nav>
 
 <nav class="navbar-side">
   <a routerLink="account" routerLinkActive="selected" class="character-item"
      [ngClass]="{'active': false}">
-    <img src="//image.eveonline.com/Character/{{ char }}_50.jpg">
+    <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
   </a>
   <a routerLink="charactersheet" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': false}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">
   </a>
   <a routerLink="skills" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': false}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg" alt="Skills icon">
   </a>
   <a routerLink="contacts" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': false}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/contacts.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/contacts.svg" alt="Contacts icon">
   </a>
   <a routerLink="mail" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': false}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg" alt="Mail icon">
   </a>
   <a routerLink="market" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': false}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg" alt="Market icon">
   </a>
   <a routerLink="wallet" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': checkAccess()}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg" alt="Wallet icon">
   </a>
   <a routerLink="assets" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': false}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg" alt="Assets icon">
   </a>
   <a routerLink="planets" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': false}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg" alt="Planets icon">
   </a>
   <a routerLink="industry" routerLinkActive="selected" class="navbar-item"
      [ngClass]="{'active': false}">
-    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg">
+    <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg" alt="Industry icon">
   </a>
   <a class="navbar-item time"
      [ngClass]="{'active': false}">

@@ -1,7 +1,9 @@
 import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { async, getTestBed, TestBed } from '@angular/core/testing';
-import { Character } from '../../components/character/character';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { expect } from 'chai';
+
+import { Character } from '../../components/character/character';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
 import { Globals } from '../../globals';
 import { LocationService } from './location.service';
@@ -59,28 +61,26 @@ describe('Dashboard', () => {
         isActive: true
       });
 
-      it('should be able to process location data', () => {
+      it('should be able to process location data', async () => {
         setupConnections(mockBackend, {
           body: JSON.stringify({'solar_system_id': 1000100}),
           status: 200
         });
 
-        locationService.getLocation(dummyCharacter).subscribe((locationID: number) => {
-          expect(typeof locationID).toBe('number');
-          expect(locationID).toBe(1000100);
-        });
+        const locationID: number = await locationService.getLocation(dummyCharacter);
+        expect(locationID).to.be.a('number');
+        expect(locationID).to.equal(1000100);
       });
 
-      it('should be able to process HTTP errors', () => {
+      it('should be able to process HTTP errors', async () => {
         setupConnections(mockBackend, {
           body: '',
           status: 500
         });
 
-        locationService.getLocation(dummyCharacter).subscribe((locationID: number) => {
-          expect(typeof locationID).toBe('number');
-          expect(locationID).toBe(-1);
-        });
+        const locationID: number = await locationService.getLocation(dummyCharacter);
+        expect(locationID).to.be.a('number');
+        expect(locationID).to.equal(-1);
       });
     });
   });

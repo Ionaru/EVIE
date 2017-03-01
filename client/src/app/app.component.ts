@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { TranslateService } from 'ng2-translate';
 import { AppReadyEvent } from './app-ready-event';
 import { UserService } from './components/user/user.service';
 import { CharacterService } from './components/character/character.service';
@@ -15,23 +14,12 @@ import * as socketIo from 'socket.io-client';
   providers: [AppReadyEvent, UserService, CharacterService, EndpointService],
 })
 export class AppComponent {
-  static translate: TranslateService;
 
   appVersion = '2.0.0-ALPHA-1';
 
-  constructor(private translate: TranslateService,
-              private userService: UserService,
+  constructor(private userService: UserService,
               private appReadyEvent: AppReadyEvent,
               private globals: Globals) {
-
-    // this language will be used as a fallback when a translation isn't found in the current language
-    const defaultLang = 'en';
-    translate.setDefaultLang(defaultLang);
-
-    // the language to use, if the lang isn't available, it will use the current loader to get them
-    translate.use(defaultLang);
-    AppComponent.translate = translate;
-
     this.boot();
   }
 
@@ -61,15 +49,4 @@ export class AppComponent {
       this.appReadyEvent.trigger();
     });
   }
-}
-
-// Export this function so we can access it anywhere
-export function switchLanguage(lang: string): void {
-  if (AppComponent.translate.currentLang !== lang) {
-    AppComponent.translate.use(lang);
-  }
-}
-
-export function getCurrentLang(): string {
-  return AppComponent.translate.currentLang;
 }

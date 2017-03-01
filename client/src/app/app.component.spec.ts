@@ -17,12 +17,11 @@ import { WalletComponent } from './pages/evedata/wallet/wallet.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Angular2FontawesomeModule } from 'angular2-fontawesome';
 import { BaseRequestOptions, Http, HttpModule, XHRBackend } from '@angular/http';
-import { createTranslateLoader } from './app.module';
-import { TranslateLoader, TranslateModule } from 'ng2-translate';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { Globals } from './globals';
 import { MockBackend } from '@angular/http/testing';
+import { expect } from 'chai';
 
 describe('AppComponent', () => {
   beforeEach(() => {
@@ -46,11 +45,6 @@ describe('AppComponent', () => {
         BrowserModule,
         FormsModule,
         HttpModule,
-        TranslateModule.forRoot({
-          provide: TranslateLoader,
-          useFactory: (createTranslateLoader),
-          deps: [Http]
-        }),
         Angular2FontawesomeModule,
         RouterTestingModule.withRoutes([
           {
@@ -77,19 +71,19 @@ describe('AppComponent', () => {
   it('should create the app', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
+    expect(app).to.be.ok;
   }));
 
   // it(`should have as title 'app works!'`, async(() => {
   //   const fixture = TestBed.createComponent(AppComponent);
   //   const app = fixture.debugElement.componentInstance;
-  //   expect(app.title).toEqual('app works!');
+  //   expect(app.title).to.equal('app works!');
   // }));
   //
   // it('should render title in a h1 tag', async(() => {
   //   const fixture = TestBed.createComponent(AppComponent);
   //   fixture.detectChanges();
   //   const compiled = fixture.debugElement.nativeElement;
-  //   expect(compiled.querySelector('h1').textContent).toContain('Welcome to EVE-Track');
+  //   expect(compiled.querySelector('h1').textContent).to.contain('Welcome to EVE-Track');
   // }));
 });

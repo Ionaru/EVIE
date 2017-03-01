@@ -1,5 +1,5 @@
 interface EveCharacterData {
-  alliance?: string;
+  alliance_id?: number;
   ancestry_id: number;
   birthday: string;
   bloodline_id: number;

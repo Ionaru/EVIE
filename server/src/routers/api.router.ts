@@ -1,4 +1,4 @@
-import bcrypt = require('bcrypt-nodejs');
+import bcrypt = require('bcrypt');
 
 import { CharacterInstance, Character } from '../models/character/character';
 import { User, UserInstance } from '../models/user/user';
@@ -51,7 +51,7 @@ export class APIRouter extends BaseRouter {
         pid: user.pid,
         username: user.username,
         email: user.email,
-        characters: user.characters.map((character: CharacterInstance): object => {
+        characters: user.characters.map((character: CharacterInstance): Object => {
           delete character.userId;
           return character.toJSON();
         }),
@@ -105,7 +105,7 @@ export class APIRouter extends BaseRouter {
           pid: user.pid,
           username: user.username,
           email: user.email,
-          characters: user.characters.map((character: CharacterInstance): object => {
+          characters: user.characters.map((character: CharacterInstance): Object => {
             delete character.userId;
             return character.toJSON();
           }),
@@ -171,7 +171,7 @@ export class APIRouter extends BaseRouter {
       user = await User.create({
         pid: await generateUniquePID(8, User),
         username: username,
-        passwordHash: bcrypt.hashSync(password),
+        passwordHash: bcrypt.hashSync(password, 8),
         email: email,
       });
 
@@ -244,7 +244,7 @@ export class APIRouter extends BaseRouter {
             if (bcrypt.compareSync(oldPassword, user.passwordHash)) { // TODO: Administrator override
               // The user password was correct, we can now change the user's password
 
-              user.passwordHash = bcrypt.hashSync(newPassword);
+              user.passwordHash = bcrypt.hashSync(newPassword, 8);
               await user.save();
               sendResponse(response, 200, 'PasswordChanged');
 

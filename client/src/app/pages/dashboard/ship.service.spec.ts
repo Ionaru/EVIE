@@ -1,7 +1,9 @@
 import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { async, getTestBed, TestBed } from '@angular/core/testing';
-import { Character } from '../../components/character/character';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { expect } from 'chai';
+
+import { Character } from '../../components/character/character';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
 import { Globals } from '../../globals';
 import { ShipService } from './ship.service';
@@ -60,36 +62,35 @@ describe('Dashboard', () => {
       };
       const dummyCharacter = new Character(dummyData);
 
-      it('should be able to process ship data', () => {
+      it('should be able to process ship data', async () => {
         setupConnections(mockBackend, {
           body: JSON.stringify({'ship_type_id': 596, 'ship_item_id': 1002943704843, 'ship_name': 'Dummy\'s Impairor'}),
           status: 200
         });
 
-        shipService.getCurrentShip(dummyCharacter).subscribe((shipData: Object) => {
-          expect(typeof shipData).toBe('object');
-          expect(Object.keys(shipData).length).toBe(2);
-          expect(typeof shipData['id']).toBe('number');
-          expect(shipData['id']).toBe(596);
-          expect(typeof shipData['name']).toBe('string');
-          expect(shipData['name']).toBe('Dummy\'s Impairor');
+        shipService.getCurrentShip(dummyCharacter).then((shipData: Object) => {
+          expect(shipData).to.be.an('object');
+          expect(Object.keys(shipData).length).to.equal(2);
+          expect(shipData['id']).to.be.a('number');
+          expect(shipData['id']).to.equal(596);
+          expect(shipData['name']).to.be.a('string');
+          expect(shipData['name']).to.equal('Dummy\'s Impairor');
         });
       });
 
-      it('should be able to process HTTP errors', () => {
+      it('should be able to process HTTP errors', async () => {
         setupConnections(mockBackend, {
           body: '',
           status: 500
         });
 
-        shipService.getCurrentShip(dummyCharacter).subscribe((shipData: Object) => {
-          expect(typeof shipData).toBe('object');
-          expect(Object.keys(shipData).length).toBe(2);
-          expect(typeof shipData['id']).toBe('number');
-          expect(shipData['id']).toBe(-1);
-          expect(typeof shipData['name']).toBe('string');
-          expect(shipData['name']).toBe('Error');
-        });
+        const shipData: Object = await shipService.getCurrentShip(dummyCharacter);
+        expect(shipData).to.be.an('object');
+        expect(Object.keys(shipData).length).to.equal(2);
+        expect(shipData['id']).to.be.a('number');
+        expect(shipData['id']).to.equal(-1);
+        expect(shipData['name']).to.be.a('string');
+        expect(shipData['name']).to.equal('Error');
       });
     });
   });

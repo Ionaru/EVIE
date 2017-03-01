@@ -11,20 +11,8 @@
   border-bottom: 1px solid $eve_ore_button_active;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.75);
   height: 50px;
-  .navbar-brand {
-    height: 100%;
-    font-family: "eve-font-bold", sans-serif;
-    color: $eve_text_color_bold;
-    float: left;
-    padding: 14px 14px;
-    font-size: 18px;
-    line-height: 20px;
-    cursor: pointer;
-    text-decoration: none;
-    background-size: 100% 200%;
-    background-image: linear-gradient(to bottom, transparent 50%, $eve_ore_button_active 50%);
-    transition: all 0.15s ease-in-out;
-  }
+  user-select: none;
+
   .navbar-item {
     cursor: pointer;
     height: 100%;
@@ -36,8 +24,18 @@
     float: left;
     padding: 14px 14px;
 
+    &.big {
+      font-family: "eve-font-bold", sans-serif;
+      color: $eve_text_color_bold;
+      font-size: 18px;
+      line-height: 20px;
+
+      i.brand-icon {
+        transform: rotate(-45deg);
+      }
+    }
+
     &.right {
-      user-select: none;
       float: right;
     }
     &.center {
@@ -52,7 +50,7 @@
       color: red;
     }
   }
-  .navbar-brand, .navbar-item {
+  .navbar-item {
     &:hover, &.selected {
       color: $eve_text_color_bold;
       background-position: 0 100%;
@@ -71,6 +69,7 @@
   text-align: center;
   max-width: 100%;
   box-shadow: 2px 0 5px 0 rgba(0, 0, 0, 0.75);
+  user-select: none;
 
   .character-item {
     cursor: pointer;

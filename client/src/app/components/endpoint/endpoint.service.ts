@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
 import { Endpoint } from './endpoint';
 import { endpointList } from './endpoints';
 import { Globals } from '../../globals';
-import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs';
+import * as assert from 'assert';
 
 export interface EveNameData {
   category: string;
@@ -45,17 +45,22 @@ export class EndpointService {
     return url;
   }
 
-  getNames(...ids: Array<string | number>) {
+  async getNames(...ids: Array<string | number>): Promise<Array<EveNameData>> {
     const url = this.constructESIUrl('v2/universe/names');
-    return this.http.post(url, ids).map((response: Response) => {
-      if (response.status === 200) {
-        return response.json();
-      } else {
-        throw new Error();
-      }
-    }).retry(1).catch(() => {
-      const response = [];
-      return Observable.of(response);
-    });
+    try {
+      const response: Response = await this.http.post(url, ids).toPromise();
+      assert.equal(response.status, 200, `Request to ${url} returned ${response.status} instead of expected 200`);
+      return response.json();
+    } catch (err) {
+      return [];
+    }
+  }
+
+  getNameFromNameData(nameData, item) {
+    try {
+      return nameData.filter(_ => _.id === item)[0].name;
+    } catch (err) {
+      return 'Error';
+    }
   }
 }

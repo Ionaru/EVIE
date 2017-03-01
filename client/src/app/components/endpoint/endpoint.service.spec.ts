@@ -1,7 +1,9 @@
 import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { async, getTestBed, TestBed } from '@angular/core/testing';
-import { Character } from '../../components/character/character';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { expect } from 'chai';
+
+import { Character } from '../../components/character/character';
 import { Globals } from '../../globals';
 import { EndpointService } from './endpoint.service';
 import { Endpoint } from './endpoint';
@@ -74,19 +76,19 @@ describe('Endpoint', () => {
 
         const params = ['dummyParam1=Value', 'dummyParam2=Value2'];
         const url = endpointService.constructXMLUrl(dummyEndpoint, ['dummyParam1=Value', 'dummyParam2=Value2']);
-        expect(typeof url).toBe('string');
-        expect(url).toContain(endpointService.XMLBaseUrl);
-        expect(url).toContain(endpointDir);
-        expect(url).toContain(endpointName);
-        expect(url).toContain('accessToken=' + dummyCharacter.accessToken);
+        expect(url).to.be.a('string');
+        expect(url).to.contain(endpointService.XMLBaseUrl);
+        expect(url).to.contain(endpointDir);
+        expect(url).to.contain(endpointName);
+        expect(url).to.contain('accessToken=' + dummyCharacter.accessToken);
         for (const param of params) {
-          expect(url).toContain(param);
+          expect(url).to.contain(param);
         }
 
         let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
         testUrl += `?accessToken=${dummyCharacter.accessToken}&${params.join('&')}`;
 
-        expect(url).toBe(testUrl);
+        expect(url).to.equal(testUrl);
       });
 
       it('should be able to construct an ESI URL', () => {
@@ -95,16 +97,16 @@ describe('Endpoint', () => {
         const param3 = dummyCharacter.characterId;
         const param4 = 'url';
         const url = endpointService.constructESIUrl(param1, param2, param3, param4);
-        expect(typeof url).toBe('string');
-        expect(url).toContain(endpointService.ESIBaseUrl);
-        expect(url).toContain(param1);
-        expect(url).toContain(param2);
-        expect(url).toContain(param3.toString());
-        expect(url).toContain(param4);
-        expect(url).toBe(`${endpointService.ESIBaseUrl}${param1}/${param2}/${param3.toString()}/${param4}/`);
+        expect(url).to.be.a('string');
+        expect(url).to.contain(endpointService.ESIBaseUrl);
+        expect(url).to.contain(param1);
+        expect(url).to.contain(param2);
+        expect(url).to.contain(param3.toString());
+        expect(url).to.contain(param4);
+        expect(url).to.equal(`${endpointService.ESIBaseUrl}${param1}/${param2}/${param3.toString()}/${param4}/`);
       });
 
-      it('should be able to process name data', () => {
+      it('should be able to process name data', async () => {
 
         setupConnections(mockBackend, {
           body: JSON.stringify([
@@ -122,31 +124,30 @@ describe('Endpoint', () => {
           status: 200
         });
 
-        endpointService.getNames(0, 1).subscribe((nameData: Array<{ id: number, name: string, category: string }>) => {
-          expect(typeof nameData).toBe('object');
+        const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
+        expect(nameData).to.be.an('array');
 
-          expect(typeof nameData[0]).toBe('object');
-          expect(nameData[0].id).toBe(0);
-          expect(nameData[0].name).toBe('TestData');
-          expect(nameData[0].category).toBe('test_category');
+        expect(nameData[0]).to.be.an('object');
+        expect(nameData[0].id).to.equal(0);
+        expect(nameData[0].name).to.equal('TestData');
+        expect(nameData[0].category).to.equal('test_category');
 
-          expect(typeof nameData[1]).toBe('object');
-          expect(nameData[1].id).toBe(1);
-          expect(nameData[1].name).toBe('MockData');
-          expect(nameData[1].category).toBe('mock_category');
-        });
+        expect(nameData[1]).to.be.a('object');
+        expect(nameData[1].id).to.equal(1);
+        expect(nameData[1].name).to.equal('MockData');
+        expect(nameData[1].category).to.equal('mock_category');
       });
 
-      it('should be able to process HTTP errors', () => {
+      it('should be able to process HTTP errors', async () => {
         setupConnections(mockBackend, {
           body: '',
           status: 500
         });
 
-        endpointService.getNames(0, 1).subscribe((nameData: Array<{ id: number, name: string, category: string }>) => {
-          expect(typeof nameData).toBe('object');
-          expect(nameData).toEqual([]);
-        });
+        const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
+        expect(nameData).to.be.an('array');
+        expect(nameData.length).to.equal(0);
+        expect(nameData).to.deep.equal([]);
       });
     });
   });
