@@ -44,11 +44,12 @@ module.exports = function (config: karma.Config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
     singleRun: false
   };
 
   if (process.env['SAUCELABS'] === 'true') {
+    // Tests are being run on Saucelabs
+
     const saucelabsBrowsers = {
       // Windows 7
       SL_Win7_Chrome: {
@@ -161,9 +162,10 @@ module.exports = function (config: karma.Config) {
       testName: 'EVE Track Client tests'
     };
     configuration.reporters = ['saucelabs', 'mocha'];
-  }
 
-  if (process.env['TRAVIS']) {
+  } else if (process.env['TRAVIS'] === 'true') {
+    // Tests are being run on Travis CI
+
     const travisBrowsers = {
       Chrome_travis_ci: {
         base: 'Chrome',
@@ -173,6 +175,11 @@ module.exports = function (config: karma.Config) {
 
     configuration.customLaunchers = travisBrowsers;
     configuration.browsers = Object.keys(travisBrowsers);
+
+  } else {
+    // Tests are being run locally
+
+    configuration.browsers = ['Chrome'];
   }
 
   config.set(configuration);
