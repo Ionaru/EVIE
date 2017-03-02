@@ -8,12 +8,12 @@ import * as assert from 'assert';
 export class ShipService {
   constructor(private http: Http, private endpointService: EndpointService) { }
 
-  async getCurrentShip(character: Character): Promise<{id, name}> {
+  async getCurrentShip(character: Character): Promise<{ id, name }> {
     const url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'ship');
     const headers = new Headers();
     headers.append('Authorization', 'Bearer ' + character.accessToken);
     try {
-      const response: Response = await this.http.get(url, {headers: headers}).toPromise().catch(() => {throw new Error();});
+      const response: Response = await this.http.get(url, {headers: headers}).toPromise().catch(() => { throw new Error(); });
       assert.equal(response.status, 200, `Request to ${url} returned ${response.status} instead of expected 200`);
       const shipData: ShipData = response.json();
       return {
