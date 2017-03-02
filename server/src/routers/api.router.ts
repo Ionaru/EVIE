@@ -1,4 +1,4 @@
-import bcrypt = require('bcrypt');
+import bcrypt = require('bcryptjs');
 
 import { CharacterInstance, Character } from '../models/character/character';
 import { User, UserInstance } from '../models/user/user';

@@ -57,7 +57,7 @@ export async function defineUser(): Promise<void> {
     },
   }).sync();
 
-  // const bcrypt = require('bcrypt');
+  // const bcrypt = require('bcryptjs');
   // await User.create({
   //   pid: '1234abcd',
   //   username: 'testUser',
