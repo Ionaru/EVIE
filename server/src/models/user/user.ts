@@ -61,7 +61,7 @@ export async function defineUser(): Promise<void> {
   // await User.create({
   //   pid: '1234abcd',
   //   username: 'testUser',
-  //   passwordHash: bcrypt.hashSync('2ab359626476ba158446d8022ab43c0e3071b08afcc9652453fe0c8be78f86d3', 8),
+  //   passwordHash: bcrypt.hashSync('KrNZYmR2uhWERtgCKrQ8DjBxsIr8yWUkU/4Mi+ePhtM=', 8),
   //   email: 'mail@example.com',
   // });
 

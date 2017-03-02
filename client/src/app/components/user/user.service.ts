@@ -33,7 +33,7 @@ export class UserService {
     const url = 'api/login';
     return this.http.post(url, {
       username: username,
-      password: crypto.SHA256(password).toString(),
+      password: crypto.enc.Base64.stringify(crypto.SHA256(password)),
     }).map(
       (res: Response) => {
         const jsonData: LoginResponse = JSON.parse(res['_body']);
