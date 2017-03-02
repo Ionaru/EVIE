@@ -10,8 +10,8 @@ module.exports = function (config: karma.Config) {
     frameworks: ['mocha', '@angular/cli'],
     plugins: [
       require('karma-mocha'),
-      require('karma-chrome-launcher'),
       require('karma-mocha-reporter'),
+      require('karma-chrome-launcher'),
       require('karma-remap-istanbul'),
       require('@angular/cli/plugins/karma')
     ],
@@ -37,6 +37,9 @@ module.exports = function (config: karma.Config) {
     reporters: config['angularCli'] && config['angularCli'].codeCoverage
       ? ['karma-remap-istanbul', 'mocha']
       : ['mocha'],
+    mochaReporter: {
+      showDiff: true
+    },
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
@@ -45,109 +48,109 @@ module.exports = function (config: karma.Config) {
     singleRun: false
   };
 
-  const saucelabsBrowsers = {
-    // Windows 7
-    SL_Win7_Chrome: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      platform: 'Windows 7',
-      version: 'latest'
-    },
-    SL_Win7_Firefox: {
-      base: 'SauceLabs',
-      browserName: 'firefox',
-      platform: 'Windows 7',
-      version: 'latest'
-    },
-    SL_Win7_IE: {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      platform: 'Windows 7',
-      version: 'latest'
-    },
-
-    // Windows 10
-    SL_Win10_Chrome: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      platform: 'Windows 10',
-      version: 'latest'
-    },
-    SL_Win10_Firefox: {
-      base: 'SauceLabs',
-      browserName: 'firefox',
-      platform: 'Windows 10',
-      version: 'latest'
-    },
-    SL_Win10_IE: {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      platform: 'Windows 10',
-      version: 'latest'
-    },
-    SL_Win10_Edge: {
-      base: 'SauceLabs',
-      browserName: 'microsoftedge',
-      platform: 'Windows 10',
-      version: 'latest'
-    },
-
-    // Linux
-    SL_Linux_Chrome: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      platform: 'Linux',
-      version: 'latest'
-    },
-    SL_Linux_Firefox: {
-      base: 'SauceLabs',
-      browserName: 'firefox',
-      platform: 'Linux',
-      version: 'latest'
-    },
-
-    // MacOS El Capitan 10.11
-    SL_OSX11_Chrome: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      platform: 'OS X 10.11',
-      version: 'latest'
-    },
-    SL_OSX11_Firefox: {
-      base: 'SauceLabs',
-      browserName: 'firefox',
-      platform: 'OS X 10.11',
-      version: 'latest'
-    },
-    SL_OSX11_Safari: {
-      base: 'SauceLabs',
-      browserName: 'safari',
-      platform: 'OS X 10.11',
-      version: 'latest'
-    },
-
-    // MacOS Mountain Lion 10.8
-    SL_OSX8_Chrome: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      platform: 'OS X 10.8',
-      version: 'latest'
-    },
-    SL_OSX8_Firefox: {
-      base: 'SauceLabs',
-      browserName: 'firefox',
-      platform: 'OS X 10.8',
-      version: 'latest'
-    },
-    SL_OSX8_Safari: {
-      base: 'SauceLabs',
-      browserName: 'safari',
-      platform: 'OS X 10.8',
-      version: 'latest'
-    }
-  };
-
   if (process.env['SAUCELABS'] === 'true') {
+    const saucelabsBrowsers = {
+      // Windows 7
+      SL_Win7_Chrome: {
+        base: 'SauceLabs',
+        browserName: 'chrome',
+        platform: 'Windows 7',
+        version: 'latest'
+      },
+      SL_Win7_Firefox: {
+        base: 'SauceLabs',
+        browserName: 'firefox',
+        platform: 'Windows 7',
+        version: 'latest'
+      },
+      SL_Win7_IE: {
+        base: 'SauceLabs',
+        browserName: 'internet explorer',
+        platform: 'Windows 7',
+        version: 'latest'
+      },
+
+      // Windows 10
+      SL_Win10_Chrome: {
+        base: 'SauceLabs',
+        browserName: 'chrome',
+        platform: 'Windows 10',
+        version: 'latest'
+      },
+      SL_Win10_Firefox: {
+        base: 'SauceLabs',
+        browserName: 'firefox',
+        platform: 'Windows 10',
+        version: 'latest'
+      },
+      SL_Win10_IE: {
+        base: 'SauceLabs',
+        browserName: 'internet explorer',
+        platform: 'Windows 10',
+        version: 'latest'
+      },
+      SL_Win10_Edge: {
+        base: 'SauceLabs',
+        browserName: 'microsoftedge',
+        platform: 'Windows 10',
+        version: 'latest'
+      },
+
+      // Linux
+      SL_Linux_Chrome: {
+        base: 'SauceLabs',
+        browserName: 'chrome',
+        platform: 'Linux',
+        version: 'latest'
+      },
+      SL_Linux_Firefox: {
+        base: 'SauceLabs',
+        browserName: 'firefox',
+        platform: 'Linux',
+        version: 'latest'
+      },
+
+      // MacOS El Capitan 10.11
+      SL_OSX11_Chrome: {
+        base: 'SauceLabs',
+        browserName: 'chrome',
+        platform: 'OS X 10.11',
+        version: 'latest'
+      },
+      SL_OSX11_Firefox: {
+        base: 'SauceLabs',
+        browserName: 'firefox',
+        platform: 'OS X 10.11',
+        version: 'latest'
+      },
+      SL_OSX11_Safari: {
+        base: 'SauceLabs',
+        browserName: 'safari',
+        platform: 'OS X 10.11',
+        version: 'latest'
+      },
+
+      // MacOS Mountain Lion 10.8
+      SL_OSX8_Chrome: {
+        base: 'SauceLabs',
+        browserName: 'chrome',
+        platform: 'OS X 10.8',
+        version: 'latest'
+      },
+      SL_OSX8_Firefox: {
+        base: 'SauceLabs',
+        browserName: 'firefox',
+        platform: 'OS X 10.8',
+        version: 'latest'
+      },
+      SL_OSX8_Safari: {
+        base: 'SauceLabs',
+        browserName: 'safari',
+        platform: 'OS X 10.8',
+        version: 'latest'
+      }
+    };
+
     const timeout = 15 * 60 * 1000; // 15 minutes
     configuration.browserNoActivityTimeout = timeout;
     configuration.captureTimeout = timeout;
@@ -160,15 +163,14 @@ module.exports = function (config: karma.Config) {
     configuration.reporters = ['saucelabs', 'mocha'];
   }
 
-
-  const travisBrowsers = {
-    Chrome_travis_ci: {
-      base: 'Chrome',
-      flags: ['--no-sandbox']
-    }
-  };
-
   if (process.env['TRAVIS']) {
+    const travisBrowsers = {
+      Chrome_travis_ci: {
+        base: 'Chrome',
+        flags: ['--no-sandbox']
+      }
+    };
+
     configuration.customLaunchers = travisBrowsers;
     configuration.browsers = Object.keys(travisBrowsers);
   }

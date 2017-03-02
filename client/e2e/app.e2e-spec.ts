@@ -1,3 +1,5 @@
+import { expect } from 'chai';
+
 import { EveTrackPage } from './app.po';
 
 describe('client App', function() {
@@ -9,6 +11,6 @@ describe('client App', function() {
 
   it('should display message saying app works', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('app works!');
+    expect(page.getParagraphText()).to.equal('app works!');
   });
 });
