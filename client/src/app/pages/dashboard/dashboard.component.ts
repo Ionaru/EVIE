@@ -6,12 +6,11 @@ import { Character } from '../../components/character/character';
 import { ShipService } from './ship.service';
 import { LocationService } from './location.service';
 import { EndpointService, EveNameData } from '../../components/endpoint/endpoint.service';
-import { Observable } from 'rxjs';
 
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss'],
-  providers: [CharacterService, ShipService, LocationService]
+  providers: [ShipService, LocationService]
 })
 export class DashboardComponent implements OnInit {
   result: String;
@@ -27,7 +26,7 @@ export class DashboardComponent implements OnInit {
               private locationService: LocationService) {
     this.globals.characterChangeEvent.subscribe(() => {
       if (this.globals.startUp) {
-        this.displayCharacters();
+        this.displayCharacters().then();
       }
     });
   }
@@ -35,79 +34,56 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.title.setTitle('EVE Track - Dashboard');
     this.username = this.globals.user.username;
-    this.displayCharacters();
+    this.displayCharacters().then();
   }
 
-  displayCharacters(): void {
+  async displayCharacters(): Promise<void> {
     this.selectedCharacter = this.globals.selectedCharacter;
     this.characters = this.globals.user.characters;
     if (this.characters) {
       for (const character of this.characters) {
-        this.getAllData(character);
-        this.getCharacterData(character);
+        this.getAllData(character).then();
       }
     }
   }
 
-  getAllData(character: Character) {
-    this.getShipData(character).first().subscribe(() => {
-      this.getLocationData(character).first().subscribe(() => {
-        this.endpointService.getNames(character.location.id, character.currentShip.id).first().subscribe((nameData: Array<EveNameData>) => {
-          character.location.name = nameData.filter(_ => _.id === character.location.id)[0].name || 'Error';
-          character.currentShip.type = nameData.filter(_ => _.id === character.currentShip.id)[0].name || 'Error';
-        });
-      });
-    });
+  async getAllData(character: Character): Promise<void> {
+    await this.getCharacterData(character);
+    await this.getLocationData(character);
+    await this.getShipData(character);
+    const nameData: Array<EveNameData> = await this.endpointService.getNames(character.location.id, character.currentShip.id);
+    character.location.name = this.endpointService.getNameFromNameData(nameData, character.location.id);
+    character.currentShip.type = this.endpointService.getNameFromNameData(nameData, character.currentShip.id);
   }
 
-  getLocationData(character: Character): Observable<void> {
-    return this.locationService.getLocation(character).map((locationID: number) => {
-      if (locationID === -1) {
-        character.location.id = -1;
-      }
-      character.location.id = locationID;
-    });
+  async getLocationData(character: Character): Promise<void> {
+    character.location.id = await this.locationService.getLocation(character);
   }
 
-  getShipData(character: Character): Observable<void> {
-    return this.shipService.getCurrentShip(character).map((shipData: {id: number, name: string}) => {
-      character.currentShip.id = shipData.id;
-      character.currentShip.name = shipData.name;
-    });
+  async getShipData(character: Character): Promise<void> {
+    const shipData: { id: number, name: string } = await this.shipService.getCurrentShip(character);
+    character.currentShip.id = shipData.id;
+    character.currentShip.name = shipData.name;
   }
 
-  refreshLocation(character: Character): void {
+  async refreshLocation(character: Character): Promise<void> {
     character.location = {};
 
-    this.getLocationData(character).first().subscribe(() => {
-      this.endpointService.getNames(character.location.id).first().subscribe((nameData: Array<EveNameData>) => {
-        try {
-          character.location.name = nameData.filter(_ => _.id === character.location.id)[0].name || 'Error';
-        } catch (err) {
-          console.error(err);
-          character.location.name = 'Error';
-        }
-      });
-    });
+    await this.getLocationData(character);
+    const nameData: Array<EveNameData> = await this.endpointService.getNames(character.location.id);
+    character.location.name = this.endpointService.getNameFromNameData(nameData, character.location.id);
   }
 
-  refreshShip(character: Character): void {
+  async refreshShip(character: Character): Promise<void> {
     character.currentShip = {};
 
-    this.getShipData(character).first().subscribe(() => {
-      this.endpointService.getNames(character.currentShip.id).first().subscribe((nameData: Array<EveNameData>) => {
-        try {
-          character.currentShip.type = nameData.filter(_ => _.id === character.currentShip.id)[0].name || 'Error';
-        } catch (err) {
-          console.error(err, character.currentShip.id);
-          character.currentShip.type = 'Error';
-        }
-      });
-    });
+    await this.getShipData(character);
+    const nameData: Array<EveNameData> = await this.endpointService.getNames(character.currentShip.id);
+    character.currentShip.type = this.endpointService.getNameFromNameData(nameData, character.currentShip.id);
   }
 
-  getCharacterData(character: Character): void {
-    this.characterService.getCharacterData(character).subscribe();
+  async getCharacterData(character: Character): Promise<void> {
+    await this.characterService.getPublicCharacterData(character);
   }
 
   isActive(character: Character): boolean {

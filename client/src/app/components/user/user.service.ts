@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { User } from './user';
 import { Observable } from 'rxjs';
-import { CharacterService } from '../character/character.service';
+import * as crypto from 'crypto-js';
+
 import { Globals } from '../../globals';
 import { isEmpty } from '../helperfunctions.component';
+import { CharacterService } from '../character/character.service';
+import { User } from './user';
 
 @Injectable()
 export class UserService {
@@ -31,7 +33,7 @@ export class UserService {
     const url = 'api/login';
     return this.http.post(url, {
       username: username,
-      password: password,
+      password: crypto.enc.Base64.stringify(crypto.SHA256(password)),
     }).map(
       (res: Response) => {
         const jsonData: LoginResponse = JSON.parse(res['_body']);

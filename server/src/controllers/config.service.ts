@@ -12,7 +12,7 @@ export let ssoConfig: Config;
 
 export class Config {
 
-  config: object;
+  config: Object;
   configName: string;
 
   constructor(configName: string, allowedMissing = false) {

@@ -57,11 +57,11 @@ export async function defineUser(): Promise<void> {
     },
   }).sync();
 
-  // let bcrypt = require('bcrypt-nodejs');
+  // const bcrypt = require('bcryptjs');
   // await User.create({
   //   pid: '1234abcd',
   //   username: 'testUser',
-  //   passwordHash: bcrypt.hashSync('000999888'),
+  //   passwordHash: bcrypt.hashSync('KrNZYmR2uhWERtgCKrQ8DjBxsIr8yWUkU/4Mi+ePhtM=', 8),
   //   email: 'mail@example.com',
   // });
 

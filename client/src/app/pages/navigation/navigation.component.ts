@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ClockService } from './clock.service';
 import { Globals } from '../../globals';
-import { TranslateService } from 'ng2-translate';
 import { CountUp } from '../../components/count-up';
 import { UserService } from '../../components/user/user.service';
 
@@ -25,7 +24,6 @@ export class NavigationComponent implements OnInit {
 
   constructor(private clock: ClockService,
               private globals: Globals,
-              private translate: TranslateService,
               private userService: UserService) {
     this.globals.characterChangeEvent.subscribe(character => {
       if (character) {
@@ -95,12 +93,4 @@ export class NavigationComponent implements OnInit {
   logout(): void {
     this.userService.logoutUser();
   }
-
-  // changeLanguage(lang: string): void {
-  //   if (this.translate.currentLang === 'nl') {
-  //     switchLanguage('en');
-  //   } else {
-  //     switchLanguage('nl');
-  //   }
-  // }
 }

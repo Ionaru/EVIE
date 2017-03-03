@@ -1,6 +1,6 @@
 #dashboard {
-  #character-list {
-    #current-ship, #location {
+  .character-list {
+    .current-ship, .location {
       pointer-events: none;
 
       &:hover {

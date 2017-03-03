@@ -31,7 +31,7 @@ declare module 'socket.io-express-session' {
 }
 
 declare module 'winston-daily-rotate-file' {
-  function winstonDRF(arg: object): void;
+  function winstonDRF(arg: Object): void;
   namespace winstonDRF {}
   export = winstonDRF;
 }

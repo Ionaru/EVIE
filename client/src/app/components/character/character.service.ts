@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Character } from './character';
-import { Observable } from 'rxjs';
 import { EndpointService } from '../endpoint/endpoint.service';
 import { Globals } from '../../globals';
-import { Http, Headers, Response } from '@angular/http';
+import { Http, Response } from '@angular/http';
 
 const tokenRefreshInterval = 15 * 60 * 1000;
 
@@ -12,14 +11,13 @@ export class CharacterService {
 
   constructor(private endpointService: EndpointService, private globals: Globals, private http: Http) { }
 
-  public getCharacterData(character: Character): Observable<void> {
+  async getPublicCharacterData(character: Character): Promise<void> {
     const url = this.endpointService.constructESIUrl('v4/characters', character.characterId);
-    const headers = new Headers();
-    headers.append('Authorization', 'Bearer ' + character.accessToken);
-    return this.http.get(url, {headers: headers}).map((response: Response) => {
-      const characterData: EveCharacterData = JSON.parse(response.text());
-      character.gender = characterData.gender;
-    });
+    const response: Response = await this.http.get(url).toPromise();
+    const characterData: EveCharacterData = JSON.parse(response.text());
+    character.gender = characterData.gender;
+    character.corporation_id = characterData.corporation_id || 1;
+    character.alliance_id = characterData.alliance_id;
   }
 
   registerCharacter(data: ApiCharacterData): Character {

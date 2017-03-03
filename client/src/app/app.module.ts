@@ -1,14 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Http, HttpModule } from '@angular/http';
-import {
-  MissingTranslationHandler,
-  MissingTranslationHandlerParams,
-  TranslateLoader,
-  TranslateModule,
-  TranslateStaticLoader
-} from 'ng2-translate';
+import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { NavigationComponent } from './pages/navigation/navigation.component';
@@ -50,29 +43,19 @@ import { SkillsComponent } from './pages/evedata/skills/skills.component';
     BrowserModule,
     FormsModule,
     HttpModule,
-    TranslateModule.forRoot({
-      provide: TranslateLoader,
-      useFactory: (createTranslateLoader),
-      deps: [Http]
-    }),
     router,
-    Angular2FontawesomeModule
+    Angular2FontawesomeModule,
   ],
   providers: [
-    {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
-    CharacterGuard, Globals, AuthGuard, AppGuard
+    AppGuard,
+    AuthGuard,
+    CharacterGuard,
+    Globals,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [
+    AppComponent,
+  ]
 })
+
 export class AppModule {
-}
-
-export function createTranslateLoader(http: Http): TranslateStaticLoader {
-  return new TranslateStaticLoader(http, '../assets/lang', '.json');
-}
-
-export class MyMissingTranslationHandler implements MissingTranslationHandler {
-  handle(params: MissingTranslationHandlerParams): string {
-    return 'some value';
-  }
 }

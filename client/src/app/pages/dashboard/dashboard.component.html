@@ -4,7 +4,7 @@
   <hr>
 
   <h2>Character list:</h2>
-  <div id="character-list" *ngFor="let character of characters">
+  <div class="character-list" *ngFor="let character of characters">
     <button *ngIf="!isActive(character)"
             (click)="setActiveCharacter(character)">Set Active
     </button>
@@ -12,13 +12,22 @@
     <button (click)="getCharacterData(character)">Get Data</button>
     <button (click)="deleteCharacter(character)">Delete</button>
     |
-    <span title="Character name" *ngIf="character.gender === 'male'">
-       <fa [name]="'male'"></fa> {{character.name}}</span>
-    <span title="Character name" *ngIf="character.gender === 'female'">| <fa [name]="'female'"></fa> {{character.name}}</span>
-    <span title="Character name" *ngIf="!character.gender">| <fa [name]="'circle-o-notch'" [spin]=true></fa> {{character.name}}</span>
-    <span title="Character ID">| <fa [name]="'id-card'"></fa> {{character.characterId}}</span>
+    <span class="character-name">
+      <ng-container title="Character name" *ngIf="character.gender === 'male'">
+       <fa [name]="'male'"></fa> {{character.name}}</ng-container>
+      <ng-container title="Character name" *ngIf="character.gender === 'female'">
+        <fa [name]="'female'"></fa> {{character.name}}</ng-container>
+      <ng-container title="Character name" *ngIf="!character.gender">
+        <fa [name]="'circle-o-notch'" [spin]=true></fa>{{character.name}}</ng-container>
+    </span>
+    <img *ngIf="character.corporation_id" style="height: 14px" src="//image.eveonline.com/Corporation/{{ character.corporation_id }}_32.png" alt="Character corporation">
+    <img *ngIf="character.alliance_id" style="height: 14px" src="//image.eveonline.com/Alliance/{{ character.alliance_id }}_32.png" alt="Character alliance">
     |
-    <span id="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">
+    <span class="character-id" title="Character ID">
+      <fa [name]="'id-card'"></fa>{{character.characterId}}
+    </span>
+    |
+    <span class="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">
       <span class="success" *ngIf="character.currentShip?.type && character.currentShip?.type !== 'Error'">
         <fa [name]="'rocket'"></fa>{{character.currentShip.name}} ({{character.currentShip.type}})</span>
       <span class="loading" *ngIf="!character.currentShip?.type"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
@@ -27,7 +36,7 @@
       </span>
     </span>
     |
-    <span id="location" title="Current location, click to refresh" (click)="refreshLocation(character)">
+    <span class="location" title="Current location, click to refresh" (click)="refreshLocation(character)">
       <span class="success" *ngIf="character.location?.name && character.location?.name !== 'Error'">
         <fa [name]="'map'"></fa>{{character.location.name}}</span>
       <span class="loading" *ngIf="!character.location?.name"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>

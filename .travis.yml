@@ -1,5 +1,7 @@
 os:
 - linux
+sudo: required
+dist: trusty
 language: node_js
 node_js:
 - '7'
@@ -11,11 +13,14 @@ cache: yarn
 env:
 - SUB_DIR=client
 - SUB_DIR=server
-before_script:
-- if [[ "$SUB_DIR" == "client" ]]; then export CHROME_BIN=chromium-browser; fi
+before_install:
+- if [[ "$SUB_DIR" == "client" ]]; then export CHROME_BIN=/usr/bin/google-chrome; fi
 - if [[ "$SUB_DIR" == "client" ]]; then export DISPLAY=:99.0; fi
 - if [[ "$SUB_DIR" == "client" ]]; then sh -e /etc/init.d/xvfb start; fi
-before_install:
+- if [[ "$SUB_DIR" == "client" ]]; then sudo apt-get update; fi
+- if [[ "$SUB_DIR" == "client" ]]; then sudo apt-get install -y libappindicator1 fonts-liberation; fi
+- if [[ "$SUB_DIR" == "client" ]]; then wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb; fi
+- if [[ "$SUB_DIR" == "client" ]]; then sudo dpkg -i google-chrome*.deb; fi
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - export PATH=$HOME/.yarn/bin:$PATH
 - openssl aes-256-cbc -K $encrypted_170d92a4e5a8_key -iv $encrypted_170d92a4e5a8_iv
