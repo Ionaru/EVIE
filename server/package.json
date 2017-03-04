@@ -56,5 +56,5 @@
     "sinon": "^1.17.7",
     "tslint": "4.4.2"
   },
-  "license": "ISC"
+  "license": "MIT"
 }
