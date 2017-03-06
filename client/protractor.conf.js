@@ -22,6 +22,7 @@ exports.config = {
   },
   useAllAngular2AppRoots: true,
   beforeLaunch: function() {
+    // eslint-disable-line global-require
     require('ts-node').register({
       project: 'e2e/tsconfig.json'
     });

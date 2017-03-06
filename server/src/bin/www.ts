@@ -59,11 +59,11 @@ export async function init(): Promise<void> {
   server.on('error', onError);
   server.on('listening', onListening);
 
-  // When a signal is sent that would normally stop the application, resume instead shut the application down gracefully
+  // When a signal is sent that would normally stop the application, resume and shut the application down gracefully
   process.stdin.resume();
   process.on('SIGINT', exit.bind(null, {cleanup: true}));
 
-  // Also perform a graceful shutdown when an uncaught exception is thrown, expect when in a testing environment
+  // Also perform a graceful shutdown when an uncaught exception is thrown, except when in a testing environment
   if (process.env.TEST !== 'true') {
     process.on('uncaughtException', exit.bind(null, {cleanup: true}));
   }

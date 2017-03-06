@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit {
               private locationService: LocationService) {
     this.globals.characterChangeEvent.subscribe(() => {
       if (this.globals.startUp) {
-        this.displayCharacters().then();
+        this.displayCharacters();
       }
     });
   }
@@ -34,10 +34,10 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.title.setTitle('EVE Track - Dashboard');
     this.username = this.globals.user.username;
-    this.displayCharacters().then();
+    this.displayCharacters();
   }
 
-  async displayCharacters(): Promise<void> {
+  displayCharacters(): void {
     this.selectedCharacter = this.globals.selectedCharacter;
     this.characters = this.globals.user.characters;
     if (this.characters) {
