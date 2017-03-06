@@ -8,6 +8,7 @@
 *.log
 
 # Client files
+/client/coverage/
 /client/dist/
 /client/node_modules/
 
