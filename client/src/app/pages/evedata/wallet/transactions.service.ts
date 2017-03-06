@@ -4,7 +4,6 @@ import { isCacheExpired, formatISK, processXML } from '../../../components/helpe
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { Endpoint } from '../../../components/endpoint/endpoint';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class TransactionService {
@@ -17,13 +16,13 @@ export class TransactionService {
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
-  getTransactions(expired = false): Observable<Array<Object>> {
+  async getTransactions(expired = false): Promise<Array<Object>> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
         return this.getTransactions(true);
       } else {
-        return Observable.of(TransactionService.processTransactionData(jsonData));
+        return TransactionService.processTransactionData(jsonData);
       }
     } else {
       const url = this.es.constructXMLUrl(this.endpoint, [
@@ -31,11 +30,10 @@ export class TransactionService {
       ]);
       const headers = new Headers();
       headers.append('Accept', 'application/xml');
-      return this.http.get(url, {headers: headers}).map((res) => {
-        const jsonData = processXML(res);
-        localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
-        return TransactionService.processTransactionData(jsonData);
-      });
+      const res = await this.http.get(url, {headers: headers}).toPromise();
+      const jsonData = processXML(res);
+      localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
+      return TransactionService.processTransactionData(jsonData);
     }
   }
 

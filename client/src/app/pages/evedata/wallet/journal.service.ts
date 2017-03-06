@@ -4,7 +4,6 @@ import { isCacheExpired, formatISK, processXML } from '../../../components/helpe
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { Endpoint } from '../../../components/endpoint/endpoint';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class JournalService {
@@ -18,13 +17,13 @@ export class JournalService {
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
-  getJournal(refTypes: Array<Object>, expired = false): Observable<Array<Object>> {
+  async getJournal(refTypes: Array<Object>, expired = false): Promise<Array<Object>> {
     if (localStorage.getItem(this.storageTag) && !expired) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
-        return this.getJournal(refTypes, true);
+        return await this.getJournal(refTypes, true);
       } else {
-        return Observable.of(JournalService.processJournalData(jsonData, refTypes));
+        return JournalService.processJournalData(jsonData, refTypes);
       }
     } else {
       const url = this.es.constructXMLUrl(this.endpoint, [
@@ -32,30 +31,23 @@ export class JournalService {
       ]);
       const headers = new Headers();
       headers.append('Accept', 'application/xml');
-      return this.http.get(url, {headers: headers}).map(res => {
-        const jsonData = processXML(res);
-
-        if (!this.checkedForJournalBug && localStorage.getItem(this.storageTag)) {
-          // The journal XML API contains a bug in which the journal data does not get updated even though the cache
-          // is expired and new data should be available, this only happens on the first request to the API.
-          // To work around this, we'll re-trigger the request one time if the cached data is exactly the same as the
-          // new data.
-          const oldData = JSON.parse(localStorage.getItem(this.storageTag))['eveapi']['result']['rowset'];
-          const newData = jsonData['eveapi']['result']['rowset'];
-          if (JSON.stringify(oldData) === JSON.stringify(newData)) {
-            this.checkedForJournalBug = true;
-            throw new Error('');
-          }
+      const res = await this.http.get(url, {headers: headers}).toPromise();
+      const jsonData = processXML(res);
+      if (!this.checkedForJournalBug && localStorage.getItem(this.storageTag)) {
+        // The journal XML API has a bug in which the journal data does not get updated even though the cache
+        // is expired and new data should be available, this only happens on the first request to the API.
+        // To work around this, we'll re-trigger the request one time if the cached data is exactly the same as the
+        // new data.
+        const oldData = JSON.parse(localStorage.getItem(this.storageTag))['eveapi']['result']['rowset'];
+        const newData = jsonData['eveapi']['result']['rowset'];
+        if (JSON.stringify(oldData) === JSON.stringify(newData)) {
+          this.checkedForJournalBug = true;
+          return await this.getJournal(refTypes, true);
         }
-
-        localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
-        this.checkedForJournalBug = false;
-        return JournalService.processJournalData(jsonData, refTypes);
-      }).retryWhen(errors => {
-        return errors.scan(() => {
-          return this.checkedForJournalBug;
-        }).delay(500);
-      });
+      }
+      localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
+      this.checkedForJournalBug = false;
+      return JournalService.processJournalData(jsonData, refTypes);
     }
   }
 

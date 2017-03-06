@@ -16,6 +16,7 @@ export class WalletComponent implements OnInit {
   journalDataRequestDone = false;
   transactionData: Array<Object> = [];
   transactionDataRequestDone = false;
+  balance: CountUp;
 
   constructor(private balanceService: BalanceService,
               private journalService: JournalService,
@@ -25,9 +26,9 @@ export class WalletComponent implements OnInit {
 
   ngOnInit(): void {
     this.title.setTitle('EVE Track - Wallet');
-    this.showBalance();
-    this.showJournal();
-    this.showTransactions();
+    this.showBalance().then();
+    this.showJournal().then();
+    this.showTransactions().then();
   }
 
   getNumberColor(amount: string): string {
@@ -55,30 +56,29 @@ export class WalletComponent implements OnInit {
     // TODO: implement
   }
 
-  showBalance(): void {
-    this.balanceService.getBalance().subscribe((balance) => {
-      const options: CountUpOptions = {
-        useEasing: false,
-      };
-      const countUp = new CountUp('balance-number', 0, Number(balance), 2, 1, options);
-      countUp.start();
-    });
+  async showBalance(): Promise<void> {
+    const balance = await this.balanceService.getBalance();
+    const options: CountUpOptions = {
+      useEasing: false,
+    };
+    this.balance = new CountUp('balance-number', 0, Number(balance), 2, 1, options);
+    this.balance.start();
   }
 
-  showJournal(): void {
-    this.refTypesService.getRefTypes().subscribe((refTypes) => {
-      const refTypeData = refTypes['eveapi']['result']['rowset']['row'];
-      this.journalService.getJournal(refTypeData).subscribe((journalData) => {
-        this.journalData = journalData;
-        this.journalDataRequestDone = true;
-      });
-    });
+  async refreshBalance(): Promise<void> {
+    const balance = await this.balanceService.getBalance();
+    this.balance.update(Number(balance));
   }
 
-  showTransactions(): void {
-    this.transactionService.getTransactions().subscribe((transactions) => {
-      this.transactionData = transactions;
-      this.transactionDataRequestDone = true;
-    });
+  async showJournal(): Promise<void> {
+    const refTypes = await this.refTypesService.getRefTypes();
+    const refTypeData = refTypes['eveapi']['result']['rowset']['row'];
+    this.journalData = await this.journalService.getJournal(refTypeData);
+    this.journalDataRequestDone = true;
+  }
+
+  async showTransactions(): Promise<void> {
+    this.transactionData = await this.transactionService.getTransactions();
+    this.transactionDataRequestDone = true;
   }
 }
