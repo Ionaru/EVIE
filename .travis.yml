@@ -36,5 +36,5 @@ install:
 - yarn
 script:
 - yarn run autotest
-after-script:
+after_script:
 - if [[ "$SUB_DIR" == "client" ]]; then codeclimate < ./coverage/lcov.info; fi
