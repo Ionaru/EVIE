@@ -310,7 +310,7 @@ export class SSORouter extends BaseRouter {
           const refreshResult = await refreshResponse.json();
           if (refreshResult.error) {
             logger.error(refreshResult);
-            sendResponse(response, 500, 'RefreshRequestError');
+            sendResponse(response, 500, 'RefreshAPIError');
             return;
           }
           character.refreshToken = refreshResult['refresh_token'];

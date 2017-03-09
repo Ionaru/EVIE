@@ -17,6 +17,7 @@ export class WalletComponent implements OnInit {
   transactionData: Array<Object> = [];
   transactionDataRequestDone = false;
   balance: CountUp;
+  balanceError = false;
 
   constructor(private balanceService: BalanceService,
               private journalService: JournalService,
@@ -57,17 +58,24 @@ export class WalletComponent implements OnInit {
   }
 
   async showBalance(): Promise<void> {
-    const balance = await this.balanceService.getBalance();
-    const options: CountUpOptions = {
-      useEasing: false,
-    };
-    this.balance = new CountUp('balance-number', 0, Number(balance), 2, 1, options);
-    this.balance.start();
+    const balance = await this.balanceService.getBalance(this.balanceError);
+    this.balanceError = false;
+    if (this.balance && balance !== 'Error') {
+      this.balance.update(Number(balance));
+    } else if (balance !== 'Error') {
+      this.initBalanceCountUp(Number(balance));
+    } else {
+      this.balanceError = true;
+    }
   }
 
-  async refreshBalance(): Promise<void> {
-    const balance = await this.balanceService.getBalance();
-    this.balance.update(Number(balance));
+  initBalanceCountUp(balance: number): void {
+    const options: CountUpOptions = {
+      useEasing: false,
+      suffix: ' ISK',
+    };
+    this.balance = new CountUp('balance-number', 0, balance, 2, 1, options);
+    this.balance.start();
   }
 
   async showJournal(): Promise<void> {

@@ -22,20 +22,35 @@ export class BalanceService {
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
         return this.getBalance(true);
       } else {
-        return BalanceService.processBalance(jsonData);
+        return this.processBalance(jsonData);
       }
     } else {
-      const url = this.es.constructXMLUrl(this.endpoint, []);
-      const headers = new Headers();
-      headers.append('Accept', 'application/xml');
-      const res = await this.http.get(url, {headers: headers}).toPromise();
-      const jsonData = processXML(res);
-      localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
-      return BalanceService.processBalance(jsonData);
+      localStorage.removeItem(this.storageTag);
+      try {
+        const url = this.es.constructXMLUrl(this.endpoint, []);
+        const headers = new Headers();
+        headers.append('Accept', 'application/xml');
+        const res = await this.http.get(url, {headers: headers}).toPromise();
+        const jsonData = processXML(res);
+        localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
+        return this.processBalance(jsonData);
+      } catch (error) {
+        return this.handleBalanceError(error);
+      }
     }
   }
 
-  private static processBalance(jsonData: Object): string {
-    return jsonData['eveapi']['result']['rowset']['row']['@attributes']['balance'];
+  private processBalance(jsonData: Object): string {
+    try {
+      return jsonData['eveapi']['result']['rowset']['row']['@attributes']['balance'];
+    } catch (error) {
+      return this.handleBalanceError(error);
+    }
+  }
+
+  private handleBalanceError(error: Error): string {
+    console.error(error);
+    localStorage.removeItem(this.storageTag);
+    return 'Error';
   }
 }

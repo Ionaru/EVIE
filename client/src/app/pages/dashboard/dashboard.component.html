@@ -9,7 +9,7 @@
             (click)="setActiveCharacter(character)">Set Active
     </button>
     <button (click)="reAuth(character)">Re-authenticate</button>
-    <button (click)="getCharacterData(character)">Get Data</button>
+    <button (click)="getCharacterData(character).then()">Get Data</button>
     <button (click)="deleteCharacter(character)">Delete</button>
     |
     <span class="character-name">
@@ -27,7 +27,7 @@
       <fa [name]="'id-card'"></fa>{{character.characterId}}
     </span>
     |
-    <span class="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">
+    <span class="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character).then()">
       <span class="success" *ngIf="character.currentShip?.type && character.currentShip?.type !== 'Error'">
         <fa [name]="'rocket'"></fa>{{character.currentShip.name}} ({{character.currentShip.type}})</span>
       <span class="loading" *ngIf="!character.currentShip?.type"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
@@ -36,7 +36,7 @@
       </span>
     </span>
     |
-    <span class="location" title="Current location, click to refresh" (click)="refreshLocation(character)">
+    <span class="location" title="Current location, click to refresh" (click)="refreshLocation(character).then()">
       <span class="success" *ngIf="character.location?.name && character.location?.name !== 'Error'">
         <fa [name]="'map'"></fa>{{character.location.name}}</span>
       <span class="loading" *ngIf="!character.location?.name"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
