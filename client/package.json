@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "ng serve --proxy-config proxy.conf.json",
-    "build": "ng build --prod",
+    "start": "ng serve --proxy-config proxy.conf.json --no-progress",
+    "build": "ng build --prod --verbose",
     "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
     "test": "ng test --single-run --code-coverage",
     "watchtest": "ng test --single-run",
@@ -54,7 +54,7 @@
     "karma-sauce-launcher": "^1.1.0",
     "mocha": "^3.2.0",
     "protractor": "~5.1.0",
-    "sinon": "^1.17.7",
+    "sinon": "next",
     "ts-node": "^2.1.0",
     "tslint": "^4.5.0",
     "typescript": "~2.1.0"

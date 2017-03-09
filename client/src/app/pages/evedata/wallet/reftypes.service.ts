@@ -3,7 +3,6 @@ import { Headers, Http } from '@angular/http';
 import { isCacheExpired, processXML } from '../../../components/helperfunctions.component';
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Endpoint } from '../../../components/endpoint/endpoint';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class RefTypesService {
@@ -16,23 +15,22 @@ export class RefTypesService {
     this.storageTag = this.endpoint.name;
   }
 
-  getRefTypes(expired = false): Observable<Object> {
+  async getRefTypes(expired = false): Promise<Object> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
         return this.getRefTypes(true);
       } else {
-        return Observable.of(jsonData);
+        return jsonData;
       }
     } else {
       const url = this.es.constructXMLUrl(this.endpoint, []);
       const headers = new Headers();
       headers.append('Accept', 'application/xml');
-      return this.http.get(url, {headers: headers}).map((res) => {
-        const jsonData = processXML(res);
-        localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
-        return jsonData;
-      });
+      const res = await this.http.get(url, {headers: headers}).toPromise();
+      const jsonData = processXML(res);
+      localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
+      return jsonData;
     }
   }
 }

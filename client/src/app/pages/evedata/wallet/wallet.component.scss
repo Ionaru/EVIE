@@ -4,6 +4,16 @@
   width: 100%;
   .balance {
     text-align: right;
+    .balance-error {
+      color: yellow;
+
+      fa {
+        user-select: none;
+        &:hover {
+          color: lightblue;
+        }
+      }
+    }
   }
 }
 

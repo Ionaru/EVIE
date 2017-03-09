@@ -37,9 +37,9 @@ export function checkAccess(accessMask: number, testAgainst: number): boolean {
   return (accessMask & testAgainst) > 0;
 }
 
-export function processXML(res: Response): Object {
+export function processXML(response: Response): Object {
   const parser: DOMParser = new DOMParser();
-  const xmlData: XMLDocument = parser.parseFromString(res['_body'], 'application/xml');
+  const xmlData: XMLDocument = parser.parseFromString(response.text(), 'application/xml');
   return xmlToJson(xmlData);
 }
 

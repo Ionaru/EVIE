@@ -4,7 +4,6 @@ import { isCacheExpired, processXML } from '../../../components/helperfunctions.
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { Endpoint } from '../../../components/endpoint/endpoint';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class BalanceService {
@@ -17,27 +16,41 @@ export class BalanceService {
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
-  getBalance(expired = false): Observable<string> {
+  async getBalance(expired = false): Promise<string> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
         return this.getBalance(true);
       } else {
-        return Observable.of(BalanceService.processBalance(jsonData));
+        return this.processBalance(jsonData);
       }
     } else {
-      const url = this.es.constructXMLUrl(this.endpoint, []);
-      const headers = new Headers();
-      headers.append('Accept', 'application/xml');
-      return this.http.get(url, {headers: headers}).map((res) => {
+      localStorage.removeItem(this.storageTag);
+      try {
+        const url = this.es.constructXMLUrl(this.endpoint, []);
+        const headers = new Headers();
+        headers.append('Accept', 'application/xml');
+        const res = await this.http.get(url, {headers: headers}).toPromise();
         const jsonData = processXML(res);
         localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
-        return BalanceService.processBalance(jsonData);
-      });
+        return this.processBalance(jsonData);
+      } catch (error) {
+        return this.handleBalanceError(error);
+      }
     }
   }
 
-  private static processBalance(jsonData: Object): string {
-    return jsonData['eveapi']['result']['rowset']['row']['@attributes']['balance'];
+  private processBalance(jsonData: Object): string {
+    try {
+      return jsonData['eveapi']['result']['rowset']['row']['@attributes']['balance'];
+    } catch (error) {
+      return this.handleBalanceError(error);
+    }
+  }
+
+  private handleBalanceError(error: Error): string {
+    console.error(error);
+    localStorage.removeItem(this.storageTag);
+    return 'Error';
   }
 }

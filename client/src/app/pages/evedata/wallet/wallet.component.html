@@ -1,5 +1,11 @@
 <div id="balance-section">
-  <h2 class="balance">Current balance: <span id="balance-number"></span> ISK</h2>
+  <h2 class="balance">
+    Current balance:
+    <span *ngIf="!balanceError" id="balance-number"></span>
+    <span *ngIf="balanceError" class="balance-error">Error
+      <fa (click)="showBalance().then()" [name]="'refresh'"></fa>
+    </span>
+  </h2>
 </div>
 <div id="wallet-section">
 
