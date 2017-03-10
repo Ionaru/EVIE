@@ -30,10 +30,10 @@ export class EndpointService {
     url += endpoint.name;
     url += '.xml.aspx?';
     if (this.globals.selectedCharacter) {
-      url += `accessToken=${this.globals.selectedCharacter.accessToken}`;
+      url += `accessToken=${this.globals.selectedCharacter.accessToken}&`;
     }
     if (params) {
-      url += `&${params.join('&')}`;
+      url += `${params.join('&')}`;
     }
     return url;
   }
@@ -56,7 +56,7 @@ export class EndpointService {
     }
   }
 
-  getNameFromNameData(nameData, item) {
+  getNameFromNameData(nameData, item): string {
     try {
       return nameData.filter(_ => _.id === item)[0].name;
     } catch (err) {
