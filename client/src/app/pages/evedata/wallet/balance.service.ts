@@ -26,17 +26,13 @@ export class BalanceService {
       }
     } else {
       localStorage.removeItem(this.storageTag);
-      try {
-        const url = this.es.constructXMLUrl(this.endpoint, []);
-        const headers = new Headers();
-        headers.append('Accept', 'application/xml');
-        const res = await this.http.get(url, {headers: headers}).toPromise();
-        const jsonData = processXML(res);
-        localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
-        return this.processBalance(jsonData);
-      } catch (error) {
-        return this.handleBalanceError(error);
-      }
+      const url = this.es.constructXMLUrl(this.endpoint, []);
+      const headers = new Headers();
+      headers.append('Accept', 'application/xml');
+      const res = await this.http.get(url, {headers: headers}).toPromise();
+      const jsonData = processXML(res);
+      localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
+      return this.processBalance(jsonData);
     }
   }
 

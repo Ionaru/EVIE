@@ -71,7 +71,48 @@ describe('Endpoint', () => {
         params.filter(_ => _.name === 'characterID')[0],
       ]);
 
-      it('should be able to construct an XML URL', () => {
+      it('should be able to construct a simple XML URL', () => {
+        const url = endpointService.constructXMLUrl(dummyEndpoint);
+        expect(url).to.be.a('string');
+        expect(url).to.contain(endpointService.XMLBaseUrl);
+        expect(url).to.contain(endpointDir);
+        expect(url).to.contain(endpointName);
+        expect(url).to.equal(`${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx?`);
+      });
+
+      it('should be able to construct an XML URL with params', () => {
+        const params = ['dummyParam1=Value', 'dummyParam2=Value2'];
+        const url = endpointService.constructXMLUrl(dummyEndpoint, ['dummyParam1=Value', 'dummyParam2=Value2']);
+        expect(url).to.be.a('string');
+        expect(url).to.contain(endpointService.XMLBaseUrl);
+        expect(url).to.contain(endpointDir);
+        expect(url).to.contain(endpointName);
+        for (const param of params) {
+          expect(url).to.contain(param);
+        }
+
+        let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
+        testUrl += `?${params.join('&')}`;
+
+        expect(url).to.equal(testUrl);
+      });
+
+      it('should be able to construct an XML URL with an accessToken', () => {
+        globals.selectedCharacter = dummyCharacter;
+
+        const url = endpointService.constructXMLUrl(dummyEndpoint);
+        expect(url).to.be.a('string');
+        expect(url).to.contain(endpointService.XMLBaseUrl);
+        expect(url).to.contain(endpointDir);
+        expect(url).to.contain(endpointName);
+
+        let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
+        testUrl += `?accessToken=${dummyCharacter.accessToken}&`;
+
+        expect(url).to.equal(testUrl);
+      });
+
+      it('should be able to construct a complex XML URL', () => {
         globals.selectedCharacter = dummyCharacter;
 
         const params = ['dummyParam1=Value', 'dummyParam2=Value2'];
@@ -111,12 +152,12 @@ describe('Endpoint', () => {
         setupConnections(mockBackend, {
           body: JSON.stringify([
             {
-              'id': 0,
+              'id': 1234,
               'name': 'TestData',
               'category': 'test_category'
             },
             {
-              'id': 1,
+              'id': 9876,
               'name': 'MockData',
               'category': 'mock_category'
             }
@@ -128,17 +169,17 @@ describe('Endpoint', () => {
         expect(nameData).to.be.an('array');
 
         expect(nameData[0]).to.be.an('object');
-        expect(nameData[0].id).to.equal(0);
+        expect(nameData[0].id).to.equal(1234);
         expect(nameData[0].name).to.equal('TestData');
         expect(nameData[0].category).to.equal('test_category');
 
         expect(nameData[1]).to.be.a('object');
-        expect(nameData[1].id).to.equal(1);
+        expect(nameData[1].id).to.equal(9876);
         expect(nameData[1].name).to.equal('MockData');
         expect(nameData[1].category).to.equal('mock_category');
       });
 
-      it('should be able to process HTTP errors', async () => {
+      it('should be able to an empty name data response', async () => {
         setupConnections(mockBackend, {
           body: '',
           status: 500
@@ -148,6 +189,92 @@ describe('Endpoint', () => {
         expect(nameData).to.be.an('array');
         expect(nameData.length).to.equal(0);
         expect(nameData).to.deep.equal([]);
+      });
+
+      it('should be able to an invalid HTTP response', async () => {
+        setupConnections(mockBackend, {
+          what: 7,
+          problem: 'nothing'
+        });
+
+        const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
+        expect(nameData).to.be.an('array');
+        expect(nameData.length).to.equal(0);
+        expect(nameData).to.deep.equal([]);
+      });
+
+      it('should be able to get specific name from name data', async () => {
+        setupConnections(mockBackend, {
+          body: JSON.stringify([
+            {
+              'id': 1234,
+              'name': 'TestData',
+              'category': 'test_category'
+            },
+            {
+              'id': 9876,
+              'name': 'MockData',
+              'category': 'mock_category'
+            }
+          ]),
+          status: 200
+        });
+
+        const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
+        expect(nameData).to.be.an('array');
+
+        expect(nameData[0]).to.be.an('object');
+        expect(nameData[0].id).to.equal(1234);
+        expect(nameData[0].name).to.equal('TestData');
+        expect(nameData[0].category).to.equal('test_category');
+
+        expect(nameData[1]).to.be.a('object');
+        expect(nameData[1].id).to.equal(9876);
+        expect(nameData[1].name).to.equal('MockData');
+        expect(nameData[1].category).to.equal('mock_category');
+
+        const TestData = endpointService.getNameFromNameData(nameData, 1234);
+        expect(TestData).to.be.a('string');
+        expect(TestData).to.equal('TestData');
+
+        const MockData = endpointService.getNameFromNameData(nameData, 9876);
+        expect(MockData).to.be.a('string');
+        expect(MockData).to.equal('MockData');
+      });
+
+      it('should return \'Error\' when name does not exist in name data', async () => {
+        setupConnections(mockBackend, {
+          body: JSON.stringify([
+            {
+              'id': 1234,
+              'name': 'TestData',
+              'category': 'test_category'
+            },
+            {
+              'id': 9876,
+              'name': 'MockData',
+              'category': 'mock_category'
+            }
+          ]),
+          status: 200
+        });
+
+        const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
+        expect(nameData).to.be.an('array');
+
+        expect(nameData[0]).to.be.an('object');
+        expect(nameData[0].id).to.equal(1234);
+        expect(nameData[0].name).to.equal('TestData');
+        expect(nameData[0].category).to.equal('test_category');
+
+        expect(nameData[1]).to.be.an('object');
+        expect(nameData[1].id).to.equal(9876);
+        expect(nameData[1].name).to.equal('MockData');
+        expect(nameData[1].category).to.equal('mock_category');
+
+        const WrongData = endpointService.getNameFromNameData(nameData, 5678);
+        expect(WrongData).to.be.a('string');
+        expect(WrongData).to.equal('Error');
       });
     });
   });
