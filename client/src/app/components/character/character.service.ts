@@ -27,8 +27,12 @@ export class CharacterService {
     if (data.isActive) {
       this.setActiveCharacter(character, true);
     }
+
     const tokenExpiryTime = character.tokenExpiry.getTime();
-    if (tokenExpiryTime <= (Date.now() + tokenRefreshInterval)) {
+    const currentTime = Date.now();
+
+    const timeLeft = (tokenExpiryTime - currentTime) - tokenRefreshInterval;
+    if (timeLeft <= 0) {
       this.refreshToken(character);
     }
 
