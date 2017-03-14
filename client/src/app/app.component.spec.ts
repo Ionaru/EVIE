@@ -68,7 +68,8 @@ describe('AppComponent', () => {
     TestBed.compileComponents().then();
   });
 
-  it('should create the app', async(() => {
+  it('should create the app', async(function() {
+    this.timeout(5000);
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).to.be.ok;

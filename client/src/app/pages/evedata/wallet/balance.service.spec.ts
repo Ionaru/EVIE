@@ -8,6 +8,7 @@ import { Character } from '../../../components/character/character';
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { BalanceService } from './balance.service';
+import { stringToDate } from '../../../components/helperfunctions.component';
 
 describe('Evedata', () => {
   describe('Wallet', () => {
@@ -162,7 +163,8 @@ describe('Evedata', () => {
 
         expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.exist;
 
-        clock = useFakeTimers(new Date('2001-01-01 00:10:00').getTime());
+        const fakeDate = stringToDate('2001-01-01 00:10:00').getTime();
+        clock = useFakeTimers(fakeDate);
 
         // We watch 'http.get()' from this point on
         const httpSpy = spy(http, 'get');
