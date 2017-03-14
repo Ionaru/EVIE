@@ -188,7 +188,7 @@ module.exports = function (config: karma.Config) {
     configuration.plugins.push(require('karma-browserstack-launcher'));
     configuration.customLaunchers = browserStackBrowsers;
     configuration.browsers = Object.keys(browserStackBrowsers);
-    configuration.reporters = ['browserstack', 'mocha'];
+    configuration.reporters = ['dots', 'BrowserStack'];
 
   } else {
     // Tests are being run locally or on TravisCI
