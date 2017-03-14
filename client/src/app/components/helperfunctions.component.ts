@@ -26,11 +26,7 @@ export function isEmpty(obj: any): boolean {
   // Otherwise, does it have any properties of its own?
   // Note that this doesn't handle
   // toString and valueOf enumeration bugs in IE < 9
-  if (Object.getOwnPropertyNames(obj).length > 0) {
-    return false;
-  }
-
-  return true;
+  return Object.getOwnPropertyNames(obj).length <= 0;
 }
 
 export function checkAccess(accessMask: number, testAgainst: number): boolean {
@@ -38,9 +34,14 @@ export function checkAccess(accessMask: number, testAgainst: number): boolean {
 }
 
 export function processXML(response: Response): Object {
-  const parser: DOMParser = new DOMParser();
-  const xmlData: XMLDocument = parser.parseFromString(response.text(), 'application/xml');
-  return xmlToJson(xmlData);
+  try {
+    const parser: DOMParser = new DOMParser();
+    const xmlData: XMLDocument = parser.parseFromString(response.text(), 'application/xml');
+    return xmlToJson(xmlData);
+  } catch (error) {
+    console.error(error);
+    return 'XMLParseError';
+  }
 }
 
 export function xmlToJson(xml: Document | Node): Object {
@@ -93,9 +94,13 @@ export function formatISK(amount: number | string, decimals = 2, decimalMark = '
 }
 
 export function isCacheExpired(cacheEndTime: string): boolean {
-  let cacheEndTimeDate = Date.parse(cacheEndTime.replace(/-/ig, '/').split('.')[0]);
+  let cacheEndTimeDate = stringToDate(cacheEndTime).getTime();
   cacheEndTimeDate += 3600000;
   const currentTime = new Date().getTime();
   const distance = cacheEndTimeDate - currentTime;
   return distance < -5000;
+}
+
+export function stringToDate(dateString): Date {
+  return new Date(dateString.replace(/-/ig, '/').split('.')[0]);
 }

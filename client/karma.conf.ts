@@ -11,7 +11,7 @@ module.exports = function (config: karma.Config) {
     plugins: [
       require('karma-mocha'),
       require('karma-mocha-reporter'),
-      require('karma-chrome-launcher'),
+      require('karma-phantomjs-launcher'),
       require('karma-coverage-istanbul-reporter'),
       require('@angular/cli/plugins/karma')
     ],
@@ -25,7 +25,7 @@ module.exports = function (config: karma.Config) {
       'text/x-typescript': ['ts', 'tsx']
     },
     coverageIstanbulReporter: {
-      reports: [ 'html', 'lcovonly' ],
+      reports: ['html', 'lcovonly'],
       fixWebpackSourcePaths: true
     },
     angularCli: {
@@ -41,59 +41,14 @@ module.exports = function (config: karma.Config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    singleRun: false
+    singleRun: false,
+    concurrency: 2
   };
 
   if (process.env['SAUCELABS'] === 'true') {
     // Tests are being run on Saucelabs
 
     const saucelabsBrowsers = {
-      // Windows 7
-      SL_Win7_Chrome: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'Windows 7',
-        version: 'latest'
-      },
-      SL_Win7_Firefox: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'Windows 7',
-        version: 'latest'
-      },
-      SL_Win7_IE: {
-        base: 'SauceLabs',
-        browserName: 'internet explorer',
-        platform: 'Windows 7',
-        version: 'latest'
-      },
-
-      // Windows 10
-      SL_Win10_Chrome: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'Windows 10',
-        version: 'latest'
-      },
-      SL_Win10_Firefox: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'Windows 10',
-        version: 'latest'
-      },
-      SL_Win10_IE: {
-        base: 'SauceLabs',
-        browserName: 'internet explorer',
-        platform: 'Windows 10',
-        version: 'latest'
-      },
-      SL_Win10_Edge: {
-        base: 'SauceLabs',
-        browserName: 'microsoftedge',
-        platform: 'Windows 10',
-        version: 'latest'
-      },
-
       // Linux
       SL_Linux_Chrome: {
         base: 'SauceLabs',
@@ -107,50 +62,10 @@ module.exports = function (config: karma.Config) {
         platform: 'Linux',
         version: 'latest'
       },
-
-      // MacOS El Capitan 10.11
-      SL_OSX11_Chrome: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'OS X 10.11',
-        version: 'latest'
-      },
-      SL_OSX11_Firefox: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'OS X 10.11',
-        version: 'latest'
-      },
-      SL_OSX11_Safari: {
-        base: 'SauceLabs',
-        browserName: 'safari',
-        platform: 'OS X 10.11',
-        version: 'latest'
-      },
-
-      // MacOS Mountain Lion 10.8
-      SL_OSX8_Chrome: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'OS X 10.8',
-        version: 'latest'
-      },
-      SL_OSX8_Firefox: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'OS X 10.8',
-        version: 'latest'
-      },
-      SL_OSX8_Safari: {
-        base: 'SauceLabs',
-        browserName: 'safari',
-        platform: 'OS X 10.8',
-        version: 'latest'
-      }
     };
 
     const timeout = 15 * 60 * 1000; // 15 minutes
-    configuration.browserNoActivityTimeout = timeout;
+    configuration.browserNoActivityTimeout = 3 * 60 * 1000; // 3 minutes
     configuration.captureTimeout = timeout;
     configuration.plugins.push(require('karma-sauce-launcher'));
     configuration.customLaunchers = saucelabsBrowsers;
@@ -160,23 +75,124 @@ module.exports = function (config: karma.Config) {
     };
     configuration.reporters = ['saucelabs', 'mocha'];
 
-  } else if (process.env['TRAVIS'] === 'true') {
-    // Tests are being run on Travis CI
+  } else if (process.env['BROWSERSTACK'] === 'true') {
+    // Tests are being run on BrowserStack
 
-    const travisBrowsers = {
-      Chrome_travis_ci: {
-        base: 'Chrome',
-        flags: ['--no-sandbox']
-      }
+    const browserStackBrowsers = {
+      BS_Win7_IE: {
+        base: 'BrowserStack',
+        os: 'WINDOWS',
+        os_version: '7',
+        browser: 'IE'
+      },
+      BS_Win7_Chrome: {
+        base: 'BrowserStack',
+        os: 'WINDOWS',
+        os_version: '7',
+        browser: 'Chrome'
+      },
+      BS_Win7_Firefox: {
+        base: 'BrowserStack',
+        os: 'WINDOWS',
+        os_version: '7',
+        browser: 'Firefox'
+      },
+
+      BS_Win10_IE: {
+        base: 'BrowserStack',
+        os: 'WINDOWS',
+        os_version: '10',
+        browser: 'IE'
+      },
+      BS_Win10_Edge: {
+        base: 'BrowserStack',
+        os: 'WINDOWS',
+        os_version: '10',
+        browser: 'Edge'
+      },
+      BS_Win10_Chrome: {
+        base: 'BrowserStack',
+        os: 'WINDOWS',
+        os_version: '10',
+        browser: 'Chrome'
+      },
+      BS_Win10_Firefox: {
+        base: 'BrowserStack',
+        os: 'WINDOWS',
+        os_version: '10',
+        browser: 'Firefox'
+      },
+
+      BS_OSX8_Safari: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'Mountain Lion',
+        browser: 'Safari'
+      },
+      BS_OSX8_Chrome: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'Mountain Lion',
+        browser: 'Chrome'
+      },
+      BS_OSX8_Firefox: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'Mountain Lion',
+        browser: 'Firefox'
+      },
+
+      BS_OSX11_Safari: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'El Capitan',
+        browser: 'Safari'
+      },
+      BS_OSX11_Chrome: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'El Capitan',
+        browser: 'Chrome'
+      },
+      BS_OSX11_Firefox: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'El Capitan',
+        browser: 'Firefox'
+      },
+
+      BS_OSX12_Safari: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'Sierra',
+        browser: 'Safari'
+      },
+      BS_OSX12_Chrome: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'Sierra',
+        browser: 'Chrome'
+      },
+      BS_OSX12_Firefox: {
+        base: 'BrowserStack',
+        os: 'OS X',
+        os_version: 'Sierra',
+        browser: 'Firefox'
+      },
     };
 
-    configuration.customLaunchers = travisBrowsers;
-    configuration.browsers = Object.keys(travisBrowsers);
+    configuration.browserStack = {
+      name: 'EVE Track Client test',
+    };
+
+    configuration.plugins.push(require('karma-browserstack-launcher'));
+    configuration.customLaunchers = browserStackBrowsers;
+    configuration.browsers = Object.keys(browserStackBrowsers);
+    configuration.reporters = ['dots', 'BrowserStack'];
 
   } else {
-    // Tests are being run locally
-
-    configuration.browsers = ['Chrome'];
+    // Tests are being run locally or on TravisCI
+    configuration.browsers = ['PhantomJS'];
   }
 
   config.set(configuration);
