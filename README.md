@@ -1,4 +1,4 @@
-# EVE-Track 
+# EVE Track 
 
 [![Build Status](https://travis-ci.org/Ionaru/EVE-Track.svg?branch=master)](https://travis-ci.org/Ionaru/EVE-Track)
 [![Test Coverage](https://lima.codeclimate.com/github/Ionaru/EVE-Track/badges/coverage.svg)](https://lima.codeclimate.com/github/Ionaru/EVE-Track/coverage)

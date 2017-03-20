@@ -1,9 +1,9 @@
 <nav class="navbar-top">
   <a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-item big">
-    <i fa class="brand-icon" [name]="'rocket'"></i> Track
+    <i fa class="brand-icon" [name]="'rocket'"></i> EVE Track
   </a>
   <a *ngIf="isLoggedIn" routerLink="dashboard" routerLinkActive="selected" class="navbar-item">
-    Dashboard
+    CMD
   </a>
   <a class="navbar-item center disabled">
     EVE <span class="{{ status }}">{{ status }}</span> - <span id="eve-players"></span> Players

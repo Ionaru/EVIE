@@ -1,27 +1,34 @@
 <div id="dashboard">
   <h1>Hello {{username}}</h1>
-  <p>Please add or choose a character below.</p>
+  <p>Welcome to your Character Management Dashboard, here you can add, manage and delete characters. This screen also
+    provides an overview of your character's current locations and the ships they're in.</p>
   <hr>
 
   <h2>Character list:</h2>
   <div class="character-list" *ngFor="let character of characters">
-    <button *ngIf="!isActive(character)"
-            (click)="setActiveCharacter(character)">Set Active
+    <button *ngIf="!isActive(character)" (click)="setActiveCharacter(character)" title="Activate this character">
+      Set Active
     </button>
-    <button (click)="reAuth(character)">Re-authenticate</button>
-    <button (click)="getCharacterData(character).then()">Get Data</button>
-    <button (click)="deleteCharacter(character)">Delete</button>
+    <button (click)="reAuth(character)" title="Refresh this character's API permissions">
+      Re-authenticate
+    </button>
+    <button (click)="deleteCharacter(character)" title="Delete this character from the API viewer">
+      Delete
+    </button>
     |
-    <span class="character-name">
+    <span class="character-name" title="Character name">
       <ng-container title="Character name" *ngIf="character.gender === 'male'">
-       <fa [name]="'male'"></fa> {{character.name}}</ng-container>
+       <fa [name]="'male'" title="Male"></fa></ng-container>
       <ng-container title="Character name" *ngIf="character.gender === 'female'">
-        <fa [name]="'female'"></fa> {{character.name}}</ng-container>
+        <fa [name]="'female'" title="Female"></fa></ng-container>
       <ng-container title="Character name" *ngIf="!character.gender">
-        <fa [name]="'circle-o-notch'" [spin]=true></fa>{{character.name}}</ng-container>
+        <fa [name]="'circle-o-notch'" [spin]=true></fa></ng-container>
+      {{character.name}}
     </span>
-    <img *ngIf="character.corporation_id" style="height: 14px" src="//image.eveonline.com/Corporation/{{ character.corporation_id }}_32.png" alt="Character corporation">
-    <img *ngIf="character.alliance_id" style="height: 14px" src="//image.eveonline.com/Alliance/{{ character.alliance_id }}_32.png" alt="Character alliance">
+    <img *ngIf="character.corporation_id" style="height: 14px" title="Corporation"
+         src="//image.eveonline.com/Corporation/{{ character.corporation_id }}_32.png" alt="Character corporation">
+    <img *ngIf="character.alliance_id" style="height: 14px" title="Alliance"
+         src="//image.eveonline.com/Alliance/{{ character.alliance_id }}_32.png" alt="Character alliance">
     |
     <span class="character-id" title="Character ID">
       <fa [name]="'id-card'"></fa>{{character.characterId}}
@@ -46,5 +53,5 @@
     </span>
   </div>
   <hr>
-  <button (click)="startSSO()">Add character</button>
+  <button (click)="startSSO()" title="Add a character to the API viewer">Add character</button>
 </div>
