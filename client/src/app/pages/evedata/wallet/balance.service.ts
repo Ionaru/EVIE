@@ -4,6 +4,7 @@ import { isCacheExpired, processXML } from '../../../components/helperfunctions.
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { Endpoint } from '../../../components/endpoint/endpoint';
+import { Logger } from 'angular2-logger/core';
 
 @Injectable()
 export class BalanceService {
@@ -11,7 +12,7 @@ export class BalanceService {
   private endpoint: Endpoint;
   private storageTag: string;
 
-  constructor(private http: Http, private es: EndpointService, private globals: Globals) {
+  constructor(private logger: Logger, private http: Http, private es: EndpointService, private globals: Globals) {
     this.endpoint = this.es.getEndpoint('AccountBalance');
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
@@ -36,7 +37,7 @@ export class BalanceService {
     }
   }
 
-  private processBalance(jsonData: Object): string {
+  private processBalance(jsonData: object): string {
     try {
       return jsonData['eveapi']['result']['rowset']['row']['@attributes']['balance'];
     } catch (error) {
@@ -45,7 +46,7 @@ export class BalanceService {
   }
 
   private handleBalanceError(error: Error): string {
-    console.error(error);
+    this.logger.error(error);
     localStorage.removeItem(this.storageTag);
     return 'Error';
   }

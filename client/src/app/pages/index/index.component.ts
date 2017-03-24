@@ -26,8 +26,8 @@ export class IndexComponent implements OnInit {
     this.login({username: 'testUser', password: '000999888'});
   }
 
-  login(formValues: {username: string, password: string}): void {
-    this.userService.loginUser(formValues.username, formValues.password).subscribe(
+  login(formValues: { username: string, password: string }): void {
+    this.userService.loginUser(formValues.username, formValues.password).first().subscribe(
       (response: [string, User]) => {
         if (response[0] === 'LoggedIn') {
           const user = response[1];
@@ -41,5 +41,12 @@ export class IndexComponent implements OnInit {
         }
       },
     );
+  }
+
+  register(formValues: { username: string, email: string, password: string, password2: string }): void {
+    if (formValues.password === formValues.password2) {
+      this.userService.registerUser(formValues.username, formValues.email, formValues.password);
+    }
+    console.log(formValues);
   }
 }

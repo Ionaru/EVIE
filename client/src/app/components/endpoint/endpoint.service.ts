@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Http, RequestOptionsArgs, Response } from '@angular/http';
 import { Endpoint } from './endpoint';
 import { endpointList } from './endpoints';
 import { Globals } from '../../globals';
 import * as assert from 'assert';
+import { Logger } from 'angular2-logger/core';
 
 export interface EveNameData {
   category: string;
@@ -17,7 +18,7 @@ export class EndpointService {
   XMLBaseUrl = 'https://api.eveonline.com/';
   ESIBaseUrl = 'https://esi.tech.ccp.is/';
 
-  constructor(private globals: Globals, private http: Http) { }
+  constructor(private logger: Logger, private globals: Globals, private http: Http) { }
 
   getEndpoint(name: string): Endpoint {
     return endpointList.filter(_ => _.name === name)[0];
@@ -46,14 +47,27 @@ export class EndpointService {
   }
 
   async getNames(...ids: Array<string | number>): Promise<Array<EveNameData>> {
-    const url = this.constructESIUrl('v2/universe/names');
-    try {
-      const response: Response = await this.http.post(url, ids).toPromise();
-      assert.equal(response.status, 200, `Request to ${url} returned ${response.status} instead of expected 200`);
-      return response.json();
-    } catch (err) {
-      return [];
+
+    // Check if all values in 'ids' are -1, if so then there's no point in calling the Names Endpoint
+    const allErrors = ids.every((element) => {
+      return element === -1;
+    });
+
+    if (!allErrors) {
+      const url = this.constructESIUrl('v2/universe/names');
+      let response: Response;
+      try {
+        response = await this.httpPost(url, ids);
+        assert.equal(response.status, 200, `Request to ${url} returned ${response.status} instead of expected 200`);
+        return response.json();
+      } catch (err) {
+        this.logger.error(err);
+        if (response) {
+          this.logger.error(response);
+        }
+      }
     }
+    return [];
   }
 
   getNameFromNameData(nameData, item): string {
@@ -62,5 +76,11 @@ export class EndpointService {
     } catch (err) {
       return 'Error';
     }
+  }
+
+  async httpPost(url: string, body: any, options?: RequestOptionsArgs): Promise<Response> {
+    return this.http.post(url, body, options).toPromise().catch((errorResponse) => {
+      return errorResponse;
+    });
   }
 }

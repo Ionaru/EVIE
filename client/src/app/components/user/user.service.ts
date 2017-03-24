@@ -33,7 +33,7 @@ export class UserService {
     const url = 'api/login';
     return this.http.post(url, {
       username: username,
-      password: crypto.enc.Base64.stringify(crypto.SHA256(password)),
+      password: UserService.hashPassword(password),
     }).map(
       (res: Response) => {
         const jsonData: LoginResponse = JSON.parse(res['_body']);
@@ -53,8 +53,21 @@ export class UserService {
     });
   }
 
-  registerUser(): void {
+  async registerUser(username: string, email: string, password: string): Promise<void> {
+    const url = 'api/register';
+    const userToRegister = {
+      username: username,
+      email: email,
+      password: UserService.hashPassword(password)
+    };
+    let response: Response;
+    response = await this.http.post(url, userToRegister).toPromise();
+    console.log(response);
+    // window.location.reload();
+  }
 
+  static hashPassword(passwordPlain: string): string {
+    return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
   }
 
   storeUser(data: UserApiData): User {

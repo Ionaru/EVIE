@@ -9,6 +9,7 @@ import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { BalanceService } from './balance.service';
 import { stringToDate } from '../../../components/helperfunctions.component';
+import { Logger } from 'angular2-logger/core';
 
 describe('Evedata', () => {
   describe('Wallet', () => {
@@ -18,7 +19,8 @@ describe('Evedata', () => {
       let mockBackend: MockBackend;
       let balanceService: BalanceService;
       let globals: Globals;
-      let cStub: SinonStub;
+      let logger: Logger;
+      let loggerStub: SinonStub;
       let clock: SinonFakeTimers;
 
       beforeEach(async () => {
@@ -29,6 +31,7 @@ describe('Evedata', () => {
             BalanceService,
             EndpointService,
             Globals,
+            Logger,
             {
               deps: [
                 MockBackend,
@@ -60,13 +63,14 @@ describe('Evedata', () => {
         http = testbed.get(Http);
         mockBackend = testbed.get(MockBackend);
         balanceService = testbed.get(BalanceService);
+        logger = testbed.get(Logger);
+        loggerStub = stub(logger, 'error');
 
-        cStub = stub(console, 'error');
         localStorage.clear();
       });
 
       afterEach(() => {
-        cStub.restore();
+        loggerStub.restore();
         if (clock) {
           clock.restore();
         }

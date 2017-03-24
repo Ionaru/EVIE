@@ -1,4 +1,7 @@
 import { Response } from '@angular/http';
+import { Logger } from 'angular2-logger/core';
+
+const logger = new Logger();
 
 export function isEmpty(obj: any): boolean {
 
@@ -39,7 +42,7 @@ export function processXML(response: Response): Object {
     const xmlData: XMLDocument = parser.parseFromString(response.text(), 'application/xml');
     return xmlToJson(xmlData);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return 'XMLParseError';
   }
 }

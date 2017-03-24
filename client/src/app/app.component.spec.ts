@@ -1,6 +1,6 @@
 /* tslint:disable:no-unused-variable */
 
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, async, getTestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { NavigationComponent } from './pages/navigation/navigation.component';
 import { IndexComponent } from './pages/index/index.component';
@@ -22,9 +22,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Globals } from './globals';
 import { MockBackend } from '@angular/http/testing';
 import { expect } from 'chai';
+import { Logger } from 'angular2-logger/core';
+import { SinonStub, stub } from 'sinon';
 
 describe('AppComponent', () => {
-  beforeEach(() => {
+
+  let logger: Logger;
+  let loggerStub: SinonStub;
+
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent,
@@ -56,6 +62,7 @@ describe('AppComponent', () => {
       providers: [Globals,
         MockBackend,
         BaseRequestOptions,
+        Logger,
         {
           provide: Http,
           deps: [MockBackend, BaseRequestOptions],
@@ -65,7 +72,16 @@ describe('AppComponent', () => {
         }
       ]
     });
-    TestBed.compileComponents().then();
+
+    const testbed = getTestBed();
+
+    logger = testbed.get(Logger);
+    loggerStub = stub(logger, 'error');
+
+  });
+
+  afterEach(() => {
+    loggerStub.restore();
   });
 
   it('should create the app', async(function() {
@@ -74,17 +90,4 @@ describe('AppComponent', () => {
     const app = fixture.debugElement.componentInstance;
     expect(app).to.be.ok;
   }));
-
-  // it(`should have as title 'app works!'`, async(() => {
-  //   const fixture = TestBed.createComponent(AppComponent);
-  //   const app = fixture.debugElement.componentInstance;
-  //   expect(app.title).to.equal('app works!');
-  // }));
-  //
-  // it('should render title in a h1 tag', async(() => {
-  //   const fixture = TestBed.createComponent(AppComponent);
-  //   fixture.detectChanges();
-  //   const compiled = fixture.debugElement.nativeElement;
-  //   expect(compiled.querySelector('h1').textContent).to.contain('Welcome to EVE-Track');
-  // }));
 });

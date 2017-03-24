@@ -3,11 +3,13 @@ import { async, getTestBed, TestBed } from '@angular/core/testing';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 import { expect } from 'chai';
 
-import { Character } from '../../components/character/character';
+import { Character } from '../character/character';
 import { Globals } from '../../globals';
 import { EndpointService } from './endpoint.service';
 import { Endpoint } from './endpoint';
 import { params } from './endpoints';
+import { Logger } from 'angular2-logger/core';
+import { SinonStub, stub } from 'sinon';
 
 describe('Endpoint', () => {
   describe('Services', () => {
@@ -16,14 +18,17 @@ describe('Endpoint', () => {
       let mockBackend: MockBackend;
       let endpointService: EndpointService;
       let globals: Globals;
+      let logger: Logger;
+      let loggerStub: SinonStub;
 
-      beforeEach(async(() => {
+      beforeEach(async () => {
         TestBed.configureTestingModule({
           providers: [
             BaseRequestOptions,
             MockBackend,
             EndpointService,
             Globals,
+            Logger,
             {
               deps: [
                 MockBackend,
@@ -41,8 +46,14 @@ describe('Endpoint', () => {
         mockBackend = testbed.get(MockBackend);
         endpointService = testbed.get(EndpointService);
         globals = testbed.get(Globals);
+        logger = testbed.get(Logger);
+        loggerStub = stub(logger, 'error');
 
-      }));
+      });
+
+      afterEach(() => {
+        loggerStub.restore();
+      });
 
       function setupConnections(backend: MockBackend, options: any) {
         backend.connections.subscribe((connection: MockConnection) => {
@@ -179,7 +190,7 @@ describe('Endpoint', () => {
         expect(nameData[1].category).to.equal('mock_category');
       });
 
-      it('should be able to an empty name data response', async () => {
+      it('should be able to process an empty name data response', async () => {
         setupConnections(mockBackend, {
           body: '',
           status: 500
@@ -191,7 +202,7 @@ describe('Endpoint', () => {
         expect(nameData).to.deep.equal([]);
       });
 
-      it('should be able to an invalid HTTP response', async () => {
+      it('should be able to process an invalid HTTP response', async () => {
         setupConnections(mockBackend, {
           what: 7,
           problem: 'nothing'
