@@ -47,6 +47,5 @@ export class IndexComponent implements OnInit {
     if (formValues.password === formValues.password2) {
       this.userService.registerUser(formValues.username, formValues.email, formValues.password);
     }
-    console.log(formValues);
   }
 }

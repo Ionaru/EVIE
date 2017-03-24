@@ -60,10 +60,7 @@ export class UserService {
       email: email,
       password: UserService.hashPassword(password)
     };
-    let response: Response;
-    response = await this.http.post(url, userToRegister).toPromise();
-    console.log(response);
-    // window.location.reload();
+    await this.http.post(url, userToRegister).toPromise();
   }
 
   static hashPassword(passwordPlain: string): string {
