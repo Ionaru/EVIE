@@ -13,7 +13,6 @@ import { CharacterGuard } from './pages/evedata/character.guard';
 import { Globals } from './globals';
 import { AuthGuard } from './auth.guard';
 import { AppGuard } from './app.guard';
-import { Angular2FontawesomeModule } from 'angular2-fontawesome';
 import { AssetsComponent } from './pages/evedata/assets/assets.component';
 import { CharactersheetComponent } from './pages/evedata/charactersheet/charactersheet.component';
 import { ContactsComponent } from './pages/evedata/contacts/contacts.component';
@@ -22,6 +21,7 @@ import { MailComponent } from './pages/evedata/mail/mail.component';
 import { MarketComponent } from './pages/evedata/market/market.component';
 import { PlanetsComponent } from './pages/evedata/planets/planets.component';
 import { SkillsComponent } from './pages/evedata/skills/skills.component';
+import { Logger } from 'angular2-logger/core';
 
 @NgModule({
   declarations: [
@@ -44,18 +44,16 @@ import { SkillsComponent } from './pages/evedata/skills/skills.component';
     FormsModule,
     HttpModule,
     router,
-    Angular2FontawesomeModule,
   ],
   providers: [
     AppGuard,
     AuthGuard,
     CharacterGuard,
     Globals,
+    Logger
   ],
   bootstrap: [
     AppComponent,
   ]
 })
-
-export class AppModule {
-}
+export class AppModule { }

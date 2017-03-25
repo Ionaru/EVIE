@@ -15,7 +15,7 @@ import * as socketIo from 'socket.io-client';
 })
 export class AppComponent {
 
-  appVersion = '2.0.0-ALPHA-1';
+  public appVersion = '0.1.0-INDEV';
 
   constructor(private userService: UserService,
               private appReadyEvent: AppReadyEvent,

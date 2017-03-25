@@ -18,15 +18,20 @@
     height: 100%;
     background-size: 100% 200%;
     background-image: linear-gradient(to bottom, transparent 50%, $eve_ore_button_active 50%);
-    transition: all 0.15s ease-in-out;
-    color: $eve_text_color;
+    transition: background 0.15s ease-in-out;
     text-decoration: none;
     float: left;
-    padding: 14px 14px;
+    font-family: "eve-font-bold", sans-serif;
+    color: $eve_text_color_bold;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    span.content {
+      padding: 0 15px;
+    }
 
     &.big {
-      font-family: "eve-font-bold", sans-serif;
-      color: $eve_text_color_bold;
       font-size: 18px;
       line-height: 20px;
 

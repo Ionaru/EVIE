@@ -69,6 +69,7 @@ export class App {
       store: this.sessionStore,
       resave: true,
       saveUninitialized: true,
+      rolling: true,
       cookie: {
         secure: mainConfig.get('secure_only_cookies') || false,
         httpOnly: false,

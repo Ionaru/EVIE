@@ -1,7 +1,7 @@
 <h1>Welcome to EVE Track!</h1>
 <p>
-  EVE Track can be best described as an EVE Online API viewer, it enables you to view your EVE Online information without having to
-  log into the game.
+  EVE Track can be best described as an EVE Online API viewer, it enables you to view your EVE Online information
+  without having to log into the game.
 </p>
 <p>
   My goal is to provide you with a simple-to-use API viewer while still providing a lot of information about your
@@ -16,40 +16,63 @@
 </p>
 <hr>
 <div *ngIf="!loggedIn">
-  <form #f="ngForm" (ngSubmit)="login(f.value)">
-    <p>
-      <label for="username-input">Username or email</label>
-      <input id="username-input" type="text" required ngModel name="username">
-    </p>
-    <p>
-      <label for="password-input">Password</label>
-      <input id="password-input" type="password" required ngModel name="password">
-    </p>
-
-  <button type="submit" [disabled]="!f.valid">Login</button>
-  </form>
-  <button (click)="loginDebug()" >Login debug</button>
+  <div>
+    <form #loginForm="ngForm" (ngSubmit)="login(loginForm.value)">
+      <p>
+        <label for="login-username">Username or email</label>
+        <input id="login-username" type="text" required ngModel name="username">
+      </p>
+      <p>
+        <label for="login-password">Password</label>
+        <input id="login-password" type="password" required ngModel name="password">
+      </p>
+      <button type="submit" [disabled]="!loginForm.valid">Login</button>
+    </form>
+    <button (click)="loginDebug()">Login debug</button>
+  </div>
+  <hr>
+  <div>
+    <form #registerForm="ngForm" (ngSubmit)="register(registerForm.value)">
+      <p>
+        <label for="register-username">Username or email</label>
+        <input id="register-username" type="text" required ngModel name="username">
+      </p>
+      <p>
+        <label for="register-email">Email</label>
+        <input id="register-email" type="email" required ngModel name="email">
+      </p>
+      <p>
+        <label for="register-password">Password</label>
+        <input id="register-password" type="password" required ngModel name="password">
+      </p>
+      <p>
+        <label for="register-password-confirm">Password</label>
+        <input id="register-password-confirm" type="password" required ngModel name="password2">
+      </p>
+      <button type="submit" [disabled]="!registerForm.valid">Register</button>
+    </form>
+  </div>
 </div>
 
 <!--<form>-->
-  <!--<input name="keyId" title="Key ID">-->
-  <!--<input name="vCode" title="Verification Code">-->
-  <!--<button type="submit">Submit</button>-->
-  <!--<button type="reset">Reset</button>-->
+<!--<input name="keyId" title="Key ID">-->
+<!--<input name="vCode" title="Verification Code">-->
+<!--<button type="submit">Submit</button>-->
+<!--<button type="reset">Reset</button>-->
 <!--</form>-->
 
 <!--<div class="container">-->
-  <!--<h2>Log in</h2>-->
-  <!--<form>-->
-    <!--<div class="form-group">-->
-      <!--<label for="username">Username or Email</label>-->
-      <!--<input type="text" class="form-control" id="username" required ngModel="user.name">-->
-      <!--&lt;!&ndash;{{ user.name }}&ndash;&gt;-->
-    <!--</div>-->
-    <!--<div class="form-group">-->
-      <!--<label for="password">Password</label>-->
-      <!--<input type="password" class="form-control" id="password" required ngModel="user.password">-->
-    <!--</div>-->
-    <!--<button type="submit" class="btn btn-default">Log in</button>-->
-  <!--</form>-->
+<!--<h2>Log in</h2>-->
+<!--<form>-->
+<!--<div class="form-group">-->
+<!--<label for="username">Username or Email</label>-->
+<!--<input type="text" class="form-control" id="username" required ngModel="user.name">-->
+<!--&lt;!&ndash;{{ user.name }}&ndash;&gt;-->
+<!--</div>-->
+<!--<div class="form-group">-->
+<!--<label for="password">Password</label>-->
+<!--<input type="password" class="form-control" id="password" required ngModel="user.password">-->
+<!--</div>-->
+<!--<button type="submit" class="btn btn-default">Log in</button>-->
+<!--</form>-->
 <!--</div>-->

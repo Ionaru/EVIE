@@ -7,6 +7,8 @@ import { Character } from '../../components/character/character';
 import { EndpointService } from '../../components/endpoint/endpoint.service';
 import { Globals } from '../../globals';
 import { LocationService } from './location.service';
+import { Logger } from 'angular2-logger/core';
+import { SinonStub, stub } from 'sinon';
 
 describe('Dashboard', () => {
   describe('Services', () => {
@@ -14,8 +16,10 @@ describe('Dashboard', () => {
 
       let mockBackend: MockBackend;
       let locationService: LocationService;
+      let logger: Logger;
+      let loggerStub: SinonStub;
 
-      beforeEach(async(() => {
+      beforeEach(async () => {
         TestBed.configureTestingModule({
           providers: [
             BaseRequestOptions,
@@ -23,6 +27,7 @@ describe('Dashboard', () => {
             LocationService,
             EndpointService,
             Globals,
+            Logger,
             {
               deps: [
                 MockBackend,
@@ -39,8 +44,14 @@ describe('Dashboard', () => {
         const testbed = getTestBed();
         mockBackend = testbed.get(MockBackend);
         locationService = testbed.get(LocationService);
+        logger = testbed.get(Logger);
+        loggerStub = stub(logger, 'error');
 
-      }));
+      });
+
+      afterEach(() => {
+        loggerStub.restore();
+      });
 
       function setupConnections(backend: MockBackend, options: any) {
         backend.connections.subscribe((connection: MockConnection) => {

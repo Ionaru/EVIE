@@ -7,7 +7,7 @@
     "build": "ng build --prod --verbose",
     "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
     "test": "ng test --single-run --code-coverage",
-    "watchtest": "ng test --single-run",
+    "watchtest": "ng test",
     "saucelabs": "export SAUCELABS=true && npm run test && unset SAUCELABS",
     "browserstack": "export BROWSERSTACK=true && npm run test && unset BROWSERSTACK",
     "pree2e": "webdriver-manager update",
@@ -15,15 +15,15 @@
     "autotest": "npm run lint && npm run test && npm run saucelabs && npm run browserstack && npm run build"
   },
   "dependencies": {
-    "@angular/common": ">=4.0.0-beta <5.0.0",
-    "@angular/compiler": ">=4.0.0-beta <5.0.0",
-    "@angular/core": ">=4.0.0-beta <5.0.0",
-    "@angular/forms": ">=4.0.0-beta <5.0.0",
-    "@angular/http": ">=4.0.0-beta <5.0.0",
-    "@angular/platform-browser": ">=4.0.0-beta <5.0.0",
-    "@angular/platform-browser-dynamic": ">=4.0.0-beta <5.0.0",
-    "@angular/router": ">=4.0.0-beta <5.0.0",
-    "angular2-fontawesome": "^0.8.0",
+    "@angular/common": "^4.0.0",
+    "@angular/compiler": "^4.0.0",
+    "@angular/core": "^4.0.0",
+    "@angular/forms": "^4.0.0",
+    "@angular/http": "^4.0.0",
+    "@angular/platform-browser": "^4.0.0",
+    "@angular/platform-browser-dynamic": "^4.0.0",
+    "@angular/router": "^4.0.0",
+    "angular2-logger": "^0.5.1",
     "core-js": "^2.4.1",
     "crypto-js": "^3.1.9-1",
     "font-awesome": "^4.7.0",
@@ -34,8 +34,9 @@
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
-    "@angular/cli": "^1.0.0-rc.2",
-    "@angular/compiler-cli": ">=4.0.0-beta <5.0.0",
+    "@angular/cli": "^1.0.0",
+    "@angular/compiler-cli": "^4.0.0",
+    "@angular/language-service": "^4.0.0",
     "@types/chai": "^3.4.35",
     "@types/crypto-js": "^3.1.33",
     "@types/karma": "^0.13.33",
@@ -58,9 +59,9 @@
     "mocha": "^3.2.0",
     "protractor": "~5.1.0",
     "sinon": "^2.1.0",
-    "ts-node": "^2.1.0",
+    "ts-node": "^3.0.2",
     "tslint": "^4.5.0",
-    "typescript": "~2.1.0"
+    "typescript": "^2.2.1"
   },
   "license": "MIT"
 }
