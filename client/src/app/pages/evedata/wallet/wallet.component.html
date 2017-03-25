@@ -3,7 +3,7 @@
     Current balance:
     <span *ngIf="!balanceError" id="balance-number"></span>
     <span *ngIf="balanceError" class="balance-error">Error
-      <fa (click)="showBalance().then()" [name]="'refresh'"></fa>
+      <i (click)="showBalance().then()" class="fa fa-refresh"></i>
     </span>
   </h2>
 </div>
@@ -11,7 +11,7 @@
 
   <div id="journal-section">
     <h2 class="journal-head">Journal</h2>
-    <fa *ngIf="!journalDataRequestDone" [name]="'circle-o-notch'" [spin]=true></fa>
+    <i *ngIf="!journalDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>
     <div id="journal-data" *ngIf="journalDataRequestDone">
       <p *ngIf="!journalData.length">There is no journal data available.</p>
       <table *ngIf="journalData.length" class="journal-table table">
@@ -41,7 +41,7 @@
 
   <div id="transactions-section">
     <h2 class="transactions-head">Transactions</h2>
-    <fa *ngIf="!transactionDataRequestDone" [name]="'circle-o-notch'" [spin]=true></fa>
+    <i *ngIf="!transactionDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>
     <div *ngIf="transactionDataRequestDone" id="transactions-data">
       <p *ngIf="!transactionData.length">There is no transaction data available.</p>
       <table *ngIf="transactionData.length" class="transactions-table table">

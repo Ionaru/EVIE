@@ -280,10 +280,6 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
-angular2-fontawesome@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/angular2-fontawesome/-/angular2-fontawesome-0.8.0.tgz#e1c3452bb1e87278421521a9ddefa9ec11a9bdc9"
-
 angular2-logger@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/angular2-logger/-/angular2-logger-0.5.1.tgz#0e2d8b7a850270036667a18d10c7d7b31500730d"

@@ -18,11 +18,11 @@
       |
       <span class="character-name" title="Character name">
         <ng-container title="Character name" *ngIf="character.gender === 'male'">
-         <fa [name]="'male'" title="Male"></fa></ng-container>
+         <i class="fa fa-male" title="Male"></i></ng-container>
         <ng-container title="Character name" *ngIf="character.gender === 'female'">
-          <fa [name]="'female'" title="Female"></fa></ng-container>
+          <i class="fa fa-female" title="Female"></i></ng-container>
         <ng-container title="Character name" *ngIf="!character.gender">
-          <fa [name]="'circle-o-notch'" [spin]=true></fa></ng-container>
+          <i  class="fa fa-circle-o-notch fa-spin"></i></ng-container>
         {{character.name}}
       </span>
       <img *ngIf="character.corporation_id" style="height: 14px" title="Corporation"
@@ -31,24 +31,24 @@
            src="//image.eveonline.com/Alliance/{{ character.alliance_id }}_32.png" alt="Character alliance">
       |
       <span class="character-id" title="Character ID">
-        <fa [name]="'id-card'"></fa>{{character.characterId}}
+        <i class="fa fa-id-card"></i> {{character.characterId}}
       </span>
       |
       <span class="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">
         <span class="success" *ngIf="character.currentShip?.type && character.currentShip?.type !== 'Error'">
-          <fa [name]="'rocket'"></fa>{{character.currentShip.name}} ({{character.currentShip.type}})</span>
-        <span class="loading" *ngIf="!character.currentShip?.type"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
+          <i class="fa fa-rocket"></i> {{character.currentShip.name}} ({{character.currentShip.type}})</span>
+        <span class="loading" *ngIf="!character.currentShip?.type"><i  class="fa fa-circle-o-notch fa-spin"></i></span>
         <span class="error" *ngIf="character.currentShip?.type === 'Error'">
-          <fa [name]="'exclamation-triangle'"></fa> Error
+          <i class="fa fa-exclamation-triangle"></i> Error
         </span>
       </span>
       |
       <span class="location" title="Current location, click to refresh" (click)="refreshLocation(character)">
         <span class="success" *ngIf="character.location?.name && character.location?.name !== 'Error'">
-          <fa [name]="'map'"></fa>{{character.location.name}}</span>
-        <span class="loading" *ngIf="!character.location?.name"><fa [name]="'circle-o-notch'" [spin]=true></fa></span>
+          <i class="fa fa-map"></i> {{character.location.name}}</span>
+        <span class="loading" *ngIf="!character.location?.name"><i  class="fa fa-circle-o-notch fa-spin"></i></span>
         <span class="error" *ngIf="character.location?.name === 'Error'">
-          <fa [name]="'exclamation-triangle'"></fa> Error
+          <i class="fa fa-exclamation-triangle"></i> Error
         </span>
       </span>
     </div>

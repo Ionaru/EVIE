@@ -15,7 +15,6 @@ import { SkillsComponent } from './pages/evedata/skills/skills.component';
 import { PlanetsComponent } from './pages/evedata/planets/planets.component';
 import { WalletComponent } from './pages/evedata/wallet/wallet.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Angular2FontawesomeModule } from 'angular2-fontawesome';
 import { BaseRequestOptions, Http, HttpModule, XHRBackend } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -51,7 +50,6 @@ describe('AppComponent', () => {
         BrowserModule,
         FormsModule,
         HttpModule,
-        Angular2FontawesomeModule,
         RouterTestingModule.withRoutes([
           {
             path: '',

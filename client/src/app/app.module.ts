@@ -13,7 +13,6 @@ import { CharacterGuard } from './pages/evedata/character.guard';
 import { Globals } from './globals';
 import { AuthGuard } from './auth.guard';
 import { AppGuard } from './app.guard';
-import { Angular2FontawesomeModule } from 'angular2-fontawesome';
 import { AssetsComponent } from './pages/evedata/assets/assets.component';
 import { CharactersheetComponent } from './pages/evedata/charactersheet/charactersheet.component';
 import { ContactsComponent } from './pages/evedata/contacts/contacts.component';
@@ -45,7 +44,6 @@ import { Logger } from 'angular2-logger/core';
     FormsModule,
     HttpModule,
     router,
-    Angular2FontawesomeModule,
   ],
   providers: [
     AppGuard,
