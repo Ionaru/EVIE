@@ -18,7 +18,7 @@ export class RefTypesService {
   async getRefTypes(expired = false): Promise<Object> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-      if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
+      if (isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
         return this.getRefTypes(true);
       } else {
         return jsonData;

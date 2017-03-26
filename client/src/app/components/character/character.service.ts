@@ -66,6 +66,7 @@ export class CharacterService {
       if (response.state === 'success') {
         if (character) {
           character.updateAuth(response.data);
+          this.globals.characterChangeEvent.next(character);
         } else {
           const newCharacter = this.registerCharacter(response.data);
           this.setActiveCharacter(newCharacter);

@@ -11,6 +11,7 @@
 
   <div id="journal-section">
     <h2 class="journal-head">Journal</h2>
+    <p>Showing the last 50 records in the last 30 days.</p>
     <i *ngIf="!journalDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>
     <div id="journal-data" *ngIf="journalDataRequestDone">
       <p *ngIf="!journalData.length">There is no journal data available.</p>
@@ -41,6 +42,7 @@
 
   <div id="transactions-section">
     <h2 class="transactions-head">Transactions</h2>
+    <p>Showing the last 50 records in the last 30 days.</p>
     <i *ngIf="!transactionDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>
     <div *ngIf="transactionDataRequestDone" id="transactions-data">
       <p *ngIf="!transactionData.length">There is no transaction data available.</p>

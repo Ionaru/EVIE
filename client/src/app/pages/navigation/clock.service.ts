@@ -20,19 +20,19 @@ export class ClockService {
     headers.append('Accept', 'application/xml');
     return this.http.get(url, {
       headers: headers
-    }).map((res: Response) => {
-      const jsonData = processXML(res);
+    }).map((response: Response) => {
+      const jsonData = processXML(response);
       return ClockService.processTime(jsonData);
     });
   }
 
   private static processTime(jsonData: Object): Object {
-    const currentTime = jsonData['eveapi']['currentTime']['#text'];
+    const currentTime = jsonData['eveapi']['currentTime'][0];
     let hours: any = parseInt(currentTime.slice(-8, -6), 10);
     let minutes: any = parseInt(currentTime.slice(-5, -3), 10);
     const seconds = parseInt(currentTime.slice(-2), 10);
-    let status = jsonData['eveapi']['result']['serverOpen']['#text'];
-    const players = jsonData['eveapi']['result']['onlinePlayers']['#text'];
+    let status = jsonData['eveapi']['result'][0]['serverOpen'][0];
+    const players = jsonData['eveapi']['result'][0]['onlinePlayers'][0];
 
     if (minutes === 60) {
       hours += 1;

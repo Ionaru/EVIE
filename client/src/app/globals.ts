@@ -53,10 +53,6 @@ export class Globals {
     this._user = value;
   }
 
-  get DOMParser(): DOMParser {
-    return this._DOMParser;
-  }
-
   get selectedCharacter(): Character {
     return this._selectedCharacter;
   }
@@ -66,7 +62,6 @@ export class Globals {
   }
 
   private _selectedCharacter: Character;
-  private _DOMParser: DOMParser = new DOMParser();
   private _loggedIn = false;
   private _user: User;
   private _socket: SocketIOClient.Socket;

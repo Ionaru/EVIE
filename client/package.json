@@ -23,6 +23,7 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
+    "@types/xml2js": "^0.0.33",
     "angular2-logger": "^0.5.1",
     "core-js": "^2.4.1",
     "crypto-js": "^3.1.9-1",
@@ -31,6 +32,7 @@
     "socket.io": "^1.7.2",
     "socket.io-client": "^1.7.2",
     "ts-helpers": "^1.1.1",
+    "xml2js": "^0.4.17",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {

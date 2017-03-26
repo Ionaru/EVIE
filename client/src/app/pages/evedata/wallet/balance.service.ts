@@ -20,7 +20,7 @@ export class BalanceService {
   async getBalance(expired = false): Promise<string> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-      if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
+      if (isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
         return this.getBalance(true);
       } else {
         return this.processBalance(jsonData);
@@ -39,7 +39,7 @@ export class BalanceService {
 
   private processBalance(jsonData: object): string {
     try {
-      return jsonData['eveapi']['result']['rowset']['row']['@attributes']['balance'];
+      return jsonData['eveapi']['result'][0]['rowset'][0]['row'][0]['$']['balance'];
     } catch (error) {
       return this.handleBalanceError(error);
     }
