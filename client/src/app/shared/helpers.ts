@@ -63,8 +63,7 @@ export class Helpers {
   }
 
   isCacheExpired(cacheEndTime: string): boolean {
-    let cacheEndTimeDate = this.eveTimeToDate(cacheEndTime).getTime();
-    cacheEndTimeDate += 3600000;
+    const cacheEndTimeDate = this.eveTimeToDate(cacheEndTime).getTime();
     const currentTime = new Date().getTime();
     const distance = cacheEndTimeDate - currentTime;
     return distance < -5000;
@@ -75,7 +74,7 @@ export class Helpers {
       return new Date(dateString.replace(/-/ig, '/').split('.')[0] + ' UTC');
     } catch (error) {
       this.logger.error(error);
-      return new Date(0);
+      return new Date();
     }
   }
 }

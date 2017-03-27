@@ -141,7 +141,7 @@ describe('Services', () => {
 
       expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.exist;
 
-      clock = useFakeTimers(new Date('2000-01-01 00:10:00').getTime());
+      clock = useFakeTimers(new Date(helpers.eveTimeToDate('2000-01-01 00:10:00')).getTime());
 
       // We watch 'http.get()' from this point on
       const httpSpy = spy(http, 'get');
