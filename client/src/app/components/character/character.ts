@@ -55,3 +55,33 @@ export class Character {
     this.tokenExpiry = new Date(data.tokenExpiry);
   }
 }
+
+export interface EveCharacterData {
+  alliance_id?: number;
+  ancestry_id: number;
+  birthday: string;
+  bloodline_id: number;
+  corporation_id: number;
+  description: string;
+  gender: string;
+  name: string;
+  race_id: number;
+  security_status: number;
+}
+
+export interface ApiCharacterData {
+  accessToken: string;
+  characterId: number;
+  name: string;
+  ownerHash: string;
+  pid: string;
+  scopes: string;
+  tokenExpiry: string;
+  isActive: boolean;
+}
+
+export interface SSOSocketResponse {
+  state: string;
+  message: string;
+  data: ApiCharacterData | undefined;
+}

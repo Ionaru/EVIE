@@ -5,6 +5,12 @@ import { EndpointService } from '../../components/endpoint/endpoint.service';
 import * as assert from 'assert';
 import { Logger } from 'angular2-logger/core';
 
+export interface ShipData {
+  ship_item_id: number;
+  ship_name: string;
+  ship_type_id: number;
+}
+
 @Injectable()
 export class ShipService {
   constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Character } from './character';
+import { ApiCharacterData, Character, EveCharacterData, SSOSocketResponse } from './character';
 import { EndpointService } from '../endpoint/endpoint.service';
 import { Globals } from '../../globals';
 import { Http, Response } from '@angular/http';
