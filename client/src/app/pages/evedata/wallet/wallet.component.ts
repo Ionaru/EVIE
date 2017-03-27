@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { BalanceService } from './balance.service';
-import { JournalService } from './journal.service';
-import { TransactionService } from './transactions.service';
-import { RefTypesService } from './reftypes.service';
-import { CountUp, CountUpOptions } from '../../../components/count-up';
+import { BalanceService } from '../../../services/balance.service';
+import { JournalService } from '../../../services/journal.service';
+import { TransactionService } from '../../../services/transactions.service';
+import { RefTypesService } from '../../../services/reftypes.service';
+import { CountUp, CountUpOptions } from '../../../shared/count-up';
 
 @Component({
   templateUrl: 'wallet.component.html',

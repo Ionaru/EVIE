@@ -1,6 +1,6 @@
 import { Router, Response, Request } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
-import { logger } from '../controllers/logger.service';
+import { logger } from '../services/logger.service';
 
 interface RequestLogItem {
   id;

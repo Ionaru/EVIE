@@ -3,8 +3,8 @@ import Sequelize = require('sequelize');
 import Instance = Sequelize.Instance;
 import Model = Sequelize.Model;
 
-import { db } from '../../controllers/db.service';
-import { logger } from '../../controllers/logger.service';
+import { db } from '../../services/db.service';
+import { logger } from '../../services/logger.service';
 
 export let User;
 

@@ -2,9 +2,9 @@
 
 import { TestBed, async, getTestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { NavigationComponent } from './pages/navigation/navigation.component';
-import { IndexComponent } from './pages/index/index.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { NavigationComponent } from './pages/core/navigation/navigation.component';
+import { IndexComponent } from './pages/core/index/index.component';
+import { DashboardComponent } from './pages/core/dashboard/dashboard.component';
 import { AssetsComponent } from './pages/evedata/assets/assets.component';
 import { CharactersheetComponent } from './pages/evedata/charactersheet/charactersheet.component';
 import { ContactsComponent } from './pages/evedata/contacts/contacts.component';
@@ -18,7 +18,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BaseRequestOptions, Http, HttpModule, XHRBackend } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { Globals } from './globals';
+import { Globals } from './shared/globals';
 import { MockBackend } from '@angular/http/testing';
 import { expect } from 'chai';
 import { Logger } from 'angular2-logger/core';

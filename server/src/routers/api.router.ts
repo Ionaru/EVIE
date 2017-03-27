@@ -3,9 +3,9 @@ import bcrypt = require('bcryptjs');
 import { CharacterInstance, Character } from '../models/character/character';
 import { User, UserInstance } from '../models/user/user';
 import { Response, Request } from 'express';
-import { logger } from '../controllers/logger.service';
+import { logger } from '../services/logger.service';
 import { BaseRouter, sendResponse } from './base.router';
-import { generateUniquePID } from '../controllers/pid.service';
+import { generateUniquePID } from '../services/pid.service';
 
 export class APIRouter extends BaseRouter {
 
