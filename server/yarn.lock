@@ -21,9 +21,15 @@
   version "3.4.35"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-3.4.35.tgz#e8d65f83492d2944f816fc620741821c28a8c900"
 
-"@types/express-serve-static-core@*", "@types/express-serve-static-core@^4.0.42":
+"@types/express-serve-static-core@*":
   version "4.0.42"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.42.tgz#e79fa1827ebd04e741adedd0ddd1f1708c80366c"
+  dependencies:
+    "@types/node" "*"
+
+"@types/express-serve-static-core@^4.0.44":
+  version "4.0.44"
+  resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.44.tgz#a1c3bd5d80e93c72fba91a03f5412c47f21d4ae7"
   dependencies:
     "@types/node" "*"
 
@@ -83,9 +89,13 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^7.0.10":
+"@types/node@*":
   version "7.0.10"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.10.tgz#d860abb18c1b58b552c7c6cd8b2ba7adf6546fa3"
+
+"@types/node@^7.0.11":
+  version "7.0.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.11.tgz#55680189f2335f080f0aeb57871f0b9823646d89"
 
 "@types/sequelize@^4.0.49":
   version "4.0.49"
@@ -495,13 +505,13 @@ debug@2.3.3:
   dependencies:
     ms "0.7.2"
 
-debug@2.6.1:
+debug@2.6.1, debug@~2.6.0:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.1.tgz#79855090ba2c4e3115cc7d8769491d58f0491351"
   dependencies:
     ms "0.7.2"
 
-debug@2.6.3, debug@^2.2.0, debug@~2.6.0:
+debug@2.6.3, debug@^2.2.0:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.3.tgz#0f7eb8c30965ec08c72accfa0130c8b79984141d"
   dependencies:
@@ -662,18 +672,18 @@ express-session@1.14.0:
     uid-safe "~2.1.1"
     utils-merge "1.0.0"
 
-express-session@^1.15.1:
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.15.1.tgz#9abba15971beea7ad98da5a4d25ed92ba4a2984e"
+express-session@^1.15.2:
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.15.2.tgz#d98516443a4ccb8688e1725ae584c02daa4093d4"
   dependencies:
     cookie "0.3.1"
     cookie-signature "1.0.6"
     crc "3.4.4"
-    debug "2.6.1"
+    debug "2.6.3"
     depd "~1.1.0"
     on-headers "~1.0.1"
     parseurl "~1.3.1"
-    uid-safe "~2.1.3"
+    uid-safe "~2.1.4"
     utils-merge "1.0.0"
 
 express-socket.io-session@^1.3.2:
@@ -1457,9 +1467,9 @@ send@0.15.1:
     range-parser "~1.2.0"
     statuses "~1.3.1"
 
-sequelize@^3.30.2:
-  version "3.30.2"
-  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-3.30.2.tgz#8fb5a5769a01777451593924092f9d3061eb935f"
+sequelize@^3.30.3:
+  version "3.30.3"
+  resolved "https://registry.yarnpkg.com/sequelize/-/sequelize-3.30.3.tgz#f9dc9b7c073bc0a0360dd5bae64a516f736f21ed"
   dependencies:
     bluebird "^3.3.4"
     depd "^1.1.0"
@@ -1762,7 +1772,7 @@ typescript@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.2.1.tgz#4862b662b988a4c8ff691cc7969622d24db76ae9"
 
-uid-safe@~2.1.1, uid-safe@~2.1.3:
+uid-safe@~2.1.1, uid-safe@~2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/uid-safe/-/uid-safe-2.1.4.tgz#3ad6f38368c6d4c8c75ec17623fb79aa1d071d81"
   dependencies:

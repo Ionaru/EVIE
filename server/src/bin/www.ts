@@ -5,10 +5,10 @@ import http = require('http');
 import sio = require('socket.io');
 import ios = require('socket.io-express-session');
 
-import { logger } from '../controllers/logger.service';
+import { logger } from '../services/logger.service';
 import { App } from '../app';
-import { db } from '../controllers/db.service';
-import { mainConfig } from '../controllers/config.service';
+import { db } from '../services/db.service';
+import { mainConfig } from '../services/config.service';
 import { Server } from 'http';
 
 export let sockets: Array<SessionSocket> = [];
@@ -172,7 +172,7 @@ function exit(options: Object, err?: any): void {
     process.exit(1);
   });
   process.on('unhandledRejection', (reason: string, p: Promise<any>): void => {
-    console.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
+    logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
     process.exit(1);
   });
 

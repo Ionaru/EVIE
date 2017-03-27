@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from 'express';
-import { logger } from '../controllers/logger.service';
+import { logger } from '../services/logger.service';
 import { BaseRouter, requestList } from './base.router';
-import { generateRandomString } from '../controllers/pid.service';
+import { generateRandomString } from '../services/pid.service';
 
 export class GlobalRouter extends BaseRouter {
 

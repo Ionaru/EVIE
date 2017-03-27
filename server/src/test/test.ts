@@ -2,9 +2,9 @@ import sinon = require('sinon');
 import www = require('../bin/www');
 import fetch from 'node-fetch';
 
-import { db } from '../controllers/db.service';
-import { logger } from '../controllers/logger.service';
-import { mainConfig, dbConfig, ssoConfig } from '../controllers/config.service';
+import { db } from '../services/db.service';
+import { logger } from '../services/logger.service';
+import { mainConfig, dbConfig, ssoConfig } from '../services/config.service';
 import { expect } from 'chai';
 
 describe('Application', function () {

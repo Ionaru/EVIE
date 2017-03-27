@@ -5,13 +5,13 @@ import path = require('path');
 import helmet = require('helmet');
 import es = require('express-session');
 import ems = require('express-mysql-session');
-import configservice = require('./controllers/config.service');
-import loggerservice = require('./controllers/logger.service');
+import configservice = require('./services/config.service');
+import loggerservice = require('./services/logger.service');
 
 // ES6 imports
-import { logger, Logger } from './controllers/logger.service';
-import { db } from './controllers/db.service';
-import { Config, mainConfig } from './controllers/config.service';
+import { logger, Logger } from './services/logger.service';
+import { db } from './services/db.service';
+import { Config, mainConfig } from './services/config.service';
 import { defineUser } from './models/user/user';
 import { defineCharacter } from './models/character/character';
 import { APIRouter } from './routers/api.router';

@@ -2,11 +2,11 @@ import https = require('https');
 import fetch from 'node-fetch';
 
 import { Response, Request } from 'express';
-import { logger } from '../controllers/logger.service';
+import { logger } from '../services/logger.service';
 import { BaseRouter, sendResponse, sendTextResponse } from './base.router';
-import { ssoConfig } from '../controllers/config.service';
+import { ssoConfig } from '../services/config.service';
 import { Character, CharacterInstance } from '../models/character/character';
-import { generateUniquePID, generateRandomString } from '../controllers/pid.service';
+import { generateUniquePID, generateRandomString } from '../services/pid.service';
 import { sockets } from '../bin/www';
 import { UserInstance, User } from '../models/user/user';
 

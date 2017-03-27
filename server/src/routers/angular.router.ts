@@ -1,5 +1,5 @@
 import { Response, Request } from 'express';
-import { logger } from '../controllers/logger.service';
+import { logger } from '../services/logger.service';
 import path = require('path');
 import { BaseRouter } from './base.router';
 
