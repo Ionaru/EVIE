@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Character } from './character';
+import { ApiCharacterData, Character, EveCharacterData, SSOSocketResponse } from './character';
 import { EndpointService } from '../endpoint/endpoint.service';
 import { Globals } from '../../globals';
 import { Http, Response } from '@angular/http';
@@ -66,6 +66,7 @@ export class CharacterService {
       if (response.state === 'success') {
         if (character) {
           character.updateAuth(response.data);
+          this.globals.characterChangeEvent.next(character);
         } else {
           const newCharacter = this.registerCharacter(response.data);
           this.setActiveCharacter(newCharacter);

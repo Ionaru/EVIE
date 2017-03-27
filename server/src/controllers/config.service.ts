@@ -14,32 +14,39 @@ export class Config {
 
   config: Object;
   configName: string;
+  allowedMissing: boolean;
 
-  constructor(configName: string, allowedMissing = false) {
+  constructor(configName?: string, allowedMissing = false) {
     this.configName = configName;
+    this.allowedMissing = allowedMissing;
+    this.readConfigFile();
+  }
+
+  /**
+   * Read the config from one of the config files and store the gotten values in this.config
+   */
+  readConfigFile() {
     try {
       // Try to read the config file from the config folder in the project root directory
-      this.config = ini.parse(fs.readFileSync(path.join(configPath, configName + '.ini'), 'utf-8'));
-      logger.info(`Config loaded: ${configName + '.ini'}`);
+      this.config = ini.parse(fs.readFileSync(path.join(configPath, this.configName + '.ini'), 'utf-8'));
+      logger.info(`Config loaded: ${this.configName + '.ini'}`);
     } catch (error) {
-      // Config file was not found
-      if (error.code === 'ENOENT' && allowedMissing) {
+      // Config file was not found or the parsing went wrong
+      if (error.code === 'ENOENT' && this.allowedMissing) {
         // Config file is allowed to be missing, but the application might miss functionality
-        logger.warn(configName + '.ini was not found, some functionality will be disabled ' +
-          'and application might misbehave.');
+        logger.warn(this.configName + '.ini was not found, some functionality will be disabled and application might misbehave.');
         this.config = {};
       } else {
-        // The config is essential for the application, throw an error
+        // The config file was marked as essential for the system or something else went wrong, throw the original error.
         throw error;
       }
     }
   }
 
   /**
-   * Get a property from a config file
-   * params:
-   *  property: The name of the property to fetch
-   * returns: The value of the given config property
+   * Get a property from the config file
+   * @param {string} property - The name of the property to fetch
+   * @return {any | null} - The value of the given config property
    */
   get(property: string): any {
     if (this.config.hasOwnProperty(property)) {

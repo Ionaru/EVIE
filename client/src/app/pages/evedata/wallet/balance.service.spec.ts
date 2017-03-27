@@ -4,7 +4,7 @@ import { MockBackend, MockConnection } from '@angular/http/testing';
 import { expect } from 'chai';
 import { assert, SinonFakeTimers, SinonStub, spy, stub, useFakeTimers } from 'sinon';
 
-import { Character } from '../../../components/character/character';
+import { ApiCharacterData, Character } from '../../../components/character/character';
 import { EndpointService } from '../../../components/endpoint/endpoint.service';
 import { Globals } from '../../../globals';
 import { BalanceService } from './balance.service';
@@ -206,7 +206,7 @@ describe('Evedata', () => {
 
       it('should be able to process an invalid response', async () => {
         setupConnections(mockBackend, {
-          body: `IamAnInvalidResponse`,
+          body: 'IamAnInvalidResponse',
           status: 200
         });
 

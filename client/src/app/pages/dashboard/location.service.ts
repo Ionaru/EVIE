@@ -5,6 +5,11 @@ import { EndpointService } from '../../components/endpoint/endpoint.service';
 import * as assert from 'assert';
 import { Logger } from 'angular2-logger/core';
 
+export interface LocationData {
+  solar_system_id: number;
+  structure_id?: number;
+}
+
 @Injectable()
 export class LocationService {
   constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }

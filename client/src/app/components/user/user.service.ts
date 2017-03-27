@@ -6,7 +6,7 @@ import * as crypto from 'crypto-js';
 import { Globals } from '../../globals';
 import { isEmpty } from '../helperfunctions.component';
 import { CharacterService } from '../character/character.service';
-import { User } from './user';
+import { LoginResponse, User, UserApiData } from './user';
 
 @Injectable()
 export class UserService {

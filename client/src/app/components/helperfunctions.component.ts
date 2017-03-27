@@ -1,7 +1,5 @@
 import { Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
-
-const logger = new Logger();
+import { parseString } from 'xml2js';
 
 export function isEmpty(obj: any): boolean {
 
@@ -10,8 +8,7 @@ export function isEmpty(obj: any): boolean {
     return true;
   }
 
-  // Assume if it has a length property with a non-zero value
-  // that that property is correct.
+  // Assume if it has a length property with a non-zero value then that property is correct.
   if (obj.length > 0) {
     return false;
   }
@@ -32,57 +29,20 @@ export function isEmpty(obj: any): boolean {
   return Object.getOwnPropertyNames(obj).length <= 0;
 }
 
-export function checkAccess(accessMask: number, testAgainst: number): boolean {
-  return (accessMask & testAgainst) > 0;
-}
-
 export function processXML(response: Response): Object {
   try {
-    const parser: DOMParser = new DOMParser();
-    const xmlData: XMLDocument = parser.parseFromString(response.text(), 'application/xml');
-    return xmlToJson(xmlData);
+    let jsonObject = {};
+
+    parseString(response.text(), function (error, json) {
+      if (error) {
+        throw error;
+      }
+      jsonObject = json;
+    });
+    return jsonObject;
   } catch (error) {
-    logger.error(error);
     return 'XMLParseError';
   }
-}
-
-export function xmlToJson(xml: Document | Node): Object {
-
-  // Create the return object
-  let obj = {};
-
-  if (xml.nodeType === 1) { // element
-    // do attributes
-    if (xml.attributes.length > 0) {
-      obj['@attributes'] = {};
-      for (let j = 0; j < xml.attributes.length; j++) {
-        const attribute = xml.attributes.item(j);
-        obj['@attributes'][attribute.nodeName] = attribute.nodeValue;
-      }
-    }
-  } else if (xml.nodeType === 3) { // text
-    obj = xml.nodeValue;
-  }
-
-  // do children
-  if (xml.hasChildNodes()) {
-    for (let i = 0; i < xml.childNodes.length; i++) {
-      const item = xml.childNodes.item(i);
-      const nodeName = item.nodeName;
-      if (typeof(obj[nodeName]) === 'undefined') {
-        obj[nodeName] = xmlToJson(item);
-      } else {
-        if (typeof(obj[nodeName].push) === 'undefined') {
-          const old = obj[nodeName];
-          obj[nodeName] = [];
-          obj[nodeName].push(old);
-        }
-        obj[nodeName].push(xmlToJson(item));
-      }
-    }
-  }
-  return obj;
 }
 
 export function formatISK(amount: number | string, decimals = 2, decimalMark = '.', delimiter = ','): string {

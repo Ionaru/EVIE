@@ -1,9 +1,9 @@
 import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
-import { async, getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 import { expect } from 'chai';
 
-import { Character } from '../character/character';
+import { ApiCharacterData, Character } from '../character/character';
 import { Globals } from '../../globals';
 import { EndpointService } from './endpoint.service';
 import { Endpoint } from './endpoint';

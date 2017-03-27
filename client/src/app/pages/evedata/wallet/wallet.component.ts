@@ -80,7 +80,7 @@ export class WalletComponent implements OnInit {
 
   async showJournal(): Promise<void> {
     const refTypes = await this.refTypesService.getRefTypes();
-    const refTypeData = refTypes['eveapi']['result']['rowset']['row'];
+    const refTypeData = refTypes['eveapi']['result'][0]['rowset'][0]['row'];
     this.journalData = await this.journalService.getJournal(refTypeData);
     this.journalDataRequestDone = true;
   }

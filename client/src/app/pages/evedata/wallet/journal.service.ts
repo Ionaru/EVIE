@@ -20,7 +20,7 @@ export class JournalService {
   async getJournal(refTypes: Array<Object>, expired = false): Promise<Array<Object>> {
     if (localStorage.getItem(this.storageTag) && !expired) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-      if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
+      if (isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
         return await this.getJournal(refTypes, true);
       } else {
         return JournalService.processJournalData(jsonData, refTypes);
@@ -31,15 +31,15 @@ export class JournalService {
       ]);
       const headers = new Headers();
       headers.append('Accept', 'application/xml');
-      const res = await this.http.get(url, {headers: headers}).toPromise();
-      const jsonData = processXML(res);
+      const response = await this.http.get(url, {headers: headers}).toPromise();
+      const jsonData = processXML(response);
       if (!this.checkedForJournalBug && localStorage.getItem(this.storageTag)) {
         // The journal XML API has a bug in which the journal data does not get updated even though the cache
         // is expired and new data should be available, this only happens on the first request to the API.
         // To work around this, we'll re-trigger the request one time if the cached data is exactly the same as the
         // new data.
-        const oldData = JSON.parse(localStorage.getItem(this.storageTag))['eveapi']['result']['rowset'];
-        const newData = jsonData['eveapi']['result']['rowset'];
+        const oldData = JSON.parse(localStorage.getItem(this.storageTag))['eveapi']['result'][0]['rowset'];
+        const newData = jsonData['eveapi']['result'][0]['rowset'];
         if (JSON.stringify(oldData) === JSON.stringify(newData)) {
           this.checkedForJournalBug = true;
           return await this.getJournal(refTypes, true);
@@ -53,14 +53,14 @@ export class JournalService {
 
   private static processJournalData(jsonData: Object, refTypes: Array<Object>): Array<Object> {
     const journalData = [];
-    if (jsonData['eveapi']['result']['rowset']['row']) {
-      for (const row of jsonData['eveapi']['result']['rowset']['row']) {
+    if (jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
+      for (const row of jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
         journalData.push({
-          date: row['@attributes']['date'],
-          refTypeName: refTypes[row['@attributes']['refTypeID']]['@attributes']['refTypeName'],
-          ownerName1: row['@attributes']['ownerName1'],
-          amount: formatISK(row['@attributes']['amount']),
-          balance: formatISK(row['@attributes']['balance']),
+          date: row['$']['date'],
+          refTypeName: refTypes[row['$']['refTypeID']]['$']['refTypeName'],
+          ownerName1: row['$']['ownerName1'],
+          amount: formatISK(row['$']['amount']),
+          balance: formatISK(row['$']['balance']),
         });
       }
     }

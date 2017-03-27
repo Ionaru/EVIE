@@ -19,7 +19,7 @@ export class TransactionService {
   async getTransactions(expired = false): Promise<Array<Object>> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-      if (isCacheExpired(jsonData['eveapi']['cachedUntil']['#text'])) {
+      if (isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
         return this.getTransactions(true);
       } else {
         return TransactionService.processTransactionData(jsonData);
@@ -39,17 +39,17 @@ export class TransactionService {
 
   private static processTransactionData(jsonData: Object): Array<Object> {
     const transactionData = [];
-    if (jsonData['eveapi']['result']['rowset']['row']) {
-      for (const row of jsonData['eveapi']['result']['rowset']['row']) {
-        const date = row['@attributes']['transactionDateTime'];
-        const ppi = row['@attributes']['price'];
-        const quantity = row['@attributes']['quantity'];
-        const typeName = row['@attributes']['typeName'];
-        const typeID = row['@attributes']['typeID'];
-        const clientName = row['@attributes']['clientName'];
-        const clientID = row['@attributes']['clientID'];
-        const transactionType = row['@attributes']['transactionType'];
-        const transactionID = row['@attributes']['transactionID'];
+    if (jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
+      for (const row of jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
+        const date = row['$']['transactionDateTime'];
+        const ppi = row['$']['price'];
+        const quantity = row['$']['quantity'];
+        const typeName = row['$']['typeName'];
+        const typeID = row['$']['typeID'];
+        const clientName = row['$']['clientName'];
+        const clientID = row['$']['clientID'];
+        const transactionType = row['$']['transactionType'];
+        const transactionID = row['$']['transactionID'];
         transactionData.push({
           date: date,
           price: formatISK(ppi * quantity),
