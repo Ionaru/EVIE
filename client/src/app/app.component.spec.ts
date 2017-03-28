@@ -83,7 +83,7 @@ describe('AppComponent', () => {
   });
 
   it('should create the app', async(function() {
-    this.timeout(5000);
+    this.timeout(10000);
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).to.be.ok;

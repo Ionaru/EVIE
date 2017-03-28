@@ -15,6 +15,7 @@ const scopes = [
   'characterAccountRead',
   'esi-location.read_location.v1',
   'esi-location.read_ship_type.v1',
+  'esi-wallet.read_character_wallet.v1',
 ];
 const protocol = 'https://';
 const oauthHost = 'login.eveonline.com';

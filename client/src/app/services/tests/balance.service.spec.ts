@@ -2,7 +2,7 @@ import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from 
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 import { expect } from 'chai';
-import { assert, SinonFakeTimers, SinonStub, spy, stub, useFakeTimers } from 'sinon';
+import { assert, SinonStub, stub } from 'sinon';
 
 import { ApiCharacterData, Character } from '../../models/character/character.model';
 import { EndpointService } from '../../models/endpoint/endpoint.service';
@@ -21,7 +21,6 @@ describe('Services', () => {
     let helpers: Helpers;
     let logger: Logger;
     let loggerStub: SinonStub;
-    let clock: SinonFakeTimers;
 
     beforeEach(async () => {
       TestBed.configureTestingModule({
@@ -73,173 +72,107 @@ describe('Services', () => {
 
     afterEach(() => {
       loggerStub.restore();
-      if (clock) {
-        clock.restore();
-      }
     });
 
-    function setupConnections(backend: MockBackend, options: any) {
-      backend.connections.subscribe((connection: MockConnection) => {
+    function mockResponse(options: { body?: string, status?: number }) {
+      mockBackend.connections.subscribe((connection: MockConnection) => {
         const responseOptions = new ResponseOptions(options);
         const response = new Response(responseOptions);
         connection.mockRespond(response);
       });
     }
 
-    const fakeBalanceXML = `<?xml version='1.0' encoding='UTF-8'?>
-        <eveapi version="2">
-          <currentTime>2000-01-01 00:00:00</currentTime>
-          <result>
-            <rowset name="accounts" key="accountID" columns="accountID,accountKey,balance">
-            <row accountID="1234567" accountKey="1000" balance="500000.00" />
-            </rowset>
-          </result>
-          <cachedUntil>2000-01-01 00:15:00</cachedUntil>
-        </eveapi>`;
+    function mockErrorResponse(options: { body?: string, status?: number }) {
+      mockBackend.connections.subscribe((connection: MockConnection) => {
+        const responseOptions = new ResponseOptions(options);
+        const response = new Response(responseOptions);
+        connection.mockError(response as any as Error);
+      });
+    }
 
-    const fakeBalanceError = `<?xml version='1.0' encoding='UTF-8'?>
-        <eveapi version="2">
-          <currentTime>2000-01-01 00:00:00</currentTime>
-          <error code="224">DummyPermissionError</error>
-          <cachedUntil>2000-01-01 00:15:00</cachedUntil>
-        </eveapi>`;
-
-    const invalidXML = `<?xml version='1.0' encoding='UTF-8'?>
-        <eveapi version="2"
-          <currentTime>2000-01-01 00:00:00</currentTime>
-          <error code="224">DummyPermissionError</error>
-          cachedUntil>2000-01-01 00:15:00</cachedUntil>
-        </eveapi>`;
+    const dummyCharacter = new Character({
+      characterId: 123,
+      name: 'Dummy',
+      accessToken: 'abc',
+      ownerHash: 'aaa',
+      pid: '123',
+      scopes: 'all',
+      tokenExpiry: '',
+      isActive: true
+    });
 
     it('should be able to process balance data', async () => {
-
-      setupConnections(mockBackend, {
-        body: fakeBalanceXML,
+      mockResponse({
+        body: '[{"wallet_id": 1000, "balance": 302315697}, {"wallet_id": 1200, "balance": 0}]',
         status: 200
       });
 
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.not.exist;
-      const balance = await balanceService.getBalance();
-      expect(balance).to.be.a('string');
-      expect(balance).to.equal('500000.00');
-
-      expect(Number(balance)).to.be.a('number');
-      expect(Number(balance)).to.equal(500000.00);
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.exist;
+      const locationID: number = await balanceService.getBalance(dummyCharacter);
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(3023156.97);
     });
 
-    it('should get cached balance data from localStorage', async () => {
-
-      setupConnections(mockBackend, {
-        body: fakeBalanceXML,
+    it('should be able to process data without a master wallet', async () => {
+      mockResponse({
+        body: '[{"wallet_id": 1100, "balance": 5000}, {"wallet_id": 1200, "balance": 0}]',
         status: 200
       });
 
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.not.exist;
-      // First request to set up a cached result in localStorage
-      await balanceService.getBalance();
-
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.exist;
-
-      clock = useFakeTimers(new Date(helpers.eveTimeToDate('2000-01-01 00:10:00')).getTime());
-
-      // We watch 'http.get()' from this point on
-      const httpSpy = spy(http, 'get');
-      const balance = await balanceService.getBalance();
-      // 'http.get()' should not have been called, this means the result came from localStorage
-      assert.notCalled(httpSpy);
-
-      expect(balance).to.be.a('string');
-      expect(balance).to.equal('500000.00');
-      expect(Number(balance)).to.be.a('number');
-      expect(Number(balance)).to.equal(500000.00);
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.exist;
+      const locationID: number = await balanceService.getBalance(dummyCharacter);
+      expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain master wallet');
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
 
-    it('should fetch new balance data when cache is expired', async () => {
-
-      setupConnections(mockBackend, {
-        body: fakeBalanceXML,
+    it('should be able to process a response with empty body', async () => {
+      mockResponse({
+        body: JSON.stringify({}),
         status: 200
       });
 
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.not.exist;
-      // First request to set up a cached result in localStorage
-      await balanceService.getBalance();
+      const locationID: number = await balanceService.getBalance(dummyCharacter);
 
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.exist;
-
-      const fakeDate = helpers.eveTimeToDate('2001-01-01 00:10:00').getTime();
-      clock = useFakeTimers(fakeDate);
-
-      // We watch 'http.get()' from this point on
-      const httpSpy = spy(http, 'get');
-      const balance = await balanceService.getBalance();
-      // 'http.get()' should been called, this means the result came from a new request
-      assert.calledOnce(httpSpy);
-
-      expect(balance).to.be.a('string');
-      expect(balance).to.equal('500000.00');
-      expect(Number(balance)).to.be.a('number');
-      expect(Number(balance)).to.equal(500000.00);
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.exist;
-    });
-
-    it('should be able to process an error response', async () => {
-      setupConnections(mockBackend, {
-        body: fakeBalanceError,
-        status: 403
-      });
-
-      const balance = await balanceService.getBalance(true);
-      expect(balance).to.be.a('string');
-      expect(balance).to.equal('Error');
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.not.exist;
+      assert.calledOnce(loggerStub);
+      expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain expected values');
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
 
     it('should be able to process an empty response', async () => {
-      setupConnections(mockBackend, {});
+      mockResponse({});
 
-      const balance = await balanceService.getBalance(true);
-      expect(balance).to.be.a('string');
-      expect(balance).to.equal('Error');
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.not.exist;
+      const locationID: number = await balanceService.getBalance(dummyCharacter);
+
+      assert.calledOnce(loggerStub);
+      expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
 
-    it('should be able to process an invalid response', async () => {
-      setupConnections(mockBackend, {
-        body: 'IamAnInvalidResponse',
-        status: 200
+    it('should be able to process a HTTP error', async () => {
+      mockErrorResponse({
+        body: '',
+        status: 403
       });
 
-      const balance = await balanceService.getBalance(true);
-      expect(balance).to.be.a('string');
-      expect(balance).to.equal('Error');
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.not.exist;
+      const locationID: number = await balanceService.getBalance(dummyCharacter);
+
+      assert.calledOnce(loggerStub);
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
 
-    it('should be able to process an invalid HTTP response', async () => {
-      setupConnections(mockBackend, {
-        what: 7,
-        problem: 'nothing'
+    it('should be able to process a non-200 status code', async () => {
+      mockResponse({
+        body: '',
+        status: 500
       });
 
-      const balance = await balanceService.getBalance(true);
-      expect(balance).to.be.a('string');
-      expect(balance).to.equal('Error');
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.not.exist;
-    });
-
-    it('should be able to process an invalid XML response', async () => {
-      setupConnections(mockBackend, {
-        body: invalidXML,
-        status: 200
-      });
-
-      const balance = await balanceService.getBalance(true);
-      expect(balance).to.be.a('string');
-      expect(balance).to.equal('Error');
-      expect(localStorage.getItem('AccountBalance' + globals.selectedCharacter.characterId)).to.not.exist;
+      const locationID: number = await balanceService.getBalance(dummyCharacter);
+      assert.calledOnce(loggerStub);
+      expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
   });
 });

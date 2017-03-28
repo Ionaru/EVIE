@@ -5,6 +5,7 @@ import { JournalService } from '../../../services/journal.service';
 import { TransactionService } from '../../../services/transactions.service';
 import { RefTypesService } from '../../../services/reftypes.service';
 import { CountUp, CountUpOptions } from '../../../shared/count-up';
+import { Globals } from '../../../shared/globals';
 
 @Component({
   templateUrl: 'wallet.component.html',
@@ -23,6 +24,7 @@ export class WalletComponent implements OnInit {
               private journalService: JournalService,
               private transactionService: TransactionService,
               private refTypesService: RefTypesService,
+              private globals: Globals,
               private title: Title) { }
 
   ngOnInit(): void {
@@ -58,11 +60,11 @@ export class WalletComponent implements OnInit {
   }
 
   async showBalance(): Promise<void> {
-    const balance = await this.balanceService.getBalance(this.balanceError);
+    const balance = await this.balanceService.getBalance(this.globals.selectedCharacter);
     this.balanceError = false;
-    if (this.balance && balance !== 'Error') {
+    if (this.balance && balance !== -1) {
       this.balance.update(Number(balance));
-    } else if (balance !== 'Error') {
+    } else if (balance !== -1) {
       this.initBalanceCountUp(Number(balance));
     } else {
       this.balanceError = true;
