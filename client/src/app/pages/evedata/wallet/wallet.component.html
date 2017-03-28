@@ -1,7 +1,7 @@
 <div id="balance-section">
   <h2 class="balance">
     Current balance:
-    <span *ngIf="!balanceError" id="balance-number"></span>
+    <span id="balance-number"></span>
     <span *ngIf="balanceError" class="balance-error">Error
       <i (click)="showBalance().then()" class="fa fa-refresh"></i>
     </span>
@@ -27,10 +27,10 @@
         </thead>
         <tbody id="wallet-journal-body">
         <tr *ngFor="let entry of journalData">
-          <td data-label="Date">{{ entry.date }}</td>
+          <td data-label="Date">{{ entry.dateRaw }}</td>
           <td data-label="refType">{{ entry.refTypeName }}</td>
           <td data-label="From">{{ entry.ownerName1 }}</td>
-          <td data-label="Amount" [ngClass]="getNumberColor(entry.amount)">{{ entry.amount }} ISK</td>
+          <td data-label="Amount" [ngClass]="getNumberColor(entry.amountFormatted)">{{ entry.amountFormatted }} ISK</td>
           <td data-label="Balance">{{ entry.balance }} ISK</td>
         </tr>
         </tbody>
@@ -56,7 +56,7 @@
         </thead>
         <tbody id="WalletTransactionsBody">
         <tr *ngFor="let entry of transactionData">
-          <td data-label="date">{{ entry.date }}</td>
+          <td data-label="date">{{ entry.dateRaw }}</td>
           <td data-label="info">
             {{ entry.quantity }} x <a (click)="getItemInfo(entry.typeID)">{{ entry.typeName }}</a>
             <span *ngIf="entry.transactionType === 'buy'">bought from</span>
