@@ -1,52 +1,57 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
-import { Helpers } from '../shared/helpers';
+import { Headers, Http, Response } from '@angular/http';
 import { EndpointService } from '../models/endpoint/endpoint.service';
-import { Globals } from '../shared/globals';
-import { Endpoint } from '../models/endpoint/endpoint.model';
 import { Logger } from 'angular2-logger/core';
-import * as assert from 'assert';
+import { Character } from '../models/character/character.model';
+import { Helpers } from '../shared/helpers';
+
+interface BalanceData {
+  balance: number;
+  wallet_id: number;
+}
 
 @Injectable()
 export class BalanceService {
 
-  private endpoint: Endpoint;
-  private storageTag: string;
+  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService,
+              private helpers: Helpers) { }
 
-  constructor(private logger: Logger,
-              private http: Http,
-              private endpointService: EndpointService,
-              private globals: Globals,
-              private helpers: Helpers) {
-    this.endpoint = this.endpointService.getEndpoint('AccountBalance');
-    this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
-  }
+  async getBalance(character: Character): Promise<number> {
+    const url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'wallets');
+    const headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + character.accessToken);
+    let response: Response;
+    try {
 
-  async getBalance(expired = false): Promise<string> {
-    if (!expired && localStorage.getItem(this.storageTag)) {
-      const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-      if (this.helpers.isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
-        return this.getBalance(true);
-      } else {
-        return jsonData['eveapi']['result'][0]['rowset'][0]['row'][0]['$']['balance'];
+      response = await this.http.get(url, {headers: headers}).toPromise().catch((error) => {
+        throw new Error(error);
+      });
+
+      if (!response.ok || response.status !== 200) {
+        this.logger.error('Response was not OK', response);
+        return -1;
       }
-    } else {
-      localStorage.removeItem(this.storageTag);
-      const url = this.endpointService.constructXMLUrl(this.endpoint, []);
-      const headers = new Headers();
-      headers.append('Accept', 'application/xml');
-      const response = await this.http.get(url, {headers: headers}).toPromise();
-      try {
-        assert.ok(response.ok, `Request to ${url} returned ${response.status} instead of expected 200`);
-        const jsonData = this.helpers.processXML(response);
-        localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
-        return jsonData['eveapi']['result'][0]['rowset'][0]['row'][0]['$']['balance'];
-      } catch (err) {
-        this.logger.error(response);
-        this.logger.error(err);
-        localStorage.removeItem(this.storageTag);
-        return 'Error';
+
+      const walletData: Array<BalanceData> = response.json();
+
+      if (this.helpers.isEmpty(walletData)) {
+        this.logger.error('Data did not contain expected values', walletData);
+        return -1;
       }
+
+      const walletMaster = walletData.filter(_ => _.wallet_id === 1000)[0];
+
+      if (!walletMaster) {
+        this.logger.error('Data did not contain master wallet', walletData);
+        return -1;
+      }
+
+      // Balance data is returned in hundredths of ISK, divide by 100 to compensate.
+      return walletMaster.balance / 100;
+
+    } catch (err) {
+      this.logger.error(err);
+      return -1;
     }
   }
 }
