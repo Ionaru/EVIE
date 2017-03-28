@@ -30,7 +30,7 @@
     <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">
   </a>
   <a routerLink="skills" routerLinkActive="selected" class="navbar-item"
-     [ngClass]="{'active': false}">
+     [ngClass]="{'active': checkAccess()}">
     <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg" alt="Skills icon">
   </a>
   <a routerLink="contacts" routerLinkActive="selected" class="navbar-item"
