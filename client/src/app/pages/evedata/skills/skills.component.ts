@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SkillData, SkillQueueData, SkillService } from '../../../services/skills.service';
+import { SkillData, SkillQueueData, SkillsService } from '../../../services/skills.service';
 import { Globals } from '../../../shared/globals';
 import { EndpointService } from '../../../models/endpoint/endpoint.service';
 import { Helpers } from '../../../shared/helpers';
@@ -7,7 +7,7 @@ import { Helpers } from '../../../shared/helpers';
 @Component({
   templateUrl: 'skills.component.html',
   styleUrls: ['skills.component.scss'],
-  providers: [SkillService],
+  providers: [SkillsService],
 })
 export class SkillsComponent implements OnInit {
 
@@ -15,12 +15,12 @@ export class SkillsComponent implements OnInit {
   skillQueueData: Array<SkillQueueData>;
   loadingDone = false;
 
-  constructor(private skillService: SkillService, private globals: Globals, private endpointService: EndpointService,
+  constructor(private skillsService: SkillsService, private globals: Globals, private endpointService: EndpointService,
               private helpers: Helpers) { }
 
   async ngOnInit(): Promise<void> {
-    this.skillsData = await this.skillService.getSkills(this.globals.selectedCharacter);
-    this.skillQueueData = await this.skillService.getSkillQueue(this.globals.selectedCharacter);
+    this.skillsData = await this.skillsService.getSkills(this.globals.selectedCharacter);
+    this.skillQueueData = await this.skillsService.getSkillQueue(this.globals.selectedCharacter);
     const names = [];
     for (const skill of this.skillsData.skills) {
       names.push(skill.skill_id);

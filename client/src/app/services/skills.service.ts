@@ -31,7 +31,7 @@ export interface SkillQueueData {
 }
 
 @Injectable()
-export class SkillService {
+export class SkillsService {
 
   constructor(private logger: Logger, private http: Http, private endpointService: EndpointService,
               private helpers: Helpers) { }

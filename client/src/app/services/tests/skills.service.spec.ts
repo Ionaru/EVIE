@@ -7,23 +7,25 @@ import { assert, SinonStub, stub } from 'sinon';
 import { Character } from '../../models/character/character.model';
 import { EndpointService } from '../../models/endpoint/endpoint.service';
 import { Globals } from '../../shared/globals';
-import { ShipService } from '../ship.service';
+import { LocationService } from '../location.service';
 import { Logger } from 'angular2-logger/core';
+import { SkillData, SkillsService } from '../skills.service';
 
 describe('Services', () => {
-  describe('ShipService', () => {
+  describe('SkillsService', () => {
 
     let mockBackend: MockBackend;
-    let shipService: ShipService;
+    let skillsService: SkillsService;
     let logger: Logger;
     let loggerStub: SinonStub;
+    let http: Http;
 
     beforeEach(async () => {
       TestBed.configureTestingModule({
         providers: [
           BaseRequestOptions,
           MockBackend,
-          ShipService,
+          LocationService,
           EndpointService,
           Globals,
           Logger,
@@ -42,7 +44,8 @@ describe('Services', () => {
 
       const testbed = getTestBed();
       mockBackend = testbed.get(MockBackend);
-      shipService = testbed.get(ShipService);
+      http = testbed.get(Http);
+      skillsService = testbed.get(SkillsService);
       logger = testbed.get(Logger);
       loggerStub = stub(logger, 'error');
 
@@ -68,7 +71,7 @@ describe('Services', () => {
       });
     }
 
-    const dummyData = {
+    const dummyCharacter = new Character({
       characterId: 123,
       name: 'Dummy',
       accessToken: 'abc',
@@ -77,22 +80,30 @@ describe('Services', () => {
       scopes: 'all',
       tokenExpiry: '',
       isActive: true
-    };
-    const dummyCharacter = new Character(dummyData);
+    });
 
-    it('should be able to process ship data', async () => {
+    const dummySkillsResponse = {
+      total_sp: 123,
+      skills: [{
+        current_skill_level: 4,
+        skill_id: 28164,
+        skillpoints_in_skill: 135765
+      }, {
+        current_skill_level: 5,
+        skill_id: 20494,
+        skillpoints_in_skill: 512000
+      }]
+    };
+
+    it('should be able to process location data', async () => {
       mockResponse({
-        body: JSON.stringify({'ship_type_id': 596, 'ship_item_id': 1002943704843, 'ship_name': 'Dummy\'s Impairor'}),
+        body: JSON.stringify(dummySkillsResponse),
         status: 200
       });
 
-      const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
-      expect(shipData).to.be.an('object');
-      expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
-      expect(shipData.id).to.equal(596);
-      expect(shipData.name).to.be.a('string');
-      expect(shipData.name).to.equal('Dummy\'s Impairor');
+      const locationID: SkillData = await skillsService.getSkills(dummyCharacter);
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(1000100);
     });
 
     it('should be able to process a response with empty body', async () => {
@@ -101,31 +112,23 @@ describe('Services', () => {
         status: 200
       });
 
-      const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
+      const locationID: number = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain expected values');
-      expect(shipData).to.be.an('object');
-      expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
-      expect(shipData.id).to.equal(-1);
-      expect(shipData.name).to.be.a('string');
-      expect(shipData.name).to.equal('Error');
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
 
     it('should be able to process an empty response', async () => {
       mockResponse({});
 
-      const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
+      const locationID: number = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(shipData).to.be.an('object');
-      expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
-      expect(shipData.id).to.equal(-1);
-      expect(shipData.name).to.be.a('string');
-      expect(shipData.name).to.equal('Error');
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
 
     it('should be able to process a HTTP error', async () => {
@@ -134,15 +137,11 @@ describe('Services', () => {
         status: 403
       });
 
-      const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
+      const locationID: number = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
-      expect(shipData).to.be.an('object');
-      expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
-      expect(shipData.id).to.equal(-1);
-      expect(shipData.name).to.be.a('string');
-      expect(shipData.name).to.equal('Error');
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
 
     it('should be able to process a non-200 status code', async () => {
@@ -151,15 +150,11 @@ describe('Services', () => {
         status: 500
       });
 
-      const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
+      const locationID: number = await skillsService.getSkills(dummyCharacter);
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(shipData).to.be.an('object');
-      expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
-      expect(shipData.id).to.equal(-1);
-      expect(shipData.name).to.be.a('string');
-      expect(shipData.name).to.equal('Error');
+      expect(locationID).to.be.a('number');
+      expect(locationID).to.equal(-1);
     });
   });
 });
