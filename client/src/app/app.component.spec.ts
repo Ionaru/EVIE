@@ -88,7 +88,6 @@ describe('AppComponent', () => {
     this.timeout(10000);
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    console.error(app);
     expect(app).to.be.ok;
   });
 });
