@@ -1,5 +1,3 @@
-/* tslint:disable:no-unused-variable */
-
 import { TestBed, async, getTestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { NavigationComponent } from './pages/core/navigation/navigation.component';

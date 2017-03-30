@@ -69,12 +69,25 @@ export class Helpers {
     return distance < -5000;
   }
 
-  eveTimeToDate(dateString): Date {
+  eveTimeToDate(dateString: string): Date {
     try {
       return new Date(dateString.replace(/-/ig, '/').split('.')[0] + ' UTC');
     } catch (error) {
       this.logger.error(error);
       return new Date();
     }
+  }
+
+  sortArrayByObjectProperty(array: Array<Object>, property: string, inverse = false): Array<Object> {
+    function compare(a, b) {
+      if (a[property] < b[property]) {
+        return inverse ? 1 : -1;
+      }
+      if (a[property] > b[property]) {
+        return inverse ? -1 : 1;
+      }
+      return 0;
+    }
+    return array.sort(compare);
   }
 }
