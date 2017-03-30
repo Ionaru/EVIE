@@ -29,7 +29,9 @@ describe('AppComponent', () => {
   let logger: Logger;
   let loggerStub: SinonStub;
 
-  beforeEach(async () => {
+  beforeEach(async function() {
+    this.timeout(10000);
+
     TestBed.configureTestingModule({
       declarations: [
         AppComponent,
@@ -78,14 +80,14 @@ describe('AppComponent', () => {
 
   });
 
-  afterEach(() => {
+  afterEach(async function() {
     loggerStub.restore();
   });
 
-  it('should create the app', async(function() {
+  it('should create the app', async function() {
     this.timeout(10000);
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).to.be.ok;
-  }));
+  });
 });
