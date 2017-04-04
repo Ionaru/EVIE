@@ -4,6 +4,7 @@ import { Helpers } from '../shared/helpers';
 import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Globals } from '../shared/globals';
 import { Endpoint } from '../models/endpoint/endpoint.model';
+import { Logger } from 'angular2-logger/core';
 
 @Injectable()
 export class TransactionService {
@@ -11,19 +12,25 @@ export class TransactionService {
   private endpoint: Endpoint;
   private storageTag: string;
 
-  constructor(private http: Http, private endpointService: EndpointService,
-              private globals: Globals, private helpers: Helpers) {
+  constructor(private http: Http, private endpointService: EndpointService, private globals: Globals,
+              private helpers: Helpers, private logger: Logger) {
     this.endpoint = this.endpointService.getEndpoint('WalletTransactions');
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
   async getTransactions(expired = false): Promise<Array<Object>> {
     if (!expired && localStorage.getItem(this.storageTag)) {
-      const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-      if (this.helpers.isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
+      try {
+        const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
+        if (this.helpers.isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
+          return this.getTransactions(true);
+        } else {
+          return this.processTransactionData(jsonData);
+        }
+      } catch (error) {
+        this.logger.error('Cache was invalid', error);
+        localStorage.removeItem(this.storageTag);
         return this.getTransactions(true);
-      } else {
-        return this.processTransactionData(jsonData);
       }
     } else {
       localStorage.removeItem(this.storageTag);
@@ -53,7 +60,8 @@ export class TransactionService {
         const transactionType = row['$']['transactionType'];
         const transactionID = row['$']['transactionID'];
         transactionData.push({
-          date: date,
+          dateRaw: date,
+          dateFormatted: this.helpers.eveTimeToDate(date),
           price: this.helpers.formatISK(ppi * quantity),
           quantity: quantity,
           transactionType: transactionType,
@@ -66,6 +74,6 @@ export class TransactionService {
         });
       }
     }
-    return transactionData;
+    return this.helpers.sortArrayByObjectProperty(transactionData, 'dateFormatted', true);
   }
 }

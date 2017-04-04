@@ -60,14 +60,16 @@ export class JournalService {
     if (jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
       for (const row of jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
         journalData.push({
-          date: row['$']['date'],
+          dateRaw: row['$']['date'],
+          dateFomratted: this.helpers.eveTimeToDate(row['$']['date']),
           refTypeName: refTypes[row['$']['refTypeID']]['$']['refTypeName'],
           ownerName1: row['$']['ownerName1'],
-          amount: this.helpers.formatISK(row['$']['amount']),
+          amountRaw: Number(row['$']['amount']),
+          amountFormatted: this.helpers.formatISK(row['$']['amount']),
           balance: this.helpers.formatISK(row['$']['balance']),
         });
       }
     }
-    return journalData;
+    return this.helpers.sortArrayByObjectProperty(journalData, 'dateRaw', true);
   }
 }
