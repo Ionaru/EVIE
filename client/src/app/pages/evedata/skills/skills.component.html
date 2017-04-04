@@ -1,21 +1,34 @@
 <ng-container *ngIf="loadingDone">
   <h2>Skillpoints</h2>
-  <p *ngIf="skillsData">
-    {{skillsData.total_sp}} SP
+  <p class="skill-points" *ngIf="skillsData">
+    <span title="This is a calculated value and may not be 100% accurate">
+      ~{{skillPoints | number:'1.0-0'}} SP</span><ng-container *ngIf="spPerSec"> (+{{spPerSec | number:'1.0-2'}}/sec)</ng-container>
   </p>
   <br>
-  <ng-container *ngIf="skillQueueData">
-    <h2>Skill queue ({{skillQueueData.length}})</h2>
-    <div *ngFor="let skill of skillQueueData">
-      <p>
+  <div class="skill-queue" *ngIf="skillQueueData">
+    <h2>Skill queue ({{skillQueueCount}})</h2>
+    <ng-container *ngIf="skillTrainingPaused">
+      <p class="stalled"><i class="fa fa-exclamation-circle"></i> Skill queue inactive</p>
+    </ng-container>
+    <ng-container *ngFor="let skill of skillQueueData">
+      <p class="{{skill.status}}" *ngIf="skill.status !== 'finished'">
+        <ng-container *ngIf="skill.status === 'training'"><i class="fa fa-cog fa-spin"></i></ng-container>
+        <ng-container *ngIf="skill.status === 'scheduled'"><i class="fa fa-chevron-circle-up"></i></ng-container>
         <span *ngIf="skill.name">{{skill.name}}</span>
-        <span>{{skill.finished_level - 1}} => {{skill.finished_level}}</span> -
-        <span>Finishes on {{skill.finish_date}}</span>
+        <span>{{skill.finished_level - 1}} 🡺 {{skill.finished_level}}</span>
+        <ng-container *ngIf="skill.status === 'training'">
+          <span>- Finishes in {{skill.countdown}}</span>
+        </ng-container>
+        <ng-container *ngIf="skill.status === 'scheduled'">
+          <ng-container *ngIf="skill.countdown">
+            <span>- {{skill.countdown}}</span>
+          </ng-container>
+        </ng-container>
       </p>
-    </div>
-  </ng-container>
+    </ng-container>
+  </div>
   <br>
-  <ng-container *ngIf="skillsData">
+  <div class="skill-list" *ngIf="skillsData">
     <h2>Skill overview ({{skillsData.skills.length}})</h2>
     <h3>{{countLvl5Skills()}} skills at level 5</h3>
     <div *ngFor="let skill of skillsData.skills">
@@ -24,5 +37,5 @@
         <span>{{skill.current_skill_level}}</span>
       </p>
     </div>
-  </ng-container>
+  </div>
 </ng-container>

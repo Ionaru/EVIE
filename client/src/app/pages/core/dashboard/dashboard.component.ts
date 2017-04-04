@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Globals } from '../../../shared/globals';
 import { CharacterService } from '../../../models/character/character.service';
@@ -6,17 +6,19 @@ import { Character } from '../../../models/character/character.model';
 import { ShipService } from '../../../services/ship.service';
 import { LocationService } from '../../../services/location.service';
 import { EndpointService, EveNameData } from '../../../models/endpoint/endpoint.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   templateUrl: 'dashboard.component.html',
   styleUrls: ['dashboard.component.scss'],
   providers: [ShipService, LocationService]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   result: String;
   username: string;
   characters: Array<Character>;
   selectedCharacter: Character;
+  characterChangeSubscription: Subscription;
 
   constructor(private title: Title,
               private globals: Globals,
@@ -24,17 +26,21 @@ export class DashboardComponent implements OnInit {
               private characterService: CharacterService,
               private shipService: ShipService,
               private locationService: LocationService) {
-    this.globals.characterChangeEvent.subscribe(() => {
+  }
+
+  ngOnInit(): void {
+    this.characterChangeSubscription = this.globals.characterChangeEvent.subscribe(() => {
       if (this.globals.startUp) {
         this.displayCharacters();
       }
     });
-  }
-
-  ngOnInit(): void {
     this.title.setTitle('EVE Track - Dashboard');
     this.username = this.globals.user.username;
     this.displayCharacters();
+  }
+
+  ngOnDestroy(): void {
+    this.characterChangeSubscription.unsubscribe();
   }
 
   displayCharacters(): void {

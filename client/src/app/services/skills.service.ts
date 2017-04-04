@@ -12,6 +12,14 @@ export interface SkillData {
     skillpoints_in_skill: number,
     name?: string
   }>;
+  skillsObject: {
+    [id: number]: {
+      current_skill_level: number,
+      skill_id: number,
+      skillpoints_in_skill: number,
+      name?: string
+    };
+  };
   total_sp: number;
 }
 
@@ -27,7 +35,12 @@ export interface SkillQueueData {
   level_start_sp: number;
   level_end_sp: number;
 
+  // Custom attributes, these are added later
   name?: string;
+  finishTimestamp?: number;
+  countdown: countdown.Timespan | number;
+  startTimestamp?: number;
+  status?: string;
 }
 
 @Injectable()
@@ -52,14 +65,21 @@ export class SkillsService {
         return null;
       }
 
-      const skillData: SkillData = response.json();
+      const skillDataArray: SkillData = response.json();
 
-      if (this.helpers.isEmpty(skillData)) {
-        this.logger.error('Data did not contain expected values', skillData);
+      if (this.helpers.isEmpty(skillDataArray)) {
+        this.logger.error('Data did not contain expected values', skillDataArray);
         return null;
       }
 
-      return skillData;
+      const skillsData = {};
+      for (const skill of skillDataArray.skills) {
+        skillsData[skill.skill_id] = skill;
+      }
+
+      skillDataArray.skillsObject = skillsData;
+
+      return skillDataArray;
 
     } catch (err) {
       this.logger.error(err);

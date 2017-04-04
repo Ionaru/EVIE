@@ -7,9 +7,9 @@ import { assert, SinonStub, stub } from 'sinon';
 import { Character } from '../../models/character/character.model';
 import { EndpointService } from '../../models/endpoint/endpoint.service';
 import { Globals } from '../../shared/globals';
-import { LocationService } from '../location.service';
 import { Logger } from 'angular2-logger/core';
 import { SkillData, SkillsService } from '../skills.service';
+import { Helpers } from '../../shared/helpers';
 
 describe('Services', () => {
   describe('SkillsService', () => {
@@ -25,10 +25,11 @@ describe('Services', () => {
         providers: [
           BaseRequestOptions,
           MockBackend,
-          LocationService,
+          SkillsService,
           EndpointService,
           Globals,
           Logger,
+          Helpers,
           {
             deps: [
               MockBackend,
@@ -92,18 +93,30 @@ describe('Services', () => {
         current_skill_level: 5,
         skill_id: 20494,
         skillpoints_in_skill: 512000
-      }]
+      }],
+      skillsObject: {
+        20494: {
+          current_skill_level: 5,
+          skill_id: 20494,
+          skillpoints_in_skill: 512000
+        },
+        28164: {
+          current_skill_level: 4,
+          skill_id: 28164,
+          skillpoints_in_skill: 135765
+        }
+      }
     };
 
-    it('should be able to process location data', async () => {
+    it('should be able to process skills data', async () => {
       mockResponse({
         body: JSON.stringify(dummySkillsResponse),
         status: 200
       });
 
-      const locationID: SkillData = await skillsService.getSkills(dummyCharacter);
-      expect(locationID).to.be.a('number');
-      expect(locationID).to.equal(1000100);
+      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      expect(skillData).to.be.an('object');
+      expect(skillData).to.deep.equal(dummySkillsResponse);
     });
 
     it('should be able to process a response with empty body', async () => {
@@ -112,23 +125,21 @@ describe('Services', () => {
         status: 200
       });
 
-      const locationID: number = await skillsService.getSkills(dummyCharacter);
+      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain expected values');
-      expect(locationID).to.be.a('number');
-      expect(locationID).to.equal(-1);
+      expect(skillData).to.equal(null);
     });
 
     it('should be able to process an empty response', async () => {
       mockResponse({});
 
-      const locationID: number = await skillsService.getSkills(dummyCharacter);
+      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(locationID).to.be.a('number');
-      expect(locationID).to.equal(-1);
+      expect(skillData).to.equal(null);
     });
 
     it('should be able to process a HTTP error', async () => {
@@ -137,11 +148,10 @@ describe('Services', () => {
         status: 403
       });
 
-      const locationID: number = await skillsService.getSkills(dummyCharacter);
+      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
-      expect(locationID).to.be.a('number');
-      expect(locationID).to.equal(-1);
+      expect(skillData).to.equal(null);
     });
 
     it('should be able to process a non-200 status code', async () => {
@@ -150,11 +160,10 @@ describe('Services', () => {
         status: 500
       });
 
-      const locationID: number = await skillsService.getSkills(dummyCharacter);
+      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(locationID).to.be.a('number');
-      expect(locationID).to.equal(-1);
+      expect(skillData).to.equal(null);
     });
   });
 });
