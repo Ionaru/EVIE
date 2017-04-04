@@ -16,7 +16,8 @@ export class SkillsComponent implements OnInit {
   skillPoints: number;
   skillQueueData: Array<SkillQueueData>;
   loadingDone = false;
-  skillQueueCount: number;
+  skillQueueCount = 0;
+  skillsCount = 0;
   spPerSec: number;
   skillTrainingPaused = true;
 
@@ -48,7 +49,7 @@ export class SkillsComponent implements OnInit {
           skill.finishTimestamp = new Date(skill.finish_date).getTime();
           skill.startTimestamp = new Date(skill.start_date).getTime();
           const now = Date.now();
-          const skillPointsGain = skill.level_end_sp - skill.level_start_sp;
+          const skillPointsGain = skill.level_end_sp - skill.training_start_sp;
 
           if (skill.finishTimestamp < now) {
             // This skills finished training somewhere in the past
@@ -67,6 +68,7 @@ export class SkillsComponent implements OnInit {
             const timeleft = skill.finishTimestamp - now;
             const timeExpired = skillTrainingTime - timeleft;
             this.skillPoints += this.spPerSec * (timeExpired / 1000);
+            skill.countdown = countdown(now, skill.finishTimestamp);
 
             setInterval(() => {
               this.skillPoints += this.spPerSec;
@@ -84,6 +86,7 @@ export class SkillsComponent implements OnInit {
         }
 
         this.skillQueueCount = this.skillQueueData.filter(_ => _.status !== 'finished').length;
+        this.skillsCount = this.skillsData.skills.length;
         this.loadingDone = true;
       }
     }
