@@ -17,7 +17,7 @@
   }
 }
 
-#journal-section, #wallet-section {
+#journal-section, #transactions-section {
   table {
     width: 100%;
     border-spacing: 0;
@@ -60,7 +60,6 @@
           }
         }
         &:hover {
-          //background-color: darken($eve_ore_button_active, 9%);
           background-color: darken($eve_ore_button_active, 20%);
         }
         &:last-child {
