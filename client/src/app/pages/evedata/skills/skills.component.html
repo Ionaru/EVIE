@@ -1,49 +1,55 @@
-<h2>Skillpoints</h2>
-<p class="skill-points" *ngIf="skillsData && loadingDone">
+<div class="skill-points-container">
+  <h2>Skillpoints</h2>
+  <p class="skill-points" *ngIf="skillsData && loadingDone">
   <span title="This is a calculated value and may not be 100% accurate">
     ~{{skillPoints | number:'1.0-0'}} SP</span>
-  <ng-container *ngIf="spPerSec"> (+{{spPerSec | number:'1.0-2'}}/sec)</ng-container>
-</p>
-<div *ngIf="!loadingDone">
-  <i class="fa fa-circle-o-notch fa-spin"></i>
-</div>
-<br>
-<h2>Skill queue ({{skillQueueCount}})</h2>
-<div class="skill-queue" *ngIf="skillQueueData && loadingDone">
-  <ng-container *ngIf="skillTrainingPaused">
-    <p class="stalled"><i class="fa fa-exclamation-circle"></i> Skill queue inactive</p>
-  </ng-container>
-  <ng-container *ngFor="let skill of skillQueueData">
-    <p class="{{skill.status}}" *ngIf="skill.status !== 'finished'">
-      <ng-container *ngIf="skill.status === 'training'"><i class="fa fa-cog fa-spin"></i></ng-container>
-      <ng-container *ngIf="skill.status === 'scheduled'"><i class="fa fa-chevron-circle-up"></i></ng-container>
-      <span *ngIf="skill.name">{{skill.name}}</span>
-      <span>{{skill.finished_level - 1}} 🡺 {{skill.finished_level}}</span>
-      <ng-container *ngIf="skill.status === 'training'">
-        <span>- Finishes in {{skill.countdown}}</span>
-      </ng-container>
-      <ng-container *ngIf="skill.status === 'scheduled'">
-        <ng-container *ngIf="skill.countdown">
-          <span>- {{skill.countdown}}</span>
-        </ng-container>
-      </ng-container>
-    </p>
-  </ng-container>
-</div>
-<div *ngIf="!loadingDone">
-  <i class="fa fa-circle-o-notch fa-spin"></i>
-</div>
-<br>
-<h2>Skill overview ({{skillsCount}})</h2>
-<div class="skill-list" *ngIf="skillsData && loadingDone">
-  <h3>{{countLvl5Skills()}} skills at level 5</h3>
-  <div *ngFor="let skill of skillsData.skills">
-    <p>
-      <span *ngIf="skill.name">{{skill.name}}</span>
-      <span>{{skill.current_skill_level}}</span>
-    </p>
+    <ng-container *ngIf="spPerSec"> (+{{spPerSec | number:'1.0-2'}}/sec)</ng-container>
+  </p>
+  <div *ngIf="!loadingDone">
+    <i class="fa fa-circle-o-notch fa-spin"></i>
   </div>
 </div>
-<div *ngIf="!loadingDone">
-  <i class="fa fa-circle-o-notch fa-spin"></i>
+<br>
+<div class="skill-queue-container">
+  <h2>Skill queue ({{skillQueueCount}})</h2>
+  <div class="skill-queue" *ngIf="skillQueueData && loadingDone">
+    <ng-container *ngIf="skillTrainingPaused">
+      <p class="stalled"><i class="fa fa-exclamation-circle"></i> Skill queue inactive</p>
+    </ng-container>
+    <ng-container *ngFor="let skill of skillQueueData">
+      <p class="{{skill.status}}" *ngIf="skill.status !== 'finished'">
+        <ng-container *ngIf="skill.status === 'training'"><i class="fa fa-cog fa-spin"></i></ng-container>
+        <ng-container *ngIf="skill.status === 'scheduled'"><i class="fa fa-chevron-circle-up"></i></ng-container>
+        <span *ngIf="skill.name">{{skill.name}}</span>
+        <span>{{skill.finished_level - 1}} 🡺 {{skill.finished_level}}</span>
+        <ng-container *ngIf="skill.status === 'training'">
+          <span>- Finishes in {{skill.countdown}}</span>
+        </ng-container>
+        <ng-container *ngIf="skill.status === 'scheduled'">
+          <ng-container *ngIf="skill.countdown">
+            <span>- {{skill.countdown}}</span>
+          </ng-container>
+        </ng-container>
+      </p>
+    </ng-container>
+  </div>
+  <div *ngIf="!loadingDone">
+    <i class="fa fa-circle-o-notch fa-spin"></i>
+  </div>
+</div>
+<br>
+<div class="skill-list-container">
+  <h2>Skill overview ({{skillsCount}})</h2>
+  <h3 *ngIf="loadingDone">{{countLvl5Skills()}} skills at level 5</h3>
+  <div class="skill-list" *ngIf="skillsData && loadingDone">
+    <div *ngFor="let skill of skillsData.skills">
+      <p>
+        <span *ngIf="skill.name">{{skill.name}}</span>
+        <span>{{skill.current_skill_level}}</span>
+      </p>
+    </div>
+  </div>
+  <div *ngIf="!loadingDone">
+    <i class="fa fa-circle-o-notch fa-spin"></i>
+  </div>
 </div>

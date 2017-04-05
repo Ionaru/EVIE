@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { SkillData, SkillQueueData, SkillsService } from '../../../services/skills.service';
+import { SkillData, SkillsService } from '../../../services/skills.service';
 import { Globals } from '../../../shared/globals';
 import { EndpointService } from '../../../models/endpoint/endpoint.service';
 import * as countdown from 'countdown';
 import { setInterval } from 'timers';
+import { SkillQueueData, SkillQueueService } from '../../../services/skill-queue.service';
 
 @Component({
   templateUrl: 'skills.component.html',
   styleUrls: ['skills.component.scss'],
-  providers: [SkillsService],
+  providers: [SkillsService, SkillQueueService],
 })
 export class SkillsComponent implements OnInit {
 
@@ -21,11 +22,12 @@ export class SkillsComponent implements OnInit {
   spPerSec: number;
   skillTrainingPaused = true;
 
-  constructor(private skillsService: SkillsService, private globals: Globals, private endpointService: EndpointService) { }
+  constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService,
+              private globals: Globals, private endpointService: EndpointService) { }
 
   async ngOnInit(): Promise<void> {
     this.skillsData = await this.skillsService.getSkills(this.globals.selectedCharacter);
-    this.skillQueueData = await this.skillsService.getSkillQueue(this.globals.selectedCharacter);
+    this.skillQueueData = await this.skillQueueService.getSkillQueue(this.globals.selectedCharacter);
 
     if (this.skillsData && this.skillQueueData) {
 
@@ -65,8 +67,8 @@ export class SkillsComponent implements OnInit {
 
             const skillTrainingTime = skill.finishTimestamp - skill.startTimestamp;
             this.spPerSec = skillPointsGain / (skillTrainingTime / 1000);
-            const timeleft = skill.finishTimestamp - now;
-            const timeExpired = skillTrainingTime - timeleft;
+            const timeLeft = skill.finishTimestamp - now;
+            const timeExpired = skillTrainingTime - timeLeft;
             this.skillPoints += this.spPerSec * (timeExpired / 1000);
             skill.countdown = countdown(now, skill.finishTimestamp);
 

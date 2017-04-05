@@ -1,19 +1,17 @@
 @import "../../../variables";
 
-.finished {
-  color: $eve_skill_untrained;
-}
+.skill-queue {
+  .training {
+    color: $eve_skill_training;
+  }
 
-.training {
-  color: $eve_skill_training;
-}
+  .scheduled {
+    color: $eve_skill_trained;
+  }
 
-.scheduled {
-  color: $eve_skill_trained;
-}
-
-.stalled {
-  color: yellow;
+  .stalled {
+    color: yellow;
+  }
 }
 
 .skill-points {

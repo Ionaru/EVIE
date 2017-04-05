@@ -8,14 +8,14 @@ import { Character } from '../../models/character/character.model';
 import { EndpointService } from '../../models/endpoint/endpoint.service';
 import { Globals } from '../../shared/globals';
 import { Logger } from 'angular2-logger/core';
-import { SkillData, SkillsService } from '../skills.service';
+import { SkillQueueData, SkillQueueService } from '../skill-queue.service';
 import { Helpers } from '../../shared/helpers';
 
 describe('Services', () => {
-  describe('SkillsService', () => {
+  describe('SkillQueueService', () => {
 
     let mockBackend: MockBackend;
-    let skillsService: SkillsService;
+    let skillQueueService: SkillQueueService;
     let logger: Logger;
     let loggerStub: SinonStub;
     let http: Http;
@@ -25,7 +25,7 @@ describe('Services', () => {
         providers: [
           BaseRequestOptions,
           MockBackend,
-          SkillsService,
+          SkillQueueService,
           EndpointService,
           Globals,
           Logger,
@@ -46,7 +46,7 @@ describe('Services', () => {
       const testbed = getTestBed();
       mockBackend = testbed.get(MockBackend);
       http = testbed.get(Http);
-      skillsService = testbed.get(SkillsService);
+      skillQueueService = testbed.get(SkillQueueService);
       logger = testbed.get(Logger);
       loggerStub = stub(logger, 'error');
 
@@ -83,51 +83,55 @@ describe('Services', () => {
       isActive: true
     });
 
-    const dummySkillsResponse = {
-      total_sp: 123,
-      skills: [{
-        current_skill_level: 4,
-        skill_id: 28164,
-        skillpoints_in_skill: 135765
-      }, {
-        current_skill_level: 5,
-        skill_id: 20494,
-        skillpoints_in_skill: 512000
-      }]
-    };
+    const dummySkillQueueResponse: Array<SkillQueueData> = [{
+      'skill_id': 3429,
+      'finished_level': 5,
+      'queue_position': 10,
+      'finish_date': '2017-04-09T07:51:10Z',
+      'start_date': '2017-04-04T10:46:20Z',
+      'training_start_sp': 45255,
+      'level_end_sp': 256000,
+      'level_start_sp': 45255
+    }, {
+      'skill_id': 3341,
+      'finished_level': 4,
+      'queue_position': 11,
+      'finish_date': '2017-04-12T15:58:16Z',
+      'start_date': '2017-04-09T07:51:10Z',
+      'training_start_sp': 32000,
+      'level_end_sp': 181020,
+      'level_start_sp': 32000
+    }];
 
-    it('should be able to process skills data', async () => {
+    it('should be able to process skill queue data', async () => {
       mockResponse({
-        body: JSON.stringify(dummySkillsResponse),
+        body: JSON.stringify(dummySkillQueueResponse),
         status: 200
       });
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
-      expect(skillData).to.be.an('object');
-      expect(skillData).to.deep.equal({
-        total_sp: 123,
-        skills: [{
-          current_skill_level: 4,
-          skill_id: 28164,
-          skillpoints_in_skill: 135765
-        }, {
-          current_skill_level: 5,
-          skill_id: 20494,
-          skillpoints_in_skill: 512000
-        }],
-        skillsObject: {
-          20494: {
-            current_skill_level: 5,
-            skill_id: 20494,
-            skillpoints_in_skill: 512000
-          },
-          28164: {
-            current_skill_level: 4,
-            skill_id: 28164,
-            skillpoints_in_skill: 135765
-          }
-        }
-      });
+      const skillQueueData: Array<SkillQueueData> = await skillQueueService.getSkillQueue(dummyCharacter);
+      expect(skillQueueData.length).to.equal(2);
+      expect(skillQueueData[0]).to.be.an('object');
+      expect(skillQueueData[1]).to.be.an('object');
+      expect(skillQueueData).to.deep.equal([{
+        'skill_id': 3429,
+        'finished_level': 5,
+        'queue_position': 10,
+        'finish_date': '2017-04-09T07:51:10Z',
+        'start_date': '2017-04-04T10:46:20Z',
+        'training_start_sp': 45255,
+        'level_end_sp': 256000,
+        'level_start_sp': 45255
+      }, {
+        'skill_id': 3341,
+        'finished_level': 4,
+        'queue_position': 11,
+        'finish_date': '2017-04-12T15:58:16Z',
+        'start_date': '2017-04-09T07:51:10Z',
+        'training_start_sp': 32000,
+        'level_end_sp': 181020,
+        'level_start_sp': 32000
+      }]);
     });
 
     it('should be able to process a response with empty body', async () => {
@@ -136,21 +140,21 @@ describe('Services', () => {
         status: 200
       });
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillQueueData: Array<SkillQueueData> = await skillQueueService.getSkillQueue(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain expected values');
-      expect(skillData).to.equal(null);
+      expect(skillQueueData).to.equal(null);
     });
 
     it('should be able to process an empty response', async () => {
       mockResponse({});
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillQueueData: Array<SkillQueueData> = await skillQueueService.getSkillQueue(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(skillData).to.equal(null);
+      expect(skillQueueData).to.equal(null);
     });
 
     it('should be able to process a HTTP error', async () => {
@@ -159,10 +163,10 @@ describe('Services', () => {
         status: 403
       });
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillQueueData: Array<SkillQueueData> = await skillQueueService.getSkillQueue(dummyCharacter);
 
       assert.calledOnce(loggerStub);
-      expect(skillData).to.equal(null);
+      expect(skillQueueData).to.equal(null);
     });
 
     it('should be able to process a non-200 status code', async () => {
@@ -171,10 +175,10 @@ describe('Services', () => {
         status: 500
       });
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillQueueData: Array<SkillQueueData> = await skillQueueService.getSkillQueue(dummyCharacter);
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(skillData).to.equal(null);
+      expect(skillQueueData).to.equal(null);
     });
   });
 });
