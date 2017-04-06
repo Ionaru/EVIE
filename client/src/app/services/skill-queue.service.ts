@@ -20,8 +20,8 @@ export interface SkillQueueData {
   // Custom attributes, these are added during processing
   name?: string;
   finishTimestamp?: number;
-  countdown?: countdown.Timespan | number;
   startTimestamp?: number;
+  countdown?: countdown.Timespan | number;
   status?: string;
 }
 

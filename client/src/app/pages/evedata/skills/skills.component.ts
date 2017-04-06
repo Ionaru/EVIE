@@ -61,7 +61,7 @@ export class SkillsComponent implements OnInit {
             this.skillPoints += skillPointsGain;
 
           } else if (skill.startTimestamp < now) {
-            // This skill was started somewhere in the past, and because the above IF failed, we can assume it's not finished yet.
+            // This skill was started somewhere in the past, and because the above statement failed, we can assume it's not finished yet.
             skill.status = 'training';
             this.skillTrainingPaused = false;
 
@@ -78,7 +78,7 @@ export class SkillsComponent implements OnInit {
             }, 1000);
 
           } else {
-            // The skill is neither started nor finished, it must be scheduled to train in the future.
+            // The skill is neither started nor finished, it must be scheduled to start in the future.
             skill.status = 'scheduled';
 
             if (skill.startTimestamp && skill.finishTimestamp) {
