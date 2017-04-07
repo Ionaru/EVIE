@@ -45,7 +45,7 @@
     }
     &.center {
       position: absolute;
-      left: 50%;
+      left: calc(50% + 25px);
       transform: translate(-50%);
     }
     .Online {

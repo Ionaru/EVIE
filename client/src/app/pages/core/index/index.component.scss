@@ -1,0 +1,12 @@
+.index-container {
+  max-width: 1070px;
+  margin: 0 auto;
+
+  .info-container {
+    text-align: center;
+  }
+
+  .login-container, .register-container, .temporary-login-container {
+    text-align: center;
+  }
+}

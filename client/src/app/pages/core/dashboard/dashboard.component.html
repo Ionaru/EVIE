@@ -5,18 +5,19 @@
   <ng-container *ngIf="characters.length">
     <hr>
     <h2>Character list:</h2>
-    <div class="character-list" *ngFor="let character of characters">
-      <button *ngIf="!isActive(character)" (click)="setActiveCharacter(character)" title="Activate this character">
-        Set Active
-      </button>
-      <button (click)="reAuth(character)" title="Refresh this character's API permissions">
-        Re-authenticate
-      </button>
-      <button (click)="deleteCharacter(character)" title="Delete this character from the API viewer">
-        Delete
-      </button>
-      |
-      <span class="character-name" title="Character name">
+    <div class="character-list">
+      <div class="character-list-item" *ngFor="let character of characters">
+        <button *ngIf="!isActive(character)" (click)="setActiveCharacter(character)" title="Activate this character">
+          Set Active
+        </button>
+        <button (click)="reAuth(character)" title="Refresh this character's API permissions">
+          Re-authenticate
+        </button>
+        <button (click)="deleteCharacter(character)" title="Delete this character from the API viewer">
+          Delete
+        </button>
+        |
+        <span class="character-name" title="Character name">
         <ng-container title="Character name" *ngIf="character.gender === 'male'">
          <i class="fa fa-male" title="Male"></i></ng-container>
         <ng-container title="Character name" *ngIf="character.gender === 'female'">
@@ -25,32 +26,33 @@
           <i class="fa fa-circle-o-notch fa-spin"></i></ng-container>
         {{character.name}}
       </span>
-      <img *ngIf="character.corporation_id" style="height: 14px" title="Corporation"
-           src="//image.eveonline.com/Corporation/{{ character.corporation_id }}_32.png" alt="Character corporation">
-      <img *ngIf="character.alliance_id" style="height: 14px" title="Alliance"
-           src="//image.eveonline.com/Alliance/{{ character.alliance_id }}_32.png" alt="Character alliance">
-      |
-      <span class="character-id" title="Character ID">
+        <img *ngIf="character.corporation_id" style="height: 14px" title="Corporation"
+             src="//image.eveonline.com/Corporation/{{ character.corporation_id }}_32.png" alt="Character corporation">
+        <img *ngIf="character.alliance_id" style="height: 14px" title="Alliance"
+             src="//image.eveonline.com/Alliance/{{ character.alliance_id }}_32.png" alt="Character alliance">
+        |
+        <span class="character-id" title="Character ID">
         <i class="fa fa-id-card"></i> {{character.characterId}}
       </span>
-      |
-      <span class="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">
+        |
+        <span class="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character)">
         <span class="success" *ngIf="character.currentShip?.type && character.currentShip?.type !== 'Error'">
           <i class="fa fa-rocket"></i> {{character.currentShip.name}} ({{character.currentShip.type}})</span>
-        <span class="loading" *ngIf="!character.currentShip?.type"><i  class="fa fa-circle-o-notch fa-spin"></i></span>
+        <span class="loading" *ngIf="!character.currentShip?.type"><i class="fa fa-circle-o-notch fa-spin"></i></span>
         <span class="error" *ngIf="character.currentShip?.type === 'Error'">
           <i class="fa fa-exclamation-triangle"></i> Error
         </span>
       </span>
-      |
-      <span class="location" title="Current location, click to refresh" (click)="refreshLocation(character)">
+        |
+        <span class="location" title="Current location, click to refresh" (click)="refreshLocation(character)">
         <span class="success" *ngIf="character.location?.name && character.location?.name !== 'Error'">
           <i class="fa fa-map"></i> {{character.location.name}}</span>
-        <span class="loading" *ngIf="!character.location?.name"><i  class="fa fa-circle-o-notch fa-spin"></i></span>
+        <span class="loading" *ngIf="!character.location?.name"><i class="fa fa-circle-o-notch fa-spin"></i></span>
         <span class="error" *ngIf="character.location?.name === 'Error'">
           <i class="fa fa-exclamation-triangle"></i> Error
         </span>
       </span>
+      </div>
     </div>
   </ng-container>
   <hr>

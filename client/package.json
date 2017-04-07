@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "ng serve --proxy-config proxy.conf.json --no-progress",
+    "start": "ng serve --proxy-config proxy.conf.json --no-progress --extract-css=true",
     "build": "ng build --prod --verbose",
     "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
     "test": "ng test --single-run --code-coverage",

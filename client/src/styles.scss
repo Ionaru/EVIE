@@ -23,6 +23,9 @@
 }
 
 html {
+
+  background-color: $eve_ore_content;
+
   body {
 
     pre {
@@ -35,7 +38,6 @@ html {
     font-size: $standard-font-size;
     line-height: $standard-line-height;
     color: $eve_text_color;
-    background-color: $eve_ore_content;
     margin: 0;
 
     padding: ($navbar_top_height + $body_padding) $body_padding $body_padding ($navbar_side_width + $body_padding);
