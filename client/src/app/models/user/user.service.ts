@@ -74,11 +74,11 @@ export class UserService {
     this.globals.user = user;
     for (const characterData of data.characters) {
       if (characterData.scopes) {
-        this.CharacterService.registerCharacter(characterData);
+        this.CharacterService.registerCharacter(characterData).then();
       }
     }
     if (!this.helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
-      this.CharacterService.setActiveCharacter(user.characters[0]);
+      this.CharacterService.setActiveCharacter(user.characters[0]).then();
     }
     return user;
   }
