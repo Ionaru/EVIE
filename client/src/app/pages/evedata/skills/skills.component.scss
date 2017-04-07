@@ -1,0 +1,22 @@
+@import "../../../variables";
+
+.skill-queue {
+  .training {
+    color: $eve_skill_training;
+  }
+
+  .scheduled {
+    color: $eve_skill_trained;
+  }
+
+  .stalled {
+    color: yellow;
+  }
+}
+
+.skill-points {
+  span {
+    border-bottom: 1px dotted;
+    cursor: help;
+  }
+}

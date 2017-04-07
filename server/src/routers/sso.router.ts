@@ -10,12 +10,15 @@ import { generateUniquePID, generateRandomString } from '../services/pid.service
 import { sockets } from '../bin/www';
 import { UserInstance, User } from '../models/user/user';
 
+//noinspection SpellCheckingInspection
 const scopes = [
   'characterWalletRead',
   'characterAccountRead',
   'esi-location.read_location.v1',
   'esi-location.read_ship_type.v1',
   'esi-wallet.read_character_wallet.v1',
+  'esi-skills.read_skills.v1',
+  'esi-skills.read_skillqueue.v1',
 ];
 const protocol = 'https://';
 const oauthHost = 'login.eveonline.com';
@@ -188,7 +191,7 @@ export class SSORouter extends BaseRouter {
         authResponse.on('data', (chunk: Buffer) => {
           authResult.push(JSON.parse(chunk.toString()));
         });
-        authResponse.on('end', async() => {
+        authResponse.on('end', async () => {
 
           // Set the Character fields from the results
           character.refreshToken = authResult[0]['refresh_token'];
@@ -213,7 +216,7 @@ export class SSORouter extends BaseRouter {
             characterIdResponse.on('data', (chunk: Buffer) => {
               characterIdResult.push(JSON.parse(chunk.toString()));
             });
-            characterIdResponse.on('end', async() => {
+            characterIdResponse.on('end', async () => {
 
               // Set the Character fields from the results
               character.name = characterIdResult[0]['CharacterName'];

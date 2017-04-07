@@ -42,7 +42,7 @@ module.exports = function (config: karma.Config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     singleRun: false,
-    concurrency: 2
+    concurrency: 1
   };
 
   if (process.env['SAUCELABS'] === 'true') {
