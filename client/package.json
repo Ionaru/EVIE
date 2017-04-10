@@ -65,7 +65,7 @@
     "sinon": "^2.1.0",
     "ts-node": "^3.0.2",
     "tslint": "^4.5.0",
-    "typescript": "^2.2.1"
+    "typescript": "^2.2.2"
   },
   "license": "MIT"
 }
