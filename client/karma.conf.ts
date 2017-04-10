@@ -45,37 +45,7 @@ module.exports = function (config: karma.Config) {
     concurrency: 1
   };
 
-  if (process.env['SAUCELABS'] === 'true') {
-    // Tests are being run on Saucelabs
-
-    const saucelabsBrowsers = {
-      // Linux
-      SL_Linux_Chrome: {
-        base: 'SauceLabs',
-        browserName: 'chrome',
-        platform: 'Linux',
-        version: 'latest'
-      },
-      SL_Linux_Firefox: {
-        base: 'SauceLabs',
-        browserName: 'firefox',
-        platform: 'Linux',
-        version: 'latest'
-      },
-    };
-
-    const timeout = 15 * 60 * 1000; // 15 minutes
-    configuration.browserNoActivityTimeout = 3 * 60 * 1000; // 3 minutes
-    configuration.captureTimeout = timeout;
-    configuration.plugins.push(require('karma-sauce-launcher'));
-    configuration.customLaunchers = saucelabsBrowsers;
-    configuration.browsers = Object.keys(saucelabsBrowsers);
-    configuration.sauceLabs = {
-      testName: 'EVE Track Client tests'
-    };
-    configuration.reporters = ['saucelabs', 'mocha'];
-
-  } else if (process.env['BROWSERSTACK'] === 'true') {
+  if (process.env['BROWSERSTACK'] === 'true') {
     // Tests are being run on BrowserStack
 
     const browserStackBrowsers = {
