@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Observable } from 'rxjs';
 import * as crypto from 'crypto-js';
 
 import { Globals } from '../../shared/globals';
@@ -16,40 +15,39 @@ export class UserService {
               private globals: Globals,
               private helpers: Helpers) { }
 
-  shakeHands(): Observable<any> {
+  async shakeHands(): Promise<any> {
     const url = 'api/handshake';
-    return this.http.get(url).map(
-      (res: Response) => {
-        const jsonData: LoginResponse = JSON.parse(res['_body']);
-        if (jsonData.message === 'LoggedIn') {
-          this.globals.loggedIn = true;
-          this.storeUser(jsonData.data);
-        }
-      }).catch((err): Observable<any> => {
-      return Observable.of(new Error(err));
+    const response: Response = await this.http.get(url).toPromise().catch((error) => {
+      return error;
     });
+    if (response.ok) {
+      const jsonData = response.json();
+      if (jsonData.message === 'LoggedIn') {
+        this.globals.loggedIn = true;
+        this.storeUser(jsonData.data);
+      }
+    }
+    return response;
   }
 
-  loginUser(username: string, password: string): Observable<any> {
+  async loginUser(username: string, password: string): Promise<[string, User]> {
     const url = 'api/login';
-    return this.http.post(url, {
+    const response: Response = await this.http.post(url, {
       username: username,
       password: UserService.hashPassword(password),
-    }).map(
-      (res: Response) => {
-        const jsonData: LoginResponse = JSON.parse(res['_body']);
-        return [jsonData.message, this.storeUser(jsonData.data)];
-      }).catch((err): Observable<any> => {
-      if (err['_body']) {
-        const errBody = JSON.parse(err['_body']);
-        return Observable.of([errBody['message']]);
-      }
+    }).toPromise().catch((error) => {
+      return error;
     });
+    const jsonData: LoginResponse = response.json();
+    if (response.ok) {
+      return [jsonData.message, this.storeUser(jsonData.data)];
+    }
+    return [jsonData.message, null];
   }
 
   logoutUser(): void {
     const url = 'api/logout';
-    this.http.post(url, {}).subscribe(() => {
+    this.http.post(url, {}).toPromise().then(() => {
       window.location.reload();
     });
   }
@@ -74,11 +72,11 @@ export class UserService {
     this.globals.user = user;
     for (const characterData of data.characters) {
       if (characterData.scopes) {
-        this.CharacterService.registerCharacter(characterData);
+        this.CharacterService.registerCharacter(characterData).then();
       }
     }
     if (!this.helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
-      this.CharacterService.setActiveCharacter(user.characters[0]);
+      this.CharacterService.setActiveCharacter(user.characters[0]).then();
     }
     return user;
   }

@@ -78,7 +78,7 @@ export class Helpers {
     }
   }
 
-  sortArrayByObjectProperty(array: Array<Object>, property: string, inverse = false): Array<Object> {
+  sortArrayByObjectProperty(array: Array<any>, property: string, inverse = false): Array<any> {
     function compare(a, b) {
       if (a[property] < b[property]) {
         return inverse ? 1 : -1;

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { BalanceService } from '../../../services/balance.service';
-import { JournalService } from '../../../services/journal.service';
-import { TransactionService } from '../../../services/transactions.service';
+import { JournalData, JournalService } from '../../../services/journal.service';
+import { TransactionData, TransactionService } from '../../../services/transactions.service';
 import { RefTypesService } from '../../../services/reftypes.service';
 import { CountUp, CountUpOptions } from '../../../shared/count-up';
 import { Globals } from '../../../shared/globals';
@@ -13,9 +13,9 @@ import { Globals } from '../../../shared/globals';
   providers: [BalanceService, JournalService, TransactionService, RefTypesService],
 })
 export class WalletComponent implements OnInit {
-  journalData: Array<Object> = [];
+  journalData: Array<JournalData> = [];
   journalDataRequestDone = false;
-  transactionData: Array<Object> = [];
+  transactionData: Array<TransactionData> = [];
   transactionDataRequestDone = false;
   balance: CountUp;
   balanceError = false;

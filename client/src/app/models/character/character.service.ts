@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiCharacterData, Character, EveCharacterData, SSOSocketResponse } from './character.model';
+import { ApiCharacterData, Character, EveCharacterData, SSOSocketResponse, TokenRefreshResponse } from './character.model';
 import { EndpointService } from '../endpoint/endpoint.service';
 import { Globals } from '../../shared/globals';
 import { Http, Response } from '@angular/http';
@@ -20,12 +20,12 @@ export class CharacterService {
     character.alliance_id = characterData.alliance_id;
   }
 
-  registerCharacter(data: ApiCharacterData): Character {
+  async registerCharacter(data: ApiCharacterData): Promise<Character> {
 
     const character = new Character(data);
     this.globals.user.characters.push(character);
     if (data.isActive) {
-      this.setActiveCharacter(character, true);
+      this.setActiveCharacter(character, true).then();
     }
 
     const tokenExpiryTime = character.tokenExpiry.getTime();
@@ -33,24 +33,23 @@ export class CharacterService {
 
     const timeLeft = (tokenExpiryTime - currentTime) - tokenRefreshInterval;
     if (timeLeft <= 0) {
-      this.refreshToken(character);
+      await this.refreshToken(character);
     }
 
     character.refreshTimer = setInterval(() => {
-      this.refreshToken(character);
+      this.refreshToken(character).then();
     }, tokenRefreshInterval);
 
     return character;
   }
 
-  refreshToken(character: Character): void {
+  async refreshToken(character: Character): Promise<void> {
     const pid = character.pid;
     const accessToken = character.accessToken;
     const url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
-    this.http.get(url).first().subscribe((res) => {
-      const response = JSON.parse(res['_body']);
-      character.accessToken = response.data.token;
-    });
+    const response: Response = await this.http.get(url).toPromise();
+    const json: TokenRefreshResponse = response.json();
+    character.accessToken = json.data.token;
   }
 
   startAuthProcess(character?: Character): void {
@@ -61,21 +60,21 @@ export class CharacterService {
 
     const w = window.open(url, '_blank', 'width=600,height=700');
 
-    this.globals.socket.once('SSO_END', (response: SSOSocketResponse) => {
+    this.globals.socket.once('SSO_END', async (response: SSOSocketResponse) => {
       w.close();
       if (response.state === 'success') {
         if (character) {
           character.updateAuth(response.data);
           this.globals.characterChangeEvent.next(character);
         } else {
-          const newCharacter = this.registerCharacter(response.data);
-          this.setActiveCharacter(newCharacter);
+          const newCharacter = await this.registerCharacter(response.data);
+          this.setActiveCharacter(newCharacter).then();
         }
       }
     });
   }
 
-  setActiveCharacter(character?: Character, alreadyActive?: boolean): void {
+  async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
 
     let characterPid;
     if (character) {
@@ -83,7 +82,7 @@ export class CharacterService {
     }
 
     if (!alreadyActive) {
-      this.http.post('/sso/activate', {characterPid: characterPid}).first().subscribe();
+      this.http.post('/sso/activate', {characterPid: characterPid}).toPromise().then();
     }
     this.globals.selectedCharacter = character;
     this.globals.characterChangeEvent.next(character);
@@ -100,7 +99,7 @@ export class CharacterService {
         clearInterval(character.refreshTimer);
 
         if (this.globals.selectedCharacter && this.globals.selectedCharacter.pid === character.pid) {
-          this.setActiveCharacter();
+          this.setActiveCharacter().then();
         }
         const index = this.globals.user.characters.indexOf(character);
         this.globals.user.characters.splice(index, 1);

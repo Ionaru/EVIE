@@ -7,6 +7,7 @@ import { EndpointService } from './models/endpoint/endpoint.service';
 import { Observable, Observer } from 'rxjs';
 import * as socketIo from 'socket.io-client';
 import { Helpers } from './shared/helpers';
+import { Response } from '@angular/http';
 
 @Component({
   selector: 'app-root',
@@ -26,18 +27,17 @@ export class AppComponent {
 
   private boot(): void {
 
-    this.globals.startUpObservable = Observable.create((observer: Observer<boolean>) => {
-      this.userService.shakeHands().subscribe((error) => {
-        if (!error) {
-          this.globals.startUp = true;
-          observer.next(true);
-          observer.complete();
-        } else {
-          this.appReadyEvent.triggerFailed();
-          document.getElementById('error-info').innerHTML = error.stack;
-          throw error;
-        }
-      });
+    this.globals.startUpObservable = Observable.create(async (observer: Observer<boolean>) => {
+      const response: Response = await this.userService.shakeHands();
+      if (response.ok) {
+        this.globals.startUp = true;
+        observer.next(true);
+        observer.complete();
+      } else {
+        this.appReadyEvent.triggerFailed();
+        document.getElementById('error-info').innerHTML = response.text();
+        document.getElementById('error-info-detail').innerHTML = response.toString();
+      }
     }).share();
 
     this.globals.startUpObservable.subscribe(() => {

@@ -6,6 +6,20 @@ import { Globals } from '../shared/globals';
 import { Endpoint } from '../models/endpoint/endpoint.model';
 import { Logger } from 'angular2-logger/core';
 
+export interface TransactionData {
+  dateRaw: string;
+  dateFormatted: string;
+  price: string;
+  quantity: string;
+  transactionType: string;
+  transactionID: string;
+  ppi: string;
+  typeName: string;
+  typeID: string;
+  clientName: string;
+  clientID: string;
+}
+
 @Injectable()
 export class TransactionService {
 
@@ -18,7 +32,7 @@ export class TransactionService {
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
-  async getTransactions(expired = false): Promise<Array<Object>> {
+  async getTransactions(expired = false): Promise<Array<TransactionData>> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       try {
         const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
@@ -46,7 +60,7 @@ export class TransactionService {
     }
   }
 
-  private processTransactionData(jsonData: Object): Array<Object> {
+  private processTransactionData(jsonData: Object): Array<TransactionData> {
     const transactionData = [];
     if (jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
       for (const row of jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
