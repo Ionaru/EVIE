@@ -24,29 +24,26 @@ export class IndexComponent implements OnInit {
   }
 
   loginDebug(): void {
-    this.login({username: 'testUser', password: '000999888'});
+    this.login({username: 'testUser', password: '000999888'}).then();
   }
 
-  login(formValues: { username: string, password: string }): void {
-    this.userService.loginUser(formValues.username, formValues.password).first().subscribe(
-      (response: [string, User]) => {
-        if (response[0] === 'LoggedIn') {
-          const user = response[1];
-          this.loggedIn = true;
-          this.globals.loggedIn = true;
-          if (this.helpers.isEmpty(user.characters)) {
-            this.router.navigate(['/dashboard']).then();
-          }
-        } else {
-          // TODO: Give the user feedback about the failed login.
-        }
-      },
-    );
+  async login(formValues: { username: string, password: string }): Promise<void> {
+    const response: [string, User] = await this.userService.loginUser(formValues.username, formValues.password);
+    if (response[0] === 'LoggedIn') {
+      const user = response[1];
+      this.loggedIn = true;
+      this.globals.loggedIn = true;
+      if (this.helpers.isEmpty(user.characters)) {
+        this.router.navigate(['/dashboard']).then();
+      }
+    } else {
+      // TODO: Give the user feedback about the failed login.
+    }
   }
 
   register(formValues: { username: string, email: string, password: string, password2: string }): void {
     if (formValues.password === formValues.password2) {
-      this.userService.registerUser(formValues.username, formValues.email, formValues.password);
+      this.userService.registerUser(formValues.username, formValues.email, formValues.password).then();
     }
   }
 }

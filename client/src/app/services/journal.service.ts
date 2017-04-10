@@ -5,6 +5,16 @@ import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Globals } from '../shared/globals';
 import { Endpoint } from '../models/endpoint/endpoint.model';
 
+export interface JournalData {
+  dateRaw: string;
+  dateFormatted: string;
+  refTypeName: string;
+  ownerName1: string;
+  amountRaw: string;
+  amountFormatted: string;
+  balance: string;
+}
+
 @Injectable()
 export class JournalService {
 
@@ -20,7 +30,7 @@ export class JournalService {
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
-  async getJournal(refTypes: Array<Object>, expired = false): Promise<Array<Object>> {
+  async getJournal(refTypes: Array<Object>, expired = false): Promise<Array<JournalData>> {
     if (localStorage.getItem(this.storageTag) && !expired) {
       const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
       if (this.helpers.isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
@@ -55,13 +65,13 @@ export class JournalService {
     }
   }
 
-  private processJournalData(jsonData: Object, refTypes: Array<Object>): Array<Object> {
+  private processJournalData(jsonData: Object, refTypes: Array<Object>): Array<JournalData> {
     const journalData = [];
     if (jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
       for (const row of jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
         journalData.push({
           dateRaw: row['$']['date'],
-          dateFomratted: this.helpers.eveTimeToDate(row['$']['date']),
+          dateFormatted: this.helpers.eveTimeToDate(row['$']['date']),
           refTypeName: refTypes[row['$']['refTypeID']]['$']['refTypeName'],
           ownerName1: row['$']['ownerName1'],
           amountRaw: Number(row['$']['amount']),
