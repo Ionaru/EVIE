@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   setActiveCharacter(character: Character): void {
-    this.characterService.setActiveCharacter(character);
+    this.characterService.setActiveCharacter(character).then();
   }
 
   startSSO(): void {

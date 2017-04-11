@@ -94,7 +94,7 @@ export class SkillsComponent implements OnInit {
     }
   }
 
-  private countLvl5Skills(): number {
+  public countLvl5Skills(): number {
     const lvl5Skills = this.skillsData.skills.filter(_ => _.current_skill_level === 5);
     return lvl5Skills.length;
   }

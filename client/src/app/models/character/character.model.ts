@@ -85,3 +85,11 @@ export interface SSOSocketResponse {
   message: string;
   data: ApiCharacterData | undefined;
 }
+
+export interface TokenRefreshResponse {
+  state: string;
+  message: string;
+  data: {
+    token: string;
+  };
+}
