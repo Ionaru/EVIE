@@ -13,6 +13,8 @@
 /client/node_modules/
 
 # Server files
+/server/coverage/
+/server/.nyc_output/
 /server/node_modules/
 /server/logs
 
