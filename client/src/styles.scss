@@ -22,6 +22,31 @@
   src: url(./assets/fonts/evesansneue-bold.otf);
 }
 
+//@import '../node_modules/bulma/sass/components/level.sass';
+//@import "~bulma";
+
+// Bulma overwrites
+//.button:focus, .button.is-focused {
+//  border-color: inherit;
+//}
+//
+pre {
+  background-color: transparent;
+  //color: inherit;
+  font-size: 0.8em;
+  white-space: pre;
+  word-wrap: normal;
+  margin: 0;
+  padding: 0;
+}
+
+.fa {
+  font-size: 21px;
+  text-align: center;
+  vertical-align: top;
+}
+
+// Custom styling
 html {
 
   background-color: $eve_ore_content;
@@ -56,8 +81,35 @@ html {
     }
 
     a {
+      position: relative;
       color: $eve_skill_training;
       text-decoration: none;
+      transition: color 0.2s ease-in-out;
+      &.underline {
+        &:before {
+          content: "";
+          position: absolute;
+          width: 100%;
+          height: 1px;
+          bottom: -1px;
+          left: 0;
+          background-color: $eve_skill_trained;
+          visibility: hidden;
+          transform: scaleX(0);
+          transition: all 0.2s ease-in-out;
+        }
+      }
+
+      &:hover {
+        color: $eve_skill_trained;
+        &.underline {
+          &:before {
+            visibility: visible;
+            -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+          }
+        }
+      }
       &.eve-link {
         color: $eve_text_yellow;
         cursor: pointer;
@@ -65,10 +117,10 @@ html {
           text-decoration: underline;
         }
       }
+    }
 
-      &.disabled {
-        pointer-events: none;
-      }
+    .disabled {
+      pointer-events: none;
     }
 
     .visible-lg, .visible-md, .visible-sm, .visible-xs {

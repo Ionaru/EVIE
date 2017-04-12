@@ -1,22 +1,22 @@
 <nav class="navbar-top">
   <a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-item big">
-    <span class="content">
+    <span class="contents">
       <i class="fa fa-rocket brand-icon"></i>
       EVE Track
     </span>
   </a>
   <a *ngIf="isLoggedIn" routerLink="dashboard" routerLinkActive="selected" class="navbar-item">
-    <span class="content">CMD</span>
+    <span class="contents">CMD</span>
   </a>
   <a class="navbar-item center disabled">
-    <span class="content">EVE <span class="{{ status }}">{{ status }}</span> - <span id="eve-players"></span> Players</span>
+    <span class="contents">EVE <span class="{{ status }}">{{ status }}</span> - <span id="eve-players"></span> Players</span>
   </a>
 
   <a *ngIf="isLoggedIn" (click)="logout()" class="navbar-item right">
-    <span class="content">Logout</span>
+    <span class="contents">Logout</span>
   </a>
   <a class="navbar-item big right" href="https://github.com/Ionaru/EVE-Track" target="_blank">
-    <span class="content"><i class="fa fa-github"></i></span>
+    <span class="contents"><i class="fa fa-github"></i></span>
   </a>
 </nav>
 

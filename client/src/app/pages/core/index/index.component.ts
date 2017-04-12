@@ -33,9 +33,9 @@ export class IndexComponent implements OnInit {
       const user = response[1];
       this.loggedIn = true;
       this.globals.loggedIn = true;
-      if (this.helpers.isEmpty(user.characters)) {
-        this.router.navigate(['/dashboard']).then();
-      }
+      // if (this.helpers.isEmpty(user.characters)) {
+      this.router.navigate(['/dashboard']).then();
+      // }
     } else {
       // TODO: Give the user feedback about the failed login.
     }

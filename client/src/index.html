@@ -18,7 +18,7 @@
 
     #pre-bootstrap-container {
       font-family: "eve-font", sans-serif;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1.42857143;
       color: #C2C4C5;
       background-color: #151D23;
@@ -37,7 +37,7 @@
       opacity: 0.0;
     }
 
-    #pre-bootstrap div.message {
+    #pre-bootstrap div.loading-message {
       z-index: 2;
       left: 0;
       position: absolute;
@@ -48,9 +48,10 @@
     }
 
     .startup-error-container {
+      margin-top: 15px;
       font-size: initial;
       line-height: initial;
-      color: yellow;
+      color: grey;
     }
 
     #pre-bootstrap h1 {
@@ -94,7 +95,7 @@
       var info = document.getElementById('info');
       info.innerHTML = 'Something went wrong while loading, please try again later.' +
         '<br><br>' +
-        '<button onclick="window.location.reload()">Click to retry</button>' +
+        '<button class="button is" onclick="window.location.reload()">Click to retry</button>' +
         '<br><br><div class="startup-error-container">' +
         '<i class="fa fa-exclamation-triangle"></i> ' +
         'ERROR INFORMATION' +
@@ -107,7 +108,7 @@
   </script>
 
   <div id="pre-bootstrap">
-    <div class="message">
+    <div class="loading-message">
       <h1>EVE Track</h1>
       <p id="info">Connecting...</p>
     </div>

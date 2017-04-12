@@ -1,19 +1,23 @@
 #dashboard {
   .character-list {
-    .current-ship, .location {
-      pointer-events: none;
+    .character-list-item {
+      margin-bottom: 10px;
 
-      &:hover {
-        color: lightblue;
-      }
-      .success {
-        pointer-events: auto;
-        cursor: pointer;
-      }
-      .error {
-        pointer-events: auto;
-        cursor: pointer;
-        color: yellow;
+      .current-ship, .location {
+        pointer-events: none;
+
+        &:hover {
+          color: lightblue;
+        }
+        .success {
+          pointer-events: auto;
+          cursor: pointer;
+        }
+        .error {
+          pointer-events: auto;
+          cursor: pointer;
+          color: yellow;
+        }
       }
     }
   }

@@ -13,7 +13,7 @@
     <p>
       For optimal use of this website, I encourage you to create an account. Don't worry, it's safe!
       If you have doubts, the source code for this website is publicly available on
-      <a href="https://github.com/Ionaru/EVE-Track" target="_blank">Github</a> so you can see what happens with your
+      <a class="underline" href="https://github.com/Ionaru/EVE-Track" target="_blank">GitHub</a> so you can see what happens with your
       data.
       (Spoiler alert!) not a whole lot. 😇
     </p>
@@ -21,22 +21,23 @@
   <hr>
   <ng-container *ngIf="!loggedIn">
     <div class="login-container">
-      <form #loginForm="ngForm" (ngSubmit)="login(loginForm.value)">
-        <h2>Log In</h2>
+      <form #loginForm="ngForm" (ngSubmit)="login(loginForm.value).then()">
+        <h2>Log in to your EVE Track account</h2>
         <p>
-          <input placeholder="Username or email" id="login-username" type="text" required ngModel name="username">
+          <input class="input" placeholder="Username or email" id="login-username" type="text" required ngModel name="username">
         </p>
         <p>
           <input placeholder="Password" id="login-password" type="password" required ngModel name="password">
         </p>
         <button type="submit" [disabled]="!loginForm.valid">Login</button>
-        <button (click)="loginDebug()">Login debug</button>
       </form>
+      <button class="button" (click)="loginDebug()">Login debug</button>
     </div>
     <hr>
     <div class="register-container">
-      <form #registerForm="ngForm" (ngSubmit)="register(registerForm.value)">
-        <h2>Register</h2>
+      <form #registerForm="ngForm" (ngSubmit)="register(registerForm.value).then()">
+        <h2>Register an EVE Track account</h2>
+        <p>Do NOT use your EVE Online username or password!</p>
         <p>
           <!--<label for="register-username">Username or email</label>-->
           <input placeholder="Username" id="register-username" type="text" required ngModel name="username">
@@ -57,7 +58,7 @@
         <button type="submit" [disabled]="!registerForm.valid">Register</button>
       </form>
     </div>
-    <hr>
+    <!--<hr>-->
     <!--<div class="temporary-login-container">-->
       <!--<h2>Temporary login</h2>-->
       <!--<p>-->
@@ -66,6 +67,13 @@
                <!--src="https://images.contentful.com/idjq7aai9ylm/18BxKSXCymyqY4QKo8KwKe/c2bdded6118472dd587c8107f24104d7/EVE_SSO_Login_Buttons_Small_White.png?w=195&amp;h=30">-->
         <!--</a>-->
       <!--</p>-->
+      <!--<form #tempForm="ngForm" (ngSubmit)="register(registerForm.value).then()">-->
+        <!--<p>or enter an Access Key</p>-->
+        <!--<p>-->
+          <!--<input placeholder="Access Key" id="temp-key" type="text" required ngModel name="username">-->
+        <!--</p>-->
+        <!--<button type="submit" [disabled]="!tempForm.valid">Log in</button>-->
+      <!--</form>-->
     <!--</div>-->
   </ng-container>
 </div>

@@ -1,26 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SkillData, SkillsService } from '../../../services/skills.service';
 import { Globals } from '../../../shared/globals';
 import { EndpointService } from '../../../models/endpoint/endpoint.service';
 import * as countdown from 'countdown';
-import { setInterval } from 'timers';
 import { SkillQueueData, SkillQueueService } from '../../../services/skill-queue.service';
+import { Helpers } from '../../../shared/helpers';
+import Timespan = countdown.Timespan;
+import Timer = NodeJS.Timer;
 
 @Component({
   templateUrl: 'skills.component.html',
   styleUrls: ['skills.component.scss'],
   providers: [SkillsService, SkillQueueService],
 })
-export class SkillsComponent implements OnInit {
+export class SkillsComponent implements OnInit, OnDestroy {
 
   skillsData: SkillData;
   skillPoints: number;
   skillQueueData: Array<SkillQueueData>;
   loadingDone = false;
-  skillQueueCount = 0;
-  skillsCount = 0;
+  skillQueueCount: number;
+  skillsCount: number;
   spPerSec: number;
   skillTrainingPaused = true;
+  totalQueueCountdown: number | Timespan;
+  totalQueueTime: number;
+  totalQueueTimer: number;
+  skillQueueTimer: number;
+  refreshOnComplete: Timer;
 
   constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService,
               private globals: Globals, private endpointService: EndpointService) { }
@@ -28,6 +35,10 @@ export class SkillsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.skillsData = await this.skillsService.getSkills(this.globals.selectedCharacter);
     this.skillQueueData = await this.skillQueueService.getSkillQueue(this.globals.selectedCharacter);
+
+    this.skillQueueCount = 0;
+    this.skillsCount = 0;
+    this.totalQueueTime = Date.now();
 
     if (this.skillsData && this.skillQueueData) {
 
@@ -69,13 +80,18 @@ export class SkillsComponent implements OnInit {
             this.spPerSec = skillPointsGain / (skillTrainingTime / 1000);
             const timeLeft = skill.finishTimestamp - now;
             const timeExpired = skillTrainingTime - timeLeft;
-            this.skillPoints += this.spPerSec * (timeExpired / 1000);
-            skill.countdown = countdown(now, skill.finishTimestamp);
+            this.skillPoints += (this.spPerSec * (timeExpired / 1000));
+            this.totalQueueTime += timeLeft;
 
-            setInterval(() => {
+            this.skillQueueTimer = Helpers.repeat(() => {
               this.skillPoints += this.spPerSec;
               skill.countdown = countdown(Date.now(), skill.finishTimestamp);
             }, 1000);
+
+            // Refresh the page 1 second after the skill finished training, to fetch and parse the new data.
+            this.refreshOnComplete = setTimeout(() => {
+              this.refreshPage();
+            }, timeLeft + 1000);
 
           } else {
             // The skill is neither started nor finished, it must be scheduled to start in the future.
@@ -83,6 +99,7 @@ export class SkillsComponent implements OnInit {
 
             if (skill.startTimestamp && skill.finishTimestamp) {
               skill.countdown = countdown(skill.startTimestamp, skill.finishTimestamp);
+              this.totalQueueTime += (skill.finishTimestamp - skill.startTimestamp);
             }
           }
         }
@@ -92,10 +109,25 @@ export class SkillsComponent implements OnInit {
         this.loadingDone = true;
       }
     }
+
+    this.totalQueueTimer = Helpers.repeat(() => {
+      this.totalQueueCountdown = countdown(Date.now(), this.totalQueueTime);
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.totalQueueTimer);
+    clearInterval(this.skillQueueTimer);
+    clearTimeout(this.refreshOnComplete);
   }
 
   public countLvl5Skills(): number {
     const lvl5Skills = this.skillsData.skills.filter(_ => _.current_skill_level === 5);
     return lvl5Skills.length;
+  }
+
+  refreshPage() {
+    this.ngOnDestroy();
+    this.ngOnInit().then();
   }
 }
