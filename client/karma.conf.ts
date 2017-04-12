@@ -27,7 +27,7 @@ module.exports = function (config: karma.Config) {
       'text/x-typescript': ['ts', 'tsx']
     },
     coverageIstanbulReporter: {
-      reports: ['html', 'lcovonly'],
+      reports: ['lcovonly'],
       fixWebpackSourcePaths: true
     },
     angularCli: {

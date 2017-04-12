@@ -6,13 +6,14 @@
     "start": "ng serve --proxy-config proxy.conf.json --no-progress",
     "build": "ng build --prod --verbose",
     "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
-    "test": "ng test --single-run --code-coverage",
+    "test": "ng test --single-run",
+    "test-cov": "ng test --single-run --code-coverage",
     "watchtest": "ng test",
     "saucelabs": "export SAUCELABS=true && npm run test && unset SAUCELABS",
     "browserstack": "export BROWSERSTACK=true && npm run test && unset BROWSERSTACK",
     "pree2e": "webdriver-manager update",
     "e2e": "protractor",
-    "autotest": "npm run lint && npm run test && npm run saucelabs && npm run browserstack && npm run build"
+    "autotest": "npm run lint && npm run test-cov && npm run saucelabs && npm run browserstack && npm run build"
   },
   "dependencies": {
     "@angular/common": "^4.0.1",
