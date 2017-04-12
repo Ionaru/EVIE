@@ -34,7 +34,7 @@ module.exports = function (config: karma.Config) {
       environment: 'dev'
     },
     reporters: config['angularCli'] && config['angularCli'].codeCoverage
-      ? ['mocha', 'karma-remap-istanbul', 'coverage', 'coveralls']
+      ? ['karma-remap-istanbul', 'coverage', 'coveralls', 'mocha']
       : ['mocha'],
     mochaReporter: {
       showDiff: true
