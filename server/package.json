@@ -7,7 +7,7 @@
     "start": "node ./src/bin/start-server",
     "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
     "test": "TS_NODE_PROJECT=./tsconfig.json mocha --compilers ts:ts-node/register ./src/test",
-    "test-cov": "nyc -e '.ts' -r lcov npm run test && npm run report",
+    "test-cov": "nyc --silent --extension '.ts' --reporter text-lcov npm run test && npm run report",
     "report": "nyc report --reporter=text-lcov | coveralls"
   },
   "dependencies": {
