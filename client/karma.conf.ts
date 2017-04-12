@@ -13,6 +13,7 @@ module.exports = function (config: karma.Config) {
       require('karma-mocha-reporter'),
       require('karma-phantomjs-launcher'),
       require('karma-coverage-istanbul-reporter'),
+      require('karma-coveralls'),
       require('@angular/cli/plugins/karma')
     ],
     files: [
