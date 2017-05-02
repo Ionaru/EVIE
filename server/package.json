@@ -7,8 +7,8 @@
     "start": "node ./src/bin/start-server",
     "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
     "test": "_mocha --compilers ts:ts-node/register ./src/test",
-    "test-cov": "nyc --silent --extension '.ts' --reporter text yarn test",
-    "report": "nyc report --reporter=text-lcov | coveralls"
+    "test-cov": "nyc --silent --root 'src' --extension '.ts' --reporter text yarn test",
+    "report": "nyc report --reporter=text | coveralls"
   },
   "nyc": {
     "require": [
