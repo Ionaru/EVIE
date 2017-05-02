@@ -7,13 +7,27 @@
     "start": "node ./src/bin/start-server",
     "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
     "test": "_mocha --compilers ts:ts-node/register ./src/test",
-    "test-cov": "nyc --silent --root 'src' --extension '.ts' --reporter text yarn test",
-    "report": "nyc report --reporter=text | coveralls"
+    "test-cov": "nyc yarn test && yarn report",
+    "report": "nyc report --reporter=text-lcov | coveralls"
   },
   "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
     "require": [
       "ts-node/register"
-    ]
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
