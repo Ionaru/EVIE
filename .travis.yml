@@ -18,6 +18,7 @@ before_install:
 install:
 - if [[ "$SUB_DIR" == "client" ]]; then yarn global add @angular/cli; fi
 - tar xvf travis.tar
+- npm install -g npm@latest
 - cd $SUB_DIR
 - yarn
 script:
