@@ -13,6 +13,8 @@ module.exports = function (config: karma.Config) {
       require('karma-mocha-reporter'),
       require('karma-phantomjs-launcher'),
       require('karma-coverage-istanbul-reporter'),
+      require('karma-coverage'),
+      require('karma-coveralls'),
       require('@angular/cli/plugins/karma')
     ],
     files: [
@@ -25,14 +27,14 @@ module.exports = function (config: karma.Config) {
       'text/x-typescript': ['ts', 'tsx']
     },
     coverageIstanbulReporter: {
-      reports: ['html', 'lcovonly'],
+      reports: ['lcov'],
       fixWebpackSourcePaths: true
     },
     angularCli: {
       environment: 'dev'
     },
     reporters: config['angularCli'] && config['angularCli'].codeCoverage
-      ? ['coverage-istanbul', 'mocha']
+      ? ['mocha', 'coverage-istanbul', 'coverage', 'coveralls']
       : ['mocha'],
     mochaReporter: {
       showDiff: true

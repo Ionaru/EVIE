@@ -3,17 +3,13 @@ os:
 language: node_js
 node_js:
 - '7'
-- '6'
 branches:
   only:
   - master
 cache: yarn
 env:
-- SUB_DIR=client
+#- SUB_DIR=client
 - SUB_DIR=server
-addons:
-  code_climate:
-    repo_token: 991fdd0a58ec462128731b217a70ea9e1d48811185765b21f10a59c3da1ffb6f
 before_install:
 - curl -o- -L https://yarnpkg.com/install.sh | bash
 - export PATH=$HOME/.yarn/bin:$PATH
@@ -21,11 +17,11 @@ before_install:
   -in travis.tar.enc -out travis.tar -d
 install:
 - if [[ "$SUB_DIR" == "client" ]]; then yarn global add @angular/cli; fi
-- if [[ "$SUB_DIR" == "client" ]]; then yarn global add codeclimate-test-reporter; fi
 - tar xvf travis.tar
+- npm install -g npm@latest
 - cd $SUB_DIR
 - yarn
 script:
 - yarn run autotest
-after_script:
-- if [[ "$SUB_DIR" == "client" ]]; then codeclimate-test-reporter < ./coverage/lcov.info; fi
+after_success:
+- if [[ "$SUB_DIR" == "server" ]]; yarn run report
