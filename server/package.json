@@ -23,8 +23,7 @@
       "ts-node/register"
     ],
     "reporter": [
-      "text-summary",
-      "html"
+      "text-summary"
     ],
     "sourceMap": true,
     "instrument": true
