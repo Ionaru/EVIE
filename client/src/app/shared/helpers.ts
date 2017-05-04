@@ -51,7 +51,7 @@ export class Helpers {
     }
   }
 
-  formatISK(amount: number | string, decimals = 2, decimalMark = '.', delimiter = ','): string {
+  formatAmount(amount: number | string, decimals = 2, decimalMark = '.', delimiter = ','): string {
     let i: any, j: any, n: any, s: any;
     n = Number(amount);
     s = n < 0 ? '-' : '';

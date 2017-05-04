@@ -58,10 +58,12 @@
         <tr *ngFor="let entry of transactionData">
           <td data-label="date">{{ entry.dateRaw }}</td>
           <td data-label="info">
+            <span *ngIf="entry.transactionType === 'buy'">Bought</span>
+            <span *ngIf="entry.transactionType === 'sell'">Sold</span>
             {{ entry.quantity }} x <a (click)="getItemInfo(entry.typeID)">{{ entry.typeName }}</a>
-            <span *ngIf="entry.transactionType === 'buy'">bought from</span>
-            <span *ngIf="entry.transactionType === 'sell'">sold to</span>
-            <a (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
+            <span *ngIf="entry.transactionType === 'buy'">from</span>
+            <span *ngIf="entry.transactionType === 'sell'">to</span>
+            <a class="underline" (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
           </td>
           <td data-label="price" [ngClass]="buyOrSell(entry.transactionType)">
             {{ entry.price }} ISK<span

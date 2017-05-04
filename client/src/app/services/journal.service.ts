@@ -75,8 +75,8 @@ export class JournalService {
           refTypeName: refTypes[row['$']['refTypeID']]['$']['refTypeName'],
           ownerName1: row['$']['ownerName1'],
           amountRaw: Number(row['$']['amount']),
-          amountFormatted: this.helpers.formatISK(row['$']['amount']),
-          balance: this.helpers.formatISK(row['$']['balance']),
+          amountFormatted: this.helpers.formatAmount(row['$']['amount']),
+          balance: this.helpers.formatAmount(row['$']['balance']),
         });
       }
     }
