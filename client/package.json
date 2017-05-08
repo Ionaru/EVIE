@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "ng serve --proxy-config proxy.conf.json --no-progress --extract-css=true",
-    "build": "ng build --prod --verbose",
+    "build": "ng build --aot=true --extract-css --progress --sourcemap --prod --verbose",
     "lint": "tslint --type-check -c tslint.json \"src/**/*.ts\"",
     "test": "ng test --single-run --code-coverage",
     "watchtest": "ng test",
