@@ -21,7 +21,8 @@ import { MailComponent } from './pages/evedata/mail/mail.component';
 import { MarketComponent } from './pages/evedata/market/market.component';
 import { PlanetsComponent } from './pages/evedata/planets/planets.component';
 import { SkillsComponent } from './pages/evedata/skills/skills.component';
-import { Logger } from 'angular2-logger/core';
+import { Logger, Options } from 'angular2-logger/core';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { Logger } from 'angular2-logger/core';
     AuthGuard,
     CharacterGuard,
     Globals,
-    Logger
+    Logger,
+    { provide: Options, useValue: { level: environment.logLevel } },
   ],
   bootstrap: [
     AppComponent,
