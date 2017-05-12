@@ -24,7 +24,7 @@
       }
     }
 
-    .skill-level, .skill-time {
+    .skill-group, .skill-level, .skill-time {
       margin-left: 25px;
     }
   }
@@ -34,5 +34,11 @@
   span {
     border-bottom: 1px dotted;
     cursor: help;
+  }
+}
+
+.skill-list {
+  .skill-group {
+    margin-top: 10px;
   }
 }

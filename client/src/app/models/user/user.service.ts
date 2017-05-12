@@ -24,7 +24,7 @@ export class UserService {
       const jsonData = response.json();
       if (jsonData.message === 'LoggedIn') {
         this.globals.loggedIn = true;
-        this.storeUser(jsonData.data);
+        await this.storeUser(jsonData.data);
       }
     }
     return response;
@@ -40,7 +40,7 @@ export class UserService {
     });
     const jsonData: LoginResponse = response.json();
     if (response.ok) {
-      return [jsonData.message, this.storeUser(jsonData.data)];
+      return [jsonData.message, await this.storeUser(jsonData.data)];
     }
     return [jsonData.message, null];
   }
@@ -66,15 +66,18 @@ export class UserService {
     return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
   }
 
-  storeUser(data: UserApiData): User {
+  async storeUser(data: UserApiData): Promise<User> {
     const user = new User(data);
     this.globals.userChangeEvent.next(user);
     this.globals.user = user;
-    for (const characterData of data.characters) {
+
+    // Register all the characters in parallel, but wait until they are all finished before continuing
+    await Promise.all(data.characters.map(async (characterData) => {
       if (characterData.scopes) {
-        this.CharacterService.registerCharacter(characterData).then();
+        await this.CharacterService.registerCharacter(characterData);
       }
-    }
+    }));
+
     if (!this.helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
       this.CharacterService.setActiveCharacter(user.characters[0]).then();
     }

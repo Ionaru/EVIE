@@ -17,11 +17,12 @@
     }
 
     #pre-bootstrap-container {
-      font-family: "eve-font", sans-serif;
+      font-family: "open-sans", sans-serif;
+      font-weight: bold;
       font-size: 16px;
       line-height: 1.42857143;
-      color: #C2C4C5;
-      background-color: #151D23;
+      /*color: #C2C4C5;*/
+      background-color: #2B3E50;
       bottom: 0;
       left: 0;
       opacity: 1.0;
@@ -68,6 +69,7 @@
   </style>
 </head>
 <body>
+<script>window.__theme = 'bs4';</script>
 <app-root></app-root>
 <div id="pre-bootstrap-container">
 
@@ -95,21 +97,23 @@
       var info = document.getElementById('info');
       info.innerHTML = 'Something went wrong while loading, please try again later.' +
         '<br><br>' +
-        '<button class="button is" onclick="window.location.reload()">Click to retry</button>' +
+        '<button class="btn btn-primary" onclick="window.location.reload()">Click to retry</button>' +
         '<br><br><div class="startup-error-container">' +
         '<i class="fa fa-exclamation-triangle"></i> ' +
         'ERROR INFORMATION' +
         ' <i class="fa fa-exclamation-triangle"></i>' +
         '<pre id="error-info"></pre>' +
         '<pre id="error-info-detail"></pre>' +
-        '</div>';
+        '</div>' +
+        '<br>' +
+        '<a class="underline" href="https://github.com/Ionaru/EVE-Track" target="_blank">Report on GitHub</a>';
     });
 
   </script>
 
   <div id="pre-bootstrap">
     <div class="loading-message">
-      <h1>EVE Track</h1>
+      <h1><strong>EVE Track</strong></h1>
       <p id="info">Connecting...</p>
     </div>
   </div>

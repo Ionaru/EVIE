@@ -1,3 +1,6 @@
+@import "../node_modules/bootswatch/superhero/variables";
+@import "../node_modules/bootstrap/scss/bootstrap";
+@import "../node_modules/bootswatch/superhero/bootswatch";
 @import "app/variables";
 
 * {
@@ -32,7 +35,7 @@
 //
 pre {
   background-color: transparent;
-  //color: inherit;
+  color: inherit;
   font-size: 0.8em;
   white-space: pre;
   word-wrap: normal;
@@ -40,25 +43,26 @@ pre {
   padding: 0;
 }
 
-.fa {
-  font-size: 21px;
-  text-align: center;
-  vertical-align: top;
-}
+//.fa {
+//  font-size: 21px;
+//  text-align: center;
+//  vertical-align: top;
+//}
 
 // Custom styling
 html {
 
-  background-color: $eve_ore_content;
+  //background-color: $eve_ore_content;
 
   body {
 
     // Set some standard rendering as the defaults might vary between browsers and operating systems
-    font-family: "eve-font", sans-serif;
-    font-size: $standard-font-size;
-    line-height: $standard-line-height;
-    color: $eve_text_color;
-    margin: 0;
+    //font-family: "open-sans", sans-serif;
+    //font-family: "eve-font", sans-serif;
+    //font-size: $standard-font-size;
+    //line-height: $standard-line-height;
+    //color: $eve_text_color;
+    //margin: 0;
 
     padding: ($navbar_top_height + $body_padding) $body_padding $body_padding ($navbar_side_width + $body_padding);
 
@@ -81,31 +85,42 @@ html {
     }
 
     a {
-      position: relative;
-      color: $eve_skill_training;
+      //color: $eve_skill_training;
       text-decoration: none;
       transition: color 0.2s ease-in-out;
       &.underline {
+        position: relative;
         &:before {
           content: "";
           position: absolute;
           width: 100%;
           height: 1px;
-          bottom: -1px;
+          bottom: 0;
           left: 0;
-          background-color: $eve_skill_trained;
+          background-color: $link-color;
           visibility: hidden;
           transform: scaleX(0);
           transition: all 0.2s ease-in-out;
         }
       }
 
-      &:hover {
-        color: $eve_skill_trained;
+      &:focus {
+        color: $link-color;
+        text-decoration: none;
         &.underline {
           &:before {
             visibility: visible;
-            -webkit-transform: scaleX(1);
+            transform: scaleX(1);
+          }
+        }
+      }
+
+      &:hover {
+        color: $eve_skill_trained;
+        text-decoration: none;
+        &.underline {
+          &:before {
+            visibility: visible;
             transform: scaleX(1);
           }
         }
@@ -249,30 +264,77 @@ html {
       }
     }
 
-    form {
-      .form-group {
-        margin-bottom: 15px;
-        label {
-          display: inline-block;
-          max-width: 100%;
-          margin-bottom: 5px;
-          font-weight: 700;
+    //form {
+    //  .form-group {
+    //    margin-bottom: 15px;
+    //    label {
+    //      display: inline-block;
+    //      max-width: 100%;
+    //      margin-bottom: 5px;
+    //      font-weight: 700;
+    //    }
+    //    input {
+    //      display: block;
+    //      width: 100%;
+    //      height: 34px;
+    //      padding: 6px 12px;
+    //      font-size: 14px;
+    //      line-height: 1.42857143;
+    //      color: #555;
+    //      background: #fff none;
+    //      border: 1px solid #ccc;
+    //      &:focus {
+    //        outline: none;
+    //      }
+    //    }
+    //  }
+    //}
+    
+    button {
+      cursor: pointer;
+    }
+
+    button.accordion {
+      background-color: transparent;
+      color: $eve_text_color;
+      cursor: pointer;
+      border: none;
+      text-align: left;
+      outline: none;
+      transition: 0.4s;
+      font-size: $standard-font-size;
+      line-height: $standard-line-height;
+      font-weight: bold;
+
+      i {
+        text-align: left;
+        width: 25px;
+      }
+
+      &:after {
+        content: '\002B';
+        color: #777;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+      }
+
+      &.active {
+        &:after {
+          content: "\2212";
         }
-        input {
-          display: block;
-          width: 100%;
-          height: 34px;
-          padding: 6px 12px;
-          font-size: 14px;
-          line-height: 1.42857143;
-          color: #555;
-          background: #fff none;
-          border: 1px solid #ccc;
-          &:focus {
-            outline: none;
-          }
+
+        i::before {
+          content: "\f07c";
         }
       }
+    }
+
+    div.accordion-body {
+      padding: 0 18px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-in-out;
     }
   }
 }

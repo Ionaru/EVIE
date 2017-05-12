@@ -1,0 +1,61 @@
+<button type="button" class="btn btn-primary" (click)="showModal()">Render auto-shown modal</button>
+<div *ngIf="isModalShown" [config]="{ show: true }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal"
+     class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Login</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hideModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="login-container">
+          <form #loginForm="ngForm" (ngSubmit)="login(loginForm.value).then()">
+
+            <div class="form-group has-success">
+              <label for="login-username" class="col-form-label">Username</label>
+              <input (focus)="resetStyle()"
+                     class="form-control" type="text" id="login-username" required ngModel name="username">
+              <!--<div class="form-control-feedback"></div>-->
+            </div>
+
+            <div class="form-group has-warning">
+              <label class="col-form-label" for="password">Warning</label>
+              <input type="password" class="form-control form-control-warning" id="password"
+                     aria-describedby="passwordStatus">
+              <!--<div class="form-control-feedback">C'mon, you can do better than that username...</div>-->
+            </div>
+
+            <!--<div class="form-group row">-->
+            <!--<label for="login-password" class="col-2 col-form-label">Password</label>-->
+            <!--<div class="col-10">-->
+            <!--<input (focus)="resetStyle()"-->
+            <!--class="form-control" type="password" id="login-password" required ngModel name="password">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<h2>Log in to your EVE Track account</h2>-->
+            <!--&lt;!&ndash;<p>&ndash;&gt;-->
+            <!--<div class="search" [style.color]="getStyle()">-->
+            <!--<input (focus)="resetStyle()"-->
+            <!--placeholder="Username or email" id="login-username" type="text" required ngModel name="username">-->
+            <!--<span class="fa fa-user-circle-o"></span>-->
+            <!--</div>-->
+
+            <div class="search" [style.color]="getStyle()">
+              <input (focus)="resetStyle()"
+                     placeholder="Password" id="login-password" type="password" required ngModel name="password">
+              <span class="fa fa-key"></span>
+            </div>
+            <!--&lt;!&ndash;</p>&ndash;&gt;-->
+            <!--&lt;!&ndash;<p>&ndash;&gt;-->
+            <!--&lt;!&ndash;<input placeholder="Password" id="login-password" type="password" required ngModel name="password">&ndash;&gt;-->
+            <!--&lt;!&ndash;</p>&ndash;&gt;-->
+            <button class="btn btn-primary" type="submit" [disabled]="!loginForm.valid || wrongLogin">Login</button>
+          </form>
+          <button class="btn" (click)="loginDebug()">Login debug</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

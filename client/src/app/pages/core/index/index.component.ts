@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { UserService } from '../../../models/user/user.service';
 import { User } from '../../../models/user/user.model';
 import { Globals } from '../../../shared/globals';
 import { Helpers } from '../../../shared/helpers';
 import { Router } from '@angular/router';
+import { ModalDirective } from 'ngx-bootstrap';
 
 @Component({
   templateUrl: 'index.component.html',
@@ -12,6 +13,7 @@ import { Router } from '@angular/router';
 })
 export class IndexComponent implements OnInit {
 
+  wrongLogin;
   loggedIn: boolean;
 
   constructor(private title: Title, private userService: UserService, private globals: Globals,
@@ -21,24 +23,6 @@ export class IndexComponent implements OnInit {
 
   ngOnInit(): void {
     this.loggedIn = this.globals.loggedIn;
-  }
-
-  loginDebug(): void {
-    this.login({username: 'testUser', password: '000999888'}).then();
-  }
-
-  async login(formValues: { username: string, password: string }): Promise<void> {
-    const response: [string, User] = await this.userService.loginUser(formValues.username, formValues.password);
-    if (response[0] === 'LoggedIn') {
-      const user = response[1];
-      this.loggedIn = true;
-      this.globals.loggedIn = true;
-      // if (this.helpers.isEmpty(user.characters)) {
-      this.router.navigate(['/dashboard']).then();
-      // }
-    } else {
-      // TODO: Give the user feedback about the failed login.
-    }
   }
 
   register(formValues: { username: string, email: string, password: string, password2: string }): void {

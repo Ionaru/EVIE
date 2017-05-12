@@ -2,6 +2,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { Logger, Options } from 'angular2-logger/core';
+import { environment } from '../environments/environment';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppComponent } from './app.component';
 import { NavigationComponent } from './pages/core/navigation/navigation.component';
@@ -21,8 +26,7 @@ import { MailComponent } from './pages/evedata/mail/mail.component';
 import { MarketComponent } from './pages/evedata/market/market.component';
 import { PlanetsComponent } from './pages/evedata/planets/planets.component';
 import { SkillsComponent } from './pages/evedata/skills/skills.component';
-import { Logger, Options } from 'angular2-logger/core';
-import { environment } from '../environments/environment';
+import { LoginModalComponent } from './pages/core/index/login-modal.component';
 
 @NgModule({
   declarations: [
@@ -39,12 +43,16 @@ import { environment } from '../environments/environment';
     SkillsComponent,
     PlanetsComponent,
     WalletComponent,
+    LoginModalComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     router,
+    BsDropdownModule.forRoot(),
+    TooltipModule.forRoot(),
+    ModalModule.forRoot(),
   ],
   providers: [
     AppGuard,
@@ -52,10 +60,11 @@ import { environment } from '../environments/environment';
     CharacterGuard,
     Globals,
     Logger,
-    { provide: Options, useValue: { level: environment.logLevel } },
+    {provide: Options, useValue: {level: environment.logLevel}},
   ],
   bootstrap: [
     AppComponent,
   ]
 })
-export class AppModule { }
+export class AppModule {
+}

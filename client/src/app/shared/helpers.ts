@@ -79,15 +79,31 @@ export class Helpers {
   }
 
   sortArrayByObjectProperty(array: Array<any>, property: string, inverse = false): Array<any> {
+
     function compare(a, b) {
-      if (a[property] < b[property]) {
+      let left = a[property];
+      let right = b[property];
+
+      if (!left || !right) {
+        // this.logger.error('Unable to compare values', left, right);
+        throw new Error(`Unable to compare values '${left}' and '${right}'`);
+      }
+
+      try {
+        left = left.toUpperCase();
+        right = right.toUpperCase();
+      } catch (err) {
+      }
+
+      if (left < right) {
         return inverse ? 1 : -1;
       }
-      if (a[property] > b[property]) {
+      if (left > right) {
         return inverse ? -1 : 1;
       }
       return 0;
     }
+
     return array.sort(compare);
   }
 

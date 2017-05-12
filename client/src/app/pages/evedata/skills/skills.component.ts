@@ -5,13 +5,14 @@ import { EndpointService } from '../../../models/endpoint/endpoint.service';
 import * as countdown from 'countdown';
 import { SkillQueueData, SkillQueueService } from '../../../services/skill-queue.service';
 import { Helpers } from '../../../shared/helpers';
+import { SkillGroupData, SkillGroupsService } from '../../../services/skill-groups.service';
 import Timespan = countdown.Timespan;
 import Timer = NodeJS.Timer;
 
 @Component({
   templateUrl: 'skills.component.html',
   styleUrls: ['skills.component.scss'],
-  providers: [SkillsService, SkillQueueService],
+  providers: [SkillsService, SkillQueueService, SkillGroupsService],
 })
 export class SkillsComponent implements OnInit, OnDestroy {
 
@@ -28,13 +29,17 @@ export class SkillsComponent implements OnInit, OnDestroy {
   totalQueueTimer: number;
   skillQueueTimer: number;
   refreshOnComplete: Timer;
+  skillGroups: Array<SkillGroupData>;
+  skillList: {
+    [groupId: number]: Array<any>
+  } = {};
 
-  constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService,
-              private globals: Globals, private endpointService: EndpointService) { }
+  constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService, private helpers: Helpers,
+              private skillGroupsService: SkillGroupsService, private globals: Globals, private endpointService: EndpointService) { }
 
   async ngOnInit(): Promise<void> {
-    this.skillsData = await this.skillsService.getSkills(this.globals.selectedCharacter);
-    this.skillQueueData = await this.skillQueueService.getSkillQueue(this.globals.selectedCharacter);
+
+    await Promise.all([this.setSkills(), this.setSkillQueue(), this.setSkillGroups()]);
 
     this.skillQueueCount = 0;
     this.skillsCount = 0;
@@ -54,6 +59,11 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
         for (const skill of this.skillsData.skills) {
           skill.name = this.endpointService.getNameFromNameData(namesData, skill.skill_id);
+        }
+
+        for (const group of this.skillGroups) {
+          // this.skillList[group.group_id] = this.getSkillsForGroup(group);
+          this.skillList[group.group_id] = this.getSkillsForGroup(group);
         }
 
         for (const skill of this.skillQueueData) {
@@ -115,15 +125,54 @@ export class SkillsComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
+  toggleAccordion(event) {
+    let acc: HTMLElement = event.target;
+
+    if (!acc.classList.contains('accordion')) {
+      if (acc.parentElement.classList.contains('accordion')) {
+        acc = acc.parentElement;
+      }
+    }
+
+    acc.classList.toggle('active');
+    const panel = <HTMLElement> acc.nextElementSibling;
+    if (panel.style.maxHeight) {
+      panel.style.maxHeight = null;
+    } else {
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+    }
+  }
+
   ngOnDestroy() {
     clearInterval(this.totalQueueTimer);
     clearInterval(this.skillQueueTimer);
     clearTimeout(this.refreshOnComplete);
   }
 
-  public countLvl5Skills(): number {
-    const lvl5Skills = this.skillsData.skills.filter(_ => _.current_skill_level === 5);
-    return lvl5Skills.length;
+  countLvl5Skills(): number {
+    return this.skillsData.skills.filter(_ => _.current_skill_level === 5).length;
+  }
+
+  getSkillGroup(skillId) {
+    return this.skillGroups.filter(_ => _.types.indexOf(skillId) !== -1)[0].name;
+  }
+
+  private async setSkillGroups() {
+    this.skillGroups = await this.skillGroupsService.getSkillGroupInformation();
+  }
+
+  private async setSkillQueue() {
+    this.skillQueueData = await this.skillQueueService.getSkillQueue(this.globals.selectedCharacter);
+  }
+
+  private async setSkills() {
+    this.skillsData = await this.skillsService.getSkills(this.globals.selectedCharacter);
+  }
+
+  getSkillsForGroup(group: SkillGroupData) {
+    let skills = this.skillsData.skills.filter(_ => group.types.indexOf(_.skill_id) !== -1);
+    skills = this.helpers.sortArrayByObjectProperty(skills, 'name');
+    return skills;
   }
 
   refreshPage() {

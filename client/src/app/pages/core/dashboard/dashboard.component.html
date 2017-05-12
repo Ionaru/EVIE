@@ -5,12 +5,12 @@
   <ng-container *ngIf="characters.length">
     <hr>
     <h2>Character list:</h2>
-    <div class="character-list">
-      <div class="character-list-item" *ngFor="let character of characters">
-        <button *ngIf="!isActive(character)" (click)="setActiveCharacter(character)" title="Activate this character">
+    <div class="character-list columns  is-multiline">
+      <div class="character-list-item column is-one-third" *ngFor="let character of characters">
+        <button class="activate" *ngIf="!isActive(character)" (click)="setActiveCharacter(character)" title="Activate this character">
           Set Active
         </button>
-        <button (click)="reAuth(character)" title="Refresh this character's API permissions">
+        <button class="re-auth" (click)="reAuth(character)" title="Refresh this character's API permissions">
           Re-authenticate
         </button>
         <button (click)="deleteCharacter(character)" title="Delete this character from the API viewer">
@@ -56,5 +56,5 @@
     </div>
   </ng-container>
   <hr>
-  <button (click)="startSSO()" title="Add a character to the API viewer">Add character</button>
+  <button (click)="startSSO()" title="Add a character to the API viewer" tooltip="boo">Add character</button>
 </div>
