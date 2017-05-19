@@ -1,4 +1,4 @@
-<div id="balance-section">
+<div class="balance-section">
   <h2 class="balance">
     Current balance:
     <span id="balance-number"></span>
@@ -7,15 +7,15 @@
     </span>
   </h2>
 </div>
-<div id="wallet-section">
+<div class="wallet-section">
 
-  <div id="journal-section">
+  <div class="journal-section">
     <h2 class="journal-head">Journal</h2>
     <i *ngIf="!journalDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>
-    <div id="journal-data" *ngIf="journalDataRequestDone">
+    <div class="journal-data" *ngIf="journalDataRequestDone">
       <p *ngIf="journalData.length">Showing the last 50 records in the last 30 days.</p>
       <p *ngIf="!journalData.length">There is no journal data available.</p>
-      <table *ngIf="journalData.length" class="journal-table table">
+      <table *ngIf="journalData.length" class="journal-table table table-hover table-bordered">
         <thead>
         <tr>
           <th class="left">Date (EVE Time)</th>
@@ -25,7 +25,7 @@
           <th class="left">Balance</th>
         </tr>
         </thead>
-        <tbody id="wallet-journal-body">
+        <tbody class="wallet-journal-body">
         <tr *ngFor="let entry of journalData">
           <td data-label="Date">{{ entry.dateRaw }}</td>
           <td data-label="refType">{{ entry.refTypeName }}</td>
@@ -40,10 +40,10 @@
 
   <hr class="opacity-20">
 
-  <div id="transactions-section">
+  <div class="transactions-section">
     <h2 class="transactions-head">Transactions</h2>
     <i *ngIf="!transactionDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>
-    <div *ngIf="transactionDataRequestDone" id="transactions-data">
+    <div *ngIf="transactionDataRequestDone" class="transactions-data">
       <p *ngIf="transactionData.length">Showing the last 50 records in the last 30 days.</p>
       <p *ngIf="!transactionData.length">There is no transaction data available.</p>
       <table *ngIf="transactionData.length" class="transactions-table table">
@@ -54,20 +54,20 @@
           <th class="left">Price</th>
         </tr>
         </thead>
-        <tbody id="WalletTransactionsBody">
+        <tbody class="WalletTransactionsBody">
         <tr *ngFor="let entry of transactionData">
-          <td data-label="date">{{ entry.dateRaw }}</td>
-          <td data-label="info">
-            <span *ngIf="entry.transactionType === 'buy'">Bought</span>
-            <span *ngIf="entry.transactionType === 'sell'">Sold</span>
+          <td data-label="date">{{ entry.date }}</td>
+          <td data-label="info">You
+            <span *ngIf="entry.transactionType === 'buy'">bought</span>
+            <span *ngIf="entry.transactionType === 'sell'">sold</span>
             {{ entry.quantity }} x <a (click)="getItemInfo(entry.typeID)">{{ entry.typeName }}</a>
             <span *ngIf="entry.transactionType === 'buy'">from</span>
             <span *ngIf="entry.transactionType === 'sell'">to</span>
-            <a class="underline" (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
+            <a (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
           </td>
           <td data-label="price" [ngClass]="buyOrSell(entry.transactionType)">
-            {{ entry.price }} ISK<span
-            *ngIf="entry.quantity > 1"> ({{ entry.ppi }} ISK per item)</span>
+            {{ entry.price | number: numberformat() }} ISK<span
+            *ngIf="entry.quantity > 1"> ({{ entry.ppi | number: numberformat() }} ISK per item)</span>
           </td>
         </tr>
         </tbody>

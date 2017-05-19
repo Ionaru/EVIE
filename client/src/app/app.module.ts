@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
@@ -27,6 +28,7 @@ import { MarketComponent } from './pages/evedata/market/market.component';
 import { PlanetsComponent } from './pages/evedata/planets/planets.component';
 import { SkillsComponent } from './pages/evedata/skills/skills.component';
 import { LoginModalComponent } from './pages/core/index/login-modal.component';
+import { RegisterModalComponent } from './pages/core/index/register-modal.component';
 
 @NgModule({
   declarations: [
@@ -44,9 +46,11 @@ import { LoginModalComponent } from './pages/core/index/login-modal.component';
     PlanetsComponent,
     WalletComponent,
     LoginModalComponent,
+    RegisterModalComponent,
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
     HttpModule,
     router,

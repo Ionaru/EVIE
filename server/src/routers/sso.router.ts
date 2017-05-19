@@ -1,14 +1,14 @@
 import https = require('https');
 import fetch from 'node-fetch';
 
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { logger } from '../services/logger.service';
 import { BaseRouter, sendResponse, sendTextResponse } from './base.router';
 import { ssoConfig } from '../services/config.service';
 import { Character, CharacterInstance } from '../models/character/character';
-import { generateUniquePID, generateRandomString } from '../services/pid.service';
+import { generateRandomString, generateUniquePID } from '../services/pid.service';
 import { sockets } from '../bin/www';
-import { UserInstance, User } from '../models/user/user';
+import { User, UserInstance } from '../models/user/user';
 
 //noinspection SpellCheckingInspection
 const scopes = [
@@ -144,7 +144,7 @@ export class SSORouter extends BaseRouter {
       } else {
         // The state got from the EVE SSO service did not match the one we expected.
         if (request.query.state) {
-          logger.error(`Returned state was not valid, expected ${request.session['state']} 
+          logger.error(`Returned state was not valid, expected ${request.session['state']}
                         and got ${request.query.state}`);
           sendResponse(response, 400, 'InvalidState');
         } else {

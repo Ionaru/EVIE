@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { BalanceService } from '../../../services/balance.service';
 import { JournalData, JournalService } from '../../../services/journal.service';
@@ -12,7 +12,7 @@ import { Globals } from '../../../shared/globals';
   styleUrls: ['wallet.component.scss'],
   providers: [BalanceService, JournalService, TransactionService, RefTypesService],
 })
-export class WalletComponent implements OnInit {
+export class WalletComponent implements OnInit, AfterViewInit {
   journalData: Array<JournalData> = [];
   journalDataRequestDone = false;
   transactionData: Array<TransactionData> = [];
@@ -29,9 +29,12 @@ export class WalletComponent implements OnInit {
 
   ngOnInit(): void {
     this.title.setTitle('EVE Track - Wallet');
-    this.showBalance().then();
     this.showJournal().then();
     this.showTransactions().then();
+  }
+
+  ngAfterViewInit(): void {
+    this.showBalance().then();
   }
 
   getNumberColor(amount: string): string {
@@ -49,6 +52,10 @@ export class WalletComponent implements OnInit {
       return 'negative';
     }
     return 'positive';
+  }
+
+  numberformat(): string {
+    return '1.2-2';
   }
 
   getItemInfo(typeID: string): void {

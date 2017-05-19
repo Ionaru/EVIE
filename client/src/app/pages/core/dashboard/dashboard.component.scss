@@ -1,4 +1,4 @@
-#dashboard {
+.dashboard-page {
   .character-list {
     .character-list-item {
       //position: relative;
@@ -27,20 +27,23 @@
       //  height: 25px;
       //}
 
-      .current-ship, .location {
+      .current-ship,
+      .location {
         pointer-events: none;
 
         &:hover {
-          color: lightblue;
+          color: #add8e6;
         }
+
         .success {
-          pointer-events: auto;
           cursor: pointer;
+          pointer-events: auto;
         }
+
         .error {
-          pointer-events: auto;
+          color: #ffff00;
           cursor: pointer;
-          color: yellow;
+          pointer-events: auto;
         }
       }
     }

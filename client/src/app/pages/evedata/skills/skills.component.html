@@ -59,7 +59,7 @@
             <i class="fa fa-folder"></i> {{group.name}} ({{skillList[group.group_id].length}})
           </button>
           <div class="accordion-body">
-            <p class="skill-name" *ngFor="let skill of skillList[group.group_id]">
+            <p class="skill-name" *ngFor="let skill of getSkillsInGroup(group.group_id)">
               <span *ngIf="skill.name">{{skill.name}}</span>
               <span>{{skill.current_skill_level}}</span>
             </p>

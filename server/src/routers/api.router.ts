@@ -1,8 +1,8 @@
 import bcrypt = require('bcryptjs');
 
-import { CharacterInstance, Character } from '../models/character/character';
+import { Character, CharacterInstance } from '../models/character/character';
 import { User, UserInstance } from '../models/user/user';
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { logger } from '../services/logger.service';
 import { BaseRouter, sendResponse } from './base.router';
 import { generateUniquePID } from '../services/pid.service';
@@ -44,21 +44,26 @@ export class APIRouter extends BaseRouter {
           attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
         }]
       });
-      user.timesLogin++;
-      user.lastLogin = new Date();
-      await user.save();
-      const userData = {
-        pid: user.pid,
-        username: user.username,
-        email: user.email,
-        characters: user.characters.map((character: CharacterInstance): Object => {
-          delete character.userId;
-          return character.toJSON();
-        }),
-      };
-      sendResponse(response, 200, 'LoggedIn', userData);
+      if (user) {
+        user.timesLogin++;
+        user.lastLogin = new Date();
+        await user.save();
+        const userData = {
+          pid: user.pid,
+          username: user.username,
+          email: user.email,
+          characters: user.characters.map((character: CharacterInstance): Object => {
+            delete character.userId;
+            return character.toJSON();
+          }),
+        };
+        return sendResponse(response, 200, 'LoggedIn', userData);
+
+      } else {
+        return sendResponse(response, 200, 'NotLoggedIn');
+      }
     } else {
-      sendResponse(response, 200, 'NotLoggedIn');
+      return sendResponse(response, 200, 'NotLoggedIn');
     }
   }
 
@@ -115,13 +120,13 @@ export class APIRouter extends BaseRouter {
       } else {
 
         // Password did not match the passwordHash
-        sendResponse(response, 400, 'IncorrectLogin');
+        sendResponse(response, 401, 'IncorrectLogin');
       }
 
     } else {
 
       // No user with that username was found
-      sendResponse(response, 400, 'IncorrectLogin');
+      sendResponse(response, 404, 'IncorrectLogin');
     }
   }
 
@@ -150,9 +155,9 @@ export class APIRouter extends BaseRouter {
    */
   private static async registerUser(request: Request, response: Response): Promise<void> {
     // Extract the form data from the request and trim the whitespace from the username and email.
-    const username = request.body.username.trim();
-    const email = request.body.email.trim();
-    const password = request.body.password;
+    const username: string = request.body.username.trim();
+    const email: string = request.body.email.trim();
+    const password: string = request.body.password;
 
     let user: UserInstance = await User.findOne({
       where: {

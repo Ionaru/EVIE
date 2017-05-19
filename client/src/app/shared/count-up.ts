@@ -82,6 +82,52 @@ export class CountUp {
     this.printValue(startVal);
   }
 
+
+  // Robert Penner's easeOutExpo
+  private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
+    return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
+  }
+
+  // Start the animation
+  start(callback?: Function): boolean {
+    this.callback = callback;
+    this.rAF = requestAnimationFrame(_timestamp => { this.count(_timestamp); });
+    return false;
+  }
+
+  // Pause or resume the animation
+  pauseResume(): void {
+    if (!this.paused) {
+      this.paused = true;
+      cancelAnimationFrame(this.rAF);
+    } else {
+      this.paused = false;
+      delete this.startTime;
+      this.duration = this.remaining;
+      this.startVal = this.frameVal;
+      requestAnimationFrame(_timestamp => { this.count(_timestamp); });
+    }
+  }
+
+  // Reset to startVal so animation can be run again
+  reset(): void {
+    this.paused = false;
+    delete this.startTime;
+    cancelAnimationFrame(this.rAF);
+    this.printValue(this.startVal);
+  }
+
+  // Pass a new endVal and start animation
+  update(newEndVal: number): void {
+    cancelAnimationFrame(this.rAF);
+    this.paused = false;
+    this.startTime = 0;
+    this.startVal = this.frameVal;
+    this.endVal = Number(newEndVal);
+    this.countDown = (this.startVal > this.endVal);
+    this.rAF = requestAnimationFrame(_timestamp => { this.count(_timestamp); });
+  }
+
   private init(): void {
     let lastTime = 0;
     const vendors = ['webkit', 'moz', 'ms', 'o'];
@@ -121,11 +167,6 @@ export class CountUp {
       }
     }
     return this.options.prefix + x1 + x2 + this.options.suffix;
-  }
-
-  // Robert Penner's easeOutExpo
-  private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
-    return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
   }
 
   private count(timestamp: number): void {
@@ -183,45 +224,5 @@ export class CountUp {
     } else {
       this.targetElement.innerHTML = result;
     }
-  }
-
-  // Start the animation
-  start(callback?: Function): boolean {
-    this.callback = callback;
-    this.rAF = requestAnimationFrame(_timestamp => { this.count(_timestamp); });
-    return false;
-  }
-
-  // Pause or resume the animation
-  pauseResume(): void {
-    if (!this.paused) {
-      this.paused = true;
-      cancelAnimationFrame(this.rAF);
-    } else {
-      this.paused = false;
-      delete this.startTime;
-      this.duration = this.remaining;
-      this.startVal = this.frameVal;
-      requestAnimationFrame(_timestamp => { this.count(_timestamp); });
-    }
-  }
-
-  // Reset to startVal so animation can be run again
-  reset(): void {
-    this.paused = false;
-    delete this.startTime;
-    cancelAnimationFrame(this.rAF);
-    this.printValue(this.startVal);
-  }
-
-  // Pass a new endVal and start animation
-  update(newEndVal: number): void {
-    cancelAnimationFrame(this.rAF);
-    this.paused = false;
-    this.startTime = 0;
-    this.startVal = this.frameVal;
-    this.endVal = Number(newEndVal);
-    this.countDown = (this.startVal > this.endVal);
-    this.rAF = requestAnimationFrame(_timestamp => { this.count(_timestamp); });
   }
 }

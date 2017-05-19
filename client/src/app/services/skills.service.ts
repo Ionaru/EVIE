@@ -5,20 +5,17 @@ import { Logger } from 'angular2-logger/core';
 import { Character } from '../models/character/character.model';
 import { Helpers } from '../shared/helpers';
 
+export interface Skill {
+  current_skill_level: number;
+  skill_id: number;
+  skillpoints_in_skill: number;
+  name?: string;
+}
+
 export interface SkillData {
-  skills: Array<{
-    current_skill_level: number,
-    skill_id: number,
-    skillpoints_in_skill: number,
-    name?: string
-  }>;
+  skills: Array<Skill>;
   skillsObject: {
-    [id: number]: {
-      current_skill_level: number,
-      skill_id: number,
-      skillpoints_in_skill: number,
-      name?: string
-    };
+    [id: number]: Skill;
   };
   total_sp: number;
 }

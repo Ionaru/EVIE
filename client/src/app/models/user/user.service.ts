@@ -5,15 +5,21 @@ import * as crypto from 'crypto-js';
 import { Globals } from '../../shared/globals';
 import { Helpers } from '../../shared/helpers';
 import { CharacterService } from '../character/character.service';
-import { LoginResponse, User, UserApiData } from './user.model';
+import { LoginResponse, RegisterResponse, User, UserApiData } from './user.model';
+import { Logger } from 'angular2-logger/core';
 
 @Injectable()
 export class UserService {
 
   constructor(private http: Http,
               private CharacterService: CharacterService,
-              private globals: Globals,
+              private globals: Globals, private logger: Logger,
               private helpers: Helpers) { }
+
+
+  static hashPassword(passwordPlain: string): string {
+    return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
+  }
 
   async shakeHands(): Promise<any> {
     const url = 'api/handshake';
@@ -40,7 +46,9 @@ export class UserService {
     });
     const jsonData: LoginResponse = response.json();
     if (response.ok) {
-      return [jsonData.message, await this.storeUser(jsonData.data)];
+      const user = await this.storeUser(jsonData.data);
+      this.globals.loggedIn = true;
+      return [jsonData.message, user];
     }
     return [jsonData.message, null];
   }
@@ -52,18 +60,35 @@ export class UserService {
     });
   }
 
-  async registerUser(username: string, email: string, password: string): Promise<void> {
+  async registerUser(username: string, email: string, password: string): Promise<string> {
     const url = 'api/register';
     const userToRegister = {
       username: username,
       email: email,
       password: UserService.hashPassword(password)
     };
-    await this.http.post(url, userToRegister).toPromise();
-  }
-
-  static hashPassword(passwordPlain: string): string {
-    return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
+    let response: Response;
+    try {
+      response = await this.http.post(url, userToRegister).toPromise().catch((errorResponse: Response) => {
+        if (errorResponse.status === 409) {
+          return errorResponse;
+        }
+        throw new Error(errorResponse.toString());
+      });
+      const result: RegisterResponse = response.json();
+      if (result.data.username_in_use) {
+        return 'username_in_use';
+      } else if (result.data.email_in_use) {
+        return 'email_in_use';
+      } else if (result.state === 'error') {
+        return 'error';
+      } else {
+        return 'success';
+      }
+    } catch (error) {
+      this.logger.error(error);
+      return null;
+    }
   }
 
   async storeUser(data: UserApiData): Promise<User> {

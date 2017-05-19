@@ -7,13 +7,13 @@ import { Endpoint } from '../models/endpoint/endpoint.model';
 import { Logger } from 'angular2-logger/core';
 
 export interface TransactionData {
-  dateRaw: string;
+  date: string;
   dateFormatted: string;
-  price: string;
-  quantity: string;
+  price: number;
+  quantity: number;
   transactionType: string;
   transactionID: string;
-  ppi: string;
+  ppi: number;
   typeName: string;
   typeID: string;
   clientName: string;
@@ -74,13 +74,13 @@ export class TransactionService {
         const transactionType = row['$']['transactionType'];
         const transactionID = row['$']['transactionID'];
         transactionData.push({
-          dateRaw: date,
-          dateFormatted: this.helpers.eveTimeToDate(date),
-          price: this.helpers.formatAmount(ppi * quantity),
-          quantity: this.helpers.formatAmount(quantity, 0),
+          date: date,
+          dateFormatted: this.helpers.eveTimeToDate(date).getTime(),
+          price: ppi * quantity,
+          quantity: quantity,
           transactionType: transactionType,
           transactionID: transactionID,
-          ppi: this.helpers.formatAmount(ppi),
+          ppi: ppi,
           typeName: typeName,
           typeID: typeID,
           clientName: clientName,

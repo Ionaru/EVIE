@@ -14,16 +14,29 @@ export class ClockService {
     this.endpoint = this.endpointService.getEndpoint('ServerStatus');
   }
 
-  getTime(): Observable<Object> {
-    const url = this.endpointService.constructXMLUrl(this.endpoint);
-    const headers = new Headers();
-    headers.append('Accept', 'application/xml');
-    return this.http.get(url, {
-      headers: headers
-    }).map((response: Response) => {
-      const jsonData = this.helpers.processXML(response);
-      return ClockService.processTime(jsonData);
-    });
+  static tickTime(time: Object): Object {
+    let h: any = parseInt(time['hours'], 10);
+    let m: any = parseInt(time['minutes'], 10);
+    m += 1;
+    if (m === 60) {
+      h += 1;
+      m = 0;
+    }
+    if (m < 10) {
+      m = '0' + m.toString();
+    }
+    if (h === 24) {
+      h = 0;
+    }
+    if (h < 10) {
+      h = '0' + h.toString();
+    }
+    return {
+      hours: h,
+      minutes: m,
+      status: time['status'],
+      players: time['players']
+    };
   }
 
   private static processTime(jsonData: Object): Object {
@@ -61,28 +74,15 @@ export class ClockService {
     };
   }
 
-  static tickTime(time: Object): Object {
-    let h: any = parseInt(time['hours'], 10);
-    let m: any = parseInt(time['minutes'], 10);
-    m += 1;
-    if (m === 60) {
-      h += 1;
-      m = 0;
-    }
-    if (m < 10) {
-      m = '0' + m.toString();
-    }
-    if (h === 24) {
-      h = 0;
-    }
-    if (h < 10) {
-      h = '0' + h.toString();
-    }
-    return {
-      hours: h,
-      minutes: m,
-      status: time['status'],
-      players: time['players']
-    };
+  getTime(): Observable<Object> {
+    const url = this.endpointService.constructXMLUrl(this.endpoint);
+    const headers = new Headers();
+    headers.append('Accept', 'application/xml');
+    return this.http.get(url, {
+      headers: headers
+    }).map((response: Response) => {
+      const jsonData = this.helpers.processXML(response);
+      return ClockService.processTime(jsonData);
+    });
   }
 }

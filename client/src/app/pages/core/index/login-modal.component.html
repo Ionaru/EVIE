@@ -1,7 +1,7 @@
-<button type="button" class="btn btn-primary" (click)="showModal()">Render auto-shown modal</button>
+<button type="button" class="btn btn-primary" (click)="showModal()">Login</button>
 <div *ngIf="isModalShown" [config]="{ show: true }" (onHidden)="onHidden()" bsModal #autoShownModal="bs-modal"
-     class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
+     (onShown)="onShown()" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-md">
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title pull-left">Login</h4>
@@ -13,48 +13,41 @@
         <div class="login-container">
           <form #loginForm="ngForm" (ngSubmit)="login(loginForm.value).then()">
 
-            <div class="form-group has-success">
-              <label for="login-username" class="col-form-label">Username</label>
-              <input (focus)="resetStyle()"
+            <div class="form-group" [ngClass]="{'has-danger': wrongLogin}">
+              <label for="login-username" class="col-form-label login-input">
+                Username or email
+              </label>
+              <input (focus)="resetStyle()" (input)="resetStyle()" #usernameInput
                      class="form-control" type="text" id="login-username" required ngModel name="username">
-              <!--<div class="form-control-feedback"></div>-->
             </div>
 
-            <div class="form-group has-warning">
-              <label class="col-form-label" for="password">Warning</label>
-              <input type="password" class="form-control form-control-warning" id="password"
-                     aria-describedby="passwordStatus">
-              <!--<div class="form-control-feedback">C'mon, you can do better than that username...</div>-->
+            <div class="form-group" [ngClass]="{'has-danger': wrongLogin}">
+              <label for="login-password" class="col-form-label login-input">
+                Password
+              </label>
+              <input (focus)="resetStyle()" (input)="resetStyle()"
+                     class="form-control" type="password" id="login-password" required ngModel name="password">
             </div>
 
-            <!--<div class="form-group row">-->
-            <!--<label for="login-password" class="col-2 col-form-label">Password</label>-->
-            <!--<div class="col-10">-->
-            <!--<input (focus)="resetStyle()"-->
-            <!--class="form-control" type="password" id="login-password" required ngModel name="password">-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--<h2>Log in to your EVE Track account</h2>-->
-            <!--&lt;!&ndash;<p>&ndash;&gt;-->
-            <!--<div class="search" [style.color]="getStyle()">-->
-            <!--<input (focus)="resetStyle()"-->
-            <!--placeholder="Username or email" id="login-username" type="text" required ngModel name="username">-->
-            <!--<span class="fa fa-user-circle-o"></span>-->
-            <!--</div>-->
-
-            <div class="search" [style.color]="getStyle()">
-              <input (focus)="resetStyle()"
-                     placeholder="Password" id="login-password" type="password" required ngModel name="password">
-              <span class="fa fa-key"></span>
-            </div>
-            <!--&lt;!&ndash;</p>&ndash;&gt;-->
-            <!--&lt;!&ndash;<p>&ndash;&gt;-->
-            <!--&lt;!&ndash;<input placeholder="Password" id="login-password" type="password" required ngModel name="password">&ndash;&gt;-->
-            <!--&lt;!&ndash;</p>&ndash;&gt;-->
-            <button class="btn btn-primary" type="submit" [disabled]="!loginForm.valid || wrongLogin">Login</button>
+            <button [ngClass]="{'m-progress' : inProgress}"
+                    class="btn btn-primary " type="submit" [disabled]="!loginForm.valid || wrongLogin">
+              Login
+            </button>
           </form>
-          <button class="btn" (click)="loginDebug()">Login debug</button>
+          <ng-container *ngIf="debugging">
+            <hr>
+            <button class="btn btn-danger" (click)="loginDebug()">
+              <i class="fa fa-exclamation-triangle"></i>
+              Login debug
+            </button>
+          </ng-container>
         </div>
+      </div>
+      <div class="modal-footer" *ngIf="wrongLogin">
+        <p [@myAnimation]="wrongLogin">
+          <i class="text-danger fa fa-exclamation-triangle"></i>
+          Incorrect login, please try again.
+        </p>
       </div>
     </div>
   </div>

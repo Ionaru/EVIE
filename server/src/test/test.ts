@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import { db } from '../services/db.service';
 import { logger } from '../services/logger.service';
 import { mainConfig, dbConfig, ssoConfig } from '../services/config.service';
-import { expect } from 'chai';
+import expect = require('must/register');
 
 describe('Application', function () {
 
@@ -28,27 +28,27 @@ describe('Application', function () {
     const db_suffix = '_test';
     it('should have a DB pool after start', async function () {
       await www.init().catch(console.error.bind(console));
-      expect(db.get()['_closed']).to.be.false;
+      expect(db.get()['_closed']).to.be.false();
     });
     it(`should be connected to a test database (ending with "${db_suffix}")`, function (done) {
       db.get().query('SELECT DATABASE()', (err, rows) => {
         const result = rows[0]['DATABASE()'];
-        expect(err).to.be.null;
+        expect(err).to.be.null();
         const re = new RegExp(`${db_suffix}$`);
         if (!re.test(result)) {
           console.error(`Database name "${result}" did not have expected suffix "${db_suffix}"!`);
           console.error(`The database should have suffix "${db_suffix}" for testing safety!`);
           process.exit(1);
         } else {
-          expect(re.test(result)).to.be.ok;
+          expect(re.test(result)).to.be.truthy();
           done();
         }
       });
     });
     it('shouldn\'t have a DB pool after cleanup', function (done) {
       www.cleanup(() => {
-        expect(db.get()['_allConnections']).to.deep.equal([]);
-        expect(db.get()['_closed']).to.be.true;
+        expect(db.get()['_allConnections']).to.eql([]);
+        expect(db.get()['_closed']).to.be.true();
         done();
       });
     });
@@ -90,9 +90,9 @@ describe('Application', function () {
     });
 
     it('shouldn\'t be empty', async function () {
-      expect(mainConfig.config).to.not.deep.equal({});
-      expect(dbConfig.config).to.not.deep.equal({});
-      expect(ssoConfig.config).to.not.deep.equal({});
+      expect(mainConfig.config).to.not.eql({});
+      expect(dbConfig.config).to.not.eql({});
+      expect(ssoConfig.config).to.not.eql({});
     });
   });
 });

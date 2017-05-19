@@ -7,6 +7,18 @@ import { Logger } from 'angular2-logger/core';
 export class Helpers {
   constructor(private logger: Logger) { }
 
+  /**
+   * Wrapper for the setInterval function, it will execute the passed function immediately before calling setInterval
+   * @param {Function} fn - The name of the property to fetch
+   * @param {number} interval - The name of the property to fetch
+   * @param {Array<any>} params - Additional parameters to pass to fn
+   * @return {number} - ID value for the interval function, used for clearInterval()
+   */
+  static repeat(fn: Function, interval: number, ...params: Array<any>): number {
+    fn(...params);
+    return setInterval(fn, interval, ...params);
+  }
+
   isEmpty(obj: any): boolean {
     // null and undefined are "empty"
     if (obj == null) {
@@ -105,17 +117,5 @@ export class Helpers {
     }
 
     return array.sort(compare);
-  }
-
-  /**
-   * Wrapper for the setInterval function, it will execute the passed function immediately before calling setInterval
-   * @param {Function} fn - The name of the property to fetch
-   * @param {number} interval - The name of the property to fetch
-   * @param {Array<any>} params - Additional parameters to pass to fn
-   * @return {number} - ID value for the interval function, used for clearInterval()
-   */
-  static repeat(fn: Function, interval: number, ...params: Array<any>): number {
-    fn(...params);
-    return setInterval(fn, interval, ...params);
   }
 }

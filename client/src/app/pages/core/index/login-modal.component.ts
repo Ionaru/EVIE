@@ -1,26 +1,51 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
-import { Title } from '@angular/platform-browser';
 import { UserService } from '../../../models/user/user.service';
 import { Globals } from '../../../shared/globals';
 import { Router } from '@angular/router';
-import { Helpers } from '../../../shared/helpers';
 import { User } from '../../../models/user/user.model';
+import { environment } from '../../../../environments/environment';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
-  selector: 'login-modal',
-  templateUrl: './login-modal.component.html'
+  selector: 'login-modal-button',
+  templateUrl: './login-modal.component.html',
+  styleUrls: ['./login-modal.component.scss'],
+  animations: [
+    trigger(
+      'myAnimation',
+      [
+        state('in', style({})),
+        transition(
+          ':enter', [
+            style({opacity: 0}),
+            animate('0.3s', style({opacity: 1}))
+          ]
+        ),
+        transition(
+          ':leave', [
+            style({'opacity': 1}),
+            animate('0.3s', style({opacity: 0})),
+          ]
+        )]
+    ),
+  ],
 })
 export class LoginModalComponent {
   @ViewChild('autoShownModal') public autoShownModal: ModalDirective;
 
-  wrongLogin;
+  wrongLogin: boolean;
+  debugging: boolean;
+  inProgress: boolean;
 
   public isModalShown = false;
 
-  constructor(private title: Title, private userService: UserService, private globals: Globals,
-              private router: Router, private helpers: Helpers) {
+  @ViewChild('usernameInput') usernameInput: ElementRef;
 
+  constructor(private userService: UserService, private globals: Globals, private router: Router) {
+    if (!environment.production) {
+      this.debugging = true;
+    }
   }
 
   public showModal(): void {
@@ -35,12 +60,8 @@ export class LoginModalComponent {
     this.isModalShown = false;
   }
 
-  getStyle() {
-    if (this.wrongLogin) {
-      return 'red';
-    } else {
-      return 'inherit';
-    }
+  public onShown(): void {
+    this.usernameInput.nativeElement.focus();
   }
 
   resetStyle() {
@@ -52,17 +73,13 @@ export class LoginModalComponent {
   }
 
   async login(formValues: { username: string, password: string }): Promise<void> {
+    this.inProgress = true;
     const response: [string, User] = await this.userService.loginUser(formValues.username, formValues.password);
+    this.inProgress = false;
     if (response[0] === 'LoggedIn') {
-      const user = response[1];
-      // this.loggedIn = true;
-      this.globals.loggedIn = true;
-      // if (this.helpers.isEmpty(user.characters)) {
       this.router.navigate(['/dashboard']).then();
-      // }
     } else {
       this.wrongLogin = true;
-      // TODO: Give the user feedback about the failed login.
     }
   }
 }

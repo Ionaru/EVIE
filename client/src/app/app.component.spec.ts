@@ -18,9 +18,13 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { Globals } from './shared/globals';
 import { MockBackend } from '@angular/http/testing';
-import { expect } from 'chai';
+import * as expect from 'must/register';
 import { Logger } from 'angular2-logger/core';
 import { SinonStub, stub } from 'sinon';
+import { LoginModalComponent } from './pages/core/index/login-modal.component';
+import { RegisterModalComponent } from './pages/core/index/register-modal.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BsDropdownModule, ModalModule, TooltipModule } from 'ngx-bootstrap';
 
 describe('AppComponent', () => {
 
@@ -28,7 +32,6 @@ describe('AppComponent', () => {
   let loggerStub: SinonStub;
 
   beforeEach(async function() {
-    this.timeout(10000);
 
     TestBed.configureTestingModule({
       declarations: [
@@ -45,9 +48,12 @@ describe('AppComponent', () => {
         SkillsComponent,
         PlanetsComponent,
         WalletComponent,
+        LoginModalComponent,
+        RegisterModalComponent,
       ],
       imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         FormsModule,
         HttpModule,
         RouterTestingModule.withRoutes([
@@ -56,6 +62,9 @@ describe('AppComponent', () => {
             component: IndexComponent
           }
         ]),
+        BsDropdownModule.forRoot(),
+        TooltipModule.forRoot(),
+        ModalModule.forRoot(),
       ],
       providers: [Globals,
         MockBackend,
@@ -82,10 +91,10 @@ describe('AppComponent', () => {
     loggerStub.restore();
   });
 
-  it('should create the app', async function() {
+  it('must create the app', async function() {
     this.timeout(10000);
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app).to.be.ok;
+    expect(app).to.be.truthy();
   });
 });

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { SkillData, SkillsService } from '../../../services/skills.service';
+import { Skill, SkillData, SkillsService } from '../../../services/skills.service';
 import { Globals } from '../../../shared/globals';
 import { EndpointService } from '../../../models/endpoint/endpoint.service';
 import * as countdown from 'countdown';
@@ -31,7 +31,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
   refreshOnComplete: Timer;
   skillGroups: Array<SkillGroupData>;
   skillList: {
-    [groupId: number]: Array<any>
+    [groupId: number]: Array<Skill>
   } = {};
 
   constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService, private helpers: Helpers,
@@ -62,7 +62,6 @@ export class SkillsComponent implements OnInit, OnDestroy {
         }
 
         for (const group of this.skillGroups) {
-          // this.skillList[group.group_id] = this.getSkillsForGroup(group);
           this.skillList[group.group_id] = this.getSkillsForGroup(group);
         }
 
@@ -157,6 +156,21 @@ export class SkillsComponent implements OnInit, OnDestroy {
     return this.skillGroups.filter(_ => _.types.indexOf(skillId) !== -1)[0].name;
   }
 
+  getSkillsForGroup(group: SkillGroupData) {
+    let skills = this.skillsData.skills.filter(_ => group.types.indexOf(_.skill_id) !== -1);
+    skills = this.helpers.sortArrayByObjectProperty(skills, 'name');
+    return skills;
+  }
+
+  refreshPage() {
+    this.ngOnDestroy();
+    this.ngOnInit().then();
+  }
+
+  getSkillsInGroup(groupId) {
+    return this.skillList[groupId];
+  }
+
   private async setSkillGroups() {
     this.skillGroups = await this.skillGroupsService.getSkillGroupInformation();
   }
@@ -167,16 +181,5 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
   private async setSkills() {
     this.skillsData = await this.skillsService.getSkills(this.globals.selectedCharacter);
-  }
-
-  getSkillsForGroup(group: SkillGroupData) {
-    let skills = this.skillsData.skills.filter(_ => group.types.indexOf(_.skill_id) !== -1);
-    skills = this.helpers.sortArrayByObjectProperty(skills, 'name');
-    return skills;
-  }
-
-  refreshPage() {
-    this.ngOnDestroy();
-    this.ngOnInit().then();
   }
 }

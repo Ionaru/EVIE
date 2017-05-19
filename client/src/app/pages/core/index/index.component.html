@@ -1,6 +1,6 @@
 <div class="index-container container">
   <div class="info-container">
-    <h1>Welcome to EVE Track!</h1>
+    <!--<h1>Welcome to EVE Track!</h1>-->
     <br>
     <p>
       EVE Track can be best described as an <strong>EVE Online API viewer</strong>, it enables you to view your EVE
@@ -27,86 +27,9 @@
     <br>
     <hr>
     <br>
-    <!--<button (click)="loginDebug()" class="btn btn-primary">Login</button>-->
-    <button class="btn btn-primary">Register</button>
     <button class="btn btn-primary">Temporary</button>
 
-    <login-modal></login-modal>
-
-    <!--<div class="login-container">-->
-      <!--<form #loginForm="ngForm" (ngSubmit)="login(loginForm.value).then()">-->
-        <!--<h2>Log in to your EVE Track account</h2>-->
-        <!--&lt;!&ndash;<p>&ndash;&gt;-->
-        <!--<div class="search" [style.color]="getStyle()">-->
-          <!--<input (focus)="resetStyle()"-->
-                 <!--placeholder="Username or email" id="login-username" type="text" required ngModel name="username">-->
-          <!--<span class="fa fa-user-circle-o"></span>-->
-        <!--</div>-->
-
-        <!--<div class="search" [style.color]="getStyle()">-->
-          <!--<input (focus)="resetStyle()"-->
-                 <!--placeholder="Password" id="login-password" type="password" required ngModel name="password">-->
-          <!--<span class="fa fa-key"></span>-->
-        <!--</div>-->
-        <!--&lt;!&ndash;</p>&ndash;&gt;-->
-        <!--&lt;!&ndash;<p>&ndash;&gt;-->
-        <!--&lt;!&ndash;<input placeholder="Password" id="login-password" type="password" required ngModel name="password">&ndash;&gt;-->
-        <!--&lt;!&ndash;</p>&ndash;&gt;-->
-        <!--<button type="submit" [disabled]="!loginForm.valid || wrongLogin">Login</button>-->
-      <!--</form>-->
-      <!--<button class="btn" (click)="loginDebug()">Login debug</button>-->
-    <!--</div>-->
-    <!--&lt;!&ndash;</ng-container>&ndash;&gt;-->
-    <!--<br>-->
-    <!--<hr>-->
-    <!--<br>-->
-    <!--&lt;!&ndash;<ng-container *ngIf="!loggedIn">&ndash;&gt;-->
-    <!--<div class="register-container">-->
-      <!--<form #registerForm="ngForm" (ngSubmit)="register(registerForm.value)">-->
-        <!--<h2>Register an EVE Track account</h2>-->
-        <!--<p>Do <strong>not</strong> use your EVE Online username or password!</p>-->
-        <!--<div class="search">-->
-          <!--<input placeholder="Username" id="register-username" type="text" required ngModel name="username">-->
-          <!--<span class="fa fa-user-circle-o"></span>-->
-        <!--</div>-->
-
-        <!--<div class="search">-->
-          <!--<input placeholder="Email" id="register-email" type="email" required ngModel name="email">-->
-          <!--<span class="fa fa-envelope"></span>-->
-        <!--</div>-->
-
-        <!--<div class="search">-->
-          <!--<input placeholder="Password" id="register-password" type="password" required ngModel name="password">-->
-          <!--<span class="fa fa-key"></span>-->
-        <!--</div>-->
-
-        <!--<div class="search">-->
-          <!--<input placeholder="Confirm password" id="register-password-confirm" type="password" required ngModel-->
-                 <!--name="password2">-->
-          <!--<span class="fa fa-key"></span>-->
-        <!--</div>-->
-        <!--<button type="submit" [disabled]="!registerForm.valid">Register</button>-->
-      <!--</form>-->
-    <!--</div>-->
-    <!--<br>-->
-    <!--<hr>-->
-    <!--<br>-->
-    <!--<div class="temporary-login-container">-->
-      <!--<h2>Create an access PIN</h2>-->
-      <!--<button>Do it!</button>-->
-      <!--&lt;!&ndash;<p>&ndash;&gt;-->
-        <!--&lt;!&ndash;<a>&ndash;&gt;-->
-          <!--&lt;!&ndash;<img alt="EVE SSO Login Buttons Small White"&ndash;&gt;-->
-               <!--&lt;!&ndash;src="https://images.contentful.com/idjq7aai9ylm/18BxKSXCymyqY4QKo8KwKe/c2bdded6118472dd587c8107f24104d7/EVE_SSO_Login_Buttons_Small_White.png?w=195&amp;h=30">&ndash;&gt;-->
-        <!--&lt;!&ndash;</a>&ndash;&gt;-->
-      <!--&lt;!&ndash;</p>&ndash;&gt;-->
-      <!--&lt;!&ndash;<form #tempForm="ngForm" (ngSubmit)="register(registerForm.value).then()">&ndash;&gt;-->
-        <!--&lt;!&ndash;<p>or enter an Access Key</p>&ndash;&gt;-->
-        <!--&lt;!&ndash;<p>&ndash;&gt;-->
-          <!--&lt;!&ndash;<input placeholder="Access Key" id="temp-key" type="text" required ngModel name="username">&ndash;&gt;-->
-        <!--&lt;!&ndash;</p>&ndash;&gt;-->
-        <!--&lt;!&ndash;<button type="submit" [disabled]="!tempForm.valid">Log in</button>&ndash;&gt;-->
-      <!--&lt;!&ndash;</form>&ndash;&gt;-->
-    <!--</div>-->
+    <login-modal-button></login-modal-button>
+    <register-modal-button></register-modal-button>
   </ng-container>
 </div>

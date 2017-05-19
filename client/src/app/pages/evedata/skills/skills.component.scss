@@ -1,30 +1,32 @@
-@import "../../../variables";
+@import '../../../variables';
 
 .skill-queue {
-
   .stalled {
-    color: yellow;
+    color: #ffff00;
   }
 
   .skill-in-queue {
     margin-top: 10px;
 
     &.training {
-      color: $eve_skill_training;
+      color: $eve-skill-training;
     }
 
     &.scheduled {
-      color: $eve_skill_trained;
+      color: $eve-skill-trained;
 
       i {
         transition: transform 0.5s;
+
         &.fa:hover {
           transform: rotate(90deg);
         }
       }
     }
 
-    .skill-group, .skill-level, .skill-time {
+    .skill-group,
+    .skill-level,
+    .skill-time {
       margin-left: 25px;
     }
   }
