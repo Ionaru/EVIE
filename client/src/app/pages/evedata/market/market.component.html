@@ -1,3 +1,43 @@
-<p>
-  To be implemented
-</p>
+<!--<span *ngFor="let order of orders">-->
+  <!--<p>{{ order.issued }} - {{ names[order.type_id].name || 'placeholder' }}, {{ order.location_id }}</p>-->
+<!--</span>-->
+
+<h2>Buy</h2>
+<table class="table">
+  <thead>
+  <th>Item</th>
+  <th>Location</th>
+  <th>Price</th>
+  <th>Items</th>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let order of orders">
+    <tr *ngIf="order.is_buy_order === true">
+      <td>{{ names[order.type_id]?.name || order.type_id }}</td>
+      <td>{{ order.location_id }}</td>
+      <td>{{ formatPrice(order.price) }} ISK</td>
+      <td>{{ order.volume_remain }}/{{ order.volume_total }}</td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>
+
+<h2>Sell</h2>
+<table class="table">
+  <thead>
+  <th>Item</th>
+  <th>Location</th>
+  <th>Price</th>
+  <th>Items left</th>
+  </thead>
+  <tbody>
+  <ng-container *ngFor="let order of orders">
+    <tr *ngIf="order.is_buy_order === false">
+      <td>{{ names[order.type_id]?.name || order.type_id }}</td>
+      <td>{{ order.location_id }}</td>
+      <td>{{ formatPrice(order.price) }} ISK</td>
+      <td>{{ order.volume_remain }}</td>
+    </tr>
+  </ng-container>
+  </tbody>
+</table>

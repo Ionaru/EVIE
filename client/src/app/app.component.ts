@@ -1,19 +1,21 @@
 import { Component } from '@angular/core';
-import { AppReadyEvent } from './app-ready.event';
-import { UserService } from './models/user/user.service';
-import { CharacterService } from './models/character/character.service';
-import { Globals } from './shared/globals';
-import { EndpointService } from './models/endpoint/endpoint.service';
+import { Response } from '@angular/http';
 import { Observable, Observer } from 'rxjs';
 import * as socketIo from 'socket.io-client';
+
+import { AppReadyEvent } from './app-ready.event';
+import { CharacterService } from './models/character/character.service';
+import { EndpointService } from './models/endpoint/endpoint.service';
+import { Globals } from './shared/globals';
 import { Helpers } from './shared/helpers';
-import { Response } from '@angular/http';
+import { NamesService } from './services/names.service';
+import { UserService } from './models/user/user.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['app.component.scss'],
-  providers: [AppReadyEvent, UserService, CharacterService, EndpointService, Helpers],
+  providers: [AppReadyEvent, UserService, CharacterService, EndpointService, NamesService, Helpers],
 })
 export class AppComponent {
 

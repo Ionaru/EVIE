@@ -15,7 +15,7 @@
     <div class="journal-data" *ngIf="journalDataRequestDone">
       <p *ngIf="journalData.length">Showing the last 50 records in the last 30 days.</p>
       <p *ngIf="!journalData.length">There is no journal data available.</p>
-      <table *ngIf="journalData.length" class="journal-table table table-hover table-bordered">
+      <table *ngIf="journalData.length" class="journal-table table table-hover">
         <thead>
         <tr>
           <th class="left">Date (EVE Time)</th>

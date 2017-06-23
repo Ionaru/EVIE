@@ -65,7 +65,7 @@ html {
     //margin: 0;
 
     //padding: ($navbar_top_height + $body_padding) $body_padding $body_padding ($navbar_side_width + $body_padding) !important;
-    padding: ($navbar-top-height + $body-padding) $body-padding $body-padding $body-padding !important;
+    padding: ($navbar-top-height + $body-padding) $body-padding $body-padding ($navbar-side-width + $body-padding) !important;
 
     .error-div,
     footer {

@@ -1,4 +1,114 @@
-//@import "../../../variables";
+@import "../../../variables";
+
+.navbar.fixed-top {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
+  .navbar-nav {
+    .nav-link {
+      position: relative;
+      &::before {
+        background-color: white;
+        bottom: 0;
+        content: '';
+        height: 2px;
+        left: 0;
+        right: 0;
+        position: absolute;
+        transform: scaleX(0);
+        transition: all 0.2s ease-in-out;
+        visibility: hidden;
+      }
+
+      &:hover, &.active {
+        &::before {
+          transform: scaleX(1);
+          visibility: visible;
+        }
+      }
+
+      &.logout {
+        height: 38px;
+        filter: grayscale(100%) brightness(200%);
+      }
+
+      //border-bottom: white 2px solid;
+    }
+  }
+}
+
+.navbar.fixed-left {
+  box-shadow: 2px 0 5px 0 rgba(0, 0, 0, 0.25);
+  padding: 0;
+  position: fixed;
+  top: $navbar-top-height;
+  left: 0;
+  bottom: 0;
+  z-index: 1029;
+  width: $navbar-side-width;
+  text-align: center;
+
+  .character-item {
+    cursor: pointer;
+    display: block;
+    height: 50px;
+
+    &:not(.active) {
+      pointer-events: none;
+    }
+  }
+
+  .navbar-item {
+    cursor: pointer;
+    text-decoration: none;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: block;
+    position: relative;
+
+    &:hover, &.active {
+      &::after {
+        transform: scaleY(1);
+        visibility: visible;
+      }
+    }
+
+    &::after {
+      background-color: white;
+      top: 0;
+      bottom: 0;
+      content: '';
+      right: 4px;
+      position: absolute;
+      transform: scaleY(0);
+      transition: all 0.2s ease-in-out;
+      visibility: hidden;
+      width: 2px;
+    }
+
+    img {
+      filter: brightness(0) invert(100%);
+      max-width: 85%;
+    }
+
+    &.time {
+      font-weight: bold;
+      margin-bottom: 0;
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      pointer-events: none;
+      &.disabled {
+        opacity: 1;
+      }
+    }
+
+    &.disabled {
+      opacity: 0.25;
+    }
+  }
+}
+
 //
 //.navbar-top {
 //  z-index: 1;
@@ -147,3 +257,4 @@
 //    }
 //  }
 //}
+

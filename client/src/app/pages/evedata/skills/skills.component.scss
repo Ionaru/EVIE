@@ -14,14 +14,6 @@
 
     &.scheduled {
       color: $eve-skill-trained;
-
-      i {
-        transition: transform 0.5s;
-
-        &.fa:hover {
-          transform: rotate(90deg);
-        }
-      }
     }
 
     .skill-group,

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User } from '../models/user/user.model';
 import { Character } from '../models/character/character.model';
 import { Observable, Subject } from 'rxjs';
+import { Names } from '../services/names.service';
 
 @Injectable()
 export class Globals {
@@ -61,6 +62,14 @@ export class Globals {
     this._selectedCharacter = value;
   }
 
+  get names(): Names {
+    return this._names;
+  }
+
+  set names(eveNameData: Names) {
+    this._names = eveNameData;
+  }
+
   private _selectedCharacter: Character;
   private _loggedIn = false;
   private _user: User;
@@ -69,4 +78,5 @@ export class Globals {
   private _startUpObservable: Observable<boolean>;
   private _characterChangeEvent: Subject<Character> = new Subject<Character>();
   private _userChangeEvent: Subject<User> = new Subject<User>();
+  private _names: Names;
 }

@@ -25,6 +25,7 @@ class Database {
     let dbOptions = {};
     if (dbConfig.get('db_ca_f') && dbConfig.get('db_cc_f') && dbConfig.get('db_ck_f')) {
       dbOptions = {
+        dialect: 'mysql',
         host: dbConfig.get('db_host'),
         port: dbConfig.get('db_port'),
         user: dbConfig.get('db_user'),
@@ -42,6 +43,7 @@ class Database {
       }
     } else {
       dbOptions = {
+        dialect: 'mysql',
         host: dbConfig.get('db_host'),
         port: dbConfig.get('db_port'),
         user: dbConfig.get('db_user'),
@@ -55,6 +57,7 @@ class Database {
     this.state['pool'] = mysql.createPool(dbOptions);
 
     this.seq = new SequelizeStatic(dbConfig.get('db_name'), dbConfig.get('db_user'), dbConfig.get('db_pass'), {
+      dialect: 'mysql',
       host: dbConfig.get('db_host'),
       port: dbConfig.get('db_port'),
       dialectOptions: {

@@ -41,16 +41,17 @@ export class NavigationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.playersCountUp = new CountUp('eve-players', 0, 0);
+    this.playersCountUp = new CountUp('eve-players', 0, 0);
     this.syncClock();
   }
 
   checkAccess(): boolean {
-    if (this.disable) {
-      return false;
-    }
-    // return this.char !== 1;
-    return true;
+    // if (this.disable) {
+    //   return false;
+    // }
+    // // return this.char !== 1;
+    // return true;
+    return this.disable;
   }
 
   logout(): void {
@@ -80,17 +81,17 @@ export class NavigationComponent implements OnInit {
   }
 
   private updateClock(time: Object): void {
-    // this.playersCountUp.reset();
-    // this.hours = time['hours'];
-    // this.minutes = time['minutes'];
-    // this.status = time['status'];
-    // this.time = time;
-    // if (this.globals.startUp) {
-    //   this.playersCountUp.update(time['players']);
-    // } else {
-    //   this.globals.startUpObservable.subscribe(() => {
-    //     this.playersCountUp.update(time['players']);
-    //   });
-    // }
+    this.playersCountUp.reset();
+    this.hours = time['hours'];
+    this.minutes = time['minutes'];
+    this.status = time['status'];
+    this.time = time;
+    if (this.globals.startUp) {
+      this.playersCountUp.update(time['players']);
+    } else {
+      this.globals.startUpObservable.subscribe(() => {
+        this.playersCountUp.update(time['players']);
+      });
+    }
   }
 }

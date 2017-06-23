@@ -8,6 +8,7 @@ import { Helpers } from '../../../shared/helpers';
 import { SkillGroupData, SkillGroupsService } from '../../../services/skill-groups.service';
 import Timespan = countdown.Timespan;
 import Timer = NodeJS.Timer;
+import { NamesService } from '../../../services/names.service';
 
 @Component({
   templateUrl: 'skills.component.html',
@@ -21,6 +22,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
   skillQueueData: Array<SkillQueueData>;
   loadingDone = false;
   skillQueueCount: number;
+  skillQueueTimeLeft: number;
   skillsCount: number;
   spPerSec: number;
   skillTrainingPaused = true;
@@ -35,9 +37,11 @@ export class SkillsComponent implements OnInit, OnDestroy {
   } = {};
 
   constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService, private helpers: Helpers,
-              private skillGroupsService: SkillGroupsService, private globals: Globals, private endpointService: EndpointService) { }
+              private skillGroupsService: SkillGroupsService, private globals: Globals, private namesService: NamesService) { }
 
   async ngOnInit(): Promise<void> {
+
+    this.notifyMe();
 
     await Promise.all([this.setSkills(), this.setSkillQueue(), this.setSkillGroups()]);
 
@@ -55,10 +59,10 @@ export class SkillsComponent implements OnInit, OnDestroy {
           names.push(skill.skill_id);
         }
 
-        const namesData = await this.endpointService.getNames(...names);
+        const namesData = await this.namesService.getNames(...names);
 
         for (const skill of this.skillsData.skills) {
-          skill.name = this.endpointService.getNameFromNameData(namesData, skill.skill_id);
+          skill.name = namesData[skill.skill_id].name;
         }
 
         for (const group of this.skillGroups) {
@@ -67,7 +71,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
         for (const skill of this.skillQueueData) {
 
-          skill.name = this.endpointService.getNameFromNameData(namesData, skill.skill_id);
+          skill.name = namesData[skill.skill_id].name;
           skill.finishTimestamp = new Date(skill.finish_date).getTime();
           skill.startTimestamp = new Date(skill.start_date).getTime();
           const now = Date.now();
@@ -121,6 +125,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
     this.totalQueueTimer = Helpers.repeat(() => {
       this.totalQueueCountdown = countdown(Date.now(), this.totalQueueTime);
+      this.skillQueueTimeLeft = this.totalQueueTime - Date.now();
     }, 1000);
   }
 
@@ -182,4 +187,32 @@ export class SkillsComponent implements OnInit, OnDestroy {
   private async setSkills() {
     this.skillsData = await this.skillsService.getSkills(this.globals.selectedCharacter);
   }
+
+  notifyMe() {
+  // Let's check if the browser supports notifications
+  if (!('Notification' in window)) {
+    alert('This browser does not support desktop notification');
+  }
+
+  // Let's check whether notification permissions have already been granted
+  // else if (Notification.permission === "granted") {
+  //   // If it's okay let's create a notification
+  //   var notification = new Notification("Hi there!");
+  // }
+
+  // Otherwise, we need to ask the user for permission
+  // else if (Notification.permission !== "denied") {
+    Notification.requestPermission(function (permission) {
+      // If the user accepts, let's create a notification
+      if (permission === 'granted') {
+        const notification = new Notification('Hi there!', {
+          icon: 'https://data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.png'
+        });
+      }
+    }).then();
+  // }
+
+  // At last, if the user has denied notifications, and you
+  // want to be respectful there is no need to bother them any more.
+}
 }

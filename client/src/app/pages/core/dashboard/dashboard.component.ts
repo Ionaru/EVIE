@@ -7,6 +7,7 @@ import { ShipService } from '../../../services/ship.service';
 import { LocationService } from '../../../services/location.service';
 import { EndpointService, EveNameData } from '../../../models/endpoint/endpoint.service';
 import { Subscription } from 'rxjs';
+import { Names, NamesService } from '../../../services/names.service';
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -23,6 +24,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private title: Title,
               private globals: Globals,
               private endpointService: EndpointService,
+              private namesService: NamesService,
               private characterService: CharacterService,
               private shipService: ShipService,
               private locationService: LocationService) {
@@ -57,9 +59,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     await this.getCharacterData(character);
     await this.getLocationData(character);
     await this.getShipData(character);
-    const nameData: Array<EveNameData> = await this.endpointService.getNames(character.location.id, character.currentShip.id);
-    character.location.name = this.endpointService.getNameFromNameData(nameData, character.location.id);
-    character.currentShip.type = this.endpointService.getNameFromNameData(nameData, character.currentShip.id);
+    const nameData: Names = await this.namesService.getNames(character.location.id, character.currentShip.id);
+    character.location.name = nameData[character.location.id].name;
+    character.currentShip.type = nameData[character.currentShip.id].name;
   }
 
   async getLocationData(character: Character): Promise<void> {
@@ -76,16 +78,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     character.location = {};
 
     await this.getLocationData(character);
-    const nameData: Array<EveNameData> = await this.endpointService.getNames(character.location.id);
-    character.location.name = this.endpointService.getNameFromNameData(nameData, character.location.id);
+    const nameData: Names = await this.namesService.getNames(character.location.id);
+    character.location.name = nameData[character.location.id].name;
   }
 
   async refreshShip(character: Character): Promise<void> {
     character.currentShip = {};
 
     await this.getShipData(character);
-    const nameData: Array<EveNameData> = await this.endpointService.getNames(character.currentShip.id);
-    character.currentShip.type = this.endpointService.getNameFromNameData(nameData, character.currentShip.id);
+    const nameData: Names = await this.namesService.getNames(character.currentShip.id);
+    character.currentShip.type = nameData[character.currentShip.id].name;
   }
 
   async getCharacterData(character: Character): Promise<void> {

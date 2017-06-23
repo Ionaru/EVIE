@@ -11,8 +11,11 @@
 </div>
 <br>
 <div class="skill-queue-container">
-  <h2>Skill queue ({{skillQueueCount}})</h2>
+  <h2>Skill queue ({{skillQueueCount || 0}})</h2>
   <p *ngIf="!skillTrainingPaused">Skill queue ends in {{totalQueueCountdown}}</p>
+  <p class="" *ngIf="!skillTrainingPaused && skillQueueTimeLeft < (24 * 60 * 60 * 1000)">
+    Your have free space in your skill queue!
+  </p>
   <div class="skill-queue" *ngIf="skillQueueData && loadingDone">
     <ng-container *ngIf="skillTrainingPaused">
       <p class="stalled"><i class="fa fa-cog"></i> Skill queue inactive</p>
@@ -22,7 +25,7 @@
         <ng-container *ngIf="skill.status === 'training'"><i class="fa fa-cog fa-spin"></i></ng-container>
         <ng-container *ngIf="skill.status === 'scheduled'"><i class="fa fa-chevron-circle-up"></i></ng-container>
         <span class="skill-name" *ngIf="skill.name"><strong>{{skill.name}}</strong></span><br>
-        <span class="skill-group" *ngIf="skill.name">{{getSkillGroup(skill.skill_id)}}</span><br>
+        <span class="skill-group" *ngIf="skill.name"><i class="fa fa-folder-open"></i> {{getSkillGroup(skill.skill_id)}}</span><br>
         <span class="skill-level">Skill level {{skill.finished_level - 1}} 🡺 {{skill.finished_level}}</span><br>
         <ng-container *ngIf="skill.status === 'training'">
           <span class="skill-time">Finishes in {{skill.countdown}}</span>
@@ -43,8 +46,8 @@
 <div class="skill-list-container">
 
 
-  <h2>Skill overview ({{skillsCount}})</h2>
-  <h3 *ngIf="loadingDone">{{countLvl5Skills()}} skills at level 5</h3>
+  <h2>Skill overview ({{skillsCount || 0}})</h2>
+  <h3 *ngIf="loadingDone">{{countLvl5Skills() || 0}} skills at level 5</h3>
   <div class="skill-list" *ngIf="skillsData && loadingDone">
     <!--<div *ngFor="let skill of skillsData.skills">-->
     <!--<p>-->
