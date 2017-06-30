@@ -1,14 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Skill, SkillData, SkillsService } from '../../../services/skills.service';
-import { Globals } from '../../../shared/globals';
-import { EndpointService } from '../../../models/endpoint/endpoint.service';
+import { Title } from '@angular/platform-browser';
 import * as countdown from 'countdown';
-import { SkillQueueData, SkillQueueService } from '../../../services/skill-queue.service';
+import { Globals } from '../../../shared/globals';
 import { Helpers } from '../../../shared/helpers';
-import { SkillGroupData, SkillGroupsService } from '../../../services/skill-groups.service';
-import Timespan = countdown.Timespan;
-import Timer = NodeJS.Timer;
 import { NamesService } from '../../../services/names.service';
+import { Skill, SkillData, SkillsService } from '../../../services/skills.service';
+import { SkillQueueData, SkillQueueService } from '../../../services/skill-queue.service';
+import { SkillGroupData, SkillGroupsService } from '../../../services/skill-groups.service';
+import Timer = NodeJS.Timer;
+
+import Timespan = countdown.Timespan;
+import { AppComponent } from '../../../app.component';
 
 @Component({
   templateUrl: 'skills.component.html',
@@ -37,11 +39,12 @@ export class SkillsComponent implements OnInit, OnDestroy {
   } = {};
 
   constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService, private helpers: Helpers,
-              private skillGroupsService: SkillGroupsService, private globals: Globals, private namesService: NamesService) { }
+              private skillGroupsService: SkillGroupsService, private globals: Globals, private namesService: NamesService,
+              private title: Title) {
+    title.setTitle(Helpers.createTitle('Skills'));
+  }
 
   async ngOnInit(): Promise<void> {
-
-    this.notifyMe();
 
     await Promise.all([this.setSkills(), this.setSkillQueue(), this.setSkillGroups()]);
 
@@ -153,6 +156,10 @@ export class SkillsComponent implements OnInit, OnDestroy {
     clearTimeout(this.refreshOnComplete);
   }
 
+  skillQueueLow() {
+    return !this.skillTrainingPaused && this.skillQueueTimeLeft < (24 * 60 * 60 * 1000);
+  }
+
   countLvl5Skills(): number {
     return this.skillsData.skills.filter(_ => _.current_skill_level === 5).length;
   }
@@ -187,32 +194,4 @@ export class SkillsComponent implements OnInit, OnDestroy {
   private async setSkills() {
     this.skillsData = await this.skillsService.getSkills(this.globals.selectedCharacter);
   }
-
-  notifyMe() {
-  // Let's check if the browser supports notifications
-  if (!('Notification' in window)) {
-    alert('This browser does not support desktop notification');
-  }
-
-  // Let's check whether notification permissions have already been granted
-  // else if (Notification.permission === "granted") {
-  //   // If it's okay let's create a notification
-  //   var notification = new Notification("Hi there!");
-  // }
-
-  // Otherwise, we need to ask the user for permission
-  // else if (Notification.permission !== "denied") {
-    Notification.requestPermission(function (permission) {
-      // If the user accepts, let's create a notification
-      if (permission === 'granted') {
-        const notification = new Notification('Hi there!', {
-          icon: 'https://data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.png'
-        });
-      }
-    }).then();
-  // }
-
-  // At last, if the user has denied notifications, and you
-  // want to be respectful there is no need to bother them any more.
-}
 }

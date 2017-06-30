@@ -1,7 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { UserService } from '../../../models/user/user.service';
-import { Globals } from '../../../shared/globals';
 import { Router } from '@angular/router';
 import { User } from '../../../models/user/user.model';
 import { environment } from '../../../../environments/environment';
@@ -42,7 +41,7 @@ export class LoginModalComponent {
 
   @ViewChild('usernameInput') usernameInput: ElementRef;
 
-  constructor(private userService: UserService, private globals: Globals, private router: Router) {
+  constructor(private userService: UserService, private router: Router) {
     if (!environment.production) {
       this.debugging = true;
     }

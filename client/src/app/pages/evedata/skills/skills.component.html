@@ -9,12 +9,14 @@
     <i class="fa fa-circle-o-notch fa-spin"></i>
   </div>
 </div>
+
 <br>
+
 <div class="skill-queue-container">
   <h2>Skill queue ({{skillQueueCount || 0}})</h2>
-  <p *ngIf="!skillTrainingPaused">Skill queue ends in {{totalQueueCountdown}}</p>
-  <p class="" *ngIf="!skillTrainingPaused && skillQueueTimeLeft < (24 * 60 * 60 * 1000)">
-    Your have free space in your skill queue!
+  <p class="skill-queue-time" *ngIf="!skillTrainingPaused" [ngClass]="{'low': skillQueueLow()}">
+    <i class="fa fa-exclamation-triangle" *ngIf="skillQueueLow()"></i>
+    Skill queue ends in {{totalQueueCountdown}}
   </p>
   <div class="skill-queue" *ngIf="skillQueueData && loadingDone">
     <ng-container *ngIf="skillTrainingPaused">
@@ -26,7 +28,7 @@
         <ng-container *ngIf="skill.status === 'scheduled'"><i class="fa fa-chevron-circle-up"></i></ng-container>
         <span class="skill-name" *ngIf="skill.name"><strong>{{skill.name}}</strong></span><br>
         <span class="skill-group" *ngIf="skill.name"><i class="fa fa-folder-open"></i> {{getSkillGroup(skill.skill_id)}}</span><br>
-        <span class="skill-level">Skill level {{skill.finished_level - 1}} 🡺 {{skill.finished_level}}</span><br>
+        <span class="skill-level">Skill level {{skill.finished_level - 1}} <i class="fa fa-arrow-right"></i> {{skill.finished_level}}</span><br>
         <ng-container *ngIf="skill.status === 'training'">
           <span class="skill-time">Finishes in {{skill.countdown}}</span>
         </ng-container>
@@ -42,26 +44,20 @@
     <i class="fa fa-circle-o-notch fa-spin"></i>
   </div>
 </div>
+
 <br>
+
 <div class="skill-list-container">
-
-
   <h2>Skill overview ({{skillsCount || 0}})</h2>
   <h3 *ngIf="loadingDone">{{countLvl5Skills() || 0}} skills at level 5</h3>
   <div class="skill-list" *ngIf="skillsData && loadingDone">
-    <!--<div *ngFor="let skill of skillsData.skills">-->
-    <!--<p>-->
-    <!--<span *ngIf="skill.name">{{skill.name}}</span>-->
-    <!--<span>{{skill.current_skill_level}}</span> ({{getSkillGroup(skill.skill_id)}})-->
-    <!--</p>-->
-    <!--</div>-->
     <ng-container *ngFor="let group of skillGroups">
       <ng-container *ngIf="skillList[group.group_id].length">
         <div class="skill-group">
           <button (click)="toggleAccordion($event)" class="accordion">
             <i class="fa fa-folder"></i> {{group.name}} ({{skillList[group.group_id].length}})
           </button>
-          <div class="accordion-body">
+          <div class="skill-group-body accordion-body">
             <p class="skill-name" *ngFor="let skill of getSkillsInGroup(group.group_id)">
               <span *ngIf="skill.name">{{skill.name}}</span>
               <span>{{skill.current_skill_level}}</span>

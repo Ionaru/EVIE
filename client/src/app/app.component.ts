@@ -19,16 +19,19 @@ import { UserService } from './models/user/user.service';
 })
 export class AppComponent {
 
-  public appVersion = '0.1.0-INDEV';
+  public static appName = 'EVE Track';
+  public static appVersion = '0.1.0-INDEV';
 
-  constructor(private userService: UserService,
-              private appReadyEvent: AppReadyEvent,
-              private globals: Globals) {
+  constructor(private userService: UserService, private appReadyEvent: AppReadyEvent, private globals: Globals) {
     this.boot();
   }
 
-  private boot(): void {
+  //noinspection JSMethodCanBeStatic
+  getAppVersion(): string {
+    return AppComponent.appVersion;
+  }
 
+  private boot(): void {
     this.globals.startUpObservable = Observable.create(async (observer: Observer<boolean>) => {
       const response: Response = await this.userService.shakeHands();
       if (response.ok) {

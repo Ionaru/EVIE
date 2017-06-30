@@ -1,10 +1,15 @@
 @import "../../../variables";
 
+nav {
+  user-select: none;
+}
+
 .navbar.fixed-top {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
   .navbar-nav {
     .nav-link {
       position: relative;
+
       &::before {
         background-color: white;
         bottom: 0;
@@ -26,8 +31,12 @@
       }
 
       &.logout {
-        height: 38px;
-        filter: grayscale(100%) brightness(200%);
+        padding: 0;
+
+        img {
+          height: 37px;
+          filter: grayscale(100%) brightness(200%);
+        }
       }
 
       //border-bottom: white 2px solid;

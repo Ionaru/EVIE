@@ -2,6 +2,7 @@ import { Response } from '@angular/http';
 import { parseString } from 'xml2js';
 import { Injectable } from '@angular/core';
 import { Logger } from 'angular2-logger/core';
+import { AppComponent } from '../app.component';
 
 @Injectable()
 export class Helpers {
@@ -117,5 +118,9 @@ export class Helpers {
     }
 
     return array.sort(compare);
+  }
+
+  static createTitle(name: string): string {
+    return AppComponent.appName + ' - ' + name;
   }
 }

@@ -1,7 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { UserService } from '../../../models/user/user.service';
-import { Globals } from '../../../shared/globals';
 import { Router } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { User } from '../../../models/user/user.model';
@@ -56,7 +55,7 @@ export class RegisterModalComponent {
 
   @ViewChild('usernameInput') usernameInput: ElementRef;
 
-  constructor(private userService: UserService, private globals: Globals, private router: Router) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   setupModal(): void {
     this.resetUsernameInput();

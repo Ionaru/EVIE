@@ -1,72 +1,3 @@
-<!--<nav class="navbar-top">-->
-<!--<a routerLink="/" routerLinkActive="selected" [routerLinkActiveOptions]="{ exact: true }" class="navbar-item big">-->
-<!--<span class="contents">-->
-<!--<i class="fa fa-rocket brand-icon"></i>-->
-<!--EVE Track-->
-<!--</span>-->
-<!--</a>-->
-<!--<a *ngIf="isLoggedIn" routerLink="dashboard" routerLinkActive="selected" class="navbar-item">-->
-<!--<span class="contents">Dashboard</span>-->
-<!--</a>-->
-<!--<a class="navbar-item center disabled">-->
-<!--<span class="contents">EVE <span class="{{ status }}">{{ status }}</span> - <span id="eve-players"></span> Players</span>-->
-<!--</a>-->
-
-<!--<a *ngIf="isLoggedIn" (click)="logout()" class="navbar-item right">-->
-<!--<span class="contents">Logout</span>-->
-<!--</a>-->
-<!--<a class="navbar-item big right" href="https://github.com/Ionaru/EVE-Track" target="_blank">-->
-<!--<span class="contents"><i class="fa fa-github"></i></span>-->
-<!--</a>-->
-<!--</nav>-->
-
-<!--<nav class="navbar-side">-->
-<!--<a routerLink="account" routerLinkActive="selected" class="character-item"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">-->
-<!--</a>-->
-<!--<a routerLink="charactersheet" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">-->
-<!--</a>-->
-<!--<a routerLink="skills" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': checkAccess()}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg" alt="Skills icon">-->
-<!--</a>-->
-<!--<a routerLink="contacts" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/contacts.svg" alt="Contacts icon">-->
-<!--</a>-->
-<!--<a routerLink="mail" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg" alt="Mail icon">-->
-<!--</a>-->
-<!--<a routerLink="market" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg" alt="Market icon">-->
-<!--</a>-->
-<!--<a routerLink="wallet" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': checkAccess()}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg" alt="Wallet icon">-->
-<!--</a>-->
-<!--<a routerLink="assets" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg" alt="Assets icon">-->
-<!--</a>-->
-<!--<a routerLink="planets" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg" alt="Planets icon">-->
-<!--</a>-->
-<!--<a routerLink="industry" routerLinkActive="selected" class="navbar-item"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg" alt="Industry icon">-->
-<!--</a>-->
-<!--<a class="navbar-item time"-->
-<!--[ngClass]="{'active': false}">-->
-<!--<span id="EVETime_Hours">{{ hours }}</span>:<span id="EVETime_Minutes">{{ minutes }}</span>-->
-<!--</a>-->
-<!--</nav>-->
-
 <nav class="navbar fixed-top navbar-toggleable-md navbar-inverse bg-inverse">
   <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarColor01"
           aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,23 +17,13 @@
       <li *ngIf="isLoggedIn" class="nav-item">
         <a class="nav-link" routerLink="dashboard" routerLinkActive="active">Dashboard</a>
       </li>
-      <li *ngIf="isLoggedIn" class="nav-item">
-        <a class="nav-link" routerLink="skills" routerLinkActive="active">Skills</a>
-      </li>
-      <li *ngIf="isLoggedIn" class="nav-item">
-        <a class="nav-link" routerLink="wallet" routerLinkActive="active">Wallet</a>
-      </li>
     </ul>
     <ul class="navbar-nav ml-auto">
       <li *ngIf="isLoggedIn" class="nav-item">
-        <!--<img class="nav-link logout"  src="//data.saturnserver.org/eve/Icons/items/9_64_6.png" alt="Logout icon">-->
-        <a class="nav-link hidden-md-down" (click)="logout()">
-          <i class="fa fa-chevron-right"></i>
-          <i class="fa fa-chevron-right"></i>
-          <i class="fa fa-chevron-right"></i>
-        </a>
+        <div class="nav-link logout hidden-md-down">
+          <img src="//data.saturnserver.org/eve/Icons/items/9_64_6.png" alt="Logout icon" (click)="logout()">
+        </div>
         <a class="nav-link hidden-md-up" (click)="logout()">Logout</a>
-        <!--<span class="nav-link" (click)="logout()">Logout</span>-->
       </li>
     </ul>
   </div>

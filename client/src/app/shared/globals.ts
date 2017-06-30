@@ -62,14 +62,8 @@ export class Globals {
     this._selectedCharacter = value;
   }
 
-  get names(): Names {
-    return this._names;
-  }
-
-  set names(eveNameData: Names) {
-    this._names = eveNameData;
-  }
-
+  public names: Names;
+  public namesExpiry: number;
   private _selectedCharacter: Character;
   private _loggedIn = false;
   private _user: User;
@@ -78,5 +72,5 @@ export class Globals {
   private _startUpObservable: Observable<boolean>;
   private _characterChangeEvent: Subject<Character> = new Subject<Character>();
   private _userChangeEvent: Subject<User> = new Subject<User>();
-  private _names: Names;
+
 }

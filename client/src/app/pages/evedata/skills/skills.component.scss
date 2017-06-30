@@ -1,5 +1,11 @@
 @import '../../../variables';
 
+.skill-queue-time {
+  &.low {
+    color: yellow;
+  }
+}
+
 .skill-queue {
   .stalled {
     color: #ffff00;
@@ -9,7 +15,7 @@
     margin-top: 10px;
 
     &.training {
-      color: $eve-skill-training;
+      color: #DF691A;
     }
 
     &.scheduled {
@@ -34,5 +40,20 @@
 .skill-list {
   .skill-group {
     margin-top: 10px;
+
+    .skill-group-body {
+      position: relative;
+      padding-left: 36px;
+
+      &::after {
+        background-color: #c2c4c5;
+        top: 0;
+        bottom: 0;
+        content: '';
+        left: 12px;
+        position: absolute;
+        width: 2px;
+      }
+    }
   }
 }
