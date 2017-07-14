@@ -20,7 +20,11 @@ export class Helpers {
     return setInterval(fn, interval, ...params);
   }
 
-  isEmpty(obj: any): boolean {
+  static createTitle(name: string): string {
+    return AppComponent.appName + ' - ' + name;
+  }
+
+  static isEmpty(obj: any): boolean {
     // null and undefined are "empty"
     if (obj == null) {
       return true;
@@ -47,6 +51,17 @@ export class Helpers {
     return Object.getOwnPropertyNames(obj).length <= 0;
   }
 
+  static formatAmount(amount: number | string, decimals = 2, decimalMark = '.', delimiter = ','): string {
+    let i: any, j: any, n: any, s: any;
+    n = Number(amount);
+    s = n < 0 ? '-' : '';
+    i = parseInt(n = Math.abs(+n || 0).toFixed(decimals), 10) + '';
+    j = (j = i.length) > 3 ? j % 3 : 0;
+    return s + (j ? i.substr(0, j) + delimiter : '') +
+      i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + delimiter) +
+      (decimals ? decimalMark + Math.abs(n - i).toFixed(decimals).slice(2) : '');
+  }
+
   processXML(response: Response): Object {
     try {
       let jsonObject = {};
@@ -62,17 +77,6 @@ export class Helpers {
       this.logger.error(error);
       return 'XMLParseError';
     }
-  }
-
-  formatAmount(amount: number | string, decimals = 2, decimalMark = '.', delimiter = ','): string {
-    let i: any, j: any, n: any, s: any;
-    n = Number(amount);
-    s = n < 0 ? '-' : '';
-    i = parseInt(n = Math.abs(+n || 0).toFixed(decimals), 10) + '';
-    j = (j = i.length) > 3 ? j % 3 : 0;
-    return s + (j ? i.substr(0, j) + delimiter : '') +
-      i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + delimiter) +
-      (decimals ? decimalMark + Math.abs(n - i).toFixed(decimals).slice(2) : '');
   }
 
   isCacheExpired(cacheEndTime: string): boolean {
@@ -118,9 +122,5 @@ export class Helpers {
     }
 
     return array.sort(compare);
-  }
-
-  static createTitle(name: string): string {
-    return AppComponent.appName + ' - ' + name;
   }
 }

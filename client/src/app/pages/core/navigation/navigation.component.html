@@ -9,7 +9,8 @@
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
         <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home
-          <span class="sr-only">(current)</span></a>
+          <span class="sr-only">(current)</span>
+        </a>
       </li>
       <li class="nav-item hidden-md-down">
         <a class="nav-link" id="eve-players">X</a>
@@ -20,7 +21,7 @@
     </ul>
     <ul class="navbar-nav ml-auto">
       <li *ngIf="isLoggedIn" class="nav-item">
-        <div class="nav-link logout hidden-md-down">
+        <div class="nav-link logout hidden-md-down" tooltip="Logout" placement="bottom">
           <img src="//data.saturnserver.org/eve/Icons/items/9_64_6.png" alt="Logout icon" (click)="logout()">
         </div>
         <a class="nav-link hidden-md-up" (click)="logout()">Logout</a>
@@ -34,11 +35,11 @@
      [ngClass]="{'disabled': true || checkAccess()}">
     <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
   </a>
-  <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item"
+  <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item" tooltip="Character Overview" placement="right"
      [ngClass]="{'disabled': true || checkAccess()}">
     <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">
   </a>
-  <a routerLink="skills" routerLinkActive="active" class="navbar-item"
+  <a routerLink="skills" routerLinkActive="active" class="navbar-item" tooltip="Skills" placement="right"
      [ngClass]="{'disabled': checkAccess()}">
     <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg" alt="Skills icon">
   </a>
@@ -50,11 +51,11 @@
      [ngClass]="{'disabled': true || checkAccess()}">
     <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg" alt="Mail icon">
   </a>
-  <a routerLink="market" routerLinkActive="active" class="navbar-item"
+  <a routerLink="market" routerLinkActive="active" class="navbar-item" tooltip="Market orders" placement="right"
      [ngClass]="{'disabled': checkAccess()}">
     <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg" alt="Market icon">
   </a>
-  <a routerLink="wallet" routerLinkActive="active" class="navbar-item"
+  <a routerLink="wallet" routerLinkActive="active" class="navbar-item" tooltip="Wallet" placement="right"
      [ngClass]="{'disabled': checkAccess()}">
     <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg" alt="Wallet icon">
   </a>

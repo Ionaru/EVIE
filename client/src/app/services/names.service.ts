@@ -17,7 +17,7 @@ export interface Names {
 @Injectable()
 export class NamesService {
 
-  namesMaxAge = 24 * 60 * 60 * 1000; // 24 hours
+  namesMaxAge = 3 * 24 * 60 * 60 * 1000; // 3 days
   namesStoreTag = 'names';
 
   constructor(private http: Http, private endpointService: EndpointService, private globals: Globals, private logger: Logger) {

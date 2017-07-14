@@ -94,18 +94,18 @@ describe('Models', () => {
       });
 
       it('must be able to construct an XML URL with params', () => {
-        const params = ['dummyParam1=Value', 'dummyParam2=Value2'];
+        const parameters = ['dummyParam1=Value', 'dummyParam2=Value2'];
         const url = endpointService.constructXMLUrl(dummyEndpoint, ['dummyParam1=Value', 'dummyParam2=Value2']);
         expect(url).to.be.a.string();
         expect(url).to.contain(endpointService.XMLBaseUrl);
         expect(url).to.contain(endpointDir);
         expect(url).to.contain(endpointName);
-        for (const param of params) {
+        for (const param of parameters) {
           expect(url).to.contain(param);
         }
 
         let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
-        testUrl += `?${params.join('&')}`;
+        testUrl += `?${parameters.join('&')}`;
 
         expect(url).to.equal(testUrl);
       });
@@ -128,19 +128,19 @@ describe('Models', () => {
       it('must be able to construct a complex XML URL', () => {
         globals.selectedCharacter = dummyCharacter;
 
-        const params = ['dummyParam1=Value', 'dummyParam2=Value2'];
+        const parameters = ['dummyParam1=Value', 'dummyParam2=Value2'];
         const url = endpointService.constructXMLUrl(dummyEndpoint, ['dummyParam1=Value', 'dummyParam2=Value2']);
         expect(url).to.be.a.string();
         expect(url).to.contain(endpointService.XMLBaseUrl);
         expect(url).to.contain(endpointDir);
         expect(url).to.contain(endpointName);
         expect(url).to.contain('accessToken=' + dummyCharacter.accessToken);
-        for (const param of params) {
+        for (const param of parameters) {
           expect(url).to.contain(param);
         }
 
         let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
-        testUrl += `?accessToken=${dummyCharacter.accessToken}&${params.join('&')}`;
+        testUrl += `?accessToken=${dummyCharacter.accessToken}&${parameters.join('&')}`;
 
         expect(url).to.equal(testUrl);
       });

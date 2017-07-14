@@ -13,8 +13,7 @@ interface BalanceData {
 @Injectable()
 export class BalanceService {
 
-  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService,
-              private helpers: Helpers) { }
+  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }
 
   async getBalance(character: Character): Promise<number> {
     const url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'wallets');
@@ -34,7 +33,7 @@ export class BalanceService {
 
       const walletData: Array<BalanceData> = response.json();
 
-      if (this.helpers.isEmpty(walletData)) {
+      if (Helpers.isEmpty(walletData)) {
         this.logger.error('Data did not contain expected values', walletData);
         return -1;
       }

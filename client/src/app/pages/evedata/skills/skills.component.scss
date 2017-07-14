@@ -2,7 +2,7 @@
 
 .skill-queue-time {
   &.low {
-    color: yellow;
+    color: #ffff00;
   }
 }
 
@@ -15,7 +15,7 @@
     margin-top: 10px;
 
     &.training {
-      color: #DF691A;
+      color: #df691a;
     }
 
     &.scheduled {
@@ -42,16 +42,16 @@
     margin-top: 10px;
 
     .skill-group-body {
-      position: relative;
       padding-left: 36px;
+      position: relative;
 
       &::after {
         background-color: #c2c4c5;
-        top: 0;
         bottom: 0;
         content: '';
         left: 12px;
         position: absolute;
+        top: 0;
         width: 2px;
       }
     }

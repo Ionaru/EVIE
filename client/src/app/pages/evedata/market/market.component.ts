@@ -33,6 +33,6 @@ export class MarketComponent implements OnInit {
   }
 
   formatPrice(number) {
-    return this.helpers.formatAmount(number);
+    return Helpers.formatAmount(number);
   }
 }

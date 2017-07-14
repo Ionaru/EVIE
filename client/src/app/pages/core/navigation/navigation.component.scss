@@ -1,4 +1,4 @@
-@import "../../../variables";
+@import '../../../variables';
 
 nav {
   user-select: none;
@@ -6,24 +6,26 @@ nav {
 
 .navbar.fixed-top {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
+
   .navbar-nav {
     .nav-link {
       position: relative;
 
       &::before {
-        background-color: white;
+        background-color: #ffffff;
         bottom: 0;
         content: '';
         height: 2px;
         left: 0;
-        right: 0;
         position: absolute;
+        right: 0;
         transform: scaleX(0);
         transition: all 0.2s ease-in-out;
         visibility: hidden;
       }
 
-      &:hover, &.active {
+      &:hover,
+      &.active {
         &::before {
           transform: scaleX(1);
           visibility: visible;
@@ -34,8 +36,8 @@ nav {
         padding: 0;
 
         img {
-          height: 37px;
           filter: grayscale(100%) brightness(200%);
+          height: 37px;
         }
       }
 
@@ -45,15 +47,15 @@ nav {
 }
 
 .navbar.fixed-left {
+  bottom: 0;
   box-shadow: 2px 0 5px 0 rgba(0, 0, 0, 0.25);
+  left: 0;
   padding: 0;
   position: fixed;
-  top: $navbar-top-height;
-  left: 0;
-  bottom: 0;
-  z-index: 1029;
-  width: $navbar-side-width;
   text-align: center;
+  top: $navbar-top-height;
+  width: $navbar-side-width;
+  z-index: 1029;
 
   .character-item {
     cursor: pointer;
@@ -67,13 +69,14 @@ nav {
 
   .navbar-item {
     cursor: pointer;
-    text-decoration: none;
-    padding-top: 5px;
-    padding-bottom: 5px;
     display: block;
+    padding-bottom: 5px;
+    padding-top: 5px;
     position: relative;
+    text-decoration: none;
 
-    &:hover, &.active {
+    &:hover,
+    &.active {
       &::after {
         transform: scaleY(1);
         visibility: visible;
@@ -81,12 +84,12 @@ nav {
     }
 
     &::after {
-      background-color: white;
-      top: 0;
+      background-color: #ffffff;
       bottom: 0;
       content: '';
-      right: 4px;
       position: absolute;
+      right: 4px;
+      top: 0;
       transform: scaleY(0);
       transition: all 0.2s ease-in-out;
       visibility: hidden;
@@ -99,14 +102,15 @@ nav {
     }
 
     &.time {
+      bottom: 0;
       font-weight: bold;
       margin-bottom: 0;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      pointer-events: none;
       position: absolute;
       width: 100%;
-      bottom: 0;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      pointer-events: none;
+
       &.disabled {
         opacity: 1;
       }

@@ -12,7 +12,7 @@ import { Logger } from 'angular2-logger/core';
 export class UserService {
 
   constructor(private http: Http,
-              private CharacterService: CharacterService,
+              private characterService: CharacterService,
               private globals: Globals, private logger: Logger,
               private helpers: Helpers) { }
 
@@ -99,12 +99,12 @@ export class UserService {
     // Register all the characters in parallel, but wait until they are all finished before continuing
     await Promise.all(data.characters.map(async (characterData) => {
       if (characterData.scopes) {
-        await this.CharacterService.registerCharacter(characterData);
+        await this.characterService.registerCharacter(characterData);
       }
     }));
 
-    if (!this.helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
-      this.CharacterService.setActiveCharacter(user.characters[0]).then();
+    if (!Helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
+      this.characterService.setActiveCharacter(user.characters[0]).then();
     }
     return user;
   }

@@ -74,7 +74,10 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
         for (const skill of this.skillQueueData) {
 
-          skill.name = namesData[skill.skill_id].name;
+          skill.name = 'Unknown skill';
+          if (namesData[skill.skill_id]) {
+            skill.name = namesData[skill.skill_id].name;
+          }
           skill.finishTimestamp = new Date(skill.finish_date).getTime();
           skill.startTimestamp = new Date(skill.start_date).getTime();
           const now = Date.now();

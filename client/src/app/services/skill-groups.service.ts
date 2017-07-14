@@ -60,7 +60,7 @@ export class SkillGroupsService {
 
       const skillCategory: SkillCategoryData = response.json();
 
-      if (this.helpers.isEmpty(skillCategory)) {
+      if (Helpers.isEmpty(skillCategory)) {
         this.logger.error('Data did not contain expected values', skillCategory);
         return null;
       }
@@ -88,7 +88,7 @@ export class SkillGroupsService {
 
       const skillGroup: SkillGroupData = response.json();
 
-      if (this.helpers.isEmpty(skillGroup)) {
+      if (Helpers.isEmpty(skillGroup)) {
         this.logger.error('Data did not contain expected values', skillGroup);
         return null;
       }
