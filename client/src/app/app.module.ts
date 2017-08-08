@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, Provider } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { Logger, Options } from 'angular2-logger/core';
@@ -30,45 +30,47 @@ import { SkillsComponent } from './pages/evedata/skills/skills.component';
 import { LoginModalComponent } from './pages/core/index/login-modal.component';
 import { RegisterModalComponent } from './pages/core/index/register-modal.component';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    NavigationComponent,
-    IndexComponent,
-    DashboardComponent,
-    AssetsComponent,
-    CharactersheetComponent,
-    ContactsComponent,
-    IndustryComponent,
-    MailComponent,
-    MarketComponent,
-    SkillsComponent,
-    PlanetsComponent,
-    WalletComponent,
-    LoginModalComponent,
-    RegisterModalComponent,
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    HttpModule,
-    router,
-    BsDropdownModule.forRoot(),
-    TooltipModule.forRoot(),
-    ModalModule.forRoot(),
-  ],
-  providers: [
-    AppGuard,
-    AuthGuard,
-    CharacterGuard,
-    Globals,
-    Logger,
-    {provide: Options, useValue: {level: environment.logLevel}},
-  ],
-  bootstrap: [
-    AppComponent,
-  ]
-})
-export class AppModule {
-}
+export const declarations: any[] = [
+  AppComponent,
+  NavigationComponent,
+  IndexComponent,
+  DashboardComponent,
+  AssetsComponent,
+  CharactersheetComponent,
+  ContactsComponent,
+  IndustryComponent,
+  MailComponent,
+  MarketComponent,
+  SkillsComponent,
+  PlanetsComponent,
+  WalletComponent,
+  LoginModalComponent,
+  RegisterModalComponent,
+];
+
+export const imports: any[] = [
+  BrowserModule,
+  BrowserAnimationsModule,
+  FormsModule,
+  HttpModule,
+  router,
+  BsDropdownModule.forRoot(),
+  TooltipModule.forRoot(),
+  ModalModule.forRoot(),
+];
+
+export const providers: Provider[] = [
+  AppGuard,
+  AuthGuard,
+  CharacterGuard,
+  Globals,
+  Logger,
+  {provide: Options, useValue: {level: environment.logLevel}},
+];
+
+export const bootstrap: any[] = [
+  AppComponent,
+];
+
+@NgModule({declarations, imports, providers, bootstrap})
+export class AppModule {}
