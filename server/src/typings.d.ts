@@ -1,10 +1,7 @@
-// Typings reference file, you can add your own global typings here
-// https://www.typescriptlang.org/docs/handbook/writing-declaration-files.html
-
 import Socket = SocketIO.Socket;
 import Session = Express.Session;
 
-interface SessionSocket extends Socket {
+interface ISessionSocket extends Socket {
   handshake: {
     session: Session;
     headers: any;
@@ -31,7 +28,7 @@ declare module 'socket.io-express-session' {
 }
 
 declare module 'winston-daily-rotate-file' {
-  function winstonDRF(arg: Object): void;
+  function winstonDRF(arg: object): void;
   namespace winstonDRF {}
   export = winstonDRF;
 }

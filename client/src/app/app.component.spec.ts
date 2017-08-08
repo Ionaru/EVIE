@@ -1,18 +1,21 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import { IndexComponent } from './pages/core/index/index.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { BaseRequestOptions, Http, HttpModule, XHRBackend } from '@angular/http';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
-import { Globals } from './shared/globals';
+import { BaseRequestOptions, Http, HttpModule, XHRBackend } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
-import * as expect from 'must/register';
-import { Logger } from 'angular2-logger/core';
-import { SinonStub, stub } from 'sinon';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Logger } from 'angular2-logger/core';
+import * as expect from 'must/register';
 import { BsDropdownModule, ModalModule, TooltipModule } from 'ngx-bootstrap';
+import { SinonStub, stub } from 'sinon';
+
+import { AppComponent } from './app.component';
 import { declarations } from './app.module';
+import { IndexComponent } from './pages/core/index/index.component';
+import { Globals } from './shared/globals';
+
+// tslint:disable:only-arrow-functions space-before-function-paren
 
 describe('AppComponent', () => {
 
@@ -23,7 +26,7 @@ describe('AppComponent', () => {
     this.timeout(10000);
 
     TestBed.configureTestingModule({
-      declarations: declarations,
+      declarations,
       imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -31,9 +34,9 @@ describe('AppComponent', () => {
         HttpModule,
         RouterTestingModule.withRoutes([
           {
+            component: IndexComponent,
             path: '',
-            component: IndexComponent
-          }
+          },
         ]),
         BsDropdownModule.forRoot(),
         TooltipModule.forRoot(),
@@ -44,13 +47,13 @@ describe('AppComponent', () => {
         BaseRequestOptions,
         Logger,
         {
-          provide: Http,
           deps: [MockBackend, BaseRequestOptions],
+          provide: Http,
           useFactory: (backend: XHRBackend, defaultOptions: BaseRequestOptions) => {
             return new Http(backend, defaultOptions);
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     const testbed = getTestBed();

@@ -2,7 +2,7 @@
   <!--<p>{{ order.issued }} - {{ names[order.type_id].name || 'placeholder' }}, {{ order.location_id }}</p>-->
 <!--</span>-->
 
-<h2>Buy</h2>
+<h2>Buy orders ({{ getOrderAmount('buy') }})</h2>
 <table class="table">
   <thead>
   <th>Item</th>
@@ -22,7 +22,7 @@
   </tbody>
 </table>
 
-<h2>Sell</h2>
+<h2>Sell orders ({{ getOrderAmount('sell') }})</h2>
 <table class="table">
   <thead>
   <th>Item</th>

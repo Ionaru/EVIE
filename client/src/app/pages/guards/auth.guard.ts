@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Globals } from '../../shared/globals';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, Observer } from 'rxjs';
+
+import { Globals } from '../../shared/globals';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
   constructor(private router: Router, private globals: Globals) { }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
+  public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
     if (this.globals.startUp) {
       if (this.globals.user) {
         return true;

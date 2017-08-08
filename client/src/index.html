@@ -84,18 +84,18 @@
       preBootstrapContainer.className = 'loaded';
 
       // Delete the bootstrap container after the transition has completed (based on the known transition time).
+      var transitionTime = 300;
       setTimeout(
         function removeLoadingScreen() {
           var body = document.getElementsByTagName('body')[0];
           var head = document.getElementsByTagName('head')[0];
           body.removeChild(preBootstrapContainer);
           head.removeChild(preBootstrapContainerStyle);
-        }, 300);
+        }, transitionTime);
     });
 
     document.addEventListener('StartupFailed', function () {
       var info = document.getElementById('info');
-      console.log(info);
       info.classList.remove('m-progress');
       info.innerHTML = 'Something went wrong while loading, please try again later.' +
         '<br><br>' +

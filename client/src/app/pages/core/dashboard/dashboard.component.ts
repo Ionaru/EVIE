@@ -1,36 +1,34 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Globals } from '../../../shared/globals';
-import { CharacterService } from '../../../models/character/character.service';
-import { Character } from '../../../models/character/character.model';
-import { ShipService } from '../../../services/ship.service';
-import { LocationService } from '../../../services/location.service';
-import { EndpointService, EveNameData } from '../../../models/endpoint/endpoint.service';
 import { Subscription } from 'rxjs';
-import { Names, NamesService } from '../../../services/names.service';
+import { Character } from '../../../models/character/character.model';
+import { CharacterService } from '../../../models/character/character.service';
+import { LocationService } from '../../../services/location.service';
+import { INames, NamesService } from '../../../services/names.service';
+import { ShipService } from '../../../services/ship.service';
+import { Globals } from '../../../shared/globals';
 
 @Component({
-  templateUrl: 'dashboard.component.html',
+  providers: [ShipService, LocationService],
   styleUrls: ['dashboard.component.scss'],
-  providers: [ShipService, LocationService]
+  templateUrl: 'dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  result: String;
-  username: string;
-  characters: Array<Character>;
-  selectedCharacter: Character;
-  characterChangeSubscription: Subscription;
+  public result: string;
+  public username: string;
+  public characters: Character[];
+  public selectedCharacter: Character;
+  public characterChangeSubscription: Subscription;
 
   constructor(private title: Title,
               private globals: Globals,
-              private endpointService: EndpointService,
               private namesService: NamesService,
               private characterService: CharacterService,
               private shipService: ShipService,
               private locationService: LocationService) {
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.characterChangeSubscription = this.globals.characterChangeEvent.subscribe(() => {
       if (this.globals.startUp) {
         this.displayCharacters();
@@ -41,11 +39,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.displayCharacters();
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.characterChangeSubscription.unsubscribe();
   }
 
-  displayCharacters(): void {
+  public displayCharacters(): void {
     this.selectedCharacter = this.globals.selectedCharacter;
     this.characters = this.globals.user.characters;
     if (this.characters) {
@@ -55,65 +53,65 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  async getAllData(character: Character): Promise<void> {
+  public async getAllData(character: Character): Promise<void> {
     await this.getCharacterData(character);
     await this.getLocationData(character);
     await this.getShipData(character);
-    const nameData: Names = await this.namesService.getNames(character.location.id, character.currentShip.id);
+    const nameData: INames = await this.namesService.getNames(character.location.id, character.currentShip.id);
     character.location.name = nameData[character.location.id].name;
     character.currentShip.type = nameData[character.currentShip.id].name;
   }
 
-  async getLocationData(character: Character): Promise<void> {
+  public async getLocationData(character: Character): Promise<void> {
     character.location.id = await this.locationService.getLocation(character);
   }
 
-  async getShipData(character: Character): Promise<void> {
+  public async getShipData(character: Character): Promise<void> {
     const shipData: { id: number, name: string } = await this.shipService.getCurrentShip(character);
     character.currentShip.id = shipData.id;
     character.currentShip.name = shipData.name;
   }
 
-  async refreshLocation(character: Character): Promise<void> {
+  public async refreshLocation(character: Character): Promise<void> {
     character.location = {};
 
     await this.getLocationData(character);
-    const nameData: Names = await this.namesService.getNames(character.location.id);
+    const nameData: INames = await this.namesService.getNames(character.location.id);
     character.location.name = nameData[character.location.id].name;
   }
 
-  async refreshShip(character: Character): Promise<void> {
+  public async refreshShip(character: Character): Promise<void> {
     character.currentShip = {};
 
     await this.getShipData(character);
-    const nameData: Names = await this.namesService.getNames(character.currentShip.id);
+    const nameData: INames = await this.namesService.getNames(character.currentShip.id);
     character.currentShip.type = nameData[character.currentShip.id].name;
   }
 
-  async getCharacterData(character: Character): Promise<void> {
+  public async getCharacterData(character: Character): Promise<void> {
     await this.characterService.getPublicCharacterData(character);
   }
 
-  isActive(character: Character): boolean {
+  public isActive(character: Character): boolean {
     if (!this.selectedCharacter) {
       return false;
     }
     return this.selectedCharacter.pid === character.pid;
   }
 
-  setActiveCharacter(character: Character): void {
+  public setActiveCharacter(character: Character): void {
     this.characterService.setActiveCharacter(character).then();
   }
 
-  startSSO(): void {
+  public startSSO(): void {
     this.characterService.startAuthProcess();
   }
 
-  reAuth(character: Character): void {
+  public reAuth(character: Character): void {
     this.characterService.startAuthProcess(character);
   }
 
-  deleteCharacter(character: Character): void {
+  public deleteCharacter(character: Character): void {
     this.characterService.deleteCharacter(character);
   }
 }

@@ -1,32 +1,32 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Logger } from 'angular2-logger/core';
+import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Helpers } from '../shared/helpers';
 
-export interface SkillCategoryData {
+export interface ISkillCategoryData {
   category_id: number;
   name: string;
   published: boolean;
-  groups: Array<number>;
+  groups: number[];
 }
 
-export interface SkillGroupData {
+export interface ISkillGroupData {
   group_id: number;
   name: string;
   published: boolean;
   category_id: number;
-  types: Array<number>;
+  types: number[];
 }
 
 @Injectable()
 export class SkillGroupsService {
 
-  skillCategoryId = 16;
+  private skillCategoryId = 16;
 
   constructor(private http: Http, private logger: Logger, private helpers: Helpers, private endpointService: EndpointService) {}
 
-  async getSkillGroupInformation(): Promise<Array<SkillGroupData>> {
+  public async getSkillGroupInformation(): Promise<ISkillGroupData[]> {
     const skillInfo = [];
 
     const skillGroups = await this.getSkillGroupIds();
@@ -45,7 +45,7 @@ export class SkillGroupsService {
     return skillInfo;
   }
 
-  async getSkillGroupIds(): Promise<Array<number>> {
+  private async getSkillGroupIds(): Promise<number[]> {
     const url = this.endpointService.constructESIUrl('v1/universe/categories', this.skillCategoryId);
     let response: Response;
     try {
@@ -58,7 +58,7 @@ export class SkillGroupsService {
         return null;
       }
 
-      const skillCategory: SkillCategoryData = response.json();
+      const skillCategory: ISkillCategoryData = response.json();
 
       if (Helpers.isEmpty(skillCategory)) {
         this.logger.error('Data did not contain expected values', skillCategory);
@@ -73,7 +73,7 @@ export class SkillGroupsService {
     }
   }
 
-  async getSkillGroup(groupId: number): Promise<SkillGroupData> {
+  private async getSkillGroup(groupId: number): Promise<ISkillGroupData> {
     const url = this.endpointService.constructESIUrl('v1/universe/groups', groupId);
     let response: Response;
     try {
@@ -86,7 +86,7 @@ export class SkillGroupsService {
         return null;
       }
 
-      const skillGroup: SkillGroupData = response.json();
+      const skillGroup: ISkillGroupData = response.json();
 
       if (Helpers.isEmpty(skillGroup)) {
         this.logger.error('Data did not contain expected values', skillGroup);

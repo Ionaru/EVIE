@@ -1,37 +1,36 @@
 // NPM imports
-import express = require('express');
 import bodyParser = require('body-parser');
-import path = require('path');
-import helmet = require('helmet');
-import es = require('express-session');
+import express = require('express');
 import ems = require('express-mysql-session');
+import es = require('express-session');
+import helmet = require('helmet');
+import path = require('path');
 import configservice = require('./services/config.service');
 import loggerservice = require('./services/logger.service');
 
 // ES6 imports
-import { logger, Logger } from './services/logger.service';
-import { db } from './services/db.service';
-import { Config, mainConfig } from './services/config.service';
-import { defineUser } from './models/user/user';
-import { defineCharacter } from './models/character/character';
-import { APIRouter } from './routers/api.router';
-import { SSORouter } from './routers/sso.router';
-import { AngularRedirectRouter } from './routers/angular.router';
-import { GlobalRouter } from './routers/global.router';
-import { Store } from 'express-session';
 import { RequestHandler } from 'express-serve-static-core';
-
+import { Store } from 'express-session';
+import { defineCharacter } from './models/character/character';
+import { defineUser } from './models/user/user';
+import { AngularRedirectRouter } from './routers/angular.router';
+import { APIRouter } from './routers/api.router';
+import { GlobalRouter } from './routers/global.router';
+import { SSORouter } from './routers/sso.router';
+import { Config, mainConfig } from './services/config.service';
+import { db } from './services/db.service';
+import { logger, Logger } from './services/logger.service';
 
 export class App {
 
-  app: express.Application;
-  sessionStore: Store;
-  sessionParser: RequestHandler;
+  public app: express.Application;
+  public sessionStore: Store;
+  public sessionParser: RequestHandler;
 
   /**
    * The main startup function for the application
    */
-  async mainStartupSequence(): Promise<void> {
+  public async mainStartupSequence(): Promise<void> {
     // Create the logger, now we can use Winston for logging
     loggerservice.logger = new Logger();
 
@@ -59,22 +58,22 @@ export class App {
     db.connect();
 
     // Setup MySQL Session Store
-    const MySQLStore = ems(es);
-    this.sessionStore = new MySQLStore({}, db.get());
+    const mySQLStore = ems(es);
+    this.sessionStore = new mySQLStore({}, db.getPool());
 
     // Configure Session Store
     this.sessionParser = es({
-      name: mainConfig.get('session_key'),
-      secret: mainConfig.get('session_secret'),
-      store: this.sessionStore,
-      resave: true,
-      saveUninitialized: true,
-      rolling: true,
       cookie: {
-        secure: mainConfig.get('secure_only_cookies') || false,
         httpOnly: false,
-        maxAge: 6 * 60 * 60 * 1000 // 6 hours
+        maxAge: 6 * 60 * 60 * 1000, // 6 hours
+        secure: mainConfig.getProperty('secure_only_cookies') || false,
       },
+      name: mainConfig.getProperty('session_key'),
+      resave: true,
+      rolling: true,
+      saveUninitialized: true,
+      secret: mainConfig.getProperty('session_secret'),
+      store: this.sessionStore,
     });
 
     app.use(this.sessionParser);

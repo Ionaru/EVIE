@@ -22,7 +22,7 @@
                      class="form-control" type="text" id="register-username" required name="username">
               <small class="form-text" [ngClass]="getTextColorClass(usernameStatus)">
                 <i class="fa" [ngClass]="getHintIconClass(usernameStatus)"></i>
-                {{usernameHint}}
+                {{ usernameHint }}
               </small>
             </div>
 
@@ -34,7 +34,7 @@
                      class="form-control" type="text" id="register-email" required name="email">
               <small class="form-text" [ngClass]="getTextColorClass(emailStatus)">
                 <i class="fa" [ngClass]="getHintIconClass(emailStatus)"></i>
-                {{emailHint}}
+                {{ emailHint }}
               </small>
             </div>
 
@@ -46,7 +46,7 @@
                      class="form-control" type="password" id="register-password" required name="password">
               <small class="form-text" [ngClass]="getTextColorClass(passwordStatus)">
                 <i class="fa" [ngClass]="getHintIconClass(passwordStatus)"></i>
-                {{passwordHint}}
+                {{ passwordHint }}
               </small>
             </div>
 
@@ -58,7 +58,7 @@
                      class="form-control" type="password" id="register-password-confirm" required name="password2">
               <small class="form-text" [ngClass]="getTextColorClass(password2Status)">
                 <i class="fa" [ngClass]="getHintIconClass(password2Status)"></i>
-                {{password2Hint}}
+                {{ password2Hint }}
               </small>
             </div>
 
@@ -75,7 +75,7 @@
       <div class="modal-footer" *ngIf="registerError">
         <p [@myAnimation]="registerError">
           <i class="text-danger fa fa-exclamation-triangle"></i>
-          {{registerErrorMessage}}
+          {{ registerErrorMessage }}
         </p>
       </div>
     </div>

@@ -4,11 +4,11 @@ import Model = Sequelize.Model;
 
 import { db } from '../../services/db.service';
 import { logger } from '../../services/logger.service';
-import { User } from '../user/user';
+import { userModel } from '../user/user';
 
-export let Character;
+export let characterModel;
 
-export interface CharacterAttr {
+export interface ICharacterAttr {
   id: number;
   pid: string;
   name: string;
@@ -23,67 +23,69 @@ export interface CharacterAttr {
   userId: number;
 }
 
-/* tslint:disable:no-empty-interface */
-export interface CharacterInstance extends Instance<CharacterAttr>, CharacterAttr { }
-export interface CharacterModel extends Model<CharacterAttr, CharacterAttr> { }
-/* tslint:enable:no-unused-variable */
+// tslint:disable:no-empty-interface
+export interface ICharacterInstance extends Instance<ICharacterAttr>, ICharacterAttr { }
+export interface ICharacterModel extends Model<ICharacterAttr, ICharacterAttr> { }
+// tslint:enable:no-unused-variable
 
 export async function defineCharacter(): Promise<void> {
-  Character = await db.seq.define('characters', {
+  characterModel = await db.seq.define('characters', {
+    // tslint:disable:object-literal-sort-keys
     pid: {
+      allowNull: false,
       type: Sequelize.STRING,
       unique: true,
-      allowNull: false,
     },
     name: {
-      type: Sequelize.STRING,
       allowNull: true,
+      type: Sequelize.STRING,
     },
     characterId: {
-      type: Sequelize.INTEGER,
       allowNull: true,
+      type: Sequelize.INTEGER,
     },
     authToken: {
-      type: Sequelize.STRING,
       allowNull: true,
+      type: Sequelize.STRING,
     },
     accessToken: {
-      type: Sequelize.STRING,
       allowNull: true,
+      type: Sequelize.STRING,
     },
     tokenExpiry: {
-      type: Sequelize.DATE,
       allowNull: true,
+      type: Sequelize.DATE,
     },
     refreshToken: {
-      type: Sequelize.STRING,
       allowNull: true,
+      type: Sequelize.STRING,
     },
     scopes: {
-      type: Sequelize.STRING,
       allowNull: true,
+      type: Sequelize.STRING,
     },
     ownerHash: {
-      type: Sequelize.STRING,
       allowNull: true,
+      type: Sequelize.STRING,
     },
     isActive: {
-      type: Sequelize.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+      type: Sequelize.BOOLEAN,
     },
     userId: {
-      type: Sequelize.INTEGER,
-      onUpdate: 'CASCADE',
-      onDelete: 'CASCADE',
       allowNull: false,
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
       references: {
-        model: User,
-      }
-    }
+        model: userModel,
+      },
+      type: Sequelize.INTEGER,
+    },
+    // tslint:enable:object-literal-sort-keys
   }).sync();
 
-  User.hasMany(Character);
+  userModel.hasMany(characterModel);
 
   // await Character.create({
   //   pid: '1234abcd',

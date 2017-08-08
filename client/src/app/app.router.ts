@@ -1,19 +1,20 @@
 import { ModuleWithProviders } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { IndexComponent } from './pages/core/index/index.component';
+import { RouterModule, Routes } from '@angular/router';
+
 import { DashboardComponent } from './pages/core/dashboard/dashboard.component';
-import { WalletComponent } from './pages/evedata/wallet/wallet.component';
-import { CharacterGuard } from './pages/guards/character.guard';
-import { AuthGuard } from './pages/guards/auth.guard';
-import { AppGuard } from './pages/guards/app.guard';
-import { IndustryComponent } from './pages/evedata/industry/industry.component';
-import { PlanetsComponent } from './pages/evedata/planets/planets.component';
+import { IndexComponent } from './pages/core/index/index.component';
 import { AssetsComponent } from './pages/evedata/assets/assets.component';
-import { MarketComponent } from './pages/evedata/market/market.component';
-import { MailComponent } from './pages/evedata/mail/mail.component';
-import { ContactsComponent } from './pages/evedata/contacts/contacts.component';
-import { SkillsComponent } from './pages/evedata/skills/skills.component';
 import { CharactersheetComponent } from './pages/evedata/charactersheet/charactersheet.component';
+import { ContactsComponent } from './pages/evedata/contacts/contacts.component';
+import { IndustryComponent } from './pages/evedata/industry/industry.component';
+import { MailComponent } from './pages/evedata/mail/mail.component';
+import { MarketComponent } from './pages/evedata/market/market.component';
+import { PlanetsComponent } from './pages/evedata/planets/planets.component';
+import { SkillsComponent } from './pages/evedata/skills/skills.component';
+import { WalletComponent } from './pages/evedata/wallet/wallet.component';
+import { AppGuard } from './pages/guards/app.guard';
+import { AuthGuard } from './pages/guards/auth.guard';
+import { CharacterGuard } from './pages/guards/character.guard';
 
 const routes: Routes = [
   {path: '', component: IndexComponent, resolve: [AppGuard]},

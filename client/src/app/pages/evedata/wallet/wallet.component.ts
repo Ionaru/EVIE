@@ -1,27 +1,28 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+
 import { BalanceService } from '../../../services/balance.service';
-import { JournalData, JournalService } from '../../../services/journal.service';
-import { TransactionData, TransactionData2, TransactionService, TransactionsService } from '../../../services/transactions.service';
+import { IJournalData, JournalService } from '../../../services/journal.service';
+import { INames, NamesService } from '../../../services/names.service';
 import { RefTypesService } from '../../../services/reftypes.service';
-import { CountUp, CountUpOptions } from '../../../shared/count-up';
+import { ITransactionData, ITransactionData2, TransactionService, TransactionsService } from '../../../services/transactions.service';
+import { CountUp, ICountUpOptions } from '../../../shared/count-up';
 import { Globals } from '../../../shared/globals';
-import { Names, NamesService } from '../../../services/names.service';
 
 @Component({
-  templateUrl: 'wallet.component.html',
-  styleUrls: ['wallet.component.scss'],
   providers: [BalanceService, JournalService, TransactionService, TransactionsService, RefTypesService],
+  styleUrls: ['wallet.component.scss'],
+  templateUrl: 'wallet.component.html',
 })
 export class WalletComponent implements OnInit, AfterViewInit {
-  journalData: Array<JournalData> = [];
-  journalDataRequestDone = false;
-  transactionData: Array<TransactionData> = [];
-  transactionData2: Array<TransactionData2> = [];
-  transactionDataRequestDone = false;
-  balance: CountUp;
-  balanceError = false;
-  names: Names;
+  public journalData: IJournalData[] = [];
+  public journalDataRequestDone = false;
+  public transactionData: ITransactionData[] = [];
+  public transactionData2: ITransactionData2[] = [];
+  public transactionDataRequestDone = false;
+  public balance: CountUp;
+  public balanceError = false;
+  public names: INames;
 
   constructor(private balanceService: BalanceService,
               private journalService: JournalService,
@@ -32,7 +33,7 @@ export class WalletComponent implements OnInit, AfterViewInit {
               private globals: Globals,
               private title: Title) { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.names = this.globals.names;
     this.title.setTitle('EVE Track - Wallet');
     this.showJournal().then();
@@ -40,11 +41,11 @@ export class WalletComponent implements OnInit, AfterViewInit {
     this.getTransactions().then();
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     this.showBalance().then();
   }
 
-  getNumberColor(amount: string): string {
+  public getNumberColor(amount: string): string {
     if (amount.indexOf('-') > -1) {
       return 'negative';
     } else if (amount === '0,00') {
@@ -54,30 +55,30 @@ export class WalletComponent implements OnInit, AfterViewInit {
     }
   }
 
-  buyOrSell(value: boolean): string {
+  public buyOrSell(value: boolean): string {
     if (value) {
       return 'negative';
     }
     return 'positive';
   }
 
-  iskFormat(): string {
+  public iskFormat(): string {
     return '1.2-2';
   }
 
-  quantityFormat(): string {
+  public quantityFormat(): string {
     return '1.0-0';
   }
 
-  getItemInfo(typeId: string): void {
+  public getItemInfo(typeId: string): void {
     // TODO: implement
   }
 
-  getPersonInfo(clientId: string): void {
+  public getPersonInfo(clientId: string): void {
     // TODO: implement
   }
 
-  async showBalance(): Promise<void> {
+  public async showBalance(): Promise<void> {
     const balance = await this.balanceService.getBalance(this.globals.selectedCharacter);
     this.balanceError = false;
     if (this.balance && balance !== -1) {
@@ -89,28 +90,27 @@ export class WalletComponent implements OnInit, AfterViewInit {
     }
   }
 
-  initBalanceCountUp(balance: number): void {
-    const options: CountUpOptions = {
-      useEasing: false,
+  public initBalanceCountUp(balance: number): void {
+    const options: ICountUpOptions = {
       suffix: ' ISK',
+      useEasing: false,
     };
     this.balance = new CountUp('balance-number', 0, balance, 2, 1, options);
     this.balance.start();
   }
 
-  async showJournal(): Promise<void> {
+  public async showJournal(): Promise<void> {
     const refTypes = await this.refTypesService.getRefTypes();
-    const refTypeData = refTypes['eveapi']['result'][0]['rowset'][0]['row'];
-    this.journalData = await this.journalService.getJournal(refTypeData);
+    this.journalData = await this.journalService.getJournal(refTypes);
     this.journalDataRequestDone = true;
   }
 
-  async showTransactions(): Promise<void> {
+  public async showTransactions(): Promise<void> {
     this.transactionData = await this.transactionService.getTransactions();
     this.transactionDataRequestDone = true;
   }
 
-  async getTransactions(): Promise<void> {
+  public async getTransactions(): Promise<void> {
     this.transactionData2 = await this.transactionsService.getTransactions(this.globals.selectedCharacter);
     this.transactionData2 = this.transactionData2.slice(0, 50);
     const typeIds = this.transactionData2.map((entry) => entry.type_id);

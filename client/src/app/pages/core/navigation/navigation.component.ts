@@ -1,31 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { ClockService } from '../../../services/clock.service';
-import { Globals } from '../../../shared/globals';
-import { CountUp } from '../../../shared/count-up';
+
 import { UserService } from '../../../models/user/user.service';
+import { ClockService, IServerStatus } from '../../../services/clock.service';
+import { CountUp } from '../../../shared/count-up';
+import { Globals } from '../../../shared/globals';
 
 @Component({
-  selector: 'app-navigation',
-  templateUrl: 'navigation.component.html',
-  styleUrls: ['navigation.component.scss'],
   providers: [ClockService],
+  selector: 'app-navigation',
+  styleUrls: ['navigation.component.scss'],
+  templateUrl: 'navigation.component.html',
 })
 export class NavigationComponent implements OnInit {
 
-  hours = '00';
-  minutes = '00';
-  status = 'Offline';
-  time: Object;
-  char = 1;
-  players: number;
-  playersCountUp: CountUp;
-  disable = true;
-  isLoggedIn = false;
+  public hours = '00';
+  public minutes = '00';
+  public status = 'Offline';
+  public time: IServerStatus;
+  public char = 1;
+  public playersCountUp: CountUp;
+  public disable = true;
+  public isLoggedIn = false;
 
   constructor(private clock: ClockService,
               private globals: Globals,
               private userService: UserService) {
-    this.globals.characterChangeEvent.subscribe(character => {
+    this.globals.characterChangeEvent.subscribe((character) => {
       if (character) {
         this.char = character.characterId;
         this.disable = false;
@@ -40,12 +40,12 @@ export class NavigationComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.playersCountUp = new CountUp('eve-players', 0, 0);
     this.syncClock();
   }
 
-  checkAccess(): boolean {
+  public checkAccess(): boolean {
     // if (this.disable) {
     //   return false;
     // }
@@ -54,18 +54,18 @@ export class NavigationComponent implements OnInit {
     return this.disable;
   }
 
-  logout(): void {
+  public logout(): void {
     this.userService.logoutUser();
   }
 
   private syncClock(): void {
     this.clock.getTime().subscribe(
-      (time) => {
+      (time: IServerStatus) => {
         this.updateClock(time);
         setTimeout(() => {
           this.timeKeeper();
-        }, 60000 - (time['seconds'] * 1000));
-      }
+        }, 60000 - (time.seconds * 1000));
+      },
     );
   }
 
@@ -80,17 +80,17 @@ export class NavigationComponent implements OnInit {
     }, 180000);
   }
 
-  private updateClock(time: Object): void {
+  private updateClock(time: IServerStatus): void {
     this.playersCountUp.reset();
-    this.hours = time['hours'];
-    this.minutes = time['minutes'];
-    this.status = time['status'];
+    this.hours = time.hours;
+    this.minutes = time.minutes;
+    this.status = time.status;
     this.time = time;
     if (this.globals.startUp) {
-      this.playersCountUp.update(time['players']);
+      this.playersCountUp.update(time.players);
     } else {
       this.globals.startUpObservable.subscribe(() => {
-        this.playersCountUp.update(time['players']);
+        this.playersCountUp.update(time.players);
       });
     }
   }

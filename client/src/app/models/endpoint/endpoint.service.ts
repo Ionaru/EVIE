@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptionsArgs, Response } from '@angular/http';
+import { Logger } from 'angular2-logger/core';
+import * as assert from 'assert';
+
+import { Globals } from '../../shared/globals';
 import { Endpoint } from './endpoint.model';
 import { endpointList } from './endpoints';
-import { Globals } from '../../shared/globals';
-import * as assert from 'assert';
-import { Logger } from 'angular2-logger/core';
 
-export interface EveNameData {
+export interface IEveNameData {
   category: string;
   id: number;
   name: string;
@@ -15,17 +16,17 @@ export interface EveNameData {
 @Injectable()
 export class EndpointService {
 
-  XMLBaseUrl = 'https://api.eveonline.com/';
-  ESIBaseUrl = 'https://esi.tech.ccp.is/';
+  public xmlBaseUrl = 'https://api.eveonline.com/';
+  public esiBaseUrl = 'https://esi.tech.ccp.is/';
 
   constructor(private logger: Logger, private globals: Globals, private http: Http) { }
 
-  getEndpoint(name: string): Endpoint {
-    return endpointList.filter(_ => _.name === name)[0];
+  public getEndpoint(name: string): Endpoint {
+    return endpointList.filter((_) => _.name === name)[0];
   }
 
-  constructXMLUrl(endpoint: Endpoint, params?: Array<string>, authentication = true): string {
-    let url = this.XMLBaseUrl;
+  public constructXMLUrl(endpoint: Endpoint, params?: string[], authentication = true): string {
+    let url = this.xmlBaseUrl;
     url += endpoint.directory;
     url += '/';
     url += endpoint.name;
@@ -39,14 +40,15 @@ export class EndpointService {
     return url;
   }
 
-  constructESIUrl(...params: Array<string | number>): string {
-    let url = this.ESIBaseUrl;
+  public constructESIUrl(...params: Array<string | number>): string {
+    let url = this.esiBaseUrl;
     url += params.join('/');
     url += '/';
     return url;
   }
 
-  async getNames(...ids: Array<string | number>): Promise<Array<EveNameData>> {
+  /** @deprecated use NamesService instead */
+  public async getNames(...ids: Array<string | number>): Promise<IEveNameData[]> {
 
     // Check if all values in 'ids' are -1, if so then there's no point in calling the Names Endpoint
     const allErrors = ids.every((element) => {
@@ -70,15 +72,15 @@ export class EndpointService {
     return [];
   }
 
-  getNameFromNameData(nameData, item): string {
+  public getNameFromNameData(nameData, item): string {
     try {
-      return nameData.filter(_ => _.id === item)[0].name;
+      return nameData.filter((_) => _.id === item)[0].name;
     } catch (err) {
       return 'Error';
     }
   }
 
-  async httpPost(url: string, body: any, options?: RequestOptionsArgs): Promise<Response> {
+  public async httpPost(url: string, body: any, options?: RequestOptionsArgs): Promise<Response> {
     return this.http.post(url, body, options).toPromise();
   }
 }

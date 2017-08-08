@@ -1,41 +1,41 @@
 import Timer = NodeJS.Timer;
 
 export class Character {
-  characterId: number;
-  pid: string;
-  name: string;
-  accessToken: string;
-  scopes: Array<string>;
-  tokenExpiry: Date;
-  ownerHash: string;
-  gender: string;
-  corporation_id: number;
-  corporation: string;
-  alliance_id: number;
-  alliance: string;
-  race: string;
-  bloodline: string;
-  ancestory: string;
-  balance = 0;
-  walletJournal: Array<Object> = [];
-  walletTransactions: Array<Object> = [];
-  currentlyTraining = 0;
-  skillQueue: Array<number> = [];
-  assets: Array<Object> = [];
-  planets: Array<Object> = [];
-  mails: Array<Object> = [];
-  location: {
+  public characterId: number;
+  public pid: string;
+  public name: string;
+  public accessToken: string;
+  public scopes: string[];
+  public tokenExpiry: Date;
+  public ownerHash: string;
+  public gender: string;
+  public corporationId: number;
+  public corporation: string;
+  public allianceId: number;
+  public alliance: string;
+  public race: string;
+  public bloodline: string;
+  public ancestory: string;
+  public balance = 0;
+  public walletJournal: object[] = [];
+  public walletTransactions: object[] = [];
+  public currentlyTraining = 0;
+  public skillQueue: number[] = [];
+  public assets: object[] = [];
+  public planets: object[] = [];
+  public mails: object[] = [];
+  public location: {
     id?: number;
     name?: string | null;
   } = {};
-  currentShip: {
+  public currentShip: {
     id?: number;
     name?: string;
     type?: string | null;
   } = {};
-  refreshTimer: Timer;
+  public refreshTimer: Timer;
 
-  constructor(data: ApiCharacterData) {
+  public constructor(data: IApiCharacterData) {
     this.characterId = data.characterId;
     this.name = data.name;
     this.accessToken = data.accessToken;
@@ -45,7 +45,7 @@ export class Character {
     this.tokenExpiry = new Date(data.tokenExpiry);
   }
 
-  updateAuth(data: ApiCharacterData): void {
+  public updateAuth(data: IApiCharacterData): void {
     this.characterId = data.characterId;
     this.name = data.name;
     this.accessToken = data.accessToken;
@@ -56,7 +56,7 @@ export class Character {
   }
 }
 
-export interface EveCharacterData {
+export interface IEveCharacterData {
   alliance_id?: number;
   ancestry_id: number;
   birthday: string;
@@ -69,7 +69,7 @@ export interface EveCharacterData {
   security_status: number;
 }
 
-export interface ApiCharacterData {
+export interface IApiCharacterData {
   accessToken: string;
   characterId: number;
   name: string;
@@ -80,13 +80,13 @@ export interface ApiCharacterData {
   isActive: boolean;
 }
 
-export interface SSOSocketResponse {
+export interface ISSOSocketResponse {
   state: string;
   message: string;
-  data: ApiCharacterData | undefined;
+  data: IApiCharacterData | undefined;
 }
 
-export interface TokenRefreshResponse {
+export interface ITokenRefreshResponse {
   state: string;
   message: string;
   data: {

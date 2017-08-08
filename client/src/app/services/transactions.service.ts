@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
-import { Helpers } from '../shared/helpers';
-import { EndpointService } from '../models/endpoint/endpoint.service';
-import { Globals } from '../shared/globals';
-import { Endpoint } from '../models/endpoint/endpoint.model';
 import { Logger } from 'angular2-logger/core';
 import { Character } from '../models/character/character.model';
+import { Endpoint } from '../models/endpoint/endpoint.model';
+import { EndpointService } from '../models/endpoint/endpoint.service';
+import { Globals } from '../shared/globals';
+import { Helpers } from '../shared/helpers';
 
-export interface TransactionData {
+export interface ITransactionData {
   date: string;
   dateFormatted: string;
   price: number;
@@ -21,7 +21,7 @@ export interface TransactionData {
   clientID: string;
 }
 
-export interface TransactionData2 {
+export interface ITransactionData2 {
   client_id: number;
   date: string;
   is_buy: boolean;
@@ -34,11 +34,34 @@ export interface TransactionData2 {
   unit_price: number;
 }
 
+export interface ITransactionXMLData {
+  eveapi: {
+    cachedUntil: [string];
+    result: [{
+      rowset: [{
+        row: [{
+          $: {
+            transactionDateTime: any;
+            price: any;
+            quantity: any;
+            typeName: any;
+            typeID: any;
+            clientID: any;
+            clientName: any;
+            transactionType: any;
+            transactionID: any;
+          };
+        }];
+      }];
+    }];
+  };
+}
+
 @Injectable()
 export class TransactionsService {
   constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }
 
-  async getTransactions(character: Character, transactionId?: number): Promise<Array<TransactionData2>> {
+  public async getTransactions(character: Character, transactionId?: number): Promise<ITransactionData2[]> {
     let url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'wallet/transactions');
     if (transactionId) {
       url += `?from_id=${transactionId}`;
@@ -49,7 +72,7 @@ export class TransactionsService {
     let response: Response;
     try {
 
-      response = await this.http.get(url, {headers: headers}).toPromise().catch((error) => {
+      response = await this.http.get(url, {headers}).toPromise().catch((error) => {
         throw new Error(error);
       });
 
@@ -58,7 +81,7 @@ export class TransactionsService {
         return null;
       }
 
-      const transactionDataArray: Array<TransactionData2> = response.json();
+      const transactionDataArray: ITransactionData2[] = response.json();
 
       if (Helpers.isEmpty(transactionDataArray)) {
         this.logger.error('Data did not contain expected values', transactionDataArray);
@@ -74,6 +97,7 @@ export class TransactionsService {
   }
 }
 
+// tslint:disable:max-classes-per-file
 @Injectable()
 export class TransactionService {
 
@@ -86,11 +110,11 @@ export class TransactionService {
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
-  async getTransactions(expired = false): Promise<Array<TransactionData>> {
+  public async getTransactions(expired = false): Promise<ITransactionData[]> {
     if (!expired && localStorage.getItem(this.storageTag)) {
       try {
-        const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-        if (this.helpers.isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
+        const jsonData = JSON.parse(localStorage.getItem(this.storageTag)) as ITransactionXMLData;
+        if (this.helpers.isCacheExpired(jsonData.eveapi.cachedUntil[0])) {
           return this.getTransactions(true);
         } else {
           return this.processTransactionData(jsonData);
@@ -103,42 +127,42 @@ export class TransactionService {
     } else {
       localStorage.removeItem(this.storageTag);
       const url = this.endpointService.constructXMLUrl(this.endpoint, [
-        'rowCount=50'
+        'rowCount=50',
       ]);
       const headers = new Headers();
       headers.append('Accept', 'application/xml');
-      const res = await this.http.get(url, {headers: headers}).toPromise();
-      const jsonData = this.helpers.processXML(res);
+      const res = await this.http.get(url, {headers}).toPromise();
+      const jsonData = this.helpers.processXML(res) as ITransactionXMLData;
       localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
       return this.processTransactionData(jsonData);
     }
   }
 
-  private processTransactionData(jsonData: Object): Array<TransactionData> {
+  private processTransactionData(jsonData: ITransactionXMLData): ITransactionData[] {
     const transactionData = [];
-    if (jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
-      for (const row of jsonData['eveapi']['result'][0]['rowset'][0]['row']) {
-        const date = row['$']['transactionDateTime'];
-        const ppi = row['$']['price'];
-        const quantity = row['$']['quantity'];
-        const typeName = row['$']['typeName'];
-        const typeID = row['$']['typeID'];
-        const clientName = row['$']['clientName'];
-        const clientID = row['$']['clientID'];
-        const transactionType = row['$']['transactionType'];
-        const transactionID = row['$']['transactionID'];
+    if (jsonData.eveapi.result[0].rowset[0].row) {
+      for (const row of jsonData.eveapi.result[0].rowset[0].row) {
+        const date = row.$.transactionDateTime;
+        const ppi = row.$.price;
+        const quantity = row.$.quantity;
+        const typeName = row.$.typeName;
+        const typeID = row.$.typeID;
+        const clientName = row.$.clientName;
+        const clientID = row.$.clientID;
+        const transactionType = row.$.transactionType;
+        const transactionID = row.$.transactionID;
         transactionData.push({
-          date: date,
+          clientID,
+          clientName,
+          date,
           dateFormatted: this.helpers.eveTimeToDate(date).getTime(),
+          ppi,
           price: ppi * quantity,
-          quantity: quantity,
-          transactionType: transactionType,
-          transactionID: transactionID,
-          ppi: ppi,
-          typeName: typeName,
-          typeID: typeID,
-          clientName: clientName,
-          clientID: clientID,
+          quantity,
+          transactionID,
+          transactionType,
+          typeID,
+          typeName,
         });
       }
     }

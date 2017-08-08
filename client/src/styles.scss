@@ -157,7 +157,7 @@ html {
     }
 
     .disabled {
-      pointer-events: none;
+      pointer-events: none !important;
     }
 
     //.visible-lg, .visible-md, .visible-sm, .visible-xs {

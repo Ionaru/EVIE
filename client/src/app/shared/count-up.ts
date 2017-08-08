@@ -1,4 +1,4 @@
-export interface CountUpOptions {
+export interface ICountUpOptions {
   // All options are optional
   useEasing?: boolean;      // Whether to use easing or not, default: true
   useGrouping?: boolean;    // 1,000,000 vs 1000000, default: true
@@ -13,18 +13,23 @@ export interface CountUpOptions {
 
 export class CountUp {
 
+  // Robert Penner's easeOutExpo
+  private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
+    return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
+  }
+
   private target: string;
   private startVal: number;
   private endVal: number;
-  private options: CountUpOptions = {
-    useEasing: true,
-    useGrouping: true,
-    separator: ',',
+  private options: ICountUpOptions = {
     decimal: '.',
     easingFn: null,
     formattingFn: null,
     prefix: '',
+    separator: ',',
     suffix: '',
+    useEasing: true,
+    useGrouping: true,
   };
   private paused: boolean;
   private countDown: boolean;
@@ -41,7 +46,7 @@ export class CountUp {
   private startTime: number;
 
   constructor(target: string, startVal: number, endVal: number, decimals = 0, duration = 1,
-              options?: CountUpOptions) {
+              options?: ICountUpOptions) {
 
     // target = id of html element or var of previously selected html element where counting occurs
     // startVal = the value you want to begin at
@@ -82,21 +87,15 @@ export class CountUp {
     this.printValue(startVal);
   }
 
-
-  // Robert Penner's easeOutExpo
-  private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
-    return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
-  }
-
   // Start the animation
-  start(callback?: Function): boolean {
+  public start(callback?: Function): boolean {
     this.callback = callback;
-    this.rAF = requestAnimationFrame(_timestamp => { this.count(_timestamp); });
+    this.rAF = requestAnimationFrame((_timestamp) => { this.count(_timestamp); });
     return false;
   }
 
   // Pause or resume the animation
-  pauseResume(): void {
+  public pauseResume(): void {
     if (!this.paused) {
       this.paused = true;
       cancelAnimationFrame(this.rAF);
@@ -105,12 +104,12 @@ export class CountUp {
       delete this.startTime;
       this.duration = this.remaining;
       this.startVal = this.frameVal;
-      requestAnimationFrame(_timestamp => { this.count(_timestamp); });
+      requestAnimationFrame((_timestamp) => { this.count(_timestamp); });
     }
   }
 
   // Reset to startVal so animation can be run again
-  reset(): void {
+  public reset(): void {
     this.paused = false;
     delete this.startTime;
     cancelAnimationFrame(this.rAF);
@@ -118,14 +117,14 @@ export class CountUp {
   }
 
   // Pass a new endVal and start animation
-  update(newEndVal: number): void {
+  public update(newEndVal: number): void {
     cancelAnimationFrame(this.rAF);
     this.paused = false;
     this.startTime = 0;
     this.startVal = this.frameVal;
     this.endVal = Number(newEndVal);
     this.countDown = (this.startVal > this.endVal);
-    this.rAF = requestAnimationFrame(_timestamp => { this.count(_timestamp); });
+    this.rAF = requestAnimationFrame((_timestamp) => { this.count(_timestamp); });
   }
 
   private init(): void {
@@ -137,17 +136,17 @@ export class CountUp {
         window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
     }
     if (!window.requestAnimationFrame) {
-      window.requestAnimationFrame = function (callback: Function): number {
+      window.requestAnimationFrame = (callback: Function): number => {
         const currTime = new Date().getTime();
         const timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        const id = window.setTimeout(function (): void { callback(currTime + timeToCall); },
+        const id = window.setTimeout((): void => { callback(currTime + timeToCall); },
           timeToCall);
         lastTime = currTime + timeToCall;
         return id;
       };
     }
     if (!window.cancelAnimationFrame) {
-      window.cancelAnimationFrame = function (id: number): void {
+      window.cancelAnimationFrame = (id: number): void => {
         clearTimeout(id);
       };
     }
@@ -156,7 +155,10 @@ export class CountUp {
   private formatNumber(nStr: any): string {
     nStr = nStr.toFixed(this.decimals);
     nStr += '';
-    let x, x1, x2, rgx;
+    let x;
+    let x1;
+    let x2;
+    let rgx;
     x = nStr.split('.');
     x1 = x[0];
     x2 = x.length > 1 ? this.options.decimal + x[1] : '';
@@ -206,7 +208,7 @@ export class CountUp {
 
     // Whether to continue
     if (progress < this.duration) {
-      this.rAF = requestAnimationFrame(_timestamp => { this.count(_timestamp); });
+      this.rAF = requestAnimationFrame((_timestamp) => { this.count(_timestamp); });
     } else {
       if (this.callback) {
         this.callback();
@@ -218,7 +220,7 @@ export class CountUp {
     const result: string = this.formattingFn(value);
 
     if (this.targetElement.tagName === 'INPUT') {
-      (<HTMLInputElement>this.targetElement).value = result;
+      (this.targetElement as HTMLInputElement).value = result;
     } else if (this.targetElement.tagName === 'text' || this.targetElement.tagName === 'tspan') {
       this.targetElement.textContent = result;
     } else {

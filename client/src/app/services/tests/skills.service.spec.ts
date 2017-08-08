@@ -1,15 +1,17 @@
-import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { getTestBed, TestBed } from '@angular/core/testing';
+import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { Logger } from 'angular2-logger/core';
 import * as expect from 'must/register';
 import { assert, SinonStub, stub } from 'sinon';
 
 import { Character } from '../../models/character/character.model';
 import { EndpointService } from '../../models/endpoint/endpoint.service';
 import { Globals } from '../../shared/globals';
-import { Logger } from 'angular2-logger/core';
-import { SkillData, SkillsService } from '../skills.service';
 import { Helpers } from '../../shared/helpers';
+import { ISkillData, SkillsService } from '../skills.service';
+
+// tslint:disable:only-arrow-functions space-before-function-paren
 
 describe('Services', () => {
   describe('SkillsService', () => {
@@ -33,14 +35,14 @@ describe('Services', () => {
           {
             deps: [
               MockBackend,
-              BaseRequestOptions
+              BaseRequestOptions,
             ],
             provide: Http,
             useFactory: (backend: XHRBackend, defaultOptions: BaseRequestOptions) => {
               return new Http(backend, defaultOptions);
-            }
-          }
-        ]
+            },
+          },
+        ],
       });
 
       const testbed = getTestBed();
@@ -73,70 +75,70 @@ describe('Services', () => {
     }
 
     const dummyCharacter = new Character({
-      characterId: 123,
-      name: 'Dummy',
       accessToken: 'abc',
+      characterId: 123,
+      isActive: true,
+      name: 'Dummy',
       ownerHash: 'aaa',
       pid: '123',
       scopes: 'all',
       tokenExpiry: '',
-      isActive: true
     });
 
     const dummySkillsResponse = {
-      total_sp: 123,
       skills: [{
         current_skill_level: 4,
         skill_id: 28164,
-        skillpoints_in_skill: 135765
+        skillpoints_in_skill: 135765,
       }, {
         current_skill_level: 5,
         skill_id: 20494,
-        skillpoints_in_skill: 512000
-      }]
+        skillpoints_in_skill: 512000,
+      }],
+      total_sp: 123,
     };
 
     it('must be able to process skills data', async () => {
       mockResponse({
         body: JSON.stringify(dummySkillsResponse),
-        status: 200
+        status: 200,
       });
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillData: ISkillData = await skillsService.getSkills(dummyCharacter);
       expect(skillData).to.be.an.object();
       expect(skillData).to.eql({
-        total_sp: 123,
         skills: [{
           current_skill_level: 4,
           skill_id: 28164,
-          skillpoints_in_skill: 135765
+          skillpoints_in_skill: 135765,
         }, {
           current_skill_level: 5,
           skill_id: 20494,
-          skillpoints_in_skill: 512000
+          skillpoints_in_skill: 512000,
         }],
         skillsObject: {
           20494: {
             current_skill_level: 5,
             skill_id: 20494,
-            skillpoints_in_skill: 512000
+            skillpoints_in_skill: 512000,
           },
           28164: {
             current_skill_level: 4,
             skill_id: 28164,
-            skillpoints_in_skill: 135765
-          }
-        }
+            skillpoints_in_skill: 135765,
+          },
+        },
+        total_sp: 123,
       });
     });
 
     it('must be able to process a response with empty body', async () => {
       mockResponse({
         body: JSON.stringify({}),
-        status: 200
+        status: 200,
       });
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillData: ISkillData = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain expected values');
@@ -146,7 +148,7 @@ describe('Services', () => {
     it('must be able to process an empty response', async () => {
       mockResponse({});
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillData: ISkillData = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
@@ -156,10 +158,10 @@ describe('Services', () => {
     it('must be able to process a HTTP error', async () => {
       mockErrorResponse({
         body: '',
-        status: 403
+        status: 403,
       });
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillData: ISkillData = await skillsService.getSkills(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(skillData).to.be.null();
@@ -168,10 +170,10 @@ describe('Services', () => {
     it('must be able to process a non-200 status code', async () => {
       mockResponse({
         body: '',
-        status: 500
+        status: 500,
       });
 
-      const skillData: SkillData = await skillsService.getSkills(dummyCharacter);
+      const skillData: ISkillData = await skillsService.getSkills(dummyCharacter);
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
       expect(skillData).to.be.null();

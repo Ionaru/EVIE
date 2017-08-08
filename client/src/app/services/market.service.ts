@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
-import { Helpers } from '../shared/helpers';
-import { EndpointService } from '../models/endpoint/endpoint.service';
-import { Globals } from '../shared/globals';
-import { Endpoint } from '../models/endpoint/endpoint.model';
 import { Logger } from 'angular2-logger/core';
 import { Character } from '../models/character/character.model';
+import { Endpoint } from '../models/endpoint/endpoint.model';
+import { EndpointService } from '../models/endpoint/endpoint.service';
+import { Globals } from '../shared/globals';
 
-export interface OrderData {
+export interface IOrderData {
   'account_id': number;
   'duration': number;
   'escrow': number;
@@ -32,20 +31,19 @@ export class MarketService {
   private endpoint: Endpoint;
   private storageTag: string;
 
-  constructor(private http: Http, private endpointService: EndpointService, private globals: Globals,
-              private helpers: Helpers, private logger: Logger) {
+  constructor(private http: Http, private endpointService: EndpointService, private globals: Globals, private logger: Logger) {
     this.endpoint = this.endpointService.getEndpoint('WalletTransactions');
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
 
-  async getOrders(character: Character): Promise<Array<OrderData>> {
+  public async getOrders(character: Character): Promise<IOrderData[]> {
     const url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'orders');
     const headers = new Headers();
     headers.append('Authorization', 'Bearer ' + character.accessToken);
     let response: Response;
     try {
 
-      response = await this.http.get(url, {headers: headers}).toPromise().catch((error) => {
+      response = await this.http.get(url, {headers}).toPromise().catch((error) => {
         throw new Error(error);
       });
 
@@ -54,18 +52,7 @@ export class MarketService {
         return [];
       }
 
-      const orders: Array<OrderData> = response.json();
-
-      // if (!(shipData.ship_type_id && shipData.ship_name)) {
-      //   this.logger.error('Data did not contain expected values', shipData);
-      //   return {id: -1, name: 'Error'};
-      // }
-      //
-      // return {
-      //   id: shipData.ship_type_id,
-      //   name: shipData.ship_name,
-      // };
-      return orders;
+      return response.json();
 
     } catch (err) {
       this.logger.error(err);

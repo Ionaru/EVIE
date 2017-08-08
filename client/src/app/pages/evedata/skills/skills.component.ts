@@ -1,41 +1,40 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import * as countdown from 'countdown';
+import Timer = NodeJS.Timer;
+import Timespan = countdown.Timespan;
+
+import { NamesService } from '../../../services/names.service';
+import { ISkillGroupData, SkillGroupsService } from '../../../services/skill-groups.service';
+import { ISkillQueueData, SkillQueueService } from '../../../services/skill-queue.service';
+import { ISkill, ISkillData, SkillsService } from '../../../services/skills.service';
 import { Globals } from '../../../shared/globals';
 import { Helpers } from '../../../shared/helpers';
-import { NamesService } from '../../../services/names.service';
-import { Skill, SkillData, SkillsService } from '../../../services/skills.service';
-import { SkillQueueData, SkillQueueService } from '../../../services/skill-queue.service';
-import { SkillGroupData, SkillGroupsService } from '../../../services/skill-groups.service';
-import Timer = NodeJS.Timer;
-
-import Timespan = countdown.Timespan;
-import { AppComponent } from '../../../app.component';
 
 @Component({
-  templateUrl: 'skills.component.html',
-  styleUrls: ['skills.component.scss'],
   providers: [SkillsService, SkillQueueService, SkillGroupsService],
+  styleUrls: ['skills.component.scss'],
+  templateUrl: 'skills.component.html',
 })
 export class SkillsComponent implements OnInit, OnDestroy {
 
-  skillsData: SkillData;
-  skillPoints: number;
-  skillQueueData: Array<SkillQueueData>;
-  loadingDone = false;
-  skillQueueCount: number;
-  skillQueueTimeLeft: number;
-  skillsCount: number;
-  spPerSec: number;
-  skillTrainingPaused = true;
-  totalQueueCountdown: number | Timespan;
-  totalQueueTime: number;
-  totalQueueTimer: number;
-  skillQueueTimer: number;
-  refreshOnComplete: Timer;
-  skillGroups: Array<SkillGroupData>;
-  skillList: {
-    [groupId: number]: Array<Skill>
+  public skillsData: ISkillData;
+  public skillPoints: number;
+  public skillQueueData: ISkillQueueData[];
+  public loadingDone = false;
+  public skillQueueCount: number;
+  public skillQueueTimeLeft: number;
+  public skillsCount: number;
+  public spPerSec: number;
+  public skillTrainingPaused = true;
+  public totalQueueCountdown: number | Timespan;
+  public totalQueueTime: number;
+  public totalQueueTimer: Timer;
+  public skillQueueTimer: Timer;
+  public refreshOnComplete: Timer;
+  public skillGroups: ISkillGroupData[];
+  public skillList: {
+    [groupId: number]: ISkill[],
   } = {};
 
   constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService, private helpers: Helpers,
@@ -44,7 +43,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
     title.setTitle(Helpers.createTitle('Skills'));
   }
 
-  async ngOnInit(): Promise<void> {
+  public async ngOnInit(): Promise<void> {
 
     await Promise.all([this.setSkills(), this.setSkillQueue(), this.setSkillGroups()]);
 
@@ -123,7 +122,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.skillQueueCount = this.skillQueueData.filter(_ => _.status !== 'finished').length;
+        this.skillQueueCount = this.skillQueueData.filter((_) => _.status !== 'finished').length;
         this.skillsCount = this.skillsData.skills.length;
         this.loadingDone = true;
       }
@@ -135,7 +134,8 @@ export class SkillsComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
-  toggleAccordion(event) {
+  // noinspection JSMethodCanBeStatic
+  public toggleAccordion(event) {
     let acc: HTMLElement = event.target;
 
     if (!acc.classList.contains('accordion')) {
@@ -145,7 +145,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
     }
 
     acc.classList.toggle('active');
-    const panel = <HTMLElement> acc.nextElementSibling;
+    const panel = acc.nextElementSibling as HTMLElement;
     if (panel.style.maxHeight) {
       panel.style.maxHeight = null;
     } else {
@@ -153,36 +153,36 @@ export class SkillsComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     clearInterval(this.totalQueueTimer);
     clearInterval(this.skillQueueTimer);
     clearTimeout(this.refreshOnComplete);
   }
 
-  skillQueueLow() {
+  public skillQueueLow() {
     return !this.skillTrainingPaused && this.skillQueueTimeLeft < (24 * 60 * 60 * 1000);
   }
 
-  countLvl5Skills(): number {
-    return this.skillsData.skills.filter(_ => _.current_skill_level === 5).length;
+  public countLvl5Skills(): number {
+    return this.skillsData.skills.filter((_) => _.current_skill_level === 5).length;
   }
 
-  getSkillGroup(skillId) {
-    return this.skillGroups.filter(_ => _.types.indexOf(skillId) !== -1)[0].name;
+  public getSkillGroup(skillId) {
+    return this.skillGroups.filter((_) => _.types.indexOf(skillId) !== -1)[0].name;
   }
 
-  getSkillsForGroup(group: SkillGroupData) {
-    let skills = this.skillsData.skills.filter(_ => group.types.indexOf(_.skill_id) !== -1);
+  public getSkillsForGroup(group: ISkillGroupData) {
+    let skills = this.skillsData.skills.filter((_) => group.types.indexOf(_.skill_id) !== -1);
     skills = this.helpers.sortArrayByObjectProperty(skills, 'name');
     return skills;
   }
 
-  refreshPage() {
+  public refreshPage() {
     this.ngOnDestroy();
     this.ngOnInit().then();
   }
 
-  getSkillsInGroup(groupId) {
+  public getSkillsInGroup(groupId) {
     return this.skillList[groupId];
   }
 

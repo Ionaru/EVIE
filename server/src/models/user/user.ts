@@ -1,14 +1,13 @@
 import Sequelize = require('sequelize');
-
 import Instance = Sequelize.Instance;
 import Model = Sequelize.Model;
 
 import { db } from '../../services/db.service';
 import { logger } from '../../services/logger.service';
 
-export let User;
+export let userModel;
 
-export interface UserAttr {
+export interface IUserAttr {
   id: number;
   pid: string;
   username: string;
@@ -19,13 +18,14 @@ export interface UserAttr {
   characters: any;
 }
 
-/* tslint:disable:no-empty-interface */
-export interface UserInstance extends Instance<UserAttr>, UserAttr { }
-export interface UserModel extends Model<UserAttr, UserAttr> { }
-/* tslint:enable:no-empty-interface */
+// tslint:disable:no-empty-interface
+export interface IUserInstance extends Instance<IUserAttr>, IUserAttr { }
+export interface IUserModel extends Model<IUserAttr, IUserAttr> { }
+// tslint:enable:no-empty-interface
 
 export async function defineUser(): Promise<void> {
-  User = await db.seq.define('users', {
+  userModel = await db.seq.define('users', {
+    // tslint:disable:object-literal-sort-keys
     pid: {
       type: Sequelize.STRING,
       unique: true,
@@ -55,6 +55,7 @@ export async function defineUser(): Promise<void> {
       defaultValue: Sequelize.NOW,
       allowNull: false,
     },
+    // tslint:enable:object-literal-sort-keys
   }).sync();
 
   // const bcrypt = require('bcryptjs');

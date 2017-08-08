@@ -1,15 +1,17 @@
-import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { getTestBed, TestBed } from '@angular/core/testing';
+import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 import * as expect from 'must/register';
 import { assert, SinonStub, stub } from 'sinon';
 
-import { ApiCharacterData, Character } from '../../models/character/character.model';
+import { Logger } from 'angular2-logger/core';
+import { Character, IApiCharacterData } from '../../models/character/character.model';
 import { EndpointService } from '../../models/endpoint/endpoint.service';
 import { Globals } from '../../shared/globals';
-import { BalanceService } from '../balance.service';
 import { Helpers } from '../../shared/helpers';
-import { Logger } from 'angular2-logger/core';
+import { BalanceService } from '../balance.service';
+
+// tslint:disable:only-arrow-functions space-before-function-paren
 
 describe('Services', () => {
   describe('BalanceService', () => {
@@ -35,29 +37,29 @@ describe('Services', () => {
           {
             deps: [
               MockBackend,
-              BaseRequestOptions
+              BaseRequestOptions,
             ],
             provide: Http,
             useFactory: (backend: XHRBackend, defaultOptions: BaseRequestOptions) => {
               return new Http(backend, defaultOptions);
-            }
-          }
-        ]
+            },
+          },
+        ],
       });
 
       const testbed = getTestBed();
       globals = testbed.get(Globals);
       helpers = testbed.get(Helpers);
 
-      const dummyData: ApiCharacterData = {
-        characterId: 123,
-        name: 'Dummy',
+      const dummyData: IApiCharacterData = {
         accessToken: 'abc',
+        characterId: 123,
+        isActive: true,
+        name: 'Dummy',
         ownerHash: 'aaa',
         pid: '123',
         scopes: 'all',
         tokenExpiry: '',
-        isActive: true
       };
       globals.selectedCharacter = new Character(dummyData);
 
@@ -91,20 +93,20 @@ describe('Services', () => {
     }
 
     const dummyCharacter = new Character({
-      characterId: 123,
-      name: 'Dummy',
       accessToken: 'abc',
+      characterId: 123,
+      isActive: true,
+      name: 'Dummy',
       ownerHash: 'aaa',
       pid: '123',
       scopes: 'all',
       tokenExpiry: '',
-      isActive: true
     });
 
     it('must be able to process balance data', async () => {
       mockResponse({
         body: '[{"wallet_id": 1000, "balance": 302315697}, {"wallet_id": 1200, "balance": 0}]',
-        status: 200
+        status: 200,
       });
 
       const locationID: number = await balanceService.getBalance(dummyCharacter);
@@ -115,7 +117,7 @@ describe('Services', () => {
     it('must be able to process data without a master wallet', async () => {
       mockResponse({
         body: '[{"wallet_id": 1100, "balance": 5000}, {"wallet_id": 1200, "balance": 0}]',
-        status: 200
+        status: 200,
       });
 
       const locationID: number = await balanceService.getBalance(dummyCharacter);
@@ -127,7 +129,7 @@ describe('Services', () => {
     it('must be able to process a response with empty body', async () => {
       mockResponse({
         body: JSON.stringify({}),
-        status: 200
+        status: 200,
       });
 
       const locationID: number = await balanceService.getBalance(dummyCharacter);
@@ -152,7 +154,7 @@ describe('Services', () => {
     it('must be able to process a HTTP error', async () => {
       mockErrorResponse({
         body: '',
-        status: 403
+        status: 403,
       });
 
       const locationID: number = await balanceService.getBalance(dummyCharacter);
@@ -165,7 +167,7 @@ describe('Services', () => {
     it('must be able to process a non-200 status code', async () => {
       mockResponse({
         body: '',
-        status: 500
+        status: 500,
       });
 
       const locationID: number = await balanceService.getBalance(dummyCharacter);

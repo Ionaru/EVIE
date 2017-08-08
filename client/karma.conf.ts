@@ -1,51 +1,55 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/0.13/config/configuration-file.html
 
+export interface IKarmaConfig extends karma.Config {
+  angularCli: any;
+}
+
 import * as karma from 'karma';
 
-module.exports = function (config: karma.Config) {
+module.exports = (config: IKarmaConfig) => {
 
   const configuration: any = {
+    angularCli: {
+      environment: 'dev',
+    },
+    autoWatch: true,
     basePath: '',
+    colors: true,
+    concurrency: 1,
+    coverageIstanbulReporter: {
+      fixWebpackSourcePaths: true,
+      reports: ['html', 'lcovonly'],
+    },
+    files: [
+      {pattern: './src/test.ts', watched: false},
+    ],
     frameworks: ['mocha', '@angular/cli'],
+    logLevel: config.LOG_INFO,
+    mime: {
+      'text/x-typescript': ['ts', 'tsx'],
+    },
+    mochaReporter: {
+      showDiff: true,
+    },
     plugins: [
       require('karma-mocha'),
       require('karma-mocha-reporter'),
       require('karma-phantomjs-launcher'),
       require('karma-coverage-istanbul-reporter'),
-      require('@angular/cli/plugins/karma')
+      require('@angular/cli/plugins/karma'),
     ],
-    files: [
-      {pattern: './src/test.ts', watched: false}
-    ],
+    port: 9876,
     preprocessors: {
-      './src/test.ts': ['@angular/cli']
+      './src/test.ts': ['@angular/cli'],
     },
-    mime: {
-      'text/x-typescript': ['ts', 'tsx']
-    },
-    coverageIstanbulReporter: {
-      reports: ['html', 'lcovonly'],
-      fixWebpackSourcePaths: true
-    },
-    angularCli: {
-      environment: 'dev'
-    },
-    reporters: config['angularCli'] && config['angularCli'].codeCoverage
+    reporters: config.angularCli && config.angularCli.codeCoverage
       ? ['coverage-istanbul', 'mocha']
       : ['mocha'],
-    mochaReporter: {
-      showDiff: true
-    },
-    port: 9876,
-    colors: true,
-    logLevel: config.LOG_INFO,
-    autoWatch: true,
     singleRun: false,
-    concurrency: 1
   };
 
-  if (process.env['SAUCELABS'] === 'true') {
+  if (process.env.SAUCELABS === 'true') {
     // Tests are being run on Saucelabs
 
     const saucelabsBrowsers = {
@@ -54,13 +58,13 @@ module.exports = function (config: karma.Config) {
         base: 'SauceLabs',
         browserName: 'chrome',
         platform: 'Linux',
-        version: 'latest'
+        version: 'latest',
       },
       SL_Linux_Firefox: {
         base: 'SauceLabs',
         browserName: 'firefox',
         platform: 'Linux',
-        version: 'latest'
+        version: 'latest',
       },
     };
 
@@ -71,113 +75,115 @@ module.exports = function (config: karma.Config) {
     configuration.customLaunchers = saucelabsBrowsers;
     configuration.browsers = Object.keys(saucelabsBrowsers);
     configuration.sauceLabs = {
-      testName: 'EVE Track Client tests'
+      testName: 'EVE Track Client tests',
     };
     configuration.reporters = ['saucelabs', 'mocha'];
 
-  } else if (process.env['BROWSERSTACK'] === 'true') {
+  } else if (process.env.BROWSERSTACK === 'true') {
     // Tests are being run on BrowserStack
 
     const browserStackBrowsers = {
-      BS_Win7_IE: {
+      BS_OSX11_Chrome: {
         base: 'BrowserStack',
-        os: 'WINDOWS',
-        os_version: '7',
-        browser: 'IE'
+        browser: 'Chrome',
+        os: 'OS X',
+        os_version: 'El Capitan',
       },
-      BS_Win7_Chrome: {
+      BS_OSX11_Firefox: {
         base: 'BrowserStack',
-        os: 'WINDOWS',
-        os_version: '7',
-        browser: 'Chrome'
+        browser: 'Firefox',
+        os: 'OS X',
+        os_version: 'El Capitan',
       },
-      BS_Win7_Firefox: {
+      BS_OSX11_Safari: {
         base: 'BrowserStack',
-        os: 'WINDOWS',
-        os_version: '7',
-        browser: 'Firefox'
+        browser: 'Safari',
+        os: 'OS X',
+        os_version: 'El Capitan',
       },
 
-      BS_Win10_IE: {
+      BS_OSX12_Chrome: {
         base: 'BrowserStack',
-        os: 'WINDOWS',
-        os_version: '10',
-        browser: 'IE'
+        browser: 'Chrome',
+        os: 'OS X',
+        os_version: 'Sierra',
       },
-      BS_Win10_Edge: {
+      BS_OSX12_Firefox: {
         base: 'BrowserStack',
-        os: 'WINDOWS',
-        os_version: '10',
-        browser: 'Edge'
+        browser: 'Firefox',
+        os: 'OS X',
+        os_version: 'Sierra',
       },
-      BS_Win10_Chrome: {
+      BS_OSX12_Safari: {
         base: 'BrowserStack',
-        os: 'WINDOWS',
-        os_version: '10',
-        browser: 'Chrome'
+        browser: 'Safari',
+        os: 'OS X',
+        os_version: 'Sierra',
       },
-      BS_Win10_Firefox: {
+
+      BS_OSX8_Chrome: {
         base: 'BrowserStack',
-        os: 'WINDOWS',
-        os_version: '10',
-        browser: 'Firefox'
+        browser: 'Chrome',
+        os: 'OS X',
+        os_version: 'Mountain Lion',
+      },
+      BS_OSX8_Firefox: {
+        base: 'BrowserStack',
+        browser: 'Firefox',
+        os: 'OS X',
+        os_version: 'Mountain Lion',
       },
 
       BS_OSX8_Safari: {
         base: 'BrowserStack',
+        browser: 'Safari',
         os: 'OS X',
         os_version: 'Mountain Lion',
-        browser: 'Safari'
-      },
-      BS_OSX8_Chrome: {
-        base: 'BrowserStack',
-        os: 'OS X',
-        os_version: 'Mountain Lion',
-        browser: 'Chrome'
-      },
-      BS_OSX8_Firefox: {
-        base: 'BrowserStack',
-        os: 'OS X',
-        os_version: 'Mountain Lion',
-        browser: 'Firefox'
       },
 
-      BS_OSX11_Safari: {
+      BS_Win10_Chrome: {
         base: 'BrowserStack',
-        os: 'OS X',
-        os_version: 'El Capitan',
-        browser: 'Safari'
+        browser: 'Chrome',
+        os: 'WINDOWS',
+        os_version: '10',
       },
-      BS_OSX11_Chrome: {
+      BS_Win10_Edge: {
         base: 'BrowserStack',
-        os: 'OS X',
-        os_version: 'El Capitan',
-        browser: 'Chrome'
+        browser: 'Edge',
+        os: 'WINDOWS',
+        os_version: '10',
       },
-      BS_OSX11_Firefox: {
+      BS_Win10_Firefox: {
         base: 'BrowserStack',
-        os: 'OS X',
-        os_version: 'El Capitan',
-        browser: 'Firefox'
+        browser: 'Firefox',
+        os: 'WINDOWS',
+        os_version: '10',
       },
 
-      BS_OSX12_Safari: {
+      BS_Win10_IE: {
         base: 'BrowserStack',
-        os: 'OS X',
-        os_version: 'Sierra',
-        browser: 'Safari'
+        browser: 'IE',
+        os: 'WINDOWS',
+        os_version: '10',
       },
-      BS_OSX12_Chrome: {
+      BS_Win7_Chrome: {
         base: 'BrowserStack',
-        os: 'OS X',
-        os_version: 'Sierra',
-        browser: 'Chrome'
+        browser: 'Chrome',
+        os: 'WINDOWS',
+        os_version: '7',
       },
-      BS_OSX12_Firefox: {
+      BS_Win7_Firefox: {
         base: 'BrowserStack',
-        os: 'OS X',
-        os_version: 'Sierra',
-        browser: 'Firefox'
+        browser: 'Firefox',
+        os: 'WINDOWS',
+        os_version: '7',
+      },
+
+      BS_Win7_IE: {
+        base: 'BrowserStack',
+        browser: 'IE',
+        os: 'WINDOWS',
+        os_version: '7',
       },
     };
 

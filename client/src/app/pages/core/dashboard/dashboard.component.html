@@ -1,5 +1,5 @@
 <div class="dashboard-page">
-  <h1>Hello {{username}}</h1>
+  <h1>Hello {{ username }}</h1>
   <p>Welcome to your Character Management Dashboard, here you can add, manage and delete characters. This screen also
     provides an overview of your character's current locations and the ships they're in.</p>
   <ng-container *ngIf="characters.length">
@@ -28,20 +28,20 @@
         <ng-container title="Character name" *ngIf="!character.gender">
           <i class="fa fa-circle-o-notch fa-spin"></i>
         </ng-container>
-        {{character.name}}
+        {{ character.name }}
       </span>
-        <img *ngIf="character.corporation_id" style="height: 14px" title="Corporation"
-             src="//image.eveonline.com/Corporation/{{ character.corporation_id }}_32.png" alt="Character corporation">
-        <img *ngIf="character.alliance_id" style="height: 14px" title="Alliance"
-             src="//image.eveonline.com/Alliance/{{ character.alliance_id }}_32.png" alt="Character alliance">
+        <img *ngIf="character.corporationId" style="height: 14px" title="Corporation"
+             src="//image.eveonline.com/Corporation/{{ character.corporationId }}_32.png" alt="Character corporation">
+        <img *ngIf="character.allianceId" style="height: 14px" title="Alliance"
+             src="//image.eveonline.com/Alliance/{{ character.allianceId }}_32.png" alt="Character alliance">
         |
         <span class="character-id" title="Character ID">
-        <i class="fa fa-id-card"></i> {{character.characterId}}
+        <i class="fa fa-id-card"></i> {{ character.characterId }}
       </span>
         |
         <span class="current-ship" title="Current ship, click to refresh" (click)="refreshShip(character).then()">
         <span class="success" *ngIf="character.currentShip?.type && character.currentShip?.type !== 'Error'">
-          <i class="fa fa-rocket"></i> {{character.currentShip.name}} ({{character.currentShip.type}})</span>
+          <i class="fa fa-rocket"></i> {{ character.currentShip.name }} ({{ character.currentShip.type }})</span>
         <span class="loading" *ngIf="!character.currentShip?.type"><i class="fa fa-circle-o-notch fa-spin"></i></span>
         <span class="error" *ngIf="character.currentShip?.type === 'Error'">
           <i class="fa fa-exclamation-triangle"></i> Error
@@ -50,7 +50,7 @@
         |
         <span class="location" title="Current location, click to refresh" (click)="refreshLocation(character).then()">
         <span class="success" *ngIf="character.location?.name && character.location?.name !== 'Error'">
-          <i class="fa fa-map"></i> {{character.location.name}}</span>
+          <i class="fa fa-map"></i> {{ character.location.name }}</span>
         <span class="loading" *ngIf="!character.location?.name"><i class="fa fa-circle-o-notch fa-spin"></i></span>
         <span class="error" *ngIf="character.location?.name === 'Error'">
           <i class="fa fa-exclamation-triangle"></i> Error
