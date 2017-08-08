@@ -26,7 +26,9 @@
     "member-access": false,
     "member-ordering": [
       true,
-      "variables-before-functions"
+      {
+        "order": "fields-first"
+      }
     ],
     "no-arg": true,
     "no-console": [
@@ -69,6 +71,7 @@
     ],
     "radix": true,
     "semicolon": [
+      true,
       "always"
     ],
     "triple-equals": [
@@ -98,7 +101,7 @@
     ],
 
     "directive-selector": [true, "attribute", "app", "camelCase"],
-    "component-selector": [true, "element", "app", "kebab-case"],
+    "component-selector": [true, "element", ["app", "login", "register"], "kebab-case"],
     "use-input-property-decorator": true,
     "use-output-property-decorator": true,
     "use-host-property-decorator": true,

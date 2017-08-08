@@ -1,78 +1,35 @@
-<h1>Welcome to EVE Track!</h1>
-<p>
-  EVE Track can be best described as an EVE Online API viewer, it enables you to view your EVE Online information
-  without having to log into the game.
-</p>
-<p>
-  My goal is to provide you with a simple-to-use API viewer while still providing a lot of information about your
-  character(s).
-</p>
-<br>
-<p>
-  For optimal use of this website, I encourage you to create an account. Don't worry, it's safe!
-  If you have doubts, the source code for this website is publicly available on
-  <a href="https://github.com/Ionaru/EVE-Track" target="_blank">Github</a> so you can see what happens with your data.
-  (Spoiler alert!) not a whole lot. 😇
-</p>
-<hr>
-<div *ngIf="!loggedIn">
-  <div>
-    <form #loginForm="ngForm" (ngSubmit)="login(loginForm.value).then()">
-      <p>
-        <label for="login-username">Username or email</label>
-        <input id="login-username" type="text" required ngModel name="username">
-      </p>
-      <p>
-        <label for="login-password">Password</label>
-        <input id="login-password" type="password" required ngModel name="password">
-      </p>
-      <button type="submit" [disabled]="!loginForm.valid">Login</button>
-    </form>
-    <button (click)="loginDebug()">Login debug</button>
+<div class="index-container container">
+  <div class="info-container">
+    <!--<h1>Welcome to EVE Track!</h1>-->
+    <br>
+    <p>
+      EVE Track can be best described as an <strong>EVE Online API viewer</strong>, it enables you to view your EVE
+      Online character information
+      without having to log into the game.
+    </p>
+    <br>
+    <p>
+      My goal is to provide you with a simple-to-use API viewer while still providing a lot of information about your
+      character(s).
+    </p>
+    <br>
+    <p>
+      For optimal use of this website, I encourage you to create an account.
+      This will enable you to save multiple characters and quickly access their data.
+      Don't worry, it's safe!<br>
+      The source code of this website is publicly available on
+      <a class="underline" href="https://github.com/Ionaru/EVE-Track" target="_blank">GitHub</a>,
+      so feel free to nose around and discover how it all works.
+    </p>
   </div>
-  <hr>
-  <div>
-    <form #registerForm="ngForm" (ngSubmit)="register(registerForm.value)">
-      <p>
-        <label for="register-username">Username or email</label>
-        <input id="register-username" type="text" required ngModel name="username">
-      </p>
-      <p>
-        <label for="register-email">Email</label>
-        <input id="register-email" type="email" required ngModel name="email">
-      </p>
-      <p>
-        <label for="register-password">Password</label>
-        <input id="register-password" type="password" required ngModel name="password">
-      </p>
-      <p>
-        <label for="register-password-confirm">Password</label>
-        <input id="register-password-confirm" type="password" required ngModel name="password2">
-      </p>
-      <button type="submit" [disabled]="!registerForm.valid">Register</button>
-    </form>
+
+  <div class="center" *ngIf="!loggedIn">
+    <br>
+    <hr>
+    <br>
+    <button class="btn btn-primary">Temporary</button>
+
+    <login-modal-button></login-modal-button>
+    <register-modal-button></register-modal-button>
   </div>
 </div>
-
-<!--<form>-->
-<!--<input name="keyId" title="Key ID">-->
-<!--<input name="vCode" title="Verification Code">-->
-<!--<button type="submit">Submit</button>-->
-<!--<button type="reset">Reset</button>-->
-<!--</form>-->
-
-<!--<div class="container">-->
-<!--<h2>Log in</h2>-->
-<!--<form>-->
-<!--<div class="form-group">-->
-<!--<label for="username">Username or Email</label>-->
-<!--<input type="text" class="form-control" id="username" required ngModel="user.name">-->
-<!--&lt;!&ndash;{{ user.name }}&ndash;&gt;-->
-<!--</div>-->
-<!--<div class="form-group">-->
-<!--<label for="password">Password</label>-->
-<!--<input type="password" class="form-control" id="password" required ngModel="user.password">-->
-<!--</div>-->
-<!--<button type="submit" class="btn btn-default">Log in</button>-->
-<!--</form>-->
-<!--</div>-->

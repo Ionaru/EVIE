@@ -24,16 +24,16 @@ export class EndpointService {
     return endpointList.filter(_ => _.name === name)[0];
   }
 
-  constructXMLUrl(endpoint: Endpoint, params?: Array<string>): string {
+  constructXMLUrl(endpoint: Endpoint, params?: Array<string>, authentication = true): string {
     let url = this.XMLBaseUrl;
     url += endpoint.directory;
     url += '/';
     url += endpoint.name;
     url += '.xml.aspx?';
-    if (this.globals.selectedCharacter) {
+    if (authentication && this.globals.selectedCharacter) {
       url += `accessToken=${this.globals.selectedCharacter.accessToken}&`;
     }
-    if (params) {
+    if (params && params.length) {
       url += `${params.join('&')}`;
     }
     return url;

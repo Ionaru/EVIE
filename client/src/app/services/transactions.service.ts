@@ -1,23 +1,77 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { Headers, Http, Response } from '@angular/http';
 import { Helpers } from '../shared/helpers';
 import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Globals } from '../shared/globals';
 import { Endpoint } from '../models/endpoint/endpoint.model';
 import { Logger } from 'angular2-logger/core';
+import { Character } from '../models/character/character.model';
 
 export interface TransactionData {
-  dateRaw: string;
+  date: string;
   dateFormatted: string;
-  price: string;
-  quantity: string;
+  price: number;
+  quantity: number;
   transactionType: string;
   transactionID: string;
-  ppi: string;
+  ppi: number;
   typeName: string;
   typeID: string;
   clientName: string;
   clientID: string;
+}
+
+export interface TransactionData2 {
+  client_id: number;
+  date: string;
+  is_buy: boolean;
+  is_personal: boolean;
+  journal_ref_id: number;
+  location_id: number;
+  quantity: number;
+  transaction_id: number;
+  type_id: number;
+  unit_price: number;
+}
+
+@Injectable()
+export class TransactionsService {
+  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }
+
+  async getTransactions(character: Character, transactionId?: number): Promise<Array<TransactionData2>> {
+    let url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'wallet/transactions');
+    if (transactionId) {
+      url += `?from_id=${transactionId}`;
+    }
+
+    const headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + character.accessToken);
+    let response: Response;
+    try {
+
+      response = await this.http.get(url, {headers: headers}).toPromise().catch((error) => {
+        throw new Error(error);
+      });
+
+      if (!response.ok || response.status !== 200) {
+        this.logger.error('Response was not OK', response);
+        return null;
+      }
+
+      const transactionDataArray: Array<TransactionData2> = response.json();
+
+      if (Helpers.isEmpty(transactionDataArray)) {
+        this.logger.error('Data did not contain expected values', transactionDataArray);
+        return null;
+      }
+
+      return transactionDataArray;
+
+    } catch (err) {
+      this.logger.error(err);
+      return null;
+    }
+  }
 }
 
 @Injectable()
@@ -74,13 +128,13 @@ export class TransactionService {
         const transactionType = row['$']['transactionType'];
         const transactionID = row['$']['transactionID'];
         transactionData.push({
-          dateRaw: date,
-          dateFormatted: this.helpers.eveTimeToDate(date),
-          price: this.helpers.formatISK(ppi * quantity),
+          date: date,
+          dateFormatted: this.helpers.eveTimeToDate(date).getTime(),
+          price: ppi * quantity,
           quantity: quantity,
           transactionType: transactionType,
           transactionID: transactionID,
-          ppi: this.helpers.formatISK(ppi),
+          ppi: ppi,
           typeName: typeName,
           typeID: typeID,
           clientName: clientName,

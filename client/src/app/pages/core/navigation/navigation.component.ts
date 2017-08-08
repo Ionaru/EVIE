@@ -45,6 +45,19 @@ export class NavigationComponent implements OnInit {
     this.syncClock();
   }
 
+  checkAccess(): boolean {
+    // if (this.disable) {
+    //   return false;
+    // }
+    // // return this.char !== 1;
+    // return true;
+    return this.disable;
+  }
+
+  logout(): void {
+    this.userService.logoutUser();
+  }
+
   private syncClock(): void {
     this.clock.getTime().subscribe(
       (time) => {
@@ -80,17 +93,5 @@ export class NavigationComponent implements OnInit {
         this.playersCountUp.update(time['players']);
       });
     }
-  }
-
-  checkAccess(): boolean {
-    if (this.disable) {
-      return false;
-    }
-    // return this.char !== 1;
-    return true;
-  }
-
-  logout(): void {
-    this.userService.logoutUser();
   }
 }

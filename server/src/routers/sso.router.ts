@@ -1,14 +1,14 @@
 import https = require('https');
 import fetch from 'node-fetch';
 
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { logger } from '../services/logger.service';
 import { BaseRouter, sendResponse, sendTextResponse } from './base.router';
 import { ssoConfig } from '../services/config.service';
 import { Character, CharacterInstance } from '../models/character/character';
-import { generateUniquePID, generateRandomString } from '../services/pid.service';
+import { generateRandomString, generateUniquePID } from '../services/pid.service';
 import { sockets } from '../bin/www';
-import { UserInstance, User } from '../models/user/user';
+import { User, UserInstance } from '../models/user/user';
 
 //noinspection SpellCheckingInspection
 const scopes = [
@@ -17,6 +17,7 @@ const scopes = [
   'esi-location.read_location.v1',
   'esi-location.read_ship_type.v1',
   'esi-wallet.read_character_wallet.v1',
+  'esi-markets.read_character_orders.v1',
   'esi-skills.read_skills.v1',
   'esi-skills.read_skillqueue.v1',
 ];
@@ -144,7 +145,7 @@ export class SSORouter extends BaseRouter {
       } else {
         // The state got from the EVE SSO service did not match the one we expected.
         if (request.query.state) {
-          logger.error(`Returned state was not valid, expected ${request.session['state']} 
+          logger.error(`Returned state was not valid, expected ${request.session['state']}
                         and got ${request.query.state}`);
           sendResponse(response, 400, 'InvalidState');
         } else {

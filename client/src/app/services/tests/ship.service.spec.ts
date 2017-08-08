@@ -1,7 +1,7 @@
 import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { expect } from 'chai';
+import * as expect from 'must/register';
 import { assert, SinonStub, stub } from 'sinon';
 
 import { Character } from '../../models/character/character.model';
@@ -80,22 +80,22 @@ describe('Services', () => {
     };
     const dummyCharacter = new Character(dummyData);
 
-    it('should be able to process ship data', async () => {
+    it('must be able to process ship data', async () => {
       mockResponse({
         body: JSON.stringify({'ship_type_id': 596, 'ship_item_id': 1002943704843, 'ship_name': 'Dummy\'s Impairor'}),
         status: 200
       });
 
       const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
-      expect(shipData).to.be.an('object');
+      expect(shipData).to.be.an.object();
       expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
+      expect(shipData.id).to.be.a.number();
       expect(shipData.id).to.equal(596);
-      expect(shipData.name).to.be.a('string');
+      expect(shipData.name).to.be.a.string();
       expect(shipData.name).to.equal('Dummy\'s Impairor');
     });
 
-    it('should be able to process a response with empty body', async () => {
+    it('must be able to process a response with empty body', async () => {
       mockResponse({
         body: JSON.stringify({}),
         status: 200
@@ -105,30 +105,30 @@ describe('Services', () => {
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain expected values');
-      expect(shipData).to.be.an('object');
+      expect(shipData).to.be.an.object();
       expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
+      expect(shipData.id).to.be.a.number();
       expect(shipData.id).to.equal(-1);
-      expect(shipData.name).to.be.a('string');
+      expect(shipData.name).to.be.a.string();
       expect(shipData.name).to.equal('Error');
     });
 
-    it('should be able to process an empty response', async () => {
+    it('must be able to process an empty response', async () => {
       mockResponse({});
 
       const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(shipData).to.be.an('object');
+      expect(shipData).to.be.an.object();
       expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
+      expect(shipData.id).to.be.a.number();
       expect(shipData.id).to.equal(-1);
-      expect(shipData.name).to.be.a('string');
+      expect(shipData.name).to.be.a.string();
       expect(shipData.name).to.equal('Error');
     });
 
-    it('should be able to process a HTTP error', async () => {
+    it('must be able to process a HTTP error', async () => {
       mockErrorResponse({
         body: '',
         status: 403
@@ -137,15 +137,15 @@ describe('Services', () => {
       const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
 
       assert.calledOnce(loggerStub);
-      expect(shipData).to.be.an('object');
+      expect(shipData).to.be.an.object();
       expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
+      expect(shipData.id).to.be.a.number();
       expect(shipData.id).to.equal(-1);
-      expect(shipData.name).to.be.a('string');
+      expect(shipData.name).to.be.a.string();
       expect(shipData.name).to.equal('Error');
     });
 
-    it('should be able to process a non-200 status code', async () => {
+    it('must be able to process a non-200 status code', async () => {
       mockResponse({
         body: '',
         status: 500
@@ -154,11 +154,11 @@ describe('Services', () => {
       const shipData: {id: number, name: string} = await shipService.getCurrentShip(dummyCharacter);
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(shipData).to.be.an('object');
+      expect(shipData).to.be.an.object();
       expect(Object.keys(shipData).length).to.equal(2);
-      expect(shipData.id).to.be.a('number');
+      expect(shipData.id).to.be.a.number();
       expect(shipData.id).to.equal(-1);
-      expect(shipData.name).to.be.a('string');
+      expect(shipData.name).to.be.a.string();
       expect(shipData.name).to.equal('Error');
     });
   });

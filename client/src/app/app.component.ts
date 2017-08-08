@@ -1,32 +1,37 @@
 import { Component } from '@angular/core';
-import { AppReadyEvent } from './app-ready.event';
-import { UserService } from './models/user/user.service';
-import { CharacterService } from './models/character/character.service';
-import { Globals } from './shared/globals';
-import { EndpointService } from './models/endpoint/endpoint.service';
+import { Response } from '@angular/http';
 import { Observable, Observer } from 'rxjs';
 import * as socketIo from 'socket.io-client';
+
+import { AppReadyEvent } from './app-ready.event';
+import { CharacterService } from './models/character/character.service';
+import { EndpointService } from './models/endpoint/endpoint.service';
+import { Globals } from './shared/globals';
 import { Helpers } from './shared/helpers';
-import { Response } from '@angular/http';
+import { NamesService } from './services/names.service';
+import { UserService } from './models/user/user.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['app.component.scss'],
-  providers: [AppReadyEvent, UserService, CharacterService, EndpointService, Helpers],
+  providers: [AppReadyEvent, UserService, CharacterService, EndpointService, NamesService, Helpers],
 })
 export class AppComponent {
 
-  public appVersion = '0.1.0-INDEV';
+  public static appName = 'EVE Track';
+  public static appVersion = '0.1.0-INDEV';
 
-  constructor(private userService: UserService,
-              private appReadyEvent: AppReadyEvent,
-              private globals: Globals) {
+  constructor(private userService: UserService, private appReadyEvent: AppReadyEvent, private globals: Globals) {
     this.boot();
   }
 
-  private boot(): void {
+  //noinspection JSMethodCanBeStatic
+  getAppVersion(): string {
+    return AppComponent.appVersion;
+  }
 
+  private boot(): void {
     this.globals.startUpObservable = Observable.create(async (observer: Observer<boolean>) => {
       const response: Response = await this.userService.shakeHands();
       if (response.ok) {

@@ -1,0 +1,11 @@
+{
+  "extends": ["stylelint-config-sass-guidelines", "stylelint-config-standard"],
+  "rules": {
+    "color-hex-case": "lower",
+    "color-hex-length": "long",
+    "no-empty-source": null,
+    "max-nesting-depth": null,
+    "selector-max-compound-selectors": null,
+    "selector-no-qualifying-type": null
+  }
+}

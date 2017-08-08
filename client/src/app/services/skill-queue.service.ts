@@ -27,8 +27,7 @@ export interface SkillQueueData {
 
 @Injectable()
 export class SkillQueueService {
-  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService,
-              private helpers: Helpers) { }
+  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }
 
   async getSkillQueue(character: Character): Promise<Array<SkillQueueData>> {
     const url = this.endpointService.constructESIUrl('v2/characters', character.characterId, 'skillqueue');
@@ -48,7 +47,7 @@ export class SkillQueueService {
 
       const skillQueue: Array<SkillQueueData> = response.json();
 
-      if (this.helpers.isEmpty(skillQueue)) {
+      if (Helpers.isEmpty(skillQueue)) {
         this.logger.error('Data did not contain expected values', skillQueue);
         return null;
       }

@@ -25,3 +25,12 @@ export interface UserApiData {
   email: string;
   characters: Array<ApiCharacterData>;
 }
+
+export interface RegisterResponse {
+  data: {
+    email_in_use: boolean;
+    username_in_use: boolean;
+  };
+  message: string;
+  state: 'error' | 'success';
+}

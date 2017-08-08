@@ -1,19 +1,50 @@
-#dashboard {
+.dashboard-page {
   .character-list {
-    .current-ship, .location {
-      pointer-events: none;
+    .character-list-item {
+      //position: relative;
+      //border: solid 1px red;
+      margin-bottom: 10px;
+      //height: 250px;
+      //
+      //button.activate {
+      //  position: absolute;
+      //  bottom: 0;
+      //  width: 100%;
+      //  height: 25px;
+      //}
+      //
+      //button.delete {
+      //  position: absolute;
+      //  bottom: 25px;
+      //  width: 100%;
+      //  height: 25px;
+      //}
+      //
+      //button.re-auth {
+      //  position: absolute;
+      //  bottom: 50px;
+      //  width: 100%;
+      //  height: 25px;
+      //}
 
-      &:hover {
-        color: lightblue;
-      }
-      .success {
-        pointer-events: auto;
-        cursor: pointer;
-      }
-      .error {
-        pointer-events: auto;
-        cursor: pointer;
-        color: yellow;
+      .current-ship,
+      .location {
+        pointer-events: none;
+
+        &:hover {
+          color: #add8e6;
+        }
+
+        .success {
+          cursor: pointer;
+          pointer-events: auto;
+        }
+
+        .error {
+          color: #ffff00;
+          cursor: pointer;
+          pointer-events: auto;
+        }
       }
     }
   }

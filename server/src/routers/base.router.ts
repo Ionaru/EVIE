@@ -53,6 +53,7 @@ export function sendResponse(response: Response, statusCode: number, message: st
   logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${statusCode} ${message}`);
 
   response.status(statusCode);
+  response.type('html');
   response.json(responseData);
 }
 

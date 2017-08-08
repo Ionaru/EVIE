@@ -5,15 +5,21 @@ import * as crypto from 'crypto-js';
 import { Globals } from '../../shared/globals';
 import { Helpers } from '../../shared/helpers';
 import { CharacterService } from '../character/character.service';
-import { LoginResponse, User, UserApiData } from './user.model';
+import { LoginResponse, RegisterResponse, User, UserApiData } from './user.model';
+import { Logger } from 'angular2-logger/core';
 
 @Injectable()
 export class UserService {
 
   constructor(private http: Http,
-              private CharacterService: CharacterService,
-              private globals: Globals,
+              private characterService: CharacterService,
+              private globals: Globals, private logger: Logger,
               private helpers: Helpers) { }
+
+
+  static hashPassword(passwordPlain: string): string {
+    return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
+  }
 
   async shakeHands(): Promise<any> {
     const url = 'api/handshake';
@@ -24,7 +30,7 @@ export class UserService {
       const jsonData = response.json();
       if (jsonData.message === 'LoggedIn') {
         this.globals.loggedIn = true;
-        this.storeUser(jsonData.data);
+        await this.storeUser(jsonData.data);
       }
     }
     return response;
@@ -40,7 +46,9 @@ export class UserService {
     });
     const jsonData: LoginResponse = response.json();
     if (response.ok) {
-      return [jsonData.message, this.storeUser(jsonData.data)];
+      const user = await this.storeUser(jsonData.data);
+      this.globals.loggedIn = true;
+      return [jsonData.message, user];
     }
     return [jsonData.message, null];
   }
@@ -52,31 +60,51 @@ export class UserService {
     });
   }
 
-  async registerUser(username: string, email: string, password: string): Promise<void> {
+  async registerUser(username: string, email: string, password: string): Promise<string> {
     const url = 'api/register';
     const userToRegister = {
       username: username,
       email: email,
       password: UserService.hashPassword(password)
     };
-    await this.http.post(url, userToRegister).toPromise();
+    let response: Response;
+    try {
+      response = await this.http.post(url, userToRegister).toPromise().catch((errorResponse: Response) => {
+        if (errorResponse.status === 409) {
+          return errorResponse;
+        }
+        throw new Error(errorResponse.toString());
+      });
+      const result: RegisterResponse = response.json();
+      if (result.data.username_in_use) {
+        return 'username_in_use';
+      } else if (result.data.email_in_use) {
+        return 'email_in_use';
+      } else if (result.state === 'error') {
+        return 'error';
+      } else {
+        return 'success';
+      }
+    } catch (error) {
+      this.logger.error(error);
+      return null;
+    }
   }
 
-  static hashPassword(passwordPlain: string): string {
-    return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
-  }
-
-  storeUser(data: UserApiData): User {
+  async storeUser(data: UserApiData): Promise<User> {
     const user = new User(data);
     this.globals.userChangeEvent.next(user);
     this.globals.user = user;
-    for (const characterData of data.characters) {
+
+    // Register all the characters in parallel, but wait until they are all finished before continuing
+    await Promise.all(data.characters.map(async (characterData) => {
       if (characterData.scopes) {
-        this.CharacterService.registerCharacter(characterData).then();
+        await this.characterService.registerCharacter(characterData);
       }
-    }
-    if (!this.helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
-      this.CharacterService.setActiveCharacter(user.characters[0]).then();
+    }));
+
+    if (!Helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
+      this.characterService.setActiveCharacter(user.characters[0]).then();
     }
     return user;
   }

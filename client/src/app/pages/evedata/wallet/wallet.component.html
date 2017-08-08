@@ -1,4 +1,4 @@
-<div id="balance-section">
+<div class="balance-section pull-right">
   <h2 class="balance">
     Current balance:
     <span id="balance-number"></span>
@@ -7,44 +7,44 @@
     </span>
   </h2>
 </div>
-<div id="wallet-section">
 
-  <div id="journal-section">
-    <h2 class="journal-head">Journal</h2>
-    <p>Showing the last 50 records in the last 30 days.</p>
-    <i *ngIf="!journalDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>
-    <div id="journal-data" *ngIf="journalDataRequestDone">
-      <p *ngIf="!journalData.length">There is no journal data available.</p>
-      <table *ngIf="journalData.length" class="journal-table table">
-        <thead>
-        <tr>
-          <th class="left">Date (EVE Time)</th>
-          <th class="left">Type</th>
-          <th class="left">From</th>
-          <th class="left">Amount</th>
-          <th class="left">Balance</th>
-        </tr>
-        </thead>
-        <tbody id="wallet-journal-body">
-        <tr *ngFor="let entry of journalData">
-          <td data-label="Date">{{ entry.dateRaw }}</td>
-          <td data-label="refType">{{ entry.refTypeName }}</td>
-          <td data-label="From">{{ entry.ownerName1 }}</td>
-          <td data-label="Amount" [ngClass]="getNumberColor(entry.amountFormatted)">{{ entry.amountFormatted }} ISK</td>
-          <td data-label="Balance">{{ entry.balance }} ISK</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+<div class="wallet-section">
+  <!--<div class="journal-section">-->
+    <!--<h2 class="journal-head">Journal</h2>-->
+    <!--<i *ngIf="!journalDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>-->
+    <!--<div class="journal-data" *ngIf="journalDataRequestDone">-->
+      <!--<p *ngIf="journalData.length">Showing the last 50 records in the last 30 days.</p>-->
+      <!--<p *ngIf="!journalData.length">There is no journal data available.</p>-->
+      <!--<table *ngIf="journalData.length" class="journal-table table table-hover">-->
+        <!--<thead>-->
+        <!--<tr>-->
+          <!--<th class="left">Date (EVE Time)</th>-->
+          <!--<th class="left">Type</th>-->
+          <!--<th class="left">From</th>-->
+          <!--<th class="left">Amount</th>-->
+          <!--<th class="left">Balance</th>-->
+        <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody class="wallet-journal-body">-->
+        <!--<tr *ngFor="let entry of journalData">-->
+          <!--<td data-label="Date">{{ entry.dateRaw }}</td>-->
+          <!--<td data-label="refType">{{ entry.refTypeName }}</td>-->
+          <!--<td data-label="From">{{ entry.ownerName1 }}</td>-->
+          <!--<td data-label="Amount" [ngClass]="getNumberColor(entry.amountFormatted)">{{ entry.amountFormatted }} ISK</td>-->
+          <!--<td data-label="Balance">{{ entry.balance }} ISK</td>-->
+        <!--</tr>-->
+        <!--</tbody>-->
+      <!--</table>-->
+    <!--</div>-->
+  <!--</div>-->
 
   <hr class="opacity-20">
 
-  <div id="transactions-section">
+  <div class="transactions-section">
     <h2 class="transactions-head">Transactions</h2>
-    <p>Showing the last 50 records in the last 30 days.</p>
     <i *ngIf="!transactionDataRequestDone" class="fa fa-circle-o-notch fa-spin"></i>
-    <div *ngIf="transactionDataRequestDone" id="transactions-data">
+    <div *ngIf="transactionDataRequestDone" class="transactions-data">
+      <p *ngIf="transactionData.length">Showing {{ transactionData2.length }} records.</p>
       <p *ngIf="!transactionData.length">There is no transaction data available.</p>
       <table *ngIf="transactionData.length" class="transactions-table table">
         <thead>
@@ -54,18 +54,21 @@
           <th class="left">Price</th>
         </tr>
         </thead>
-        <tbody id="WalletTransactionsBody">
-        <tr *ngFor="let entry of transactionData">
-          <td data-label="date">{{ entry.dateRaw }}</td>
-          <td data-label="info">
-            {{ entry.quantity }} x <a (click)="getItemInfo(entry.typeID)">{{ entry.typeName }}</a>
-            <span *ngIf="entry.transactionType === 'buy'">bought from</span>
-            <span *ngIf="entry.transactionType === 'sell'">sold to</span>
-            <a (click)="getPersonInfo(entry.clientID)">{{ entry.clientName }}</a>
+        <tbody class="WalletTransactionsBody">
+        <tr *ngFor="let entry of transactionData2">
+          <td>{{ entry.date }}</td>
+          <!--<td data-label="date">{{ entry.date }}</td>-->
+          <td data-label="info">You
+            <span *ngIf="entry.is_buy === true">bought</span>
+            <span *ngIf="entry.is_buy === false">sold</span>
+            {{ entry.quantity | number: quantityFormat() }} x <a (click)="getItemInfo(entry.type_id)">{{ names[entry.type_id]?.name || entry.type_id }}</a>
+            <span *ngIf="entry.is_buy === true">from</span>
+            <span *ngIf="entry.is_buy === false">to</span>
+            <a (click)="getPersonInfo(entry.client_id)">{{ entry.client_id }}</a>
           </td>
-          <td data-label="price" [ngClass]="buyOrSell(entry.transactionType)">
-            {{ entry.price }} ISK<span
-            *ngIf="entry.quantity > 1"> ({{ entry.ppi }} ISK per item)</span>
+          <td data-label="price" [ngClass]="buyOrSell(entry.is_buy)">
+            {{ entry.unit_price * entry.quantity | number: iskFormat() }} ISK<span
+            *ngIf="entry.quantity > 1"> ({{ entry.unit_price | number: iskFormat() }} ISK per item)</span>
           </td>
         </tr>
         </tbody>

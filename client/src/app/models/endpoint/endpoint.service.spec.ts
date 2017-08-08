@@ -1,7 +1,7 @@
 import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { expect } from 'chai';
+import * as expect from 'must/register';
 import { assert, SinonStub, spy, stub } from 'sinon';
 
 import { ApiCharacterData, Character } from '../character/character.model';
@@ -84,37 +84,37 @@ describe('Models', () => {
         params.filter(_ => _.name === 'characterID')[0],
       ]);
 
-      it('should be able to construct a simple XML URL', () => {
+      it('must be able to construct a simple XML URL', () => {
         const url = endpointService.constructXMLUrl(dummyEndpoint);
-        expect(url).to.be.a('string');
-        expect(url).to.contain(endpointService.XMLBaseUrl);
-        expect(url).to.contain(endpointDir);
-        expect(url).to.contain(endpointName);
+        expect(url).to.be.a.string();
+        expect(url).to.include(endpointService.XMLBaseUrl);
+        expect(url).to.include(endpointDir);
+        expect(url).to.include(endpointName);
         expect(url).to.equal(`${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx?`);
       });
 
-      it('should be able to construct an XML URL with params', () => {
-        const params = ['dummyParam1=Value', 'dummyParam2=Value2'];
+      it('must be able to construct an XML URL with params', () => {
+        const parameters = ['dummyParam1=Value', 'dummyParam2=Value2'];
         const url = endpointService.constructXMLUrl(dummyEndpoint, ['dummyParam1=Value', 'dummyParam2=Value2']);
-        expect(url).to.be.a('string');
+        expect(url).to.be.a.string();
         expect(url).to.contain(endpointService.XMLBaseUrl);
         expect(url).to.contain(endpointDir);
         expect(url).to.contain(endpointName);
-        for (const param of params) {
+        for (const param of parameters) {
           expect(url).to.contain(param);
         }
 
         let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
-        testUrl += `?${params.join('&')}`;
+        testUrl += `?${parameters.join('&')}`;
 
         expect(url).to.equal(testUrl);
       });
 
-      it('should be able to construct an XML URL with an accessToken', () => {
+      it('must be able to construct an XML URL with an accessToken', () => {
         globals.selectedCharacter = dummyCharacter;
 
         const url = endpointService.constructXMLUrl(dummyEndpoint);
-        expect(url).to.be.a('string');
+        expect(url).to.be.a.string();
         expect(url).to.contain(endpointService.XMLBaseUrl);
         expect(url).to.contain(endpointDir);
         expect(url).to.contain(endpointName);
@@ -125,33 +125,33 @@ describe('Models', () => {
         expect(url).to.equal(testUrl);
       });
 
-      it('should be able to construct a complex XML URL', () => {
+      it('must be able to construct a complex XML URL', () => {
         globals.selectedCharacter = dummyCharacter;
 
-        const params = ['dummyParam1=Value', 'dummyParam2=Value2'];
+        const parameters = ['dummyParam1=Value', 'dummyParam2=Value2'];
         const url = endpointService.constructXMLUrl(dummyEndpoint, ['dummyParam1=Value', 'dummyParam2=Value2']);
-        expect(url).to.be.a('string');
+        expect(url).to.be.a.string();
         expect(url).to.contain(endpointService.XMLBaseUrl);
         expect(url).to.contain(endpointDir);
         expect(url).to.contain(endpointName);
         expect(url).to.contain('accessToken=' + dummyCharacter.accessToken);
-        for (const param of params) {
+        for (const param of parameters) {
           expect(url).to.contain(param);
         }
 
         let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
-        testUrl += `?accessToken=${dummyCharacter.accessToken}&${params.join('&')}`;
+        testUrl += `?accessToken=${dummyCharacter.accessToken}&${parameters.join('&')}`;
 
         expect(url).to.equal(testUrl);
       });
 
-      it('should be able to construct an ESI URL', () => {
+      it('must be able to construct an ESI URL', () => {
         const param1 = 'v99';
         const param2 = 'test';
         const param3 = dummyCharacter.characterId;
         const param4 = 'url';
         const url = endpointService.constructESIUrl(param1, param2, param3, param4);
-        expect(url).to.be.a('string');
+        expect(url).to.be.a.string();
         expect(url).to.contain(endpointService.ESIBaseUrl);
         expect(url).to.contain(param1);
         expect(url).to.contain(param2);
@@ -160,7 +160,7 @@ describe('Models', () => {
         expect(url).to.equal(`${endpointService.ESIBaseUrl}${param1}/${param2}/${param3.toString()}/${param4}/`);
       });
 
-      it('should be able to process name data', async () => {
+      it('must be able to process name data', async () => {
 
         setupConnections(mockBackend, {
           body: JSON.stringify([
@@ -179,44 +179,44 @@ describe('Models', () => {
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
-        expect(nameData).to.be.an('array');
+        expect(nameData).to.be.an.array();
 
-        expect(nameData[0]).to.be.an('object');
+        expect(nameData[0]).to.be.an.object();
         expect(nameData[0].id).to.equal(1234);
         expect(nameData[0].name).to.equal('TestData');
         expect(nameData[0].category).to.equal('test_category');
 
-        expect(nameData[1]).to.be.a('object');
+        expect(nameData[1]).to.be.an.object();
         expect(nameData[1].id).to.equal(9876);
         expect(nameData[1].name).to.equal('MockData');
         expect(nameData[1].category).to.equal('mock_category');
       });
 
-      it('should be able to process an empty name data response', async () => {
+      it('must be able to process an empty name data response', async () => {
         setupConnections(mockBackend, {
           body: '',
           status: 500
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
-        expect(nameData).to.be.an('array');
+        expect(nameData).to.be.an.array();
         expect(nameData.length).to.equal(0);
-        expect(nameData).to.deep.equal([]);
+        expect(nameData).to.eql([]);
       });
 
-      it('should be able to process an invalid HTTP response', async () => {
+      it('must be able to process an invalid HTTP response', async () => {
         setupConnections(mockBackend, {
           what: 7,
           problem: 'nothing'
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
-        expect(nameData).to.be.an('array');
+        expect(nameData).to.be.an.array();
         expect(nameData.length).to.equal(0);
-        expect(nameData).to.deep.equal([]);
+        expect(nameData).to.eql([]);
       });
 
-      it('should not call the endpoint when no valid names were given', async () => {
+      it('must not call the endpoint when no valid names were given', async () => {
         setupConnections(mockBackend, {
           what: 7,
           problem: 'nothing'
@@ -226,12 +226,12 @@ describe('Models', () => {
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(-1, -1);
         assert.notCalled(httpSpy);
 
-        expect(nameData).to.be.an('array');
+        expect(nameData).to.be.an.array();
         expect(nameData.length).to.equal(0);
-        expect(nameData).to.deep.equal([]);
+        expect(nameData).to.eql([]);
       });
 
-      it('should be able to get specific name from name data', async () => {
+      it('must be able to get specific name from name data', async () => {
         setupConnections(mockBackend, {
           body: JSON.stringify([
             {
@@ -249,28 +249,28 @@ describe('Models', () => {
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
-        expect(nameData).to.be.an('array');
+        expect(nameData).to.be.an.array();
 
-        expect(nameData[0]).to.be.an('object');
+        expect(nameData[0]).to.be.an.object();
         expect(nameData[0].id).to.equal(1234);
         expect(nameData[0].name).to.equal('TestData');
         expect(nameData[0].category).to.equal('test_category');
 
-        expect(nameData[1]).to.be.a('object');
+        expect(nameData[1]).to.be.an.object();
         expect(nameData[1].id).to.equal(9876);
         expect(nameData[1].name).to.equal('MockData');
         expect(nameData[1].category).to.equal('mock_category');
 
         const TestData = endpointService.getNameFromNameData(nameData, 1234);
-        expect(TestData).to.be.a('string');
+        expect(TestData).to.be.a.string();
         expect(TestData).to.equal('TestData');
 
         const MockData = endpointService.getNameFromNameData(nameData, 9876);
-        expect(MockData).to.be.a('string');
+        expect(MockData).to.be.a.string();
         expect(MockData).to.equal('MockData');
       });
 
-      it('should return \'Error\' when name does not exist in name data', async () => {
+      it('must return \'Error\' when name does not exist in name data', async () => {
         setupConnections(mockBackend, {
           body: JSON.stringify([
             {
@@ -288,20 +288,20 @@ describe('Models', () => {
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
-        expect(nameData).to.be.an('array');
+        expect(nameData).to.be.an.array();
 
-        expect(nameData[0]).to.be.an('object');
+        expect(nameData[0]).to.be.an.object();
         expect(nameData[0].id).to.equal(1234);
         expect(nameData[0].name).to.equal('TestData');
         expect(nameData[0].category).to.equal('test_category');
 
-        expect(nameData[1]).to.be.an('object');
+        expect(nameData[1]).to.be.an.object();
         expect(nameData[1].id).to.equal(9876);
         expect(nameData[1].name).to.equal('MockData');
         expect(nameData[1].category).to.equal('mock_category');
 
         const WrongData = endpointService.getNameFromNameData(nameData, 5678);
-        expect(WrongData).to.be.a('string');
+        expect(WrongData).to.be.a.string();
         expect(WrongData).to.equal('Error');
       });
     });
