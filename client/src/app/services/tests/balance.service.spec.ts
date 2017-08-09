@@ -105,76 +105,89 @@ describe('Services', () => {
 
     it('must be able to process balance data', async () => {
       mockResponse({
-        body: '[{"wallet_id": 1000, "balance": 302315697}, {"wallet_id": 1200, "balance": 0}]',
+        body: '3023156.97',
         status: 200,
       });
 
-      const locationID: number = await balanceService.getBalance(dummyCharacter);
-      expect(locationID).to.be.a.number();
-      expect(locationID).to.equal(3023156.97);
+      const balance: number = await balanceService.getBalance(dummyCharacter);
+      expect(balance).to.be.a.number();
+      expect(balance).to.equal(3023156.97);
     });
 
-    it('must be able to process data without a master wallet', async () => {
+    it('must be able to process a balance of zero', async () => {
       mockResponse({
-        body: '[{"wallet_id": 1100, "balance": 5000}, {"wallet_id": 1200, "balance": 0}]',
+        body: '0',
         status: 200,
       });
 
-      const locationID: number = await balanceService.getBalance(dummyCharacter);
-      expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain master wallet');
-      expect(locationID).to.be.a.number();
-      expect(locationID).to.equal(-1);
+      const balance: number = await balanceService.getBalance(dummyCharacter);
+      expect(balance).to.be.a.number();
+      expect(balance).to.equal(0);
     });
 
     it('must be able to process a response with empty body', async () => {
       mockResponse({
-        body: JSON.stringify({}),
+        body: '',
         status: 200,
       });
 
-      const locationID: number = await balanceService.getBalance(dummyCharacter);
+      const balance: number = await balanceService.getBalance(dummyCharacter);
+
+      assert.calledOnce(loggerStub);
+      expect(balance).to.be.a.number();
+      expect(balance).to.equal(-1);
+    });
+
+    it('must be able to process a response with a wrong data type', async () => {
+      mockResponse({
+        body: 'Not a Number',
+        status: 200,
+      });
+
+      const balance: number = await balanceService.getBalance(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Data did not contain expected values');
-      expect(locationID).to.be.a.number();
-      expect(locationID).to.equal(-1);
+      expect(balance).to.be.a.number();
+      expect(balance).to.equal(-1);
     });
 
     it('must be able to process an empty response', async () => {
       mockResponse({});
 
-      const locationID: number = await balanceService.getBalance(dummyCharacter);
+      const balance: number = await balanceService.getBalance(dummyCharacter);
 
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(locationID).to.be.a.number();
-      expect(locationID).to.equal(-1);
+      expect(balance).to.be.a.number();
+      expect(balance).to.equal(-1);
     });
 
-    it('must be able to process a HTTP error', async () => {
-      mockErrorResponse({
-        body: '',
+    it('must be able to process a response with an auth error', async () => {
+      mockResponse({
+        body: '{"error": "Missing or invalid token.", "sso_status": 400}',
         status: 403,
       });
 
-      const locationID: number = await balanceService.getBalance(dummyCharacter);
+      const balance: number = await balanceService.getBalance(dummyCharacter);
 
       assert.calledOnce(loggerStub);
-      expect(locationID).to.be.a.number();
-      expect(locationID).to.equal(-1);
+      expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
+      expect(balance).to.be.a.number();
+      expect(balance).to.equal(-1);
     });
 
-    it('must be able to process a non-200 status code', async () => {
+    it('must be able to process a non-200 status code with empty body', async () => {
       mockResponse({
         body: '',
         status: 500,
       });
 
-      const locationID: number = await balanceService.getBalance(dummyCharacter);
+      const balance: number = await balanceService.getBalance(dummyCharacter);
       assert.calledOnce(loggerStub);
       expect(loggerStub.firstCall.args[0]).to.equal('Response was not OK');
-      expect(locationID).to.be.a.number();
-      expect(locationID).to.equal(-1);
+      expect(balance).to.be.a.number();
+      expect(balance).to.equal(-1);
     });
   });
 });
