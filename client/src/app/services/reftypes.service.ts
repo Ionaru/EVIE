@@ -1,8 +1,25 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
-import { Helpers } from '../shared/helpers';
-import { EndpointService } from '../models/endpoint/endpoint.service';
+
 import { Endpoint } from '../models/endpoint/endpoint.model';
+import { EndpointService } from '../models/endpoint/endpoint.service';
+import { Helpers } from '../shared/helpers';
+
+export interface IRefTypes {
+  eveapi: {
+    cachedUntil: [string];
+    result: [{
+      rowset: [{
+        row: [{
+          $: {
+            refTypeID: any;
+            refTypeName: any;
+          };
+        }];
+      }];
+    }];
+  };
+}
 
 @Injectable()
 export class RefTypesService {
@@ -15,10 +32,10 @@ export class RefTypesService {
     this.storageTag = this.endpoint.name;
   }
 
-  async getRefTypes(expired = false): Promise<Object> {
+  public async getRefTypes(expired = false): Promise<IRefTypes> {
     if (!expired && localStorage.getItem(this.storageTag)) {
-      const jsonData = JSON.parse(localStorage.getItem(this.storageTag));
-      if (this.helpers.isCacheExpired(jsonData['eveapi']['cachedUntil'][0])) {
+      const jsonData: IRefTypes = JSON.parse(localStorage.getItem(this.storageTag));
+      if (this.helpers.isCacheExpired(jsonData.eveapi.cachedUntil[0])) {
         return this.getRefTypes(true);
       } else {
         return jsonData;
@@ -28,8 +45,8 @@ export class RefTypesService {
       const url = this.endpointService.constructXMLUrl(this.endpoint, []);
       const headers = new Headers();
       headers.append('Accept', 'application/xml');
-      const res = await this.http.get(url, {headers: headers}).toPromise();
-      const jsonData = this.helpers.processXML(res);
+      const res = await this.http.get(url, {headers}).toPromise();
+      const jsonData = this.helpers.processXML(res) as IRefTypes;
       localStorage.setItem(this.storageTag, JSON.stringify(jsonData));
       return jsonData;
     }

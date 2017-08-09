@@ -1,30 +1,31 @@
-import { Response } from '@angular/http';
-import { parseString } from 'xml2js';
 import { Injectable } from '@angular/core';
+import { Response } from '@angular/http';
 import { Logger } from 'angular2-logger/core';
+import { parseString } from 'xml2js';
+
 import { AppComponent } from '../app.component';
+import Timer = NodeJS.Timer;
 
 @Injectable()
 export class Helpers {
-  constructor(private logger: Logger) { }
 
   /**
    * Wrapper for the setInterval function, it will execute the passed function immediately before calling setInterval
-   * @param {Function} fn - The name of the property to fetch
-   * @param {number} interval - The name of the property to fetch
+   * @param {() => void} fn - The function to run
+   * @param {number} interval - The interval of the repeat
    * @param {Array<any>} params - Additional parameters to pass to fn
-   * @return {number} - ID value for the interval function, used for clearInterval()
+   * @return {Timer} - Timer object for the interval function, used for clearInterval()
    */
-  static repeat(fn: Function, interval: number, ...params: Array<any>): number {
+  public static repeat(fn: (...params) => void, interval: number, ...params: any[]): Timer {
     fn(...params);
     return setInterval(fn, interval, ...params);
   }
 
-  static createTitle(name: string): string {
+  public static createTitle(name: string): string {
     return AppComponent.appName + ' - ' + name;
   }
 
-  static isEmpty(obj: any): boolean {
+  public static isEmpty(obj: any): boolean {
     // null and undefined are "empty"
     if (obj == null) {
       return true;
@@ -51,8 +52,11 @@ export class Helpers {
     return Object.getOwnPropertyNames(obj).length <= 0;
   }
 
-  static formatAmount(amount: number | string, decimals = 2, decimalMark = '.', delimiter = ','): string {
-    let i: any, j: any, n: any, s: any;
+  public static formatAmount(amount: number | string, decimals = 2, decimalMark = '.', delimiter = ','): string {
+    let i: any;
+    let j: any;
+    let n: any;
+    let s: any;
     n = Number(amount);
     s = n < 0 ? '-' : '';
     i = parseInt(n = Math.abs(+n || 0).toFixed(decimals), 10) + '';
@@ -62,11 +66,13 @@ export class Helpers {
       (decimals ? decimalMark + Math.abs(n - i).toFixed(decimals).slice(2) : '');
   }
 
-  processXML(response: Response): Object {
+  constructor(private logger: Logger) { }
+
+  public processXML(response: Response): object {
     try {
       let jsonObject = {};
 
-      parseString(response.text(), function (error, json) {
+      parseString(response.text(), (error, json) => {
         if (error) {
           throw error;
         }
@@ -75,18 +81,18 @@ export class Helpers {
       return jsonObject;
     } catch (error) {
       this.logger.error(error);
-      return 'XMLParseError';
+      return {err: 'XMLParseError'};
     }
   }
 
-  isCacheExpired(cacheEndTime: string): boolean {
+  public isCacheExpired(cacheEndTime: string): boolean {
     const cacheEndTimeDate = this.eveTimeToDate(cacheEndTime).getTime();
     const currentTime = new Date().getTime();
     const distance = cacheEndTimeDate - currentTime;
     return distance < -5000;
   }
 
-  eveTimeToDate(dateString: string): Date {
+  public eveTimeToDate(dateString: string): Date {
     try {
       return new Date(dateString.replace(/-/ig, '/').split('.')[0] + ' UTC');
     } catch (error) {
@@ -95,21 +101,24 @@ export class Helpers {
     }
   }
 
-  sortArrayByObjectProperty(array: Array<any>, property: string, inverse = false): Array<any> {
+  public sortArrayByObjectProperty(array: any[], property: string, inverse = false): any[] {
 
-    function compare(a, b) {
+    const compare = (a, b) => {
       let left = a[property];
       let right = b[property];
 
       if (!left || !right) {
-        // this.logger.error('Unable to compare values', left, right);
         throw new Error(`Unable to compare values '${left}' and '${right}'`);
       }
 
-      try {
+      if (typeof left !== typeof right) {
+        throw new Error(`Unable to compare different types: '${left}' (${typeof left}) and '${right}' (${typeof right})`);
+      }
+
+      // We know the types are the same, but it's better to make absolutely sure.
+      if (typeof left === 'string' && typeof right === 'string') {
         left = left.toUpperCase();
         right = right.toUpperCase();
-      } catch (err) {
       }
 
       if (left < right) {
@@ -119,7 +128,7 @@ export class Helpers {
         return inverse ? -1 : 1;
       }
       return 0;
-    }
+    };
 
     return array.sort(compare);
   }

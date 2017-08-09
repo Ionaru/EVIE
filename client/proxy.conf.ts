@@ -4,9 +4,9 @@ const PROXY_CONFIG = [
       '/api',
       '/sso',
     ],
+    secure: false,
     target: 'http://localhost:3000',
-    secure: false
-  }
+  },
 ];
 
 module.exports = PROXY_CONFIG;

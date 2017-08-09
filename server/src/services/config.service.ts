@@ -12,9 +12,9 @@ export let ssoConfig: Config;
 
 export class Config {
 
-  config: Object;
-  configName: string;
-  allowedMissing: boolean;
+  public config: object;
+  public configName: string;
+  public allowedMissing: boolean;
 
   constructor(configName?: string, allowedMissing = false) {
     this.configName = configName;
@@ -23,9 +23,23 @@ export class Config {
   }
 
   /**
+   * Get a property from the config file
+   * @param {string} property - The name of the property to fetch
+   * @return {any | null} - The value of the given config property
+   */
+  public getProperty(property: string): any {
+    if (this.config.hasOwnProperty(property)) {
+      return this.config[property];
+    } else {
+      logger.warn(`Property '${property}' does not exist in config '${this.configName}.ini'`);
+      return null;
+    }
+  }
+
+  /**
    * Read the config from one of the config files and store the gotten values in this.config
    */
-  readConfigFile() {
+  private readConfigFile() {
     try {
       // Try to read the config file from the config folder in the project root directory
       this.config = ini.parse(fs.readFileSync(path.join(configPath, this.configName + '.ini'), 'utf-8'));
@@ -40,20 +54,6 @@ export class Config {
         // The config file was marked as essential for the system or something else went wrong, throw the original error.
         throw error;
       }
-    }
-  }
-
-  /**
-   * Get a property from the config file
-   * @param {string} property - The name of the property to fetch
-   * @return {any | null} - The value of the given config property
-   */
-  get(property: string): any {
-    if (this.config.hasOwnProperty(property)) {
-      return this.config[property];
-    } else {
-      logger.warn(`Property '${property}' does not exist in config '${this.configName}.ini'`);
-      return null;
     }
   }
 }

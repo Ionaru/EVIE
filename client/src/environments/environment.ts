@@ -5,5 +5,5 @@
 
 export const environment = {
   logLevel: 5,
-  production: false
+  production: false,
 };

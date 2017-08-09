@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
+// TODO: Remove on implementation.
+// tslint:disable:no-empty
+
 @Component({
+  styleUrls: ['mail.component.scss'],
   templateUrl: 'mail.component.html',
-  styleUrls: ['mail.component.scss']
 })
 export class MailComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
   }
 
 }

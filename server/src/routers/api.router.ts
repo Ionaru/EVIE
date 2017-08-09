@@ -1,26 +1,13 @@
 import bcrypt = require('bcryptjs');
 
-import { Character, CharacterInstance } from '../models/character/character';
-import { User, UserInstance } from '../models/user/user';
 import { Request, Response } from 'express';
+import { characterModel, ICharacterInstance } from '../models/character/character';
+import { IUserInstance, userModel } from '../models/user/user';
 import { logger } from '../services/logger.service';
-import { BaseRouter, sendResponse } from './base.router';
 import { generateUniquePID } from '../services/pid.service';
+import { BaseRouter, sendResponse } from './base.router';
 
 export class APIRouter extends BaseRouter {
-
-  constructor() {
-    super();
-    this.createGetRoute('/handshake', APIRouter.doHandShake);
-    this.createPostRoute('/login', APIRouter.loginUser);
-    this.createPostRoute('/logout', APIRouter.logoutUser);
-    this.createPostRoute('/register', APIRouter.registerUser);
-    this.createPostRoute('/change/username', APIRouter.changeUserUsername);
-    this.createPostRoute('/change/password', APIRouter.changeUserPassword);
-    this.createPostRoute('/change/email', APIRouter.changeUserEmail);
-    this.createPostRoute('/delete', APIRouter.deleteUser);
-    logger.info('Route defined: API');
-  }
 
   // TODO: Route for resetting a password
 
@@ -33,29 +20,29 @@ export class APIRouter extends BaseRouter {
    *  200 NotLoggedIn: No client session was found
    */
   private static async doHandShake(request: Request, response: Response): Promise<void> {
-    if (request.session['user'].id) {
-      const user: UserInstance = await User.findOne({
+    if (request.session.user.id) {
+      const user: IUserInstance = await userModel.findOne({
         attributes: ['id', 'passwordHash', 'timesLogin', 'pid', 'username', 'email'],
-        where: {
-          id: request.session['user'].id,
-        },
         include: [{
-          model: Character,
           attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
-        }]
+          model: characterModel,
+        }],
+        where: {
+          id: request.session.user.id,
+        },
       });
       if (user) {
         user.timesLogin++;
         user.lastLogin = new Date();
         await user.save();
         const userData = {
-          pid: user.pid,
-          username: user.username,
-          email: user.email,
-          characters: user.characters.map((character: CharacterInstance): Object => {
+          characters: user.characters.map((character: ICharacterInstance): object => {
             delete character.userId;
             return character.toJSON();
           }),
+          email: user.email,
+          pid: user.pid,
+          username: user.username,
         };
         return sendResponse(response, 200, 'LoggedIn', userData);
 
@@ -84,36 +71,36 @@ export class APIRouter extends BaseRouter {
     const username = request.body.username;
     const password = request.body.password;
 
-    const user: UserInstance = await User.findOne({
+    const user: IUserInstance = await userModel.findOne({
       attributes: ['id', 'passwordHash', 'timesLogin', 'pid', 'username', 'email'],
+      include: [{
+        attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
+        model: characterModel,
+      }],
       where: {
         $or: [
-          {username: username},
-          {email: username}
+          {username},
+          {email: username},
         ],
       },
-      include: [{
-        model: Character,
-        attributes: ['pid', 'accessToken', 'tokenExpiry', 'characterId', 'scopes', 'ownerHash', 'name', 'isActive'],
-      }]
     });
 
     if (user) {
       if (bcrypt.compareSync(password, user.passwordHash)) {
-        request.session['user'].id = user.id;
-        request.session['user'].pid = user.pid;
+        request.session.user.id = user.id;
+        request.session.user.pid = user.pid;
         user.timesLogin++;
         user.lastLogin = new Date();
         await user.save();
         logger.info(user.username + ' logged in.');
         const userData = {
-          pid: user.pid,
-          username: user.username,
-          email: user.email,
-          characters: user.characters.map((character: CharacterInstance): Object => {
+          characters: user.characters.map((character: ICharacterInstance): object => {
             delete character.userId;
             return character.toJSON();
           }),
+          email: user.email,
+          pid: user.pid,
+          username: user.username,
         };
         sendResponse(response, 200, 'LoggedIn', userData);
 
@@ -159,31 +146,31 @@ export class APIRouter extends BaseRouter {
     const email: string = request.body.email.trim();
     const password: string = request.body.password;
 
-    let user: UserInstance = await User.findOne({
+    let user: IUserInstance = await userModel.findOne({
       where: {
         $or: [
           // To prevent conflicts in username/email combination, both the username and email may only exist once in the
           // database.
-          {username: username},
+          {username},
           {username: email},
-          {email: email},
+          {email},
           {email: username},
         ],
-      }
+      },
     });
 
     if (!user) {
-      user = await User.create({
-        pid: await generateUniquePID(8, User),
-        username: username,
+      user = await userModel.create({
+        email,
         passwordHash: bcrypt.hashSync(password, 8),
-        email: email,
+        pid: await generateUniquePID(8, userModel),
+        username,
       });
 
       sendResponse(response, 200, 'Registered', {
+        email: user.email,
         pid: user.pid,
         username: user.username,
-        email: user.email,
       });
 
     } else {
@@ -202,8 +189,8 @@ export class APIRouter extends BaseRouter {
       }
 
       sendResponse(response, 409, 'Taken', {
-        username_in_use: usernameInUse,
         email_in_use: emailInUse,
+        username_in_use: usernameInUse,
       });
     }
   }
@@ -226,7 +213,7 @@ export class APIRouter extends BaseRouter {
    */
   private static async changeUserPassword(request: Request, response: Response): Promise<void> {
 
-    if (request.session['user']) {
+    if (request.session.user) {
 
       const pid = request.body.pid;
       const oldPassword = request.body.oldpassword;
@@ -234,16 +221,16 @@ export class APIRouter extends BaseRouter {
 
       if (pid && oldPassword && newPassword) { // TODO: Administrator override
 
-        const user: UserInstance = await User.findOne({
+        const user: IUserInstance = await userModel.findOne({
           attributes: ['id', 'passwordHash', 'pid'],
           where: {
-            pid: pid,
-          }
+            pid,
+          },
         });
 
         if (user) {
 
-          if (pid === request.session['user'].pid) { // TODO: Administrator override
+          if (pid === request.session.user.pid) { // TODO: Administrator override
             // The user from the session is the same as the one it is trying to modify, this is allowed
 
             if (bcrypt.compareSync(oldPassword, user.passwordHash)) { // TODO: Administrator override
@@ -304,7 +291,7 @@ export class APIRouter extends BaseRouter {
    */
   private static async changeUserEmail(request: Request, response: Response): Promise<void> {
 
-    if (request.session['user']) {
+    if (request.session.user) {
       // A user session is active
 
       const pid = request.body.pid;
@@ -313,30 +300,30 @@ export class APIRouter extends BaseRouter {
 
       if (pid && password && newEmail) { // TODO: Administrator override
 
-        const user: UserInstance = await User.findOne({
+        const user: IUserInstance = await userModel.findOne({
           attributes: ['id', 'passwordHash', 'pid'],
           where: {
-            pid: pid,
-          }
+            pid,
+          },
         });
 
         if (user) {
           // A user exists with this PID
 
-          if (pid === request.session['user'].pid) { // TODO: Administrator override
+          if (pid === request.session.user.pid) { // TODO: Administrator override
             // The user from the session is the same as the one it is trying to modify, this is allowed
 
             if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
               // The user password was correct, we can now try to change the user's email
 
-              const existingUser: UserInstance = await User.findOne({
+              const existingUser: IUserInstance = await userModel.findOne({
                 attributes: ['id', 'username', 'email'],
                 where: {
                   $or: [
                     {username: newEmail},
                     {email: newEmail},
                   ],
-                }
+                },
               });
 
               if (!existingUser) {
@@ -403,7 +390,7 @@ export class APIRouter extends BaseRouter {
    */
   private static async changeUserUsername(request: Request, response: Response): Promise<void> {
 
-    if (request.session['user']) {
+    if (request.session.user) {
       // A user session is active
 
       const pid = request.body.pid;
@@ -412,30 +399,30 @@ export class APIRouter extends BaseRouter {
 
       if (pid && password && newUsername) { // TODO: Administrator override
 
-        const user: UserInstance = await User.findOne({
+        const user: IUserInstance = await userModel.findOne({
           attributes: ['id', 'passwordHash', 'pid'],
           where: {
-            pid: pid,
-          }
+            pid,
+          },
         });
 
         if (user) {
           // A user exists with this PID
 
-          if (pid === request.session['user'].pid) { // TODO: Administrator override
+          if (pid === request.session.user.pid) { // TODO: Administrator override
             // The user from the session is the same as the one it is trying to modify, this is allowed
 
             if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
               // The user password was correct, we can now try to change the user's username
 
-              const existingUser: UserInstance = await User.findOne({
+              const existingUser: IUserInstance = await userModel.findOne({
                 attributes: ['id', 'username', 'email'],
                 where: {
                   $or: [
                     {username: newUsername},
                     {email: newUsername},
                   ],
-                }
+                },
               });
 
               if (!existingUser) {
@@ -500,7 +487,7 @@ export class APIRouter extends BaseRouter {
    */
   private static async deleteUser(request: Request, response: Response): Promise<void> {
 
-    if (request.session['user']) {
+    if (request.session.user) {
       // A user session is active
 
       const pid = request.body.pid;
@@ -508,17 +495,17 @@ export class APIRouter extends BaseRouter {
 
       if (pid && password) { // TODO: Administrator override
 
-        const user: UserInstance = await User.findOne({
+        const user: IUserInstance = await userModel.findOne({
           attributes: ['id', 'passwordHash', 'pid'],
           where: {
-            pid: pid,
-          }
+            pid,
+          },
         });
 
         if (user) {
           // A user exists with this PID
 
-          if (pid === request.session['user'].pid) { // TODO: Administrator override
+          if (pid === request.session.user.pid) { // TODO: Administrator override
             // The user from the session is the same as the one it is trying to delete, this is allowed
 
             if (bcrypt.compareSync(password, user.passwordHash)) { // TODO: Administrator override
@@ -557,5 +544,18 @@ export class APIRouter extends BaseRouter {
       // User is not logged in
       sendResponse(response, 401, 'NotLoggedIn');
     }
+  }
+
+  constructor() {
+    super();
+    this.createGetRoute('/handshake', APIRouter.doHandShake);
+    this.createPostRoute('/login', APIRouter.loginUser);
+    this.createPostRoute('/logout', APIRouter.logoutUser);
+    this.createPostRoute('/register', APIRouter.registerUser);
+    this.createPostRoute('/change/username', APIRouter.changeUserUsername);
+    this.createPostRoute('/change/password', APIRouter.changeUserPassword);
+    this.createPostRoute('/change/email', APIRouter.changeUserEmail);
+    this.createPostRoute('/delete', APIRouter.deleteUser);
+    logger.info('Route defined: API');
   }
 }

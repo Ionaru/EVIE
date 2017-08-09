@@ -1,32 +1,32 @@
-import { ApiCharacterData, Character } from '../character/character.model';
+import { Character, IApiCharacterData } from '../character/character.model';
 
 export class User {
-  pid: string;
-  username: string;
-  email: string;
-  characters: Array<Character> = [];
+  public pid: string;
+  public username: string;
+  public email: string;
+  public characters: Character[] = [];
 
-  constructor(data: UserApiData) {
+  constructor(data: IUserApiData) {
     this.pid = data.pid;
-    this.username = data['username'];
-    this.email = data['email'];
+    this.username = data.username;
+    this.email = data.email;
   }
 }
 
-export interface LoginResponse {
+export interface ILoginResponse {
   state: string;
   message: string;
-  data: UserApiData;
+  data: IUserApiData;
 }
 
-export interface UserApiData {
+export interface IUserApiData {
   username: string;
   pid: string;
   email: string;
-  characters: Array<ApiCharacterData>;
+  characters: IApiCharacterData[];
 }
 
-export interface RegisterResponse {
+export interface IRegisterResponse {
   data: {
     email_in_use: boolean;
     username_in_use: boolean;

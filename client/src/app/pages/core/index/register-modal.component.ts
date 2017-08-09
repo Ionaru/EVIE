@@ -1,14 +1,12 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { ModalDirective } from 'ngx-bootstrap/modal';
-import { UserService } from '../../../models/user/user.service';
-import { Router } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+
 import { User } from '../../../models/user/user.model';
+import { UserService } from '../../../models/user/user.service';
 
 @Component({
-  selector: 'register-modal-button',
-  templateUrl: './register-modal.component.html',
-  styleUrls: ['./register-modal.component.scss'],
   animations: [
     trigger(
       'myAnimation',
@@ -17,70 +15,73 @@ import { User } from '../../../models/user/user.model';
         transition(
           ':enter', [
             style({opacity: 0}),
-            animate('0.3s', style({opacity: 1}))
-          ]
+            animate('0.3s', style({opacity: 1})),
+          ],
         ),
         transition(
           ':leave', [
-            style({'opacity': 1}),
+            style({opacity: 1}),
             animate('0.3s', style({opacity: 0})),
-          ]
-        )]
+          ],
+        )],
     ),
   ],
+  selector: 'register-modal-button',
+  styleUrls: ['./register-modal.component.scss'],
+  templateUrl: './register-modal.component.html',
 })
 export class RegisterModalComponent {
   @ViewChild('autoShownModal') public autoShownModal: ModalDirective;
 
-  usernameStatus: string;
-  usernameHint: string;
+  public usernameStatus: string;
+  public usernameHint: string;
 
-  emailStatus: string;
-  emailHint: string;
+  public emailStatus: string;
+  public emailHint: string;
 
-  passwordStatus: string;
-  passwordHint: string;
-  passwordInput: string;
+  public passwordStatus: string;
+  public passwordHint: string;
+  public passwordInput: string;
 
-  password2Status: string;
-  password2Hint: string;
-  password2Input: string;
+  public password2Status: string;
+  public password2Hint: string;
+  public password2Input: string;
 
-  registerError: boolean;
-  registerErrorMessage: string;
+  public registerError: boolean;
+  public registerErrorMessage: string;
 
-  inProgress: boolean;
+  public inProgress: boolean;
 
   public isModalShown = false;
 
-  @ViewChild('usernameInput') usernameInput: ElementRef;
+  @ViewChild('usernameInput') public usernameInput: ElementRef;
 
   constructor(private userService: UserService, private router: Router) { }
 
-  setupModal(): void {
+  public setupModal(): void {
     this.resetUsernameInput();
     this.resetEmailInput();
     this.resetPasswordInput();
     this.resetPassword2Input();
   }
 
-  resetUsernameInput(): void {
+  public resetUsernameInput(): void {
     this.usernameStatus = 'info';
     this.usernameHint = 'Please enter a username for your account.';
   }
 
-  resetEmailInput(): void {
+  public resetEmailInput(): void {
     this.emailStatus = 'info';
     this.emailHint = 'Please enter your email address.';
   }
 
-  resetPasswordInput(): void {
+  public resetPasswordInput(): void {
     this.passwordStatus = 'info';
     this.passwordHint = 'Do not use your EVE Online password!';
     this.passwordInput = '';
   }
 
-  resetPassword2Input(): void {
+  public resetPassword2Input(): void {
     this.password2Status = 'info';
     this.password2Hint = 'Please confirm your password.';
     this.password2Input = '';
@@ -103,7 +104,7 @@ export class RegisterModalComponent {
     this.usernameInput.nativeElement.focus();
   }
 
-  anyFormErrors(): boolean {
+  public anyFormErrors(): boolean {
     if (this.usernameStatus === 'error'
       || this.emailStatus === 'error'
       || this.passwordStatus === 'error'
@@ -112,7 +113,7 @@ export class RegisterModalComponent {
     }
   }
 
-  getTextColorClass(input) {
+  public getTextColorClass(input) {
     switch (input) {
       case 'error':
         return 'text-danger';
@@ -121,7 +122,7 @@ export class RegisterModalComponent {
     }
   }
 
-  getHintIconClass(input) {
+  public getHintIconClass(input) {
     switch (input) {
       case 'error':
         return 'fa-times-circle';
@@ -132,10 +133,10 @@ export class RegisterModalComponent {
     }
   }
 
-  onUsernameInput(event: any): void {
+  public onUsernameInput(event: any): void {
     this.usernameStatus = '';
 
-    const target = <HTMLInputElement> event.target;
+    const target = event.target as HTMLInputElement;
     const text: string = target.value;
 
     if (text.trim().length < 1) {
@@ -155,10 +156,10 @@ export class RegisterModalComponent {
     }
   }
 
-  onEmailInput(event: Event): void {
+  public onEmailInput(event: Event): void {
     this.emailStatus = '';
 
-    const target = <HTMLInputElement> event.target;
+    const target = event.target as HTMLInputElement;
     const text = target.value;
 
     if (text.trim().length < 1) {
@@ -178,7 +179,7 @@ export class RegisterModalComponent {
     }
   }
 
-  onPasswordInput() {
+  public onPasswordInput() {
     this.passwordStatus = '';
 
     const text = this.passwordInput;
@@ -194,7 +195,7 @@ export class RegisterModalComponent {
     }
   }
 
-  onPassword2Input() {
+  public onPassword2Input() {
     this.password2Status = '';
 
     const text = this.password2Input;
@@ -210,7 +211,7 @@ export class RegisterModalComponent {
     }
   }
 
-  async register(formValues: { username: string, email: string, password: string, password2: string }): Promise<void> {
+  public async register(formValues: { username: string, email: string, password: string, password2: string }): Promise<void> {
     this.inProgress = true;
     this.registerError = false;
 

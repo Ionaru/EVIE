@@ -1,28 +1,28 @@
 import { Component, OnInit } from '@angular/core';
-import { MarketService, OrderData } from '../../../services/market.service';
+import { IOrderData, MarketService } from '../../../services/market.service';
+import { INames, NamesService } from '../../../services/names.service';
 import { Globals } from '../../../shared/globals';
-import { Names, NamesService } from '../../../services/names.service';
 import { Helpers } from '../../../shared/helpers';
 
 @Component({
-  templateUrl: 'market.component.html',
-  styleUrls: ['market.component.scss'],
   providers: [MarketService],
+  styleUrls: ['market.component.scss'],
+  templateUrl: 'market.component.html',
 })
 export class MarketComponent implements OnInit {
 
-  orders: Array<OrderData>;
-  names: Names;
+  public orders: IOrderData[];
+  public names: INames;
 
   constructor(private marketService: MarketService, private namesService: NamesService,
-              private globals: Globals, private helpers: Helpers) { }
+              private globals: Globals) { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.names = this.globals.names;
     this.getOrders().then();
   }
 
-  async getOrders(): Promise<void> {
+  public async getOrders(): Promise<void> {
     this.orders = await this.marketService.getOrders(this.globals.selectedCharacter);
     // this.helpers.sortArrayByObjectProperty(this.orders, 'price').slice();
     const ids = [];
@@ -32,7 +32,15 @@ export class MarketComponent implements OnInit {
     this.namesService.getNames(...ids).then();
   }
 
-  formatPrice(number) {
-    return Helpers.formatAmount(number);
+  public formatPrice(amount) {
+    return Helpers.formatAmount(amount);
+  }
+
+  public getOrderAmount(type: string): number {
+    if (!this.orders) {
+      return 0;
+    }
+    const buyOrder = type === 'buy';
+    return this.orders.filter((_) => _.is_buy_order === buyOrder).length;
   }
 }

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ApiCharacterData, Character, EveCharacterData, SSOSocketResponse, TokenRefreshResponse } from './character.model';
-import { EndpointService } from '../endpoint/endpoint.service';
-import { Globals } from '../../shared/globals';
 import { Http, Response } from '@angular/http';
+
+import { Globals } from '../../shared/globals';
+import { EndpointService } from '../endpoint/endpoint.service';
+import { Character, IApiCharacterData, IEveCharacterData, ISSOSocketResponse, ITokenRefreshResponse } from './character.model';
 
 const tokenRefreshInterval = 15 * 60 * 1000;
 
@@ -11,16 +12,16 @@ export class CharacterService {
 
   constructor(private endpointService: EndpointService, private globals: Globals, private http: Http) { }
 
-  async getPublicCharacterData(character: Character): Promise<void> {
+  public async getPublicCharacterData(character: Character): Promise<void> {
     const url = this.endpointService.constructESIUrl('v4/characters', character.characterId);
     const response: Response = await this.http.get(url).toPromise();
-    const characterData: EveCharacterData = JSON.parse(response.text());
+    const characterData: IEveCharacterData = JSON.parse(response.text());
     character.gender = characterData.gender;
-    character.corporation_id = characterData.corporation_id || 1;
-    character.alliance_id = characterData.alliance_id;
+    character.corporationId = characterData.corporation_id || 1;
+    character.allianceId = characterData.alliance_id;
   }
 
-  async registerCharacter(data: ApiCharacterData): Promise<Character> {
+  public async registerCharacter(data: IApiCharacterData): Promise<Character> {
 
     const character = new Character(data);
     this.globals.user.characters.push(character);
@@ -43,16 +44,16 @@ export class CharacterService {
     return character;
   }
 
-  async refreshToken(character: Character): Promise<void> {
+  public async refreshToken(character: Character): Promise<void> {
     const pid = character.pid;
     const accessToken = character.accessToken;
     const url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
     const response: Response = await this.http.get(url).toPromise();
-    const json: TokenRefreshResponse = response.json();
+    const json: ITokenRefreshResponse = response.json();
     character.accessToken = json.data.token;
   }
 
-  startAuthProcess(character?: Character): void {
+  public startAuthProcess(character?: Character): void {
     let url = '/sso/start';
     if (character) {
       url += '?characterPid=' + character.pid;
@@ -60,7 +61,7 @@ export class CharacterService {
 
     const w = window.open(url, '_blank', 'width=600,height=700');
 
-    this.globals.socket.once('SSO_END', async (response: SSOSocketResponse) => {
+    this.globals.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
       w.close();
       if (response.state === 'success') {
         if (character) {
@@ -74,7 +75,7 @@ export class CharacterService {
     });
   }
 
-  async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
+  public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
 
     let characterPid;
     if (character) {
@@ -82,19 +83,19 @@ export class CharacterService {
     }
 
     if (!alreadyActive) {
-      this.http.post('/sso/activate', {characterPid: characterPid}).toPromise().then();
+      this.http.post('/sso/activate', {characterPid}).toPromise().then();
     }
     this.globals.selectedCharacter = character;
     this.globals.characterChangeEvent.next(character);
   }
 
-  deleteCharacter(character: Character): void {
+  public deleteCharacter(character: Character): void {
     const url = '/sso/delete';
     const data = {
-      characterPid: character.pid
+      characterPid: character.pid,
     };
-    this.http.post(url, data).subscribe((response) => {
-      const responseBody = JSON.parse(response['_body']);
+    this.http.post(url, data).subscribe((response: Response) => {
+      const responseBody = response.json();
       if (responseBody.state === 'success') {
         clearInterval(character.refreshTimer);
 

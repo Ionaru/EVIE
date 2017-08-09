@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
+// TODO: Remove on implementation.
+// tslint:disable:no-empty
+
 @Component({
+  styleUrls: ['charactersheet.component.scss'],
   templateUrl: 'charactersheet.component.html',
-  styleUrls: ['charactersheet.component.scss']
 })
 export class CharactersheetComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
   }
 
 }

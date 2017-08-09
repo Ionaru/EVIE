@@ -1,6 +1,5 @@
-import { DOCUMENT } from '@angular/platform-browser';
-import { Inject } from '@angular/core';
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 
 @Injectable()
 export class AppReadyEvent {
@@ -66,9 +65,9 @@ export class AppReadyEvent {
       customEvent = new CustomEvent(
         eventType,
         {
-          bubbles: bubbles,
-          cancelable: cancelable
-        }
+          bubbles,
+          cancelable,
+        },
       );
     } catch (error) {
       customEvent = this.doc.createEvent('CustomEvent');

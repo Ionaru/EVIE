@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { User } from '../models/user/user.model';
-import { Character } from '../models/character/character.model';
 import { Observable, Subject } from 'rxjs';
-import { Names } from '../services/names.service';
+
+import { Character } from '../models/character/character.model';
+import { User } from '../models/user/user.model';
+import { INames } from '../services/names.service';
 
 @Injectable()
 export class Globals {
@@ -62,7 +63,7 @@ export class Globals {
     this._selectedCharacter = value;
   }
 
-  public names: Names;
+  public names: INames;
   public namesExpiry: number;
   private _selectedCharacter: Character;
   private _loggedIn = false;

@@ -1,15 +1,15 @@
-import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { getTestBed, TestBed } from '@angular/core/testing';
+import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { Logger } from 'angular2-logger/core';
 import * as expect from 'must/register';
 import { assert, SinonStub, spy, stub } from 'sinon';
 
-import { ApiCharacterData, Character } from '../character/character.model';
 import { Globals } from '../../shared/globals';
-import { EndpointService } from './endpoint.service';
+import { Character, IApiCharacterData } from '../character/character.model';
 import { Endpoint } from './endpoint.model';
+import { EndpointService } from './endpoint.service';
 import { params } from './endpoints';
-import { Logger } from 'angular2-logger/core';
 
 describe('Models', () => {
   describe('Endpoint', () => {
@@ -33,14 +33,14 @@ describe('Models', () => {
             {
               deps: [
                 MockBackend,
-                BaseRequestOptions
+                BaseRequestOptions,
               ],
               provide: Http,
               useFactory: (backend: XHRBackend, defaultOptions: BaseRequestOptions) => {
                 return new Http(backend, defaultOptions);
-              }
-            }
-          ]
+              },
+            },
+          ],
         });
 
         const testbed = getTestBed();
@@ -65,15 +65,15 @@ describe('Models', () => {
         });
       }
 
-      const dummyData: ApiCharacterData = {
-        characterId: 123,
-        name: 'Dummy',
+      const dummyData: IApiCharacterData = {
         accessToken: 'abc',
+        characterId: 123,
+        isActive: true,
+        name: 'Dummy',
         ownerHash: 'aaa',
         pid: '123',
         scopes: 'all',
         tokenExpiry: '',
-        isActive: true
       };
       const dummyCharacter = new Character(dummyData);
 
@@ -81,30 +81,30 @@ describe('Models', () => {
       const endpointName = 'TheEndpointOfAllEndpoints';
 
       const dummyEndpoint = new Endpoint(endpointDir, endpointName, [
-        params.filter(_ => _.name === 'characterID')[0],
+        params.filter((_) => _.name === 'characterID')[0],
       ]);
 
       it('must be able to construct a simple XML URL', () => {
         const url = endpointService.constructXMLUrl(dummyEndpoint);
         expect(url).to.be.a.string();
-        expect(url).to.include(endpointService.XMLBaseUrl);
+        expect(url).to.include(endpointService.xmlBaseUrl);
         expect(url).to.include(endpointDir);
         expect(url).to.include(endpointName);
-        expect(url).to.equal(`${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx?`);
+        expect(url).to.equal(`${endpointService.xmlBaseUrl}${endpointDir}/${endpointName}.xml.aspx?`);
       });
 
       it('must be able to construct an XML URL with params', () => {
         const parameters = ['dummyParam1=Value', 'dummyParam2=Value2'];
         const url = endpointService.constructXMLUrl(dummyEndpoint, ['dummyParam1=Value', 'dummyParam2=Value2']);
         expect(url).to.be.a.string();
-        expect(url).to.contain(endpointService.XMLBaseUrl);
+        expect(url).to.contain(endpointService.xmlBaseUrl);
         expect(url).to.contain(endpointDir);
         expect(url).to.contain(endpointName);
         for (const param of parameters) {
           expect(url).to.contain(param);
         }
 
-        let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
+        let testUrl = `${endpointService.xmlBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
         testUrl += `?${parameters.join('&')}`;
 
         expect(url).to.equal(testUrl);
@@ -115,11 +115,11 @@ describe('Models', () => {
 
         const url = endpointService.constructXMLUrl(dummyEndpoint);
         expect(url).to.be.a.string();
-        expect(url).to.contain(endpointService.XMLBaseUrl);
+        expect(url).to.contain(endpointService.xmlBaseUrl);
         expect(url).to.contain(endpointDir);
         expect(url).to.contain(endpointName);
 
-        let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
+        let testUrl = `${endpointService.xmlBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
         testUrl += `?accessToken=${dummyCharacter.accessToken}&`;
 
         expect(url).to.equal(testUrl);
@@ -131,7 +131,7 @@ describe('Models', () => {
         const parameters = ['dummyParam1=Value', 'dummyParam2=Value2'];
         const url = endpointService.constructXMLUrl(dummyEndpoint, ['dummyParam1=Value', 'dummyParam2=Value2']);
         expect(url).to.be.a.string();
-        expect(url).to.contain(endpointService.XMLBaseUrl);
+        expect(url).to.contain(endpointService.xmlBaseUrl);
         expect(url).to.contain(endpointDir);
         expect(url).to.contain(endpointName);
         expect(url).to.contain('accessToken=' + dummyCharacter.accessToken);
@@ -139,7 +139,7 @@ describe('Models', () => {
           expect(url).to.contain(param);
         }
 
-        let testUrl = `${endpointService.XMLBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
+        let testUrl = `${endpointService.xmlBaseUrl}${endpointDir}/${endpointName}.xml.aspx`;
         testUrl += `?accessToken=${dummyCharacter.accessToken}&${parameters.join('&')}`;
 
         expect(url).to.equal(testUrl);
@@ -152,12 +152,12 @@ describe('Models', () => {
         const param4 = 'url';
         const url = endpointService.constructESIUrl(param1, param2, param3, param4);
         expect(url).to.be.a.string();
-        expect(url).to.contain(endpointService.ESIBaseUrl);
+        expect(url).to.contain(endpointService.esiBaseUrl);
         expect(url).to.contain(param1);
         expect(url).to.contain(param2);
         expect(url).to.contain(param3.toString());
         expect(url).to.contain(param4);
-        expect(url).to.equal(`${endpointService.ESIBaseUrl}${param1}/${param2}/${param3.toString()}/${param4}/`);
+        expect(url).to.equal(`${endpointService.esiBaseUrl}${param1}/${param2}/${param3.toString()}/${param4}/`);
       });
 
       it('must be able to process name data', async () => {
@@ -165,17 +165,17 @@ describe('Models', () => {
         setupConnections(mockBackend, {
           body: JSON.stringify([
             {
-              'id': 1234,
-              'name': 'TestData',
-              'category': 'test_category'
+              category: 'test_category',
+              id: 1234,
+              name: 'TestData',
             },
             {
-              'id': 9876,
-              'name': 'MockData',
-              'category': 'mock_category'
-            }
+              category: 'mock_category',
+              id: 9876,
+              name: 'MockData',
+            },
           ]),
-          status: 200
+          status: 200,
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
@@ -195,7 +195,7 @@ describe('Models', () => {
       it('must be able to process an empty name data response', async () => {
         setupConnections(mockBackend, {
           body: '',
-          status: 500
+          status: 500,
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
@@ -206,8 +206,8 @@ describe('Models', () => {
 
       it('must be able to process an invalid HTTP response', async () => {
         setupConnections(mockBackend, {
+          problem: 'nothing',
           what: 7,
-          problem: 'nothing'
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
@@ -218,8 +218,8 @@ describe('Models', () => {
 
       it('must not call the endpoint when no valid names were given', async () => {
         setupConnections(mockBackend, {
+          problem: 'nothing',
           what: 7,
-          problem: 'nothing'
         });
 
         const httpSpy = spy(http, 'get');
@@ -235,17 +235,17 @@ describe('Models', () => {
         setupConnections(mockBackend, {
           body: JSON.stringify([
             {
-              'id': 1234,
-              'name': 'TestData',
-              'category': 'test_category'
+              category: 'test_category',
+              id: 1234,
+              name: 'TestData',
             },
             {
-              'id': 9876,
-              'name': 'MockData',
-              'category': 'mock_category'
-            }
+              category: 'mock_category',
+              id: 9876,
+              name: 'MockData',
+            },
           ]),
-          status: 200
+          status: 200,
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
@@ -261,30 +261,30 @@ describe('Models', () => {
         expect(nameData[1].name).to.equal('MockData');
         expect(nameData[1].category).to.equal('mock_category');
 
-        const TestData = endpointService.getNameFromNameData(nameData, 1234);
-        expect(TestData).to.be.a.string();
-        expect(TestData).to.equal('TestData');
+        const testData = endpointService.getNameFromNameData(nameData, 1234);
+        expect(testData).to.be.a.string();
+        expect(testData).to.equal('TestData');
 
-        const MockData = endpointService.getNameFromNameData(nameData, 9876);
-        expect(MockData).to.be.a.string();
-        expect(MockData).to.equal('MockData');
+        const mockData = endpointService.getNameFromNameData(nameData, 9876);
+        expect(mockData).to.be.a.string();
+        expect(mockData).to.equal('MockData');
       });
 
       it('must return \'Error\' when name does not exist in name data', async () => {
         setupConnections(mockBackend, {
           body: JSON.stringify([
             {
-              'id': 1234,
-              'name': 'TestData',
-              'category': 'test_category'
+              category: 'test_category',
+              id: 1234,
+              name: 'TestData',
             },
             {
-              'id': 9876,
-              'name': 'MockData',
-              'category': 'mock_category'
-            }
+              category: 'mock_category',
+              id: 9876,
+              name: 'MockData',
+            },
           ]),
-          status: 200
+          status: 200,
         });
 
         const nameData: Array<{ id: number, name: string, category: string }> = await endpointService.getNames(0, 1);
@@ -300,9 +300,9 @@ describe('Models', () => {
         expect(nameData[1].name).to.equal('MockData');
         expect(nameData[1].category).to.equal('mock_category');
 
-        const WrongData = endpointService.getNameFromNameData(nameData, 5678);
-        expect(WrongData).to.be.a.string();
-        expect(WrongData).to.equal('Error');
+        const wrongData = endpointService.getNameFromNameData(nameData, 5678);
+        expect(wrongData).to.be.a.string();
+        expect(wrongData).to.equal('Error');
       });
     });
   });

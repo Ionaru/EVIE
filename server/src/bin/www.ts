@@ -5,13 +5,13 @@ import http = require('http');
 import sio = require('socket.io');
 import ios = require('socket.io-express-session');
 
-import { logger } from '../services/logger.service';
-import { App } from '../app';
-import { db } from '../services/db.service';
-import { mainConfig } from '../services/config.service';
 import { Server } from 'http';
+import { App } from '../app';
+import { mainConfig } from '../services/config.service';
+import { db } from '../services/db.service';
+import { logger } from '../services/logger.service';
 
-export let sockets: Array<SessionSocket> = [];
+export let sockets: ISessionSocket[] = [];
 export let express: App;
 export let server: Server;
 export let io: SocketIO.Server;
@@ -25,7 +25,7 @@ export async function init(): Promise<void> {
   await express.mainStartupSequence();
 
   // Get port from environment || config || default and store in Express.
-  const port = normalizePort(process.env.PORT || mainConfig.get('backend_port') || 3000);
+  const port = normalizePort(process.env.PORT || mainConfig.getProperty('backend_port') || 3000);
   express.app.set('port', port);
 
   // Create the HTTP server and give it the Express application for settings
@@ -41,13 +41,13 @@ export async function init(): Promise<void> {
   socketServer.use(ios(express.sessionParser));
 
   // On connection with a client, save the socket ID to the client session and add it to the list of connected sockets
-  socketServer.on('connection', async(socket: SessionSocket) => {
-    socket.handshake.session['socket'] = socket.id;
-    await socket.handshake.session.save(() => {});
+  socketServer.on('connection', async (socket: ISessionSocket) => {
+    socket.handshake.session.socket = socket.id;
+    await socket.handshake.session.save(null);
     sockets.push(socket);
 
     // Remove the socket from the socket list when a client disconnects
-    socket.on('disconnect', async() => {
+    socket.on('disconnect', async () => {
       sockets.splice(sockets.indexOf(socket), 1);
     });
   });
@@ -69,7 +69,7 @@ export async function init(): Promise<void> {
   }
 
   // Promises that fail should not cause the application to stop, instead we print the error
-  process.on('unhandledRejection', function (reason: string, p: Promise<any>): void {
+  process.on('unhandledRejection', (reason: string, p: Promise<any>): void => {
     logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
   });
 
@@ -144,7 +144,7 @@ export function cleanup(callback: Function): void {
       logger.info('Session store closed');
     }
     db.seq.close();
-    db.get().end((databaseError) => {
+    db.getPool().end((databaseError) => {
       if (databaseError) {
         logger.error('Error while closing Database connection');
         logger.error(databaseError);
@@ -164,7 +164,7 @@ export function cleanup(callback: Function): void {
 /**
  * Function that gets executed when the app shuts down
  */
-function exit(options: Object, err?: any): void {
+function exit(options: {cleanup: boolean}, err?: any): void {
   logger.info('Got shutdown event, starting shutdown sequence');
 
   // Ensure the app shuts down when there is an exception during shutdown
@@ -176,7 +176,7 @@ function exit(options: Object, err?: any): void {
     process.exit(1);
   });
 
-  if (options['cleanup']) {
+  if (options.cleanup) {
     cleanup(() => {
       logger.info('Cleanup tasks done');
       shutdown(err);

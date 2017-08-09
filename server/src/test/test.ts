@@ -1,18 +1,19 @@
-import sinon = require('sinon');
-import www = require('../bin/www');
+import expect = require('must/register');
 import fetch from 'node-fetch';
 
+import www = require('../bin/www');
+import { dbConfig, mainConfig, ssoConfig } from '../services/config.service';
 import { db } from '../services/db.service';
 import { logger } from '../services/logger.service';
-import { mainConfig, dbConfig, ssoConfig } from '../services/config.service';
-import expect = require('must/register');
+
+// tslint:disable:only-arrow-functions space-before-function-paren no-console
 
 describe('Application', function () {
 
   this.timeout(10000);
-  process.env['SILENT'] = true;
-  process.env['TEST'] = true;
-  process.env['PORT'] = 3001;
+  process.env.SILENT = Boolean(true).toString();
+  process.env.TEST = Boolean(true).toString();
+  process.env.PORT = Number(3001).toString();
 
   describe('control', function () {
     it('should be able to start', async function () {
@@ -25,19 +26,19 @@ describe('Application', function () {
     });
   });
   describe('database pool', function () {
-    const db_suffix = '_test';
+    const dbSuffix = '_test';
     it('should have a DB pool after start', async function () {
       await www.init().catch(console.error.bind(console));
-      expect(db.get()['_closed']).to.be.false();
+      expect(db.getPool()._closed).to.be.false();
     });
-    it(`should be connected to a test database (ending with "${db_suffix}")`, function (done) {
-      db.get().query('SELECT DATABASE()', (err, rows) => {
+    it(`should be connected to a test database (ending with "${dbSuffix}")`, function (done) {
+      db.getPool().query('SELECT DATABASE()', (err, rows) => {
         const result = rows[0]['DATABASE()'];
         expect(err).to.be.null();
-        const re = new RegExp(`${db_suffix}$`);
+        const re = new RegExp(`${dbSuffix}$`);
         if (!re.test(result)) {
-          console.error(`Database name "${result}" did not have expected suffix "${db_suffix}"!`);
-          console.error(`The database should have suffix "${db_suffix}" for testing safety!`);
+          console.error(`Database name "${result}" did not have expected suffix "${dbSuffix}"!`);
+          console.error(`The database should have suffix "${dbSuffix}" for testing safety!`);
           process.exit(1);
         } else {
           expect(re.test(result)).to.be.truthy();
@@ -47,8 +48,8 @@ describe('Application', function () {
     });
     it('shouldn\'t have a DB pool after cleanup', function (done) {
       www.cleanup(() => {
-        expect(db.get()['_allConnections']).to.eql([]);
-        expect(db.get()['_closed']).to.be.true();
+        expect(db.getPool()._allConnections).to.eql([]);
+        expect(db.getPool()._closed).to.be.true();
         done();
       });
     });
@@ -84,9 +85,9 @@ describe('Application', function () {
     });
 
     it('should be able read from a config file', async function () {
-      mainConfig.get('testValueDoesNotExist');
-      dbConfig.get('testValueDoesNotExist');
-      ssoConfig.get('testValueDoesNotExist');
+      mainConfig.getProperty('testValueDoesNotExist');
+      dbConfig.getProperty('testValueDoesNotExist');
+      ssoConfig.getProperty('testValueDoesNotExist');
     });
 
     it('shouldn\'t be empty', async function () {
@@ -100,11 +101,11 @@ describe('Application', function () {
 describe('API route', function () {
 
   this.timeout(10000);
-  process.env['SILENT'] = true;
-  process.env['TEST'] = true;
-  process.env['PORT'] = 3001;
+  process.env.SILENT = Boolean(true).toString();
+  process.env.TEST = Boolean(true).toString();
+  process.env.PORT = Number(3001).toString();
 
-  const url = `http://127.0.0.1:${process.env['PORT']}/api`;
+  const url = `http://127.0.0.1:${process.env.PORT}/api`;
 
   before(async function () {
     await www.init().catch(console.error.bind(console));
@@ -122,8 +123,8 @@ describe('API route', function () {
       const handshakeResponse = await fetch(url + '/handshake');
       const handshakeResult = await handshakeResponse.json();
 
-      expect(handshakeResult['state']).to.equal('success');
-      expect(handshakeResult['message']).to.equal('NotLoggedIn');
+      expect(handshakeResult.state).to.equal('success');
+      expect(handshakeResult.message).to.equal('NotLoggedIn');
     });
   });
 });

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
+import { Logger } from 'angular2-logger/core';
 import { Observable } from 'rxjs';
+
 import { Endpoint } from '../models/endpoint/endpoint.model';
 import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Helpers } from '../shared/helpers';
-import { Logger } from 'angular2-logger/core';
 
-export interface ServerStatus {
+export interface IServerStatus {
   hours?: string;
   minutes?: string;
   seconds?: number;
@@ -14,18 +15,22 @@ export interface ServerStatus {
   players: number;
 }
 
+export interface IServerStatusXMLData {
+  eveapi: {
+    currentTime: [string];
+    result: [{
+      serverOpen: [string];
+      onlinePlayers: [number];
+    }];
+  };
+}
+
 @Injectable()
 export class ClockService {
 
-  private endpoint: Endpoint;
-
-  constructor(private http: Http, private endpointService: EndpointService, private helpers: Helpers, private logger: Logger) {
-    this.endpoint = this.endpointService.getEndpoint('ServerStatus');
-  }
-
-  static tickTime(time: Object): ServerStatus {
-    let h: any = parseInt(time['hours'], 10);
-    let m: any = parseInt(time['minutes'], 10);
+  public static tickTime(time: IServerStatus): IServerStatus {
+    let h: any = parseInt(time.hours, 10);
+    let m: any = parseInt(time.minutes, 10);
     m += 1;
     if (m === 60) {
       h += 1;
@@ -43,18 +48,18 @@ export class ClockService {
     return {
       hours: h,
       minutes: m,
-      status: time['status'],
-      players: time['players']
+      players: time.players,
+      status: time.status,
     };
   }
 
-  private static processTime(jsonData: Object): ServerStatus {
-    const currentTime = jsonData['eveapi']['currentTime'][0];
+  private static processTime(jsonData: IServerStatusXMLData): IServerStatus {
+    const currentTime = jsonData.eveapi.currentTime[0];
     let hours: any = parseInt(currentTime.slice(-8, -6), 10);
     let minutes: any = parseInt(currentTime.slice(-5, -3), 10);
     const seconds = parseInt(currentTime.slice(-2), 10);
-    let status = jsonData['eveapi']['result'][0]['serverOpen'][0];
-    const players = jsonData['eveapi']['result'][0]['onlinePlayers'][0];
+    let status = jsonData.eveapi.result[0].serverOpen[0];
+    const players = jsonData.eveapi.result[0].onlinePlayers[0];
 
     if (minutes === 60) {
       hours += 1;
@@ -75,26 +80,32 @@ export class ClockService {
     }
 
     return {
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds,
-      status: status,
-      players: players
+      hours,
+      minutes,
+      players,
+      seconds,
+      status,
     };
   }
 
-  getTime(): Observable<Object> {
+  private endpoint: Endpoint;
+
+  constructor(private http: Http, private endpointService: EndpointService, private helpers: Helpers, private logger: Logger) {
+    this.endpoint = this.endpointService.getEndpoint('ServerStatus');
+  }
+
+  public getTime(): Observable<object> {
     const url = this.endpointService.constructXMLUrl(this.endpoint, [], false);
     const headers = new Headers();
     headers.append('Accept', 'application/xml');
-    return this.http.get(url, {headers: headers}).map((response: Response) => {
-      const jsonData = this.helpers.processXML(response);
+    return this.http.get(url, {headers}).map((response: Response) => {
+      const jsonData = this.helpers.processXML(response) as IServerStatusXMLData;
       return ClockService.processTime(jsonData);
     }).catch((error) => {
       this.logger.error(error);
       return Observable.of({
+        players: 0,
         status: 'Offline',
-        players: 0
       });
     });
   }

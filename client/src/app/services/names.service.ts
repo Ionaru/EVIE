@@ -1,24 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { EndpointService } from '../models/endpoint/endpoint.service';
-import { Globals } from '../shared/globals';
 import { Logger } from 'angular2-logger/core';
 
-export interface EveNameData {
+import { EndpointService } from '../models/endpoint/endpoint.service';
+import { Globals } from '../shared/globals';
+
+export interface IEveNameData {
   category: string;
   id: number;
   name: string;
 }
 
-export interface Names {
-  [id: number]: EveNameData;
+export interface INames {
+  [id: number]: IEveNameData;
 }
 
 @Injectable()
 export class NamesService {
 
-  namesMaxAge = 3 * 24 * 60 * 60 * 1000; // 3 days
-  namesStoreTag = 'names';
+  private static uniquify(array: any[]): any[] {
+    return array.filter((elem, index, self) => {
+      return index === self.indexOf(elem);
+    });
+  }
+
+  private namesMaxAge = 3 * 24 * 60 * 60 * 1000; // 3 days
+  private namesStoreTag = 'names';
 
   constructor(private http: Http, private endpointService: EndpointService, private globals: Globals, private logger: Logger) {
     this.getNamesFromStore();
@@ -27,13 +34,7 @@ export class NamesService {
     }
   }
 
-  static uniquify(array: Array<any>): Array<any> {
-    return array.filter(function (elem, index, self) {
-      return index === self.indexOf(elem);
-    });
-  }
-
-  async getNames(...ids: Array<string | number>): Promise<Names> {
+  public async getNames(...ids: Array<string | number>): Promise<INames> {
 
     ids = NamesService.uniquify(ids);
 
@@ -57,7 +58,7 @@ export class NamesService {
       await this.getNamesFromAPI(...namesToGet);
     }
 
-    const returnData: Names = {};
+    const returnData: INames = {};
     for (const id of ids) {
       returnData[id] = this.globals.names[id];
     }
@@ -66,7 +67,7 @@ export class NamesService {
     return returnData;
   }
 
-  async getNamesFromAPI(...ids: Array<string | number>): Promise<void> {
+  private async getNamesFromAPI(...ids: Array<string | number>): Promise<void> {
     const url = this.endpointService.constructESIUrl('v2/universe/names');
     let response: Response;
     try {
@@ -79,7 +80,7 @@ export class NamesService {
         this.logger.error('Response was not OK', response);
       }
 
-      const names: Array<EveNameData> = response.json();
+      const names: IEveNameData[] = response.json();
 
       for (const name of names) {
         this.globals.names[name.id] = name;
@@ -101,11 +102,11 @@ export class NamesService {
   private getNamesFromStore(): void {
     try {
       const storeData = JSON.parse(localStorage.getItem(this.namesStoreTag));
-      if (!storeData || storeData['expiry'] < (Date.now() - this.namesMaxAge)) {
+      if (!storeData || storeData.expiry < (Date.now() - this.namesMaxAge)) {
         return this.resetNames();
       }
-      this.globals.namesExpiry = storeData['expiry'];
-      this.globals.names = storeData['names'];
+      this.globals.namesExpiry = storeData.expiry;
+      this.globals.names = storeData.names;
     } catch (error) {
       this.logger.error(error);
       return this.resetNames();
