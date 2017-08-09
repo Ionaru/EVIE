@@ -6,10 +6,10 @@ import sio = require('socket.io');
 import ios = require('socket.io-express-session');
 
 import { Server } from 'http';
+import { logger } from 'winston-pnp-logger';
 import { App } from '../app';
 import { mainConfig } from '../services/config.service';
 import { db } from '../services/db.service';
-import { logger } from '../services/logger.service';
 
 export let sockets: ISessionSocket[] = [];
 export let express: App;

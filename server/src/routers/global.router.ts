@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { logger } from '../services/logger.service';
+import { logger } from 'winston-pnp-logger';
 import { generateRandomString } from '../services/pid.service';
 import { BaseRouter, requestList } from './base.router';
 

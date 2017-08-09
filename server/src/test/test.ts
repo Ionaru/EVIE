@@ -1,10 +1,10 @@
 import expect = require('must/register');
 import fetch from 'node-fetch';
+import { logger } from 'winston-pnp-logger';
 
 import www = require('../bin/www');
 import { dbConfig, mainConfig, ssoConfig } from '../services/config.service';
 import { db } from '../services/db.service';
-import { logger } from '../services/logger.service';
 
 // tslint:disable:only-arrow-functions space-before-function-paren no-console
 
