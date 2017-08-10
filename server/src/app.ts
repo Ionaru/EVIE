@@ -5,7 +5,7 @@ import ems = require('express-mysql-session');
 import es = require('express-session');
 import helmet = require('helmet');
 import path = require('path');
-import { WinstonPnPLogger } from 'winston-pnp-logger';
+import { logger, WinstonPnPLogger } from 'winston-pnp-logger';
 import configService = require('./services/config.service');
 
 // ES6 imports
@@ -31,9 +31,11 @@ export class App {
    */
   public async mainStartupSequence(): Promise<void> {
     // Create the logger, now we can use Winston for logging
-    const logger = new WinstonPnPLogger({
-      logDir: '../logs',
-    });
+    if (!logger) {
+      new WinstonPnPLogger({
+        logDir: '../logs',
+      });
+    }
 
     // Load the configuration files
     configService.mainConfig = new Config('main');
