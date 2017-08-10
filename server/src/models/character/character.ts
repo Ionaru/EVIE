@@ -2,8 +2,8 @@ import Sequelize = require('sequelize');
 import Instance = Sequelize.Instance;
 import Model = Sequelize.Model;
 
+import { logger } from 'winston-pnp-logger';
 import { db } from '../../services/db.service';
-import { logger } from '../../services/logger.service';
 import { userModel } from '../user/user';
 
 export let characterModel;

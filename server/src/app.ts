@@ -5,8 +5,8 @@ import ems = require('express-mysql-session');
 import es = require('express-session');
 import helmet = require('helmet');
 import path = require('path');
-import configservice = require('./services/config.service');
-import loggerservice = require('./services/logger.service');
+import { logger, WinstonPnPLogger } from 'winston-pnp-logger';
+import configService = require('./services/config.service');
 
 // ES6 imports
 import { RequestHandler } from 'express-serve-static-core';
@@ -19,7 +19,6 @@ import { GlobalRouter } from './routers/global.router';
 import { SSORouter } from './routers/sso.router';
 import { Config, mainConfig } from './services/config.service';
 import { db } from './services/db.service';
-import { logger, Logger } from './services/logger.service';
 
 export class App {
 
@@ -32,12 +31,16 @@ export class App {
    */
   public async mainStartupSequence(): Promise<void> {
     // Create the logger, now we can use Winston for logging
-    loggerservice.logger = new Logger();
+    if (!logger) {
+      new WinstonPnPLogger({
+        logDir: '../logs',
+      });
+    }
 
     // Load the configuration files
-    configservice.mainConfig = new Config('main');
-    configservice.dbConfig = new Config('database');
-    configservice.ssoConfig = new Config('sso');
+    configService.mainConfig = new Config('main');
+    configService.dbConfig = new Config('database');
+    configService.ssoConfig = new Config('sso');
 
     logger.info('Beginning app startup');
 

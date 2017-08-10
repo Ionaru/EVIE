@@ -1,9 +1,9 @@
 import bcrypt = require('bcryptjs');
 
 import { Request, Response } from 'express';
+import { logger } from 'winston-pnp-logger';
 import { characterModel, ICharacterInstance } from '../models/character/character';
 import { IUserInstance, userModel } from '../models/user/user';
-import { logger } from '../services/logger.service';
 import { generateUniquePID } from '../services/pid.service';
 import { BaseRouter, sendResponse } from './base.router';
 

@@ -2,11 +2,11 @@ import https = require('https');
 import fetch from 'node-fetch';
 
 import { Request, Response } from 'express';
+import { logger } from 'winston-pnp-logger';
 import { sockets } from '../bin/www';
 import { characterModel, ICharacterInstance } from '../models/character/character';
 import { IUserInstance, userModel } from '../models/user/user';
 import { ssoConfig } from '../services/config.service';
-import { logger } from '../services/logger.service';
 import { generateRandomString, generateUniquePID } from '../services/pid.service';
 import { BaseRouter, sendResponse, sendTextResponse } from './base.router';
 
@@ -233,16 +233,16 @@ export class SSORouter extends BaseRouter {
               sendTextResponse(response, 200, '<h2>You may now close this window.</h2>');
             });
             characterIdResponse.on('error', (error) => {
-              logger.error(error);
+              logger.error(error.message);
             });
             characterIdRequest.end();
           });
           authResponse.on('error', (error) => {
-            logger.error(error);
+            logger.error(error.message);
           });
         });
         authRequest.on('error', (error) => {
-          logger.error(error);
+          logger.error(error.message);
         });
       });
 

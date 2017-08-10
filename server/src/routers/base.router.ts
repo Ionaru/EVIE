@@ -1,6 +1,6 @@
-import { Request, Response, Router } from 'express';
+import { Request, Router } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
-import { logger } from '../services/logger.service';
+import { logger } from 'winston-pnp-logger';
 import { IResponse } from './global.router';
 
 interface IRequestLogItem {

@@ -4,8 +4,8 @@ import { IPool } from 'mysql';
 import path = require('path');
 import SequelizeStatic = require('sequelize');
 import { Sequelize } from 'sequelize';
+import { logger } from 'winston-pnp-logger';
 import { configPath, dbConfig } from './config.service';
-import { logger } from './logger.service';
 
 class Database {
 
