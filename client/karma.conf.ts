@@ -1,11 +1,12 @@
-// Karma configuration file, see link for more information
-// https://karma-runner.github.io/0.13/config/configuration-file.html
-
 export interface IKarmaConfig extends karma.Config {
   angularCli: any;
 }
 
 import * as karma from 'karma';
+import karmaCoverageIstanbulReporter = require('karma-coverage-istanbul-reporter');
+import karmaMocha = require('karma-mocha');
+import karmaMochaReporter = require('karma-mocha-reporter');
+import karmaPhantomjsLauncher = require('karma-phantomjs-launcher');
 
 module.exports = (config: IKarmaConfig) => {
 
@@ -33,10 +34,10 @@ module.exports = (config: IKarmaConfig) => {
       showDiff: true,
     },
     plugins: [
-      require('karma-mocha'),
-      require('karma-mocha-reporter'),
-      require('karma-phantomjs-launcher'),
-      require('karma-coverage-istanbul-reporter'),
+      karmaMocha,
+      karmaMochaReporter,
+      karmaPhantomjsLauncher,
+      karmaCoverageIstanbulReporter,
       require('@angular/cli/plugins/karma'),
     ],
     port: 9876,
@@ -195,6 +196,8 @@ module.exports = (config: IKarmaConfig) => {
     configuration.customLaunchers = browserStackBrowsers;
     configuration.browsers = Object.keys(browserStackBrowsers);
     configuration.reporters = ['dots', 'BrowserStack'];
+    configuration.captureTimeout = 30 * 1000; // 30 seconds
+    configuration.retryLimit = 3;
 
   } else {
     // Tests are being run locally or on TravisCI
