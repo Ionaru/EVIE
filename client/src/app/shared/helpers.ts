@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
 import { Logger } from 'angular2-logger/core';
 import { parseString } from 'xml2js';
-
-import { AppComponent } from '../app.component';
 import Timer = NodeJS.Timer;
 
 @Injectable()
@@ -11,9 +9,9 @@ export class Helpers {
 
   /**
    * Wrapper for the setInterval function, it will execute the passed function immediately before calling setInterval
-   * @param {() => void} fn - The function to run
+   * @param {function} fn - The function to run
    * @param {number} interval - The interval of the repeat
-   * @param {Array<any>} params - Additional parameters to pass to fn
+   * @param {Array} params - Additional parameters to pass to fn
    * @return {Timer} - Timer object for the interval function, used for clearInterval()
    */
   public static repeat(fn: (...params) => void, interval: number, ...params: any[]): Timer {
@@ -22,7 +20,7 @@ export class Helpers {
   }
 
   public static createTitle(name: string): string {
-    return AppComponent.appName + ' - ' + name;
+    return `EVE-Track - ${name}`;
   }
 
   public static isEmpty(obj: any): boolean {
