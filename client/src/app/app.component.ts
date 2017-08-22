@@ -19,16 +19,8 @@ import { Helpers } from './shared/helpers';
 })
 export class AppComponent {
 
-  public static appName = 'EVE Track';
-  public static appVersion = '0.1.0-INDEV';
-
   constructor(private userService: UserService, private appReadyEvent: AppReadyEvent, private globals: Globals) {
     this.boot();
-  }
-
-  //noinspection JSMethodCanBeStatic
-  public getAppVersion(): string {
-    return AppComponent.appVersion;
   }
 
   private boot(): void {
