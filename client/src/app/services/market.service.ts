@@ -44,7 +44,8 @@ export class MarketService {
     try {
 
       response = await this.http.get(url, {headers}).toPromise().catch((error) => {
-        throw new Error(error);
+        this.logger.error('Response error', error);
+        return error;
       });
 
       if (!response.ok || response.status !== 200) {
