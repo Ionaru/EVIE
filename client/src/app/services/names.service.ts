@@ -18,13 +18,25 @@ export interface INames {
 @Injectable()
 export class NamesService {
 
+  public static getNameFromData(nameData: INames, id: number, unknownMessage: string = 'Unknown'): string {
+    if (!nameData || !Object.keys(nameData).length) {
+      return unknownMessage;
+    }
+
+    if (nameData[id] && nameData[id].name) {
+      return nameData[id].name;
+    } else {
+      return unknownMessage;
+    }
+  }
+
   private static uniquify(array: any[]): any[] {
     return array.filter((elem, index, self) => {
       return index === self.indexOf(elem);
     });
   }
 
-  private namesMaxAge = 3 * 24 * 60 * 60 * 1000; // 3 days
+  private namesMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
   private namesStoreTag = 'names';
 
   constructor(private http: Http, private endpointService: EndpointService, private globals: Globals, private logger: Logger) {
@@ -73,11 +85,13 @@ export class NamesService {
     try {
 
       response = await this.http.post(url, ids).toPromise().catch((error) => {
-        throw new Error(error);
+        this.logger.error('Response error', error);
+        return error;
       });
 
       if (!response.ok || response.status !== 200) {
         this.logger.error('Response was not OK', response);
+        return;
       }
 
       const names: IEveNameData[] = response.json();

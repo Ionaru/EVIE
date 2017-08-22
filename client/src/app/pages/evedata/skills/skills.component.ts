@@ -64,7 +64,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
         const namesData = await this.namesService.getNames(...names);
 
         for (const skill of this.skillsData.skills) {
-          skill.name = namesData[skill.skill_id].name;
+          skill.name = NamesService.getNameFromData(namesData, skill.skill_id, 'Unknown skill');
         }
 
         for (const group of this.skillGroups) {
@@ -73,10 +73,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
         for (const skill of this.skillQueueData) {
 
-          skill.name = 'Unknown skill';
-          if (namesData[skill.skill_id]) {
-            skill.name = namesData[skill.skill_id].name;
-          }
+          skill.name = NamesService.getNameFromData(namesData, skill.skill_id, 'Unknown skill');
           skill.finishTimestamp = new Date(skill.finish_date).getTime();
           skill.startTimestamp = new Date(skill.start_date).getTime();
           const now = Date.now();

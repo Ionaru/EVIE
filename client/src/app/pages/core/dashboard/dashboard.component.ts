@@ -58,8 +58,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     await this.getLocationData(character);
     await this.getShipData(character);
     const nameData: INames = await this.namesService.getNames(character.location.id, character.currentShip.id);
-    character.location.name = nameData[character.location.id].name;
-    character.currentShip.type = nameData[character.currentShip.id].name;
+    character.location.name = NamesService.getNameFromData(nameData, character.location.id, 'Unknown location');
+    character.currentShip.type = NamesService.getNameFromData(nameData, character.currentShip.id, 'Unknown ship');
   }
 
   public async getLocationData(character: Character): Promise<void> {
@@ -77,7 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     await this.getLocationData(character);
     const nameData: INames = await this.namesService.getNames(character.location.id);
-    character.location.name = nameData[character.location.id].name;
+    character.location.name = NamesService.getNameFromData(nameData, character.location.id, 'Unknown location');
   }
 
   public async refreshShip(character: Character): Promise<void> {
@@ -85,7 +85,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     await this.getShipData(character);
     const nameData: INames = await this.namesService.getNames(character.currentShip.id);
-    character.currentShip.type = nameData[character.currentShip.id].name;
+    character.currentShip.type = NamesService.getNameFromData(nameData, character.currentShip.id, 'Unknown ship');
   }
 
   public async getCharacterData(character: Character): Promise<void> {
