@@ -13,7 +13,7 @@ export class BalanceService {
   public async getBalance(character: Character): Promise<number> {
     const url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'wallet');
     const headers = new Headers();
-    headers.append('Authorization', 'Begarer ' + character.accessToken);
+    headers.append('Authorization', 'Bearer ' + character.accessToken);
     let response: Response;
     try {
 
@@ -33,8 +33,8 @@ export class BalanceService {
 
       return Number(walletData);
 
-    } catch (err) {
-      this.logger.error(err);
+    } catch (error) {
+      this.logger.error(error);
       return -1;
     }
   }

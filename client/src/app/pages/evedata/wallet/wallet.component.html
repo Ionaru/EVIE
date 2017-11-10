@@ -64,7 +64,7 @@
             {{ entry.quantity | number: quantityFormat() }} x <a (click)="getItemInfo(entry.type_id)">{{ names[entry.type_id]?.name || entry.type_id }}</a>
             <span *ngIf="entry.is_buy === true">from</span>
             <span *ngIf="entry.is_buy === false">to</span>
-            <a (click)="getPersonInfo(entry.client_id)">{{ entry.client_id }}</a>
+            <a (click)="getPersonInfo(entry.client_id)">{{ names[entry.client_id]?.name || entry.client_id }}</a>
           </td>
           <td data-label="price" [ngClass]="buyOrSell(entry.is_buy)">
             {{ entry.unit_price * entry.quantity | number: iskFormat() }} ISK<span
