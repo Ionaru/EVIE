@@ -1,6 +1,7 @@
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import * as crypto from 'crypto-js';
 
 import { Globals } from '../../shared/globals';
@@ -8,23 +9,29 @@ import { Helpers } from '../../shared/helpers';
 import { CharacterService } from '../character/character.service';
 import { ILoginResponse, IRegisterResponse, IUserApiData, User } from './user.model';
 
+interface IHandshakeResponse {
+  state: string;
+  message: string;
+  data?: IUserApiData;
+}
+
 @Injectable()
 export class UserService {
+
 
   private static hashPassword(passwordPlain: string): string {
     return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
   }
 
-  constructor(private http: Http, private characterService: CharacterService, private globals: Globals, private logger: Logger) { }
+  constructor(private http2: HttpClient, private http: Http, private characterService: CharacterService,
+              private globals: Globals /*, private logger: Logger */) { }
 
   public async shakeHands(): Promise<any> {
     const url = 'api/handshake';
-    const response: Response = await this.http.get(url).toPromise().catch((error) => {
-      return error;
-    });
+    const response: HttpResponse<IHandshakeResponse> = await this.http2.get(url, {observe: 'response'}).toPromise().catch((error) => error);
     if (response.ok) {
-      const jsonData = response.json();
-      if (jsonData.message === 'LoggedIn') {
+      const jsonData = response.body;
+      if (jsonData.message === 'LoggedIn' && jsonData.data) {
         this.globals.loggedIn = true;
         await this.storeUser(jsonData.data);
       }
@@ -37,9 +44,7 @@ export class UserService {
     const response: Response = await this.http.post(url, {
       password: UserService.hashPassword(password),
       username,
-    }).toPromise().catch((error) => {
-      return error;
-    });
+    }).toPromise().catch((error) => error);
     const jsonData: ILoginResponse = response.json();
     if (response.ok) {
       const user = await this.storeUser(jsonData.data);
@@ -82,7 +87,7 @@ export class UserService {
         return 'success';
       }
     } catch (error) {
-      this.logger.error(error);
+      // this.logger.error(error);
       return null;
     }
   }

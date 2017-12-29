@@ -1,5 +1,4 @@
-import { ICharacterModel } from '../models/character/character';
-import { IUserModel } from '../models/user/user';
+import { db } from './db.service';
 
 /**
  * Generate a random string from a range of 62 characters
@@ -18,21 +17,20 @@ export function generateRandomString(length: number): string {
 /**
  * Generate a random PID that is unique for a given model
  * @param {number} pidLength - The length of the desired PID
- * @param {IUserModel | ICharacterModel} model - Which model to generate a unique PID for
+ * @param model - Which model to generate a unique PID for, MODEL NEEDS A 'pid' ATTRIBUTE!
  * @return {string} - The unique PID
  */
-export async function generateUniquePID(pidLength: number, model: IUserModel | ICharacterModel): Promise<string> {
+export async function generateUniquePID(pidLength: number, model: any): Promise<string> {
   const pid = generateRandomString(pidLength);
-  const search = await model.findOne(
-    {
-      attributes: ['id'],
-      where: {
-        pid,
-      },
-    });
+  // Because of some typing issues, we need to set the model as any.
+  const search: any | undefined = await db.orm.getRepository(model).createQueryBuilder('model')
+    .select('model.id')
+    .where('model.pid = :pid', {pid})
+    .getOne();
+
   if (search) {
+    // This PID is already in use, run the function again.
     return await generateUniquePID(pidLength, model);
-  } else {
-    return pid;
   }
+  return pid;
 }

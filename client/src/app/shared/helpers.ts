@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import { parseString } from 'xml2js';
 import Timer = NodeJS.Timer;
 
@@ -64,7 +64,7 @@ export class Helpers {
       (decimals ? decimalMark + Math.abs(n - i).toFixed(decimals).slice(2) : '');
   }
 
-  constructor(private logger: Logger) { }
+  // constructor(private logger: Logger) { }
 
   public processXML(response: Response): object {
     try {
@@ -78,7 +78,7 @@ export class Helpers {
       });
       return jsonObject;
     } catch (error) {
-      this.logger.error(error);
+      // this.logger.error(error);
       return {err: 'XMLParseError'};
     }
   }
@@ -94,7 +94,7 @@ export class Helpers {
     try {
       return new Date(dateString.replace(/-/ig, '/').split('.')[0] + ' UTC');
     } catch (error) {
-      this.logger.error(error);
+      // this.logger.error(error);
       return new Date();
     }
   }

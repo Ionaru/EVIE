@@ -4,7 +4,7 @@ import { MockBackend, MockConnection } from '@angular/http/testing';
 import * as expect from 'must/register';
 import { assert, SinonStub, stub } from 'sinon';
 
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import { Character, IApiCharacterData } from '../../models/character/character.model';
 import { EndpointService } from '../../models/endpoint/endpoint.service';
 import { Globals } from '../../shared/globals';
@@ -21,7 +21,7 @@ describe('Services', () => {
     let balanceService: BalanceService;
     let globals: Globals;
     let helpers: Helpers;
-    let logger: Logger;
+    // let logger: Logger;
     let loggerStub: SinonStub;
 
     beforeEach(async () => {
@@ -33,7 +33,7 @@ describe('Services', () => {
           EndpointService,
           Globals,
           Helpers,
-          Logger,
+          // Logger,
           {
             deps: [
               MockBackend,
@@ -66,14 +66,14 @@ describe('Services', () => {
       http = testbed.get(Http);
       mockBackend = testbed.get(MockBackend);
       balanceService = testbed.get(BalanceService);
-      logger = testbed.get(Logger);
-      loggerStub = stub(logger, 'error');
+      // logger = testbed.get(Logger);
+      // loggerStub = stub(logger, 'error');
 
       localStorage.clear();
     });
 
     afterEach(() => {
-      loggerStub.restore();
+      // loggerStub.restore();
     });
 
     function mockResponse(options: { body?: string, status?: number }) {

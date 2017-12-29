@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 
 import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Globals } from '../shared/globals';
@@ -39,7 +39,7 @@ export class NamesService {
   private namesMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
   private namesStoreTag = 'names';
 
-  constructor(private http: Http, private endpointService: EndpointService, private globals: Globals, private logger: Logger) {
+  constructor(private http: Http, private endpointService: EndpointService, private globals: Globals /*, private logger: Logger */) {
     this.getNamesFromStore();
     if (!globals.names || globals.names instanceof Array) {
       this.resetNames();
@@ -85,12 +85,12 @@ export class NamesService {
     try {
 
       response = await this.http.post(url, ids).toPromise().catch((error) => {
-        this.logger.error('Response error', error);
+        // this.logger.error('Response error', error);
         return error;
       });
 
       if (!response.ok || response.status !== 200) {
-        this.logger.error('Response was not OK', response);
+        // this.logger.error('Response was not OK', response);
         return;
       }
 
@@ -101,9 +101,9 @@ export class NamesService {
       }
 
     } catch (err) {
-      this.logger.error(err);
+      // this.logger.error(err);
       if (response) {
-        this.logger.error(response);
+        // this.logger.error(response);
       }
     }
   }
@@ -122,7 +122,7 @@ export class NamesService {
       this.globals.namesExpiry = storeData.expiry;
       this.globals.names = storeData.names;
     } catch (error) {
-      this.logger.error(error);
+      // this.logger.error(error);
       return this.resetNames();
     }
   }

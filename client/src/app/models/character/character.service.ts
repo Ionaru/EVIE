@@ -48,9 +48,11 @@ export class CharacterService {
     const pid = character.pid;
     const accessToken = character.accessToken;
     const url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
-    const response: Response = await this.http.get(url).toPromise();
-    const json: ITokenRefreshResponse = response.json();
-    character.accessToken = json.data.token;
+    const response: Response = await this.http.get(url).toPromise().catch((e) => e);
+    if (response.ok) {
+      const json: ITokenRefreshResponse = response.json();
+      character.accessToken = json.data.token;
+    }
   }
 
   public startAuthProcess(character?: Character): void {

@@ -1,74 +1,94 @@
-import { Request, Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
+import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
-import { IResponse } from './global.router';
+
+export interface IResponse extends Response {
+    id?: string;
+}
 
 interface IRequestLogItem {
-  id;
-  request: Request;
+    id: string;
+    request: Request;
 }
+
 export let requestList: IRequestLogItem[] = [];
 
 export class BaseRouter {
-  public router: Router = Router();
+    public router: Router = Router();
 
-  public createAllRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.all(url, routeFunction);
-  }
+    public createAllRoute(url: string, routeFunction: RequestHandlerParams): void {
+        this.router.all(url, routeFunction);
+    }
 
-  public createGetRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.get(url, routeFunction);
-  }
+    public createGetRoute(url: string, routeFunction: RequestHandlerParams): void {
+        this.router.get(url, routeFunction);
+    }
 
-  public createPostRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.post(url, routeFunction);
-  }
+    public createPostRoute(url: string, routeFunction: RequestHandlerParams): void {
+        this.router.post(url, wrapper(routeFunction));
+    }
 
-  public createPutRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.put(url, routeFunction);
-  }
+    public createPutRoute(url: string, routeFunction: RequestHandlerParams): void {
+        this.router.put(url, routeFunction);
+    }
 
-  public createDeleteRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.delete(url, routeFunction);
-  }
+    public createDeleteRoute(url: string, routeFunction: RequestHandlerParams): void {
+        this.router.delete(url, wrapper(routeFunction));
+    }
 }
 
-export function sendResponse(response: IResponse, statusCode: number, message: string, data?: any): void {
-  let state = 'success';
-  if (statusCode !== 200) {
-    state = 'error';
-  }
+function wrapper(routeFunction: any) {
+    return (request: Request, response: Response, next?: NextFunction) => {
+        routeFunction(request, response, next).catch((err: Error) => {
+            errorHandler(err, request, response);
+        });
+    };
+}
 
-  const request = requestList.filter((_) => _.id === response.id)[0].request;
+export function sendResponse(response: IResponse, statusCode: number, message: string, data?: object): void {
+    let state = 'success';
+    if (statusCode !== 200) {
+        state = 'error';
+    }
 
-  const responseData = {
-    data,
-    message,
-    state,
-  };
+    const request = requestList.filter((_) => _.id === response.id)[0].request;
 
-  if (!data) {
-    delete responseData.data;
-  }
+    const responseData = {
+        data,
+        message,
+        state,
+    };
 
-  logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${statusCode} ${message}`);
+    if (!data) {
+        delete responseData.data;
+    }
+    response.status(statusCode);
+    // noinspection JSIgnoredPromiseFromCall
+    response.json(responseData);
 
-  response.status(statusCode);
-  response.type('html');
-  response.json(responseData);
+    logRequest(request, response, message);
 }
 
 export function sendTextResponse(response: IResponse, statusCode: number, message: string): void {
-  const request = requestList.filter((_) => _.id === response.id)[0].request;
+    response.status(statusCode);
+    response.send(message);
 
-  logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${statusCode}`);
+    const request = requestList.filter((_) => _.id === response.id)[0].request;
+    logRequest(request, response, message);
+}
 
-  response.status(statusCode);
-  response.send(message);
+function logRequest(request: Request, response: Response, message?: string) {
+    logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${response.statusCode} ${message}`);
 }
 
 export function getIp(request: Request): string {
-  return request.headers['x-forwarded-for'] ||
-    request.connection.remoteAddress ||
-    request.socket.remoteAddress;
+    return request.headers['x-forwarded-for'] ||
+        request.connection.remoteAddress ||
+        request.socket.remoteAddress || 'Unknown IP';
+}
+
+export function errorHandler(error: Error, _req: Request, response: Response) {
+    logger.error(error.message, error);
+    sendTextResponse(response, httpStatus.INTERNAL_SERVER_ERROR, error.message);
 }

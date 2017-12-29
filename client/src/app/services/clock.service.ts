@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import { Observable } from 'rxjs';
 
 import { Endpoint } from '../models/endpoint/endpoint.model';
@@ -90,7 +90,7 @@ export class ClockService {
 
   private endpoint: Endpoint;
 
-  constructor(private http: Http, private endpointService: EndpointService, private helpers: Helpers, private logger: Logger) {
+  constructor(private http: Http, private endpointService: EndpointService, private helpers: Helpers /*, private logger: Logger */) {
     this.endpoint = this.endpointService.getEndpoint('ServerStatus');
   }
 
@@ -102,7 +102,7 @@ export class ClockService {
       const jsonData = this.helpers.processXML(response) as IServerStatusXMLData;
       return ClockService.processTime(jsonData);
     }).catch((error) => {
-      this.logger.error(error);
+      // this.logger.error(error);
       return Observable.of({
         players: 0,
         status: 'Offline',

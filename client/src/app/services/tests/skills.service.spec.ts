@@ -1,7 +1,7 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import * as expect from 'must/register';
 import { assert, SinonStub, stub } from 'sinon';
 
@@ -18,7 +18,7 @@ describe('Services', () => {
 
     let mockBackend: MockBackend;
     let skillsService: SkillsService;
-    let logger: Logger;
+    // let logger: Logger;
     let loggerStub: SinonStub;
     let http: Http;
 
@@ -30,7 +30,7 @@ describe('Services', () => {
           SkillsService,
           EndpointService,
           Globals,
-          Logger,
+          // Logger,
           Helpers,
           {
             deps: [
@@ -49,13 +49,13 @@ describe('Services', () => {
       mockBackend = testbed.get(MockBackend);
       http = testbed.get(Http);
       skillsService = testbed.get(SkillsService);
-      logger = testbed.get(Logger);
-      loggerStub = stub(logger, 'error');
+      // logger = testbed.get(Logger);
+      // loggerStub = stub(logger, 'error');
 
     });
 
     afterEach(() => {
-      loggerStub.restore();
+      // loggerStub.restore();
     });
 
     function mockResponse(options: { body?: string, status?: number }) {

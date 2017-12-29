@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import { Character } from '../models/character/character.model';
 import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Helpers } from '../shared/helpers';
@@ -27,7 +27,7 @@ export interface ISkillQueueData {
 
 @Injectable()
 export class SkillQueueService {
-  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }
+  constructor(/* private logger: Logger,*/ private http: Http, private endpointService: EndpointService) { }
 
   public async getSkillQueue(character: Character): Promise<ISkillQueueData[]> {
     const url = this.endpointService.constructESIUrl('v2/characters', character.characterId, 'skillqueue');
@@ -41,21 +41,21 @@ export class SkillQueueService {
       });
 
       if (!response.ok || response.status !== 200) {
-        this.logger.error('Response was not OK', response);
+        // this.logger.error('Response was not OK', response);
         return null;
       }
 
       const skillQueue: ISkillQueueData[] = response.json();
 
       if (Helpers.isEmpty(skillQueue)) {
-        this.logger.error('Data did not contain expected values', skillQueue);
+        // this.logger.error('Data did not contain expected values', skillQueue);
         return null;
       }
 
       return skillQueue;
 
     } catch (err) {
-      this.logger.error(err);
+      // this.logger.error(err);
       return null;
     }
   }

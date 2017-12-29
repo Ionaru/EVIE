@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import { Character } from '../models/character/character.model';
 import { Endpoint } from '../models/endpoint/endpoint.model';
 import { EndpointService } from '../models/endpoint/endpoint.service';
@@ -59,7 +59,7 @@ export interface ITransactionXMLData {
 
 @Injectable()
 export class TransactionsService {
-  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }
+  constructor(/* private logger: Logger, */ private http: Http, private endpointService: EndpointService) { }
 
   public async getTransactions(character: Character, transactionId?: number): Promise<ITransactionData2[]> {
     let url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'wallet/transactions');
@@ -77,21 +77,21 @@ export class TransactionsService {
       });
 
       if (!response.ok || response.status !== 200) {
-        this.logger.error('Response was not OK', response);
+        // this.logger.error('Response was not OK', response);
         return null;
       }
 
       const transactionDataArray: ITransactionData2[] = response.json();
 
       if (Helpers.isEmpty(transactionDataArray)) {
-        this.logger.error('Data did not contain expected values', transactionDataArray);
+        // this.logger.error('Data did not contain expected values', transactionDataArray);
         return null;
       }
 
       return transactionDataArray;
 
     } catch (err) {
-      this.logger.error(err);
+      // this.logger.error(err);
       return null;
     }
   }
@@ -105,7 +105,7 @@ export class TransactionService {
   private storageTag: string;
 
   constructor(private http: Http, private endpointService: EndpointService, private globals: Globals,
-              private helpers: Helpers, private logger: Logger) {
+              private helpers: Helpers/*, private logger: Logger*/) {
     this.endpoint = this.endpointService.getEndpoint('WalletTransactions');
     this.storageTag = this.endpoint.name + this.globals.selectedCharacter.characterId;
   }
@@ -120,7 +120,7 @@ export class TransactionService {
           return this.processTransactionData(jsonData);
         }
       } catch (error) {
-        this.logger.error('Cache was invalid', error);
+        // this.logger.error('Cache was invalid', error);
         localStorage.removeItem(this.storageTag);
         return this.getTransactions(true);
       }

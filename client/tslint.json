@@ -34,6 +34,10 @@
       true,
       140
     ],
+    "no-unused-expression": [
+      true,
+      "allow-new"
+    ],
     "quotemark": [
       true,
       "single"

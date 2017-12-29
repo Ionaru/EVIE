@@ -5,7 +5,7 @@ import { MockBackend } from '@angular/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import * as expect from 'must/register';
 import { BsDropdownModule, ModalModule, TooltipModule } from 'ngx-bootstrap';
 import { SinonStub, stub } from 'sinon';
@@ -19,7 +19,7 @@ import { Globals } from './shared/globals';
 
 describe('AppComponent', () => {
 
-  let logger: Logger;
+  // let logger: Logger;
   let loggerStub: SinonStub;
 
   beforeEach(async function () {
@@ -45,7 +45,7 @@ describe('AppComponent', () => {
       providers: [Globals,
         MockBackend,
         BaseRequestOptions,
-        Logger,
+        // Logger,
         {
           deps: [MockBackend, BaseRequestOptions],
           provide: Http,
@@ -58,13 +58,13 @@ describe('AppComponent', () => {
 
     const testbed = getTestBed();
 
-    logger = testbed.get(Logger);
-    loggerStub = stub(logger, 'error');
+    // logger = testbed.get(Logger);
+    // loggerStub = stub(logger, 'error');
 
   });
 
   afterEach(async function () {
-    loggerStub.restore();
+    // loggerStub.restore();
   });
 
   it('must create the app', async function () {

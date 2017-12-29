@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptionsArgs, Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import * as assert from 'assert';
 
 import { Globals } from '../../shared/globals';
@@ -19,7 +19,7 @@ export class EndpointService {
   public xmlBaseUrl = 'https://api.eveonline.com/';
   public esiBaseUrl = 'https://esi.tech.ccp.is/';
 
-  constructor(private logger: Logger, private globals: Globals, private http: Http) { }
+  constructor(/* private logger: Logger, */ private globals: Globals, private http: Http) { }
 
   public getEndpoint(name: string): Endpoint {
     return endpointList.filter((_) => _.name === name)[0];
@@ -63,9 +63,9 @@ export class EndpointService {
         assert.equal(response.status, 200, `Request to ${url} returned ${response.status} instead of expected 200`);
         return response.json();
       } catch (err) {
-        this.logger.error(err);
+        // this.logger.error(err);
         if (response) {
-          this.logger.error(response);
+          // this.logger.error(response);
         }
       }
     }

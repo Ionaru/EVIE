@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import { EndpointService } from '../models/endpoint/endpoint.service';
 import { Helpers } from '../shared/helpers';
 
@@ -24,7 +24,7 @@ export class SkillGroupsService {
 
   private skillCategoryId = 16;
 
-  constructor(private http: Http, private logger: Logger, private helpers: Helpers, private endpointService: EndpointService) {}
+  constructor(private http: Http, /* private logger: Logger,*/ private helpers: Helpers, private endpointService: EndpointService) {}
 
   public async getSkillGroupInformation(): Promise<ISkillGroupData[]> {
     const skillInfo = [];
@@ -54,21 +54,21 @@ export class SkillGroupsService {
       });
 
       if (!response.ok || response.status !== 200) {
-        this.logger.error('Response was not OK', response);
+        // this.logger.error('Response was not OK', response);
         return null;
       }
 
       const skillCategory: ISkillCategoryData = response.json();
 
       if (Helpers.isEmpty(skillCategory)) {
-        this.logger.error('Data did not contain expected values', skillCategory);
+        // this.logger.error('Data did not contain expected values', skillCategory);
         return null;
       }
 
       return skillCategory.groups;
 
     } catch (err) {
-      this.logger.error(err);
+      // this.logger.error(err);
       return null;
     }
   }
@@ -82,21 +82,21 @@ export class SkillGroupsService {
       });
 
       if (!response.ok || response.status !== 200) {
-        this.logger.error('Response was not OK', response);
+        // this.logger.error('Response was not OK', response);
         return null;
       }
 
       const skillGroup: ISkillGroupData = response.json();
 
       if (Helpers.isEmpty(skillGroup)) {
-        this.logger.error('Data did not contain expected values', skillGroup);
+        // this.logger.error('Data did not contain expected values', skillGroup);
         return null;
       }
 
       return skillGroup;
 
     } catch (err) {
-      this.logger.error(err);
+      // this.logger.error(err);
       return null;
     }
   }

@@ -1,5 +1,5 @@
+import { HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { Response } from '@angular/http';
 import { Observable, Observer } from 'rxjs';
 import * as socketIo from 'socket.io-client';
 
@@ -25,15 +25,15 @@ export class AppComponent {
 
   private boot(): void {
     this.globals.startUpObservable = Observable.create(async (observer: Observer<boolean>) => {
-      const response: Response = await this.userService.shakeHands();
+      const response: HttpResponse<null> = await this.userService.shakeHands();
       if (response.ok) {
         this.globals.startUp = true;
         observer.next(true);
         observer.complete();
       } else {
         this.appReadyEvent.triggerFailed();
-        document.getElementById('error-info').innerText = response.text();
-        document.getElementById('error-info-detail').innerText = response.toString();
+        document.getElementById('error-info').innerText = response.body;
+        document.getElementById('error-info-detail').innerText = JSON.stringify(response);
       }
     }).share();
 

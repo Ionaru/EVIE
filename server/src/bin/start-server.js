@@ -3,7 +3,7 @@
 
 // eslint-disable-line global-require
 require('ts-node').register({
-  project: './src/'
+    project: './src/'
 });
 var application = require('./www');
 application.init().catch(console.error.bind(console));

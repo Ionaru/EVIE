@@ -1,7 +1,7 @@
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { BaseRequestOptions, Http, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 import * as expect from 'must/register';
 import { assert, SinonStub, spy, stub } from 'sinon';
 
@@ -19,7 +19,7 @@ describe('Models', () => {
       let endpointService: EndpointService;
       let globals: Globals;
       let http: Http;
-      let logger: Logger;
+      // let logger: Logger;
       let loggerStub: SinonStub;
 
       beforeEach(async () => {
@@ -29,7 +29,7 @@ describe('Models', () => {
             MockBackend,
             EndpointService,
             Globals,
-            Logger,
+            // Logger,
             {
               deps: [
                 MockBackend,
@@ -48,13 +48,13 @@ describe('Models', () => {
         endpointService = testbed.get(EndpointService);
         globals = testbed.get(Globals);
         http = testbed.get(Http);
-        logger = testbed.get(Logger);
-        loggerStub = stub(logger, 'error');
+        // logger = testbed.get(Logger);
+        // loggerStub = stub(logger, 'error');
 
       });
 
       afterEach(() => {
-        loggerStub.restore();
+        // loggerStub.restore();
       });
 
       function setupConnections(backend: MockBackend, options: any) {

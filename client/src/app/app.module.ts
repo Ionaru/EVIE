@@ -1,16 +1,17 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule, Provider } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Logger, Options } from 'angular2-logger/core';
+// import { Logger, Options } from 'angular2-logger/core';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
-import { router } from './app.router';
+import { AppRoutingModule } from './app.router';
 import { DashboardComponent } from './pages/core/dashboard/dashboard.component';
 import { IndexComponent } from './pages/core/index/index.component';
 import { LoginModalComponent } from './pages/core/index/login-modal.component';
@@ -53,7 +54,8 @@ export const imports: any[] = [
   BrowserAnimationsModule,
   FormsModule,
   HttpModule,
-  router,
+  HttpClientModule,
+  AppRoutingModule,
   BsDropdownModule.forRoot(),
   TooltipModule.forRoot(),
   ModalModule.forRoot(),
@@ -64,8 +66,8 @@ export const providers: Provider[] = [
   AuthGuard,
   CharacterGuard,
   Globals,
-  Logger,
-  {provide: Options, useValue: {level: environment.logLevel}},
+  // Logger,
+  // {provide: Options, useValue: {level: environment.logLevel}},
 ];
 
 export const bootstrap: any[] = [

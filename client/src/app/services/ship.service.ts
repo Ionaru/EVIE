@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
-import { Logger } from 'angular2-logger/core';
+// import { Logger } from 'angular2-logger/core';
 
 import { Character } from '../models/character/character.model';
 import { EndpointService } from '../models/endpoint/endpoint.service';
@@ -13,7 +13,7 @@ export interface IShipData {
 
 @Injectable()
 export class ShipService {
-  constructor(private logger: Logger, private http: Http, private endpointService: EndpointService) { }
+  constructor(/* private logger: Logger, */ private http: Http, private endpointService: EndpointService) { }
 
   public async getCurrentShip(character: Character): Promise<{ id, name }> {
     const url = this.endpointService.constructESIUrl('v1/characters', character.characterId, 'ship');
@@ -27,14 +27,14 @@ export class ShipService {
       });
 
       if (!response.ok || response.status !== 200) {
-        this.logger.error('Response was not OK', response);
+        // this.logger.error('Response was not OK', response);
         return {id: -1, name: 'Error'};
       }
 
       const shipData: IShipData = response.json();
 
       if (!(shipData.ship_type_id && shipData.ship_name)) {
-        this.logger.error('Data did not contain expected values', shipData);
+        // this.logger.error('Data did not contain expected values', shipData);
         return {id: -1, name: 'Error'};
       }
 
@@ -44,7 +44,7 @@ export class ShipService {
       };
 
     } catch (err) {
-      this.logger.error(err);
+      // this.logger.error(err);
       return {id: -1, name: 'Error'};
     }
   }
