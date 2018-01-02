@@ -103,9 +103,9 @@ export class APIRouter extends BaseRouter {
      * path: /api/logout
      * method: POST
      */
-    private static logoutUser(request: Request, response: Response): void {
+    private static async logoutUser(request: Request, response: Response): Promise<void> {
         request.session!.destroy(() => {
-            response.redirect('/');
+            response.end();
         });
     }
 

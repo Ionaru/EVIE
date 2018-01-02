@@ -18,11 +18,11 @@ export class BaseRouter {
     public router: Router = Router();
 
     public createAllRoute(url: string, routeFunction: RequestHandlerParams): void {
-        this.router.all(url, routeFunction);
+        this.router.all(url, wrapper(routeFunction));
     }
 
     public createGetRoute(url: string, routeFunction: RequestHandlerParams): void {
-        this.router.get(url, routeFunction);
+        this.router.get(url, wrapper(routeFunction));
     }
 
     public createPostRoute(url: string, routeFunction: RequestHandlerParams): void {
@@ -30,7 +30,7 @@ export class BaseRouter {
     }
 
     public createPutRoute(url: string, routeFunction: RequestHandlerParams): void {
-        this.router.put(url, routeFunction);
+        this.router.put(url, wrapper(routeFunction));
     }
 
     public createDeleteRoute(url: string, routeFunction: RequestHandlerParams): void {
@@ -40,9 +40,11 @@ export class BaseRouter {
 
 function wrapper(routeFunction: any) {
     return (request: Request, response: Response, next?: NextFunction) => {
-        routeFunction(request, response, next).catch((err: Error) => {
-            errorHandler(err, request, response);
-        });
+        if (routeFunction) {
+            routeFunction(request, response, next).catch((err: Error) => {
+                errorHandler(err, request, response);
+            });
+        }
     };
 }
 

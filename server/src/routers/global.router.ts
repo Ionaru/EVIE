@@ -11,7 +11,7 @@ export class GlobalRouter extends BaseRouter {
      * path: All roads (paths) lead to this router
      * method: Any HTML method
      */
-    private static globalRoute(request: Request, response: Response, next?: NextFunction): void {
+    private static async globalRoute(request: Request, response: Response, next?: NextFunction): Promise<void> {
 
         // Define the session user if it didn't exists already
         if (!request.session!.user) {

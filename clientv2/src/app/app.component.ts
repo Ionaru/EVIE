@@ -16,7 +16,7 @@ interface IHandshakeResponse {
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-    title = 'app';
+    version = '0.2.0-INDEV';
 
     constructor(private appReadyEvent: AppReadyEvent, private http: HttpClient, private userService: UserService) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Unexpected error', error));
@@ -26,8 +26,6 @@ export class AppComponent {
         UserService.userChangeEvent.subscribe((newUser: User) => {
             console.log(newUser);
         });
-
-        // await this.userService.loginUser('testUser', '000999888');
 
         await this.shakeHands();
         this.appReadyEvent.triggerSuccess();
@@ -42,5 +40,9 @@ export class AppComponent {
         if (response && response.message === 'LoggedIn') {
             await this.userService.storeUser(response.data);
         }
+    }
+
+    private login() {
+        this.userService.loginUser('testUser', '000999888').then();
     }
 }

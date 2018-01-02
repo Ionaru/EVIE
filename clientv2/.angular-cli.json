@@ -21,10 +21,7 @@
       "styles": [
         "styles.scss"
       ],
-      "scripts": [
-        "../node_modules/jquery/dist/jquery.js",
-        "../node_modules/bootstrap/js/dist/index.js"
-      ],
+      "scripts": [],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

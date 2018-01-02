@@ -1,0 +1,276 @@
+@import '../variables';
+
+nav {
+    background-color: #171B23;
+    user-select: none;
+}
+
+.navbar.fixed-top {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
+
+    .navbar-nav {
+        .nav-link {
+            position: relative;
+
+            &::before {
+                background-color: #ffffff;
+                bottom: 0;
+                content: '';
+                height: 2px;
+                left: 0;
+                position: absolute;
+                right: 0;
+                transform: scaleX(0);
+                transition: all 0.2s ease-in-out;
+                visibility: hidden;
+            }
+
+            &:hover,
+            &.active {
+                &::before {
+                    transform: scaleX(1);
+                    visibility: visible;
+                }
+            }
+
+            &.logout {
+                padding: 0;
+
+                img {
+                    filter: grayscale(100%) brightness(200%);
+                    height: 37px;
+                }
+            }
+
+            //border-bottom: white 2px solid;
+        }
+    }
+}
+
+.navbar.fixed-left {
+    bottom: 0;
+    box-shadow: 2px 0 5px 0 rgba(0, 0, 0, 0.25);
+    left: 0;
+    padding: 0;
+    position: fixed;
+    text-align: center;
+    top: $navbar-top-height;
+    width: $navbar-side-width;
+    z-index: 1029;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    .character-item {
+        cursor: pointer;
+        display: block;
+        height: 50px;
+
+        &:not(.active) {
+            pointer-events: none;
+        }
+    }
+
+    .navbar-item {
+        cursor: pointer;
+        display: block;
+        padding-bottom: 5px;
+        padding-top: 5px;
+        position: relative;
+        text-decoration: none;
+
+        &:hover,
+        &.active {
+            &::after {
+                transform: scaleY(1);
+                visibility: visible;
+            }
+        }
+
+        &::after {
+            background-color: #ffffff;
+            bottom: 0;
+            content: '';
+            position: absolute;
+            right: 4px;
+            top: 0;
+            transform: scaleY(0);
+            transition: all 0.2s ease-in-out;
+            visibility: hidden;
+            width: 2px;
+        }
+
+        img {
+            filter: brightness(0) invert(100%);
+            max-width: 85%;
+        }
+
+        &.time {
+            bottom: 0;
+            //font-weight: bold;
+            margin-bottom: 0;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+
+            &.disabled {
+                opacity: 1;
+            }
+        }
+
+        &.disabled {
+            opacity: 0.25;
+        }
+    }
+}
+
+//
+//.navbar-top {
+//  z-index: 1;
+//  position: fixed;
+//  top: 0;
+//  left: 0;
+//  right: 0;
+//  background-color: $eve_ore_body;
+//  min-height: $navbar_top_height;
+//  border-bottom: 1px solid $eve_ore_button_active;
+//  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.75);
+//  height: 50px;
+//  user-select: none;
+//
+//  .navbar-item {
+//    cursor: pointer;
+//    height: 100%;
+//    background-size: 100% 200%;
+//    background-image: linear-gradient(to bottom, transparent 50%, $eve_ore_button_active 50%);
+//    transition: background 0.15s ease-in-out, color 0.15s ease-in-out;
+//    text-decoration: none;
+//    float: left;
+//    color: $eve_text_color;
+//    font-weight: bold;
+//    display: flex;
+//    flex-direction: column;
+//    justify-content: center;
+//
+//    span.contents {
+//      padding: 0 15px;
+//    }
+//
+//    &.big {
+//      font-size: 18px;
+//      line-height: 20px;
+//
+//      i.brand-icon {
+//        transform: rotate(-45deg);
+//      }
+//    }
+//
+//    &.right {
+//      float: right;
+//    }
+//    &.center {
+//      position: absolute;
+//      left: calc(50% + 25px);
+//      transform: translate(-50%);
+//    }
+//    .Online {
+//      color: green;
+//    }
+//    .Offline {
+//      color: red;
+//    }
+//  }
+//  .navbar-item {
+//    &:hover, &.selected {
+//      color: $eve_text_color_bold;
+//      background-position: 0 100%;
+//    }
+//  }
+//}
+//
+//.navbar-side {
+//  position: fixed;
+//  top: $navbar_top_height;
+//  left: 0;
+//  bottom: 0;
+//  background-color: $eve_ore_body;
+//  width: $navbar_side_width;
+//  border-right: 1px solid $eve_ore_button_active;
+//  text-align: center;
+//  max-width: 100%;
+//  box-shadow: 2px 0 5px 0 rgba(0, 0, 0, 0.75);
+//  user-select: none;
+//
+//  .character-item {
+//    cursor: pointer;
+//    display: block;
+//    height: 50px;
+//    img {
+//      transition: filter 0.2s linear;
+//    }
+//    &:hover {
+//      img {
+//        filter: brightness(150%);
+//      }
+//    }
+//    &.selected {
+//      img {
+//
+//      }
+//    }
+//    &:not(.active) {
+//      pointer-events: none;
+//    }
+//  }
+//
+//  .navbar-item {
+//    color: $eve_text_color;
+//    cursor: pointer;
+//    text-decoration: none;
+//    padding-top: 5px;
+//    padding-bottom: 5px;
+//    display: block;
+//    background-size: 200% 100%;
+//    background-image: linear-gradient(to right, transparent 50%, $eve_ore_button_active 50%);
+//    transition: background-position 0.15s ease-in-out, color 0.15s ease-in-out;
+//
+//    img {
+//      transition: filter 0.1s linear;
+//      vertical-align: middle;
+//      max-width: 85%;
+//    }
+//
+//    &:hover, &.selected {
+//      color: $eve_text_color_bold;
+//
+//      img {
+//        filter: brightness(150%);
+//      }
+//    }
+//
+//    &.selected {
+//      background-position: 100% 0;
+//    }
+//
+//    &.time {
+//      margin-bottom: 0;
+//      position: absolute;
+//      width: 100%;
+//      bottom: 0;
+//      padding-top: 10px;
+//      padding-bottom: 10px;
+//      &:not(.active) {
+//        pointer-events: none;
+//      }
+//    }
+//
+//    &:not(.active) {
+//      pointer-events: none;
+//      img {
+//        filter: brightness(25%);
+//      }
+//    }
+//  }
+//}
+

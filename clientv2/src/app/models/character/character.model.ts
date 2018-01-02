@@ -10,6 +10,9 @@ export class Character {
   public ownerHash: string;
   public gender: string;
   public corporationId: number;
+  public birthday: Date;
+  public securityStatus: number;
+  public description: string;
   public corporation: string;
   public allianceId: number;
   public alliance: string;

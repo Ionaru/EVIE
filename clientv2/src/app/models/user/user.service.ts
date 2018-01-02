@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 // import { Http, Response } from '@angular/http';
 // import { Logger } from 'angular2-logger/core';
@@ -7,6 +7,7 @@ import * as crypto from 'crypto-js';
 // import { CharacterService } from '../character/character.service';
 import { ILoginResponse, IRegisterResponse, IUserApiData, User } from './user.model';
 import { Subject } from 'rxjs/Subject';
+import { CharacterService } from '../character/character.service';
 
 @Injectable()
 export class UserService {
@@ -21,7 +22,7 @@ export class UserService {
         return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
     }
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private characterService: CharacterService) { }
 
     public async loginUser(username: string, password: string): Promise<[string, User | undefined]> {
 
@@ -90,12 +91,13 @@ export class UserService {
         UserService._user = user;
 
         // Register all the characters in parallel, but wait until they are all finished before continuing
-        // await Promise.all(data.characters.map(async (characterData) => {
-        //     if (characterData.scopes) {
-        //         await this.characterService.registerCharacter(characterData);
-        //     }
-        // }));
-        //
+        await Promise.all(data.characters.map(async (characterData) => {
+            if (characterData.scopes) {
+                const character = await this.characterService.registerCharacter(characterData);
+                UserService.user.characters.push(character);
+            }
+        }));
+
         // if (!Helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
         //     this.characterService.setActiveCharacter(user.characters[0]).then();
         // }
