@@ -1,0 +1,103 @@
+<div class="modal-header">
+    <h4 class="modal-title">Register</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
+        <i class="fa fa-times"></i>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="register-container">
+        <form #registerForm="ngForm" (ngSubmit)="register(registerForm.value).then()">
+
+            <div class="form-group">
+                <label for="register-username" class="col-form-label">
+                    Username
+                </label>
+                <input ngModel (input)="onUsernameInput($event)" #usernameInput
+                       class="form-control" type="text" id="register-username" required name="username">
+
+                <ng-container [ngSwitch]="usernameStatus">
+                    <small class="form-text text-danger" *ngSwitchCase="'error'">
+                            <i class="fa fa-times-circle"></i> {{ usernameHint }}
+                    </small>
+                    <small class="form-text" *ngSwitchCase="'info'">
+                        <i class="fa fa-info-circle"></i> {{ usernameHint }}
+                    </small>
+                    <small class="form-text text-success" *ngSwitchCase="'valid'">
+                        <i class="fa fa-check-circle"></i> {{ usernameHint }}
+                    </small>
+                </ng-container>
+            </div>
+
+            <div class="form-group">
+                <label for="register-email" class="col-form-label">
+                    Email
+                </label>
+                <input ngModel (input)="onEmailInput($event)"
+                       class="form-control" type="text" id="register-email" required name="email">
+                <ng-container [ngSwitch]="emailStatus">
+                    <small class="form-text text-danger" *ngSwitchCase="'error'">
+                        <i class="fa fa-times-circle"></i> {{ emailHint }}
+                    </small>
+                    <small class="form-text" *ngSwitchCase="'info'">
+                        <i class="fa fa-info-circle"></i> {{ emailHint }}
+                    </small>
+                    <small class="form-text text-success" *ngSwitchCase="'valid'">
+                        <i class="fa fa-check-circle"></i> {{ emailHint }}
+                    </small>
+                </ng-container>
+            </div>
+
+            <div class="form-group">
+                <label for="register-password" class="col-form-label">
+                    Password
+                </label>
+                <input ngModel (input)="onPasswordInput(); onPassword2Input()" [(ngModel)]="passwordInput"
+                       class="form-control" type="password" id="register-password" required name="password">
+                <ng-container [ngSwitch]="passwordStatus">
+                    <small class="form-text text-danger" *ngSwitchCase="'error'">
+                        <i class="fa fa-times-circle"></i> {{ passwordHint }}
+                    </small>
+                    <small class="form-text" *ngSwitchCase="'info'">
+                        <i class="fa fa-info-circle"></i> {{ passwordHint }}
+                    </small>
+                    <small class="form-text text-success" *ngSwitchCase="'valid'">
+                        <i class="fa fa-check-circle"></i> {{ passwordHint }}
+                    </small>
+                </ng-container>
+            </div>
+
+            <div class="form-group">
+                <label for="register-password-confirm" class="col-form-label">
+                    Password confirmation
+                </label>
+                <input ngModel (input)="onPassword2Input()" [(ngModel)]="password2Input"
+                       class="form-control" type="password" id="register-password-confirm" required name="password2">
+                <ng-container [ngSwitch]="password2Status">
+                    <small class="form-text text-danger" *ngSwitchCase="'error'">
+                        <i class="fa fa-times-circle"></i> {{ password2Hint }}
+                    </small>
+                    <small class="form-text" *ngSwitchCase="'info'">
+                        <i class="fa fa-info-circle"></i> {{ password2Hint }}
+                    </small>
+                    <small class="form-text text-success" *ngSwitchCase="'valid'">
+                        <i class="fa fa-check-circle"></i> {{ password2Hint }}
+                    </small>
+                </ng-container>
+            </div>
+
+            <hr>
+
+            <button [ngClass]="{'m-progress' : inProgress}"
+                    class="btn btn-success " type="submit"
+                    [disabled]="!registerForm.valid || anyFormErrors()">
+                Register
+            </button>
+        </form>
+    </div>
+</div>
+<div class="modal-footer" *ngIf="registerError">
+    <p [@myAnimation]="registerError">
+        <i class="text-danger fa fa-exclamation-triangle"></i>
+        {{ registerErrorMessage }}
+    </p>
+</div>

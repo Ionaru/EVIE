@@ -3,6 +3,8 @@ import { AppReadyEvent } from './app-ready.event';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { User, IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 interface IHandshakeResponse {
     state: string;
@@ -16,7 +18,8 @@ interface IHandshakeResponse {
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-    version = '0.2.0-INDEV';
+
+    public version = '0.2.0-INDEV';
 
     constructor(private appReadyEvent: AppReadyEvent, private http: HttpClient, private userService: UserService) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Unexpected error', error));
@@ -40,9 +43,5 @@ export class AppComponent {
         if (response && response.message === 'LoggedIn') {
             await this.userService.storeUser(response.data);
         }
-    }
-
-    private login() {
-        this.userService.loginUser('testUser', '000999888').then();
     }
 }

@@ -1,0 +1,7 @@
+<p>
+  dashboard works!
+</p>
+
+<div *ngFor="let character of characters">
+    <button (click)="switchToCharacter(character)">Switch to {{character.name}}</button>
+</div>

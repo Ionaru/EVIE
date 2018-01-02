@@ -1,4 +1,4 @@
-@import '../variables';
+@import '../../variables';
 
 nav {
     background-color: #171B23;
@@ -8,41 +8,60 @@ nav {
 .navbar.fixed-top {
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
 
+    .navbar-brand {
+
+        svg {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        &:hover svg {
+            transform: translateX(-5px) rotate(45deg);
+        }
+    }
+
+    .navbar-toggler {
+        color: $primary;
+    }
+
     .navbar-nav {
-        .nav-link {
-            position: relative;
+        .nav-item {
+            text-align: right;
 
-            &::before {
-                background-color: #ffffff;
-                bottom: 0;
-                content: '';
-                height: 2px;
-                left: 0;
-                position: absolute;
-                right: 0;
-                transform: scaleX(0);
-                transition: all 0.2s ease-in-out;
-                visibility: hidden;
-            }
+            .nav-link {
+                position: relative;
 
-            &:hover,
-            &.active {
                 &::before {
-                    transform: scaleX(1);
-                    visibility: visible;
+                    background-color: #ffffff;
+                    bottom: 0;
+                    content: '';
+                    height: 2px;
+                    left: 0;
+                    position: absolute;
+                    right: 0;
+                    transform: scaleX(0);
+                    transition: all 0.2s ease-in-out;
+                    visibility: hidden;
                 }
-            }
 
-            &.logout {
-                padding: 0;
-
-                img {
-                    filter: grayscale(100%) brightness(200%);
-                    height: 37px;
+                &:hover,
+                &.active {
+                    &::before {
+                        transform: scaleX(1);
+                        visibility: visible;
+                    }
                 }
-            }
 
-            //border-bottom: white 2px solid;
+                &.logout {
+                    padding: 0;
+
+                    img {
+                        filter: grayscale(100%) brightness(200%);
+                        height: 37px;
+                    }
+                }
+
+                //border-bottom: white 2px solid;
+            }
         }
     }
 }

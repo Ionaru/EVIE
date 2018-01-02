@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs/Subject';
 import { Helpers } from '../../shared/helpers';
 
-const tokenRefreshInterval = 15 * 60 * 1000;
+const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
 
 @Injectable()
 export class CharacterService {

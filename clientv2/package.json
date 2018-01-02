@@ -36,6 +36,7 @@
         "@angular/cli": "^1.6.3",
         "@angular/compiler-cli": "^5.1.2",
         "@angular/language-service": "^5.1.2",
+        "@types/crypto-js": "^3.1.38",
         "@types/jasmine": "^2.8.3",
         "@types/jasminewd2": "~2.0.2",
         "@types/node": "^8.5.2",

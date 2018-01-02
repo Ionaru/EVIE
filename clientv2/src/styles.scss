@@ -1,10 +1,9 @@
 //$body-bg: #171B23;
 $body-bg: #101010;
 
-@import '../node_modules/bootswatch/dist/superhero/variables';
+@import 'variables';
 @import '../node_modules/bootstrap/scss/bootstrap';
 @import '../node_modules/bootswatch/dist/superhero/bootswatch';
-@import 'app/variables';
 
 * {
   // Set box-sizing: border-box on every element

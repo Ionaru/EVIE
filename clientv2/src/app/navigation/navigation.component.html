@@ -1,37 +1,31 @@
 <nav class="navbar fixed-top navbar-expand-lg">
-    <a class="navbar-brand" routerLink="/">EVE Track</a>
+    <a class="navbar-brand" routerLink="/"><i class="fa fa-rocket"></i> EVE Track</a>
     <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"
             [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
-        <span class="navbar-toggler-icon"></span>
+        <i class="fa fa-chevron-down"></i>
     </button>
 
     <div class="collapse navbar-collapse" id="collapseExample" [ngbCollapse]="!isCollapsed">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
+            <li class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="/" routerLinkActive="active"
                    [routerLinkActiveOptions]="{ exact: true }">Home
                     <span class="sr-only">(current)</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" routerLink="1" routerLinkActive="active" (click)="isCollapsed = !isCollapsed">Dashboard</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" routerLink="2" routerLinkActive="active">Dashboard</a>
-            </li>
-            <li *ngIf="isLoggedIn" class="nav-item">
+            <li *ngIf="isLoggedIn" class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="dashboard" routerLinkActive="active">Dashboard</a>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item hidden-md-down disabled">
-                <a class="nav-link"><span id="eve-players"></span>{{playerCount}} players online</a>
+                <a class="nav-link"><span id="eve-players" href="#"></span>{{playerCount}} players online</a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item">
-                <div class="nav-link logout hidden-md-down" tooltip="Logout" placement="bottom">
-                    <img src="//data.saturnserver.org/eve/Icons/items/9_64_6.png" alt="Logout icon" (click)="logout()">
-                </div>
-                <!--<a class="nav-link hidden-md-up" (click)="logout()">Logout</a>-->
+                <!--<div class="nav-link logout hidden-md-down" tooltip="Logout" placement="bottom">-->
+                    <!--<img src="//data.saturnserver.org/eve/Icons/items/9_64_6.png" alt="Logout icon" (click)="logout()">-->
+                <!--</div>-->
+                <a class="nav-link hidden-md-up" href="#" (click)="logout()">Logout</a>
             </li>
         </ul>
     </div>

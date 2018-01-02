@@ -32,7 +32,8 @@ export class UserService {
             username,
         };
 
-        const response = await this.http.post<any>(url, body).toPromise<ILoginResponse>().catch((errorResponse: HttpErrorResponse) => {
+        const response = await this.http.post<any>(url, body).toPromise<ILoginResponse>()
+            .catch((errorResponse: HttpErrorResponse) => {
             if (errorResponse.error) {
                 const errorBody = errorResponse.error;
                 if (errorBody.hasOwnProperty('state') && errorBody.hasOwnProperty('message')) {
@@ -42,9 +43,12 @@ export class UserService {
             throw errorResponse.error;
         });
 
-        const user = await this.storeUser(response.data);
-
-        return [response.message, user];
+        if (response.message === 'LoggedIn') {
+            const user = await this.storeUser(response.data);
+            return [response.message, user];
+        } else {
+            return [response.message, null];
+        }
     }
 
     public logoutUser(): void {
@@ -54,40 +58,56 @@ export class UserService {
         });
     }
 
-    // public async registerUser(username: string, email: string, password: string): Promise<string> {
-    //     const url = 'api/register';
-    //     const userToRegister = {
-    //         email,
-    //         password: UserService.hashPassword(password),
-    //         username,
-    //     };
-    //     let response: Response;
-    //     try {
-    //         response = await this.http.post(url, userToRegister).toPromise().catch((errorResponse: Response) => {
-    //             if (errorResponse.status === 409) {
-    //                 return errorResponse;
-    //             }
-    //             throw new Error(errorResponse.toString());
-    //         });
-    //         const result: IRegisterResponse = response.json();
-    //         if (result.data.username_in_use) {
-    //             return 'username_in_use';
-    //         } else if (result.data.email_in_use) {
-    //             return 'email_in_use';
-    //         } else if (result.state === 'error') {
-    //             return 'error';
-    //         } else {
-    //             return 'success';
-    //         }
-    //     } catch (error) {
-    //         // this.logger.error(error);
-    //         return null;
-    //     }
-    // }
+    public async registerUser(username: string, email: string, password: string): Promise<string> {
+        const url = 'api/register';
+        const userToRegister = {
+            email,
+            password: UserService.hashPassword(password),
+            username,
+        };
+        // let response: Response;
+        // try {
+        //     response = await this.http.post(url, userToRegister).toPromise().catch((errorResponse: Response) => {
+        //         if (errorResponse.status === 409) {
+        //             return errorResponse;
+        //         }
+        //         throw new Error(errorResponse.toString());
+        //     });
+        //     const result: IRegisterResponse = response.json();
+        //     if (result.data.username_in_use) {
+        //         return 'username_in_use';
+        //     } else if (result.data.email_in_use) {
+        //         return 'email_in_use';
+        //     } else if (result.state === 'error') {
+        //         return 'error';
+        //     } else {
+        //         return 'success';
+        //     }
+        // } catch (error) {
+        //     // this.logger.error(error);
+        //     return null;
+        // }
+
+        const response = await this.http.post<any>(url, userToRegister).toPromise<IRegisterResponse>()
+            .catch((errorResponse: HttpErrorResponse) => {
+            if (errorResponse.status === 409) {
+                return errorResponse.error as IRegisterResponse;
+            }
+            throw errorResponse.error;
+        });
+        if (response.data.username_in_use) {
+            return 'username_in_use';
+        } else if (response.data.email_in_use) {
+            return 'email_in_use';
+        } else if (response.state === 'error') {
+            return 'error';
+        } else {
+            return 'success';
+        }
+    }
 
     public async storeUser(data: IUserApiData): Promise<User> {
         const user = new User(data);
-        UserService.userChangeEvent.next(user);
         UserService._user = user;
 
         // Register all the characters in parallel, but wait until they are all finished before continuing
@@ -101,6 +121,7 @@ export class UserService {
         // if (!Helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
         //     this.characterService.setActiveCharacter(user.characters[0]).then();
         // }
+        UserService.userChangeEvent.next(user);
         return user;
     }
 }
