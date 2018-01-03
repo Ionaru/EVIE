@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-import { AppReadyEvent } from './app-ready.event';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import * as io from 'socket.io-client';
+import Socket = SocketIOClient.Socket;
+
+import { AppReadyEvent } from './app-ready.event';
 import { User, IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 
 interface IHandshakeResponse {
     state: string;
@@ -19,6 +21,7 @@ interface IHandshakeResponse {
 })
 export class AppComponent {
 
+    public static socket: Socket;
     public version = '0.2.0-INDEV';
 
     constructor(private appReadyEvent: AppReadyEvent, private http: HttpClient, private userService: UserService) {
@@ -31,16 +34,26 @@ export class AppComponent {
         });
 
         await this.shakeHands();
+        AppComponent.socket = io.connect('http://localhost:3000/', {
+            reconnection: true,
+        });
+        AppComponent.socket.on('STOP', (): void => {
+            // The server will send STOP upon shutting down.
+            // Reloading the window ensures nobody keeps using the site while the server is down.
+            window.location.reload();
+        });
         this.appReadyEvent.triggerSuccess();
     }
 
     private async shakeHands(): Promise<any> {
+        console.log('Shake shake');
         const url = 'api/handshake';
         const response = await this.http.get<any>(url).toPromise<IHandshakeResponse>().catch((error: HttpErrorResponse) => {
             this.appReadyEvent.triggerFailure(error.message, error.error);
         });
 
         if (response && response.message === 'LoggedIn') {
+            console.log('Storing user');
             await this.userService.storeUser(response.data);
         }
     }

@@ -15,9 +15,7 @@ export class DashboardComponent implements OnInit {
     constructor(private userService: UserService, private characterService: CharacterService) { }
 
     ngOnInit() {
-        // UserService.userChangeEvent.subscribe(() => {
         this.characters = UserService.user.characters;
-        // });
     }
 
     private switchToCharacter(character: Character) {

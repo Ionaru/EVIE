@@ -67,7 +67,7 @@ export class Character extends BaseEntity {
     })
     public user: User;
 
-    public getSanitizedValues() {
+    public getSanitizedCopy() {
         // Delete data that should not be sent to the client.
         const copy = Object.assign({}, this);
         delete copy.id;

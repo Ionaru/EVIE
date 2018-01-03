@@ -192,7 +192,7 @@ export class SSORouter extends BaseRouter {
         const socket: ISessionSocket | undefined = sockets.filter((_) => _.id === request.session!.socket)[0];
         if (socket) {
             socket.emit('SSO_END', {
-                data: character.getSanitizedValues(),
+                data: character.getSanitizedCopy(),
                 message: 'SSOSuccessful',
                 state: 'success',
             });

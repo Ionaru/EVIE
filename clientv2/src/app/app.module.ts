@@ -50,6 +50,7 @@ import { RegisterModalComponent } from './pages/home/register-modal.component';
         EndpointService,
         StatusService,
         AppReadyGuard,
+        // AuthGuard,
     ]
 })
 export class AppModule {

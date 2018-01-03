@@ -42,7 +42,7 @@ export class APIRouter extends BaseRouter {
         user.lastLogin = new Date();
         user.save().then();
         const userData = {
-            characters: user.characters.map((character) => character.getSanitizedValues()),
+            characters: user.characters.map((character) => character.getSanitizedCopy()),
             email: user.email,
             pid: user.pid,
             username: user.username,
@@ -90,7 +90,7 @@ export class APIRouter extends BaseRouter {
         await user.save();
         logger.info(user.username + ' logged in.');
         const userData = {
-            characters: user.characters.map((character) => character.getSanitizedValues()),
+            characters: user.characters.map((character) => character.getSanitizedCopy()),
             email: user.email,
             pid: user.pid,
             username: user.username,

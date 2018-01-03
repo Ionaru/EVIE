@@ -65,29 +65,6 @@ export class UserService {
             password: UserService.hashPassword(password),
             username,
         };
-        // let response: Response;
-        // try {
-        //     response = await this.http.post(url, userToRegister).toPromise().catch((errorResponse: Response) => {
-        //         if (errorResponse.status === 409) {
-        //             return errorResponse;
-        //         }
-        //         throw new Error(errorResponse.toString());
-        //     });
-        //     const result: IRegisterResponse = response.json();
-        //     if (result.data.username_in_use) {
-        //         return 'username_in_use';
-        //     } else if (result.data.email_in_use) {
-        //         return 'email_in_use';
-        //     } else if (result.state === 'error') {
-        //         return 'error';
-        //     } else {
-        //         return 'success';
-        //     }
-        // } catch (error) {
-        //     // this.logger.error(error);
-        //     return null;
-        // }
-
         const response = await this.http.post<any>(url, userToRegister).toPromise<IRegisterResponse>()
             .catch((errorResponse: HttpErrorResponse) => {
             if (errorResponse.status === 409) {
@@ -118,9 +95,9 @@ export class UserService {
             }
         }));
 
-        // if (!Helpers.isEmpty(user.characters) && !this.globals.selectedCharacter) {
-        //     this.characterService.setActiveCharacter(user.characters[0]).then();
-        // }
+        if (user.characters && user.characters.length && !CharacterService.selectedCharacter) {
+            this.characterService.setActiveCharacter(user.characters[0]).then();
+        }
         UserService.userChangeEvent.next(user);
         return user;
     }
