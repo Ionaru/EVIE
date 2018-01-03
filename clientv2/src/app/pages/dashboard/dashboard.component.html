@@ -3,5 +3,12 @@
 </p>
 
 <div *ngFor="let character of characters">
-    <button (click)="switchToCharacter(character)">Switch to {{character.name}}</button>
+    <button class="btn btn-outline-primary" [disabled]="character === selectedCharacter" (click)="switchToCharacter(character)">Switch to {{character.name}}</button>
+    <button class="btn btn-outline-danger" (click)="deleteCharacter(character)"><i class="far fa-trash"></i></button>
 </div>
+
+<hr>
+
+<button class="btn btn-outline-primary" (click)="authCharacter()">
+    Add new character
+</button>

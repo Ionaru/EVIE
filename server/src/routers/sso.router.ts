@@ -300,11 +300,6 @@ export class SSORouter extends BaseRouter {
 
         const characterToDelete = characterToDeleteList[0];
 
-        if (user.id !== characterToDelete.user.id) {
-            // That character does not belong to the user who initiated the request
-            return sendResponse(response, 401, 'NotYourCharacter');
-        }
-
         await characterToDelete.remove();
         return sendResponse(response, 200, 'CharacterDeleted');
     }

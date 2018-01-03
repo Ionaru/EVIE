@@ -6,7 +6,7 @@ import Socket = SocketIOClient.Socket;
 import { AppReadyEvent } from './app-ready.event';
 import { User, IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
-
+import { SocketService } from './socket/socket.service';
 
 interface IHandshakeResponse {
     state: string;
@@ -29,15 +29,9 @@ export class AppComponent {
     }
 
     private async boot(): Promise<void> {
-        UserService.userChangeEvent.subscribe((newUser: User) => {
-            console.log(newUser);
-        });
-
         await this.shakeHands();
-        AppComponent.socket = io.connect('http://localhost:3000/', {
-            reconnection: true,
-        });
-        AppComponent.socket.on('STOP', (): void => {
+        new SocketService();
+        SocketService.socket.on('STOP', (): void => {
             // The server will send STOP upon shutting down.
             // Reloading the window ensures nobody keeps using the site while the server is down.
             window.location.reload();
@@ -46,14 +40,12 @@ export class AppComponent {
     }
 
     private async shakeHands(): Promise<any> {
-        console.log('Shake shake');
         const url = 'api/handshake';
         const response = await this.http.get<any>(url).toPromise<IHandshakeResponse>().catch((error: HttpErrorResponse) => {
             this.appReadyEvent.triggerFailure(error.message, error.error);
         });
 
         if (response && response.message === 'LoggedIn') {
-            console.log('Storing user');
             await this.userService.storeUser(response.data);
         }
     }

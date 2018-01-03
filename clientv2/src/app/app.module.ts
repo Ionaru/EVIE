@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 
-import { AppReadyGuard, AppRoutingModule } from './app-routing.module';
+import { AppReadyGuard, AppRoutingModule, AuthGuard } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppReadyEvent } from './app-ready.event';
 import { HttpClientModule } from '@angular/common/http';
@@ -17,6 +17,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { LoginModalComponent } from './pages/home/login-modal.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
+import { SocketService } from './socket/socket.service';
 
 
 @NgModule({
@@ -49,8 +50,9 @@ import { RegisterModalComponent } from './pages/home/register-modal.component';
         CharacterService,
         EndpointService,
         StatusService,
+        SocketService,
         AppReadyGuard,
-        // AuthGuard,
+        AuthGuard,
     ]
 })
 export class AppModule {

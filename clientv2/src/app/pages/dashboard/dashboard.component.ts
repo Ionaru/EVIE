@@ -11,14 +11,27 @@ import { CharacterService } from '../../models/character/character.service';
 export class DashboardComponent implements OnInit {
 
     public characters: Character[] = [];
+    public selectedCharacter = CharacterService.selectedCharacter;
 
     constructor(private userService: UserService, private characterService: CharacterService) { }
 
     ngOnInit() {
         this.characters = UserService.user.characters;
+        CharacterService.characterChangeEvent.subscribe(() => {
+            this.characters = UserService.user.characters;
+            this.selectedCharacter = CharacterService.selectedCharacter;
+        });
     }
 
-    private switchToCharacter(character: Character) {
+    public switchToCharacter(character: Character) {
         this.characterService.setActiveCharacter(character).then();
+    }
+
+    public authCharacter(character?: Character) {
+        this.characterService.startAuthProcess(character);
+    }
+
+    public deleteCharacter(character: Character) {
+        this.userService.deleteCharacter(character).then();
     }
 }

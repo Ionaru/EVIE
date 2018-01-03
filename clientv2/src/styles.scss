@@ -150,6 +150,7 @@ html {
       }
     }
 
+    *:disabled,
     .disabled {
       pointer-events: none !important;
     }

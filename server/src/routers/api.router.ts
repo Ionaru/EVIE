@@ -20,7 +20,6 @@ export class APIRouter extends BaseRouter {
      *  200 NotLoggedIn: No client session was found
      */
     private static async doHandShake(request: Request, response: Response): Promise<void> {
-        // request.session!.user!.id = 3; // DEBUG - TODO: REMOVE
 
         if (!request.session!.user.id) {
             // No user ID present in the session.

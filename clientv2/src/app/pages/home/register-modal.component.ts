@@ -49,8 +49,6 @@ export class RegisterModalComponent {
 
     public inProgress: boolean;
 
-    public isModalShown = false;
-
     @ViewChild('usernameInput') public usernameInput: ElementRef;
 
     constructor(public activeModal: NgbActiveModal, private userService: UserService, private router: Router) {
@@ -86,60 +84,12 @@ export class RegisterModalComponent {
         this.password2Input = '';
     }
 
-    // public showModal(): void {
-    //     this.setupModal();
-    //     this.isModalShown = true;
-    // }
-    //
-    // public hideModal(): void {
-    //     this.autoShownModal.hide();
-    // }
-
-    // public onHidden(): void {
-    //     this.isModalShown = false;
-    // }
-    //
-    // public onShown(): void {
-    //     this.usernameInput.nativeElement.focus();
-    // }
-
     public anyFormErrors(): boolean {
         if (this.usernameStatus === 'error'
             || this.emailStatus === 'error'
             || this.passwordStatus === 'error'
             || this.password2Status === 'error') {
             return true;
-        }
-    }
-
-    // public getHintLevel(input) {
-    //     switch (input) {
-    //         case 'error':
-    //             return 'fa-times-circle';
-    //         case 'info':
-    //             return 'fa-info-circle';
-    //         case 'valid':
-    //             return 'fa-check-circle';
-    //     }
-    // }
-
-    public getTextColorClass(input) {
-        switch (input) {
-            case 'error':
-                return 'text-danger';
-            case 'valid':
-                return 'text-success';
-        }
-    }
-
-    public getHintIconClass(input) {
-        switch (input) {
-            case 'error':
-                return 'fa-times-circle';
-            case 'info':
-                return 'fa-info-circle';
-            case 'valid':
-                return 'fa-check-circle';
         }
     }
 

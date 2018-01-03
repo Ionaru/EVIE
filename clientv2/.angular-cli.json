@@ -22,6 +22,8 @@
         "styles.scss"
       ],
       "scripts": [
+          "../node_modules/@fortawesome/fontawesome-free-brands/index.js",
+          "../node_modules/@fortawesome/fontawesome-pro-regular/index.js",
           "../node_modules/@fortawesome/fontawesome-pro-solid/index.js",
           "../node_modules/@fortawesome/fontawesome/index.js"
       ],

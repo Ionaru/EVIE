@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-// import { Globals } from '../../shared/globals';
-// import { EndpointService } from '../endpoint/endpoint.service';
-import { Character, IApiCharacterData, IEveCharacterData, ITokenRefreshResponse } from './character.model';
+import {
+    Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ISSOSocketResponse,
+    ITokenRefreshResponse
+} from './character.model';
 import { EndpointService } from '../endpoint/endpoint.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Subject } from 'rxjs/Subject';
 import { Helpers } from '../../shared/helpers';
+import { SocketService } from '../../socket/socket.service';
 
 const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
 
@@ -63,29 +65,28 @@ export class CharacterService {
         character.accessToken = response.data.token;
     }
 
-    //
-    // public startAuthProcess(character?: Character): void {
-    //   let url = '/sso/start';
-    //   if (character) {
-    //     url += '?characterPid=' + character.pid;
-    //   }
-    //
-    //   const w = window.open(url, '_blank', 'width=600,height=700');
-    //
-    //   this.globals.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
-    //     w.close();
-    //     if (response.state === 'success') {
-    //       if (character) {
-    //         character.updateAuth(response.data);
-    //         this.globals.characterChangeEvent.next(character);
-    //       } else {
-    //         const newCharacter = await this.registerCharacter(response.data);
-    //         this.setActiveCharacter(newCharacter).then();
-    //       }
-    //     }
-    //   });
-    // }
-    //
+    public startAuthProcess(character?: Character): void {
+        let url = '/sso/start';
+        if (character) {
+            url += '?characterPid=' + character.pid;
+        }
+
+        const w = window.open(url, '_blank', 'width=600,height=700');
+
+        SocketService.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
+            w.close();
+            if (response.state === 'success') {
+                if (character) {
+                    character.updateAuth(response.data);
+                    CharacterService.characterChangeEvent.next(character);
+                } else {
+                    const newCharacter = await this.registerCharacter(response.data);
+                    this.setActiveCharacter(newCharacter).then();
+                }
+            }
+        });
+    }
+
     public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
 
         let characterPid;
@@ -100,22 +101,22 @@ export class CharacterService {
         CharacterService.characterChangeEvent.next(character);
     }
 
-    // public deleteCharacter(character: Character): void {
-    //   const url = '/sso/delete';
-    //   const data = {
-    //     characterPid: character.pid,
-    //   };
-    //   this.http.post(url, data).subscribe((response: Response) => {
-    //     const responseBody = response.json();
-    //     if (responseBody.state === 'success') {
-    //       clearInterval(character.refreshTimer);
-    //
-    //       if (this.globals.selectedCharacter && this.globals.selectedCharacter.pid === character.pid) {
-    //         this.setActiveCharacter().then();
-    //       }
-    //       const index = this.globals.user.characters.indexOf(character);
-    //       this.globals.user.characters.splice(index, 1);
-    //     }
-    //   });
-    // }
+    public async deleteCharacter(character: Character): Promise<void> {
+        const url = '/sso/delete';
+        const data = {
+            characterPid: character.pid,
+        };
+
+        const response = await this.http.post<any>(url, data).toPromise<IDeleteCharacterResponse>()
+            .catch((errorResponse: HttpErrorResponse) => {
+                throw errorResponse.error;
+            });
+        if (response.state === 'success') {
+            clearInterval(character.refreshTimer);
+
+            if (CharacterService.selectedCharacter && CharacterService.selectedCharacter.pid === character.pid) {
+                this.setActiveCharacter().then();
+            }
+        }
+    }
 }

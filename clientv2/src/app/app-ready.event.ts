@@ -1,11 +1,15 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 
 @Injectable()
 export class AppReadyEvent {
 
-    private static _appReadyEvent = new BehaviorSubject<void>(null);
+    private static _appReadyObserver: Observer<void>;
+    private static _appReadyEvent: Observable<void> = Observable.create((observer: Observer<void>) => {
+        AppReadyEvent._appReadyObserver = observer;
+    });
     public static get appReadyEvent() { return this._appReadyEvent; }
 
     private static _appReady = false;
@@ -20,7 +24,8 @@ export class AppReadyEvent {
         }
 
         AppReadyEvent._appReady = true;
-        AppReadyEvent.appReadyEvent.complete();
+        AppReadyEvent._appReadyObserver.next(null);
+        AppReadyEvent._appReadyObserver.complete();
         document.dispatchEvent(this.createEvent('StartupSuccess'));
     }
 

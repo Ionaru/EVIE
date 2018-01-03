@@ -8,6 +8,7 @@ import * as crypto from 'crypto-js';
 import { ILoginResponse, IRegisterResponse, IUserApiData, User } from './user.model';
 import { Subject } from 'rxjs/Subject';
 import { CharacterService } from '../character/character.service';
+import { Character, IApiCharacterData } from '../character/character.model';
 
 @Injectable()
 export class UserService {
@@ -90,8 +91,7 @@ export class UserService {
         // Register all the characters in parallel, but wait until they are all finished before continuing
         await Promise.all(data.characters.map(async (characterData) => {
             if (characterData.scopes) {
-                const character = await this.characterService.registerCharacter(characterData);
-                UserService.user.characters.push(character);
+                await this.addCharacter(characterData);
             }
         }));
 
@@ -100,5 +100,16 @@ export class UserService {
         }
         UserService.userChangeEvent.next(user);
         return user;
+    }
+
+    public async addCharacter(data: IApiCharacterData): Promise<void> {
+        const character = await this.characterService.registerCharacter(data);
+        UserService.user.characters.push(character);
+    }
+
+    public async deleteCharacter(character: Character): Promise<void> {
+        await this.characterService.deleteCharacter(character);
+        const index = UserService.user.characters.indexOf(character);
+        UserService.user.characters.splice(index, 1);
     }
 }

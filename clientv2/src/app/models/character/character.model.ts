@@ -96,3 +96,8 @@ export interface ITokenRefreshResponse {
     token: string;
   };
 }
+
+export interface IDeleteCharacterResponse {
+    state: string;
+    message: string;
+}

@@ -29,5 +29,4 @@ export class HomeComponent implements OnInit {
     openRegisterModal() {
         this.modalService.open(RegisterModalComponent);
     }
-
 }
