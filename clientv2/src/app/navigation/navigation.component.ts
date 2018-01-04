@@ -23,6 +23,7 @@ export class NavigationComponent implements OnInit {
     public disable = true;
     public isLoggedIn = false;
     public playerCount: number;
+    public isCollapsed: boolean;
 
     constructor(private userService: UserService, private statusService: StatusService) {
         CharacterService.characterChangeEvent.subscribe((character) => {

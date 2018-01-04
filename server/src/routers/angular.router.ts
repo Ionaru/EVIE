@@ -7,7 +7,7 @@ import { BaseRouter } from './base.router';
 export class AngularRedirectRouter extends BaseRouter {
 
     private static async redirectToAngular(_request: Request, response: Response): Promise<void> {
-        response.status(200).sendFile(path.join(__dirname, '../../../client/dist/index.html'));
+        response.sendFile(path.join(__dirname, '../../../clientv2/dist/index.html'));
     }
 
     constructor() {

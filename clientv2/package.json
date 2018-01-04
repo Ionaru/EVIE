@@ -4,8 +4,8 @@
     "license": "MIT",
     "scripts": {
         "ng": "ng",
-        "start": "ng serve --proxy-config proxy.conf.ts --no-progress --extract-css=true --sourcemap --port 4201 --watch",
-        "build": "ng build",
+        "start": "ng serve --host=0.0.0.0 --proxy-config proxy.conf.ts --no-progress --extract-css=true --sourcemap --port 4201 --watch",
+        "build": "ng build --aot=true --extract-css --progress --sourcemap --prod --verbose",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e"

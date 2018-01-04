@@ -65,28 +65,6 @@ export class CharacterService {
         character.accessToken = response.data.token;
     }
 
-    public startAuthProcess(character?: Character): void {
-        let url = '/sso/start';
-        if (character) {
-            url += '?characterPid=' + character.pid;
-        }
-
-        const w = window.open(url, '_blank', 'width=600,height=700');
-
-        SocketService.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
-            w.close();
-            if (response.state === 'success') {
-                if (character) {
-                    character.updateAuth(response.data);
-                    CharacterService.characterChangeEvent.next(character);
-                } else {
-                    const newCharacter = await this.registerCharacter(response.data);
-                    this.setActiveCharacter(newCharacter).then();
-                }
-            }
-        });
-    }
-
     public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
 
         let characterPid;

@@ -12,6 +12,7 @@ export class DashboardComponent implements OnInit {
 
     public characters: Character[] = [];
     public selectedCharacter = CharacterService.selectedCharacter;
+    public deleteInProgress = false;
 
     constructor(private userService: UserService, private characterService: CharacterService) { }
 
@@ -28,10 +29,23 @@ export class DashboardComponent implements OnInit {
     }
 
     public authCharacter(character?: Character) {
-        this.characterService.startAuthProcess(character);
+        this.userService.authCharacter(character);
     }
 
-    public deleteCharacter(character: Character) {
-        this.userService.deleteCharacter(character).then();
+    public async deleteCharacter(character: Character) {
+        this.deleteInProgress = true;
+        await this.userService.deleteCharacter(character);
+        this.deleteInProgress = false;
+    }
+
+    public isCharacterSelected(character: Character): boolean {
+        return character === this.selectedCharacter;
+    }
+
+    public getActivateButtonClass(character: Character) {
+        if (this.isCharacterSelected(character)) {
+            return 'btn-success';
+        }
+        return 'btn-outline-success';
     }
 }

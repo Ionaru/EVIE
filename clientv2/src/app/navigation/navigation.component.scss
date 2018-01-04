@@ -79,6 +79,12 @@ nav {
     flex-direction: column;
     justify-content: flex-start;
 
+    .scrollContainer {
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-bottom: 50px;
+    }
+
     .character-item {
         cursor: pointer;
         display: block;

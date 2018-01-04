@@ -8,7 +8,9 @@ import * as crypto from 'crypto-js';
 import { ILoginResponse, IRegisterResponse, IUserApiData, User } from './user.model';
 import { Subject } from 'rxjs/Subject';
 import { CharacterService } from '../character/character.service';
-import { Character, IApiCharacterData } from '../character/character.model';
+import { Character, IApiCharacterData, ISSOSocketResponse } from '../character/character.model';
+import { SocketService } from '../../socket/socket.service';
+import { Helpers } from '../../shared/helpers';
 
 @Injectable()
 export class UserService {
@@ -102,9 +104,32 @@ export class UserService {
         return user;
     }
 
-    public async addCharacter(data: IApiCharacterData): Promise<void> {
+    public async addCharacter(data: IApiCharacterData): Promise<Character> {
         const character = await this.characterService.registerCharacter(data);
         UserService.user.characters.push(character);
+        Helpers.sortArrayByObjectProperty(UserService.user.characters, 'name');
+        return character;
+    }
+
+    public authCharacter(character?: Character): void {
+        let url = '/sso/start';
+        if (character) {
+            url += '?characterPid=' + character.pid;
+        }
+
+        const authWindow = window.open(url, '_blank', 'width=600,height=700');
+
+        SocketService.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
+            authWindow.close();
+            if (response.state === 'success') {
+                if (character) {
+                    character.updateAuth(response.data);
+                } else {
+                    character = await this.addCharacter(response.data);
+                }
+                this.characterService.setActiveCharacter(character).then();
+            }
+        });
     }
 
     public async deleteCharacter(character: Character): Promise<void> {

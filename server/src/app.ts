@@ -94,7 +94,7 @@ export class App {
         logger.info('Session store loaded');
 
         // Use static client folder for serving assets
-        app.use(express.static(path.join(__dirname, '../../client/dist')));
+        app.use(express.static(path.join(__dirname, '../../clientv2/dist')));
 
         // Put all requests through a global router first
         app.use('*', (new GlobalRouter()).router);
