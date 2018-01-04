@@ -61,5 +61,4 @@ export class LoginModalComponent {
             this.wrongLogin = true;
         }
     }
-
 }

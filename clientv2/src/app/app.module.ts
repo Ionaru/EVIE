@@ -18,6 +18,8 @@ import { LoginModalComponent } from './pages/home/login-modal.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
 import { SocketService } from './socket/socket.service';
+import { ShipService } from './data-services/ship.service';
+import { NamesService } from './data-services/names.service';
 
 
 @NgModule({
@@ -49,7 +51,9 @@ import { SocketService } from './socket/socket.service';
         UserService,
         CharacterService,
         EndpointService,
+        NamesService,
         StatusService,
+        ShipService,
         SocketService,
         AppReadyGuard,
         AuthGuard,

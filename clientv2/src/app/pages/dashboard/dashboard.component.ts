@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../models/user/user.service';
 import { Character } from '../../models/character/character.model';
 import { CharacterService } from '../../models/character/character.service';
+import { ShipService } from '../../data-services/ship.service';
+import { INames, NamesService } from '../../data-services/names.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -14,7 +16,8 @@ export class DashboardComponent implements OnInit {
     public selectedCharacter = CharacterService.selectedCharacter;
     public deleteInProgress = false;
 
-    constructor(private userService: UserService, private characterService: CharacterService) { }
+    constructor(private userService: UserService, private characterService: CharacterService, private shipService: ShipService,
+                private namesService: NamesService) { }
 
     ngOnInit() {
         this.characters = UserService.user.characters;
@@ -22,6 +25,9 @@ export class DashboardComponent implements OnInit {
             this.characters = UserService.user.characters;
             this.selectedCharacter = CharacterService.selectedCharacter;
         });
+        for (const character of this.characters) {
+            this.getShipData(character).then();
+        }
     }
 
     public switchToCharacter(character: Character) {
@@ -36,6 +42,15 @@ export class DashboardComponent implements OnInit {
         this.deleteInProgress = true;
         await this.userService.deleteCharacter(character);
         this.deleteInProgress = false;
+    }
+
+    public async getShipData(character: Character): Promise<void> {
+        const shipData: { id: number, name: string } = await this.shipService.getCurrentShip(character);
+        character.currentShip.id = shipData.id;
+        character.currentShip.name = shipData.name;
+        const nameData: INames = await this.namesService.getNames(character.currentShip.id);
+        // character.location.name = NamesService.getNameFromData(nameData, character.location.id, 'Unknown location');
+        character.currentShip.type = NamesService.getNameFromData(nameData, character.currentShip.id, 'Unknown ship');
     }
 
     public isCharacterSelected(character: Character): boolean {

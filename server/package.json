@@ -50,7 +50,7 @@
         "@types/mkdirp": "^0.5.2",
         "@types/mocha": "^2.2.45",
         "@types/mysql": "^2.15.2",
-        "@types/node": "^8.5.2",
+        "@types/node": "^8.5.5",
         "@types/node-fetch": "^1.6.7",
         "@types/socket.io": "^1.4.31",
         "@types/winston": "^2.3.7",

@@ -4,11 +4,24 @@
 </p>
 
 <div class="container fluid">
+    <button class="btn btn-outline-primary add-character-button" (click)="authCharacter()">
+        Add new character
+    </button>
     <div *ngFor="let character of characters" [ngClass]="{'selected' : isCharacterSelected(character)}"
          class="character-container row justify-content-between">
         <div class="info-container col-10">
-            <p>{{character.name}}</p>
-            <p>{{character.accessToken}}</p>
+            <p ngbTooltip="Character name">
+                <i class="fas fa-user"></i>
+                {{character.name}}
+            </p>
+            <p title="Character ID">
+                <i class="fas fa-id-card"></i>
+                {{character.characterId}}
+            </p>
+            <p *ngIf="character.currentShip">
+                <i class="fas fa-rocket"></i>
+                {{character.currentShip.name}} ({{character.currentShip.type}})
+            </p>
         </div>
         <div class="actions-container col-2 row justify-content-end">
             <button class="btn" [disabled]="isCharacterSelected(character)"
@@ -24,7 +37,4 @@
             </button>
         </div>
     </div>
-    <button class="btn btn-outline-primary add-character-button" (click)="authCharacter()">
-        Add new character
-    </button>
 </div>
