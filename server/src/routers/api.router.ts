@@ -66,6 +66,11 @@ export class APIRouter extends BaseRouter {
         const username = request.body.username;
         const password = request.body.password;
 
+        if (!username || !password) {
+            // Missing parameters
+            return sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
+        }
+
         const user: User | undefined = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.username = :username', {username})
@@ -125,6 +130,11 @@ export class APIRouter extends BaseRouter {
         const username: string = request.body.username.trim();
         const email: string = request.body.email.trim();
         const password: string = request.body.password;
+
+        if (!username || !email || !password) {
+            // Missing parameters
+            return sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
+        }
 
         const user: User | undefined = await User.doQuery()
             .where('user.username = :username', {username})
