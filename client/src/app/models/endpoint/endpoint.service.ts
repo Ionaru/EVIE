@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { Endpoint } from './endpoint.model';
 import { endpointList } from './endpoints';
 
-// import { Logger } from 'angular2-logger/core';
-
 export interface IEveNameData {
     category: string;
     id: number;

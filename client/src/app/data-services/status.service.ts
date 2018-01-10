@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { EndpointService } from '../models/endpoint/endpoint.service';
 
 export interface IStatusData {

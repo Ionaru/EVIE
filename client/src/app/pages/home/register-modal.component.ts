@@ -1,9 +1,10 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../../models/user/user.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
 import { User } from '../../models/user/user.model';
+import { UserService } from '../../models/user/user.service';
 
 @Component({
     animations: [

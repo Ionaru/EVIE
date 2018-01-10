@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import * as io from 'socket.io-client';
+import { Component } from '@angular/core';
 import Socket = SocketIOClient.Socket;
 
 import { AppReadyEvent } from './app-ready.event';
-import { User, IUserApiData } from './models/user/user.model';
+import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
 import { SocketService } from './socket/socket.service';
 
@@ -17,11 +16,10 @@ interface IHandshakeResponse {
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss']
+    styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
 
-    public static socket: Socket;
     public version = '0.2.0-INDEV';
 
     constructor(private appReadyEvent: AppReadyEvent, private http: HttpClient, private userService: UserService) {

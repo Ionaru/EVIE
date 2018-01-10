@@ -1,13 +1,10 @@
-import { Injectable } from '@angular/core';
-import {
-    Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ISSOSocketResponse,
-    ITokenRefreshResponse
-} from './character.model';
-import { EndpointService } from '../endpoint/endpoint.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
+
 import { Helpers } from '../../shared/helpers';
-import { SocketService } from '../../socket/socket.service';
+import { EndpointService } from '../endpoint/endpoint.service';
+import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
 
 const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
 

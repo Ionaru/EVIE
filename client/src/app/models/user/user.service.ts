@@ -1,16 +1,13 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-// import { Http, Response } from '@angular/http';
-// import { Logger } from 'angular2-logger/core';
 import * as crypto from 'crypto-js';
-
-// import { CharacterService } from '../character/character.service';
-import { ILoginResponse, IRegisterResponse, IUserApiData, User } from './user.model';
 import { Subject } from 'rxjs/Subject';
-import { CharacterService } from '../character/character.service';
-import { Character, IApiCharacterData, ISSOSocketResponse } from '../character/character.model';
-import { SocketService } from '../../socket/socket.service';
+
 import { Helpers } from '../../shared/helpers';
+import { SocketService } from '../../socket/socket.service';
+import { Character, IApiCharacterData, ISSOSocketResponse } from '../character/character.model';
+import { CharacterService } from '../character/character.service';
+import { ILoginResponse, IRegisterResponse, IUserApiData, User } from './user.model';
 
 @Injectable()
 export class UserService {

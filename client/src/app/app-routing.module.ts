@@ -1,20 +1,20 @@
 import { Injectable, NgModule } from '@angular/core';
 import { CanActivate, Resolve, Router, RouterModule, Routes } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
+import { Observable } from 'rxjs/Observable';
 
-import { HomeComponent } from './pages/home/home.component';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { Observer } from 'rxjs/Observer';
 import { AppReadyEvent } from './app-ready.event';
 import { UserService } from './models/user/user.service';
-import { Observer } from 'rxjs/Observer';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { HomeComponent } from './pages/home/home.component';
 
 @Injectable()
 export class AppReadyGuard implements Resolve<boolean> {
 
     /**
      * Resolves if the app has started correctly.
-     * */
+     */
     public resolve(): Observable<any> {
         if (AppReadyEvent.appReady) {
             return Observable.of(true);
@@ -62,7 +62,7 @@ const routes: Routes = [
 
 @NgModule({
     imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
 export class AppRoutingModule {
 }

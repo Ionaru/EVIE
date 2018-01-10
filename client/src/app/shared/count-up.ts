@@ -5,18 +5,13 @@ export interface ICountUpOptions {
     separator?: string;       // Character to use as seperator, default: ',' (comma). Note: if this option is set
                               // to '' (empty string), useGrouping will be disabled
     decimal?: string;         // Character to use as decimal, default: '.' (dot)
-    easingFn?: Function;      // Custom easing closure function, default: Robert Penner's easeOutExpo
-    formattingFn?: Function;  // Custom formatting function, default: self.formatNumber below
+    easingFn?: (...args: any[]) => any;      // Custom easing closure function, default: Robert Penner's easeOutExpo
+    formattingFn?: (...args: any[]) => any;  // Custom formatting function, default: self.formatNumber below
     prefix?: string;          // Prefix to add, default: ''
     suffix?: string;          // Suffix to add, default: ''
 }
 
 export class CountUp {
-
-    // Robert Penner's easeOutExpo
-    private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
-        return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
-    }
 
     private target: string;
     private startVal: number;
@@ -38,12 +33,17 @@ export class CountUp {
     private frameVal: number;
     private targetElement: HTMLElement;
     private decimals: number;
-    private callback: Function;
-    private easingFn: Function;
+    private callback: (...args: any[]) => any;
+    private easingFn: (...args: any[]) => any;
     private remaining: number;
-    private formattingFn: Function;
+    private formattingFn: (...args: any[]) => any;
     private dec: number;
     private startTime: number;
+
+    // Robert Penner's easeOutExpo
+    private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
+        return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
+    }
 
     constructor(target: string, startVal: number, endVal: number, decimals = 0, duration = 1,
                 options?: ICountUpOptions) {
@@ -88,7 +88,7 @@ export class CountUp {
     }
 
     // Start the animation
-    public start(callback?: Function): boolean {
+    public start(callback?: (...args: any[]) => any): boolean {
         this.callback = callback;
         this.rAF = requestAnimationFrame((_timestamp) => { this.count(_timestamp); });
         return false;
@@ -136,7 +136,7 @@ export class CountUp {
                 window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
         }
         if (!window.requestAnimationFrame) {
-            window.requestAnimationFrame = (callback: Function): number => {
+            window.requestAnimationFrame = (callback: (...args: any[]) => void): number => {
                 const currTime = new Date().getTime();
                 const timeToCall = Math.max(0, 16 - (currTime - lastTime));
                 const id = window.setTimeout((): void => { callback(currTime + timeToCall); },
@@ -180,25 +180,19 @@ export class CountUp {
 
         // To ease or not to ease
         if (this.options.useEasing) {
-            if (this.countDown) {
-                this.frameVal = this.startVal - this.easingFn(progress, 0, this.startVal - this.endVal, this.duration);
-            } else {
-                this.frameVal = this.easingFn(progress, this.startVal, this.endVal - this.startVal, this.duration);
-            }
+            this.frameVal = this.countDown ?
+                this.startVal - this.easingFn(progress, 0, this.startVal - this.endVal, this.duration) :
+                this.easingFn(progress, this.startVal, this.endVal - this.startVal, this.duration);
+
         } else {
-            if (this.countDown) {
-                this.frameVal = this.startVal - ((this.startVal - this.endVal) * (progress / this.duration));
-            } else {
-                this.frameVal = this.startVal + (this.endVal - this.startVal) * (progress / this.duration);
-            }
+            this.frameVal = this.countDown ?
+                this.startVal - ((this.startVal - this.endVal) * (progress / this.duration)) :
+                this.startVal + (this.endVal - this.startVal) * (progress / this.duration);
         }
 
-        // Don't go past endVal since progress can exceed duration in the last frame
-        if (this.countDown) {
-            this.frameVal = (this.frameVal < this.endVal) ? this.endVal : this.frameVal;
-        } else {
-            this.frameVal = (this.frameVal > this.endVal) ? this.endVal : this.frameVal;
-        }
+        this.frameVal = this.countDown ?
+            (this.frameVal < this.endVal) ? this.endVal : this.frameVal :
+            (this.frameVal > this.endVal) ? this.endVal : this.frameVal;
 
         // Decimal
         this.frameVal = Math.round(this.frameVal * this.dec) / this.dec;

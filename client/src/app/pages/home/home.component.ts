@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../models/user/user.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { UserService } from '../../models/user/user.service';
 import { LoginModalComponent } from './login-modal.component';
 import { RegisterModalComponent } from './register-modal.component';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.scss']
+    styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
 

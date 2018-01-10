@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
-import { UserService } from '../models/user/user.service';
 import { StatusService } from '../data-services/status.service';
 import { CharacterService } from '../models/character/character.service';
+import { UserService } from '../models/user/user.service';
 // import { ClockService, IServerStatus } from '../../../services/clock.service';
 // import { CountUp } from '../../../shared/count-up';
 // import { Globals } from '../../../shared/globals';
@@ -49,11 +49,8 @@ export class NavigationComponent implements OnInit {
 
     public async getStatus(): Promise<void> {
         const status = await this.statusService.getStatus();
-        if (status) {
-            this.playerCount = status.players;
-        } else {
-            this.playerCount = 0;
-        }
+        this.playerCount = status ? status.players : 0;
+
         setTimeout(() => {
             this.getStatus().then();
         }, 45000);

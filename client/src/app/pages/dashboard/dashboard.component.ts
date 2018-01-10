@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../models/user/user.service';
+import { INames, NamesService } from '../../data-services/names.service';
+import { ShipService } from '../../data-services/ship.service';
 import { Character } from '../../models/character/character.model';
 import { CharacterService } from '../../models/character/character.service';
-import { ShipService } from '../../data-services/ship.service';
-import { INames, NamesService } from '../../data-services/names.service';
+import { UserService } from '../../models/user/user.service';
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.scss']
+    styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
 

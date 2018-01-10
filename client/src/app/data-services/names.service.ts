@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-// import { Logger } from 'angular2-logger/core';
+import { Injectable } from '@angular/core';
 
 import { EndpointService } from '../models/endpoint/endpoint.service';
 
@@ -41,10 +40,15 @@ export class NamesService {
         });
     }
 
+    private static resetNames(): void {
+        NamesService.namesExpiry = 0;
+        NamesService.names = {};
+    }
+
     constructor(private http: HttpClient, private endpointService: EndpointService) {
         this.getNamesFromStore();
         if (!NamesService.names || NamesService.names instanceof Array) {
-            this.resetNames();
+            NamesService.resetNames();
         }
     }
 
@@ -92,21 +96,16 @@ export class NamesService {
         }
     }
 
-    private resetNames(): void {
-        NamesService.namesExpiry = 0;
-        NamesService.names = {};
-    }
-
     private getNamesFromStore(): void {
         try {
             const storeData = JSON.parse(localStorage.getItem(this.namesStoreTag));
             if (!storeData || storeData.expiry < (Date.now() - this.namesMaxAge)) {
-                return this.resetNames();
+                return NamesService.resetNames();
             }
             NamesService.namesExpiry = storeData.expiry;
             NamesService.names = storeData.names;
         } catch (error) {
-            return this.resetNames();
+            return NamesService.resetNames();
         }
     }
 

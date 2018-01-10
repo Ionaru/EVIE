@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { UserService } from '../../models/user/user.service';
-import { User } from '../../models/user/user.model';
 import { environment } from '../../../environments/environment';
+import { User } from '../../models/user/user.model';
+import { UserService } from '../../models/user/user.service';
 
 @Component({
     animations: [
@@ -28,7 +28,7 @@ import { environment } from '../../../environments/environment';
         ),
     ],
     templateUrl: './login-modal.component.html',
-    styleUrls: ['./login-modal.component.scss']
+    styleUrls: ['./login-modal.component.scss'],
 })
 export class LoginModalComponent {
 
