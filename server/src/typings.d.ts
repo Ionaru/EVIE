@@ -31,7 +31,3 @@ interface IVerifyResponseData {
     CharacterOwnerHash: string;
     IntellectualProperty: string;
 }
-
-declare module 'express-mysql-session';
-
-declare module 'socket.io-express-session';

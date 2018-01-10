@@ -76,7 +76,7 @@ describe('Services', () => {
       isActive: true,
       name: 'Dummy',
       ownerHash: 'aaa',
-      pid: '123',
+      uuid: '123',
       scopes: 'all',
       tokenExpiry: '',
     };

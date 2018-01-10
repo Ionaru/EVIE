@@ -20,7 +20,10 @@
             </p>
             <p *ngIf="character.currentShip">
                 <i class="fas fa-rocket"></i>
-                {{character.currentShip.name}} ({{character.currentShip.type}})
+                <ng-container *ngIf="character.currentShip.name && character.currentShip.type;then other_content">
+                    <i class="fas fa-rocket fa-spin"></i>
+                </ng-container>
+                <ng-template #other_content>{{character.currentShip.name}} ({{character.currentShip.type}})</ng-template>
             </p>
         </div>
         <div class="actions-container col-2 row justify-content-end">
@@ -28,6 +31,9 @@
                     [ngClass]="getActivateButtonClass(character)"
                     (click)="switchToCharacter(character)">
                 <i class="far fa-check"></i>
+            </button>
+            <button class="btn btn-info" (click)="refreshCharacterToken(character)">
+                <i class="far fa-sync"></i>
             </button>
             <button class="btn btn-outline-info disabled">
                 <i class="far fa-sync"></i>

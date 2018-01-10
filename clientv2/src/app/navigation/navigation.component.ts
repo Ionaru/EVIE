@@ -22,7 +22,7 @@ export class NavigationComponent implements OnInit {
     // public playersCountUp: CountUp;
     public disable = true;
     public isLoggedIn = false;
-    public playerCount: number;
+    public playerCount = 0;
     public isCollapsed: boolean;
 
     constructor(private userService: UserService, private statusService: StatusService) {
@@ -51,6 +51,8 @@ export class NavigationComponent implements OnInit {
         const status = await this.statusService.getStatus();
         if (status) {
             this.playerCount = status.players;
+        } else {
+            this.playerCount = 0;
         }
         setTimeout(() => {
             this.getStatus().then();

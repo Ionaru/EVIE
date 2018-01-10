@@ -2,12 +2,12 @@ import { Request, Response } from 'express';
 import fetch from 'node-fetch';
 import { logger } from 'winston-pnp-logger';
 
-import { sockets } from '../bin/www';
+import { config } from '../controllers/configuration.controller';
+import { generateRandomString } from '../controllers/random.controller';
+import { SocketServer } from '../controllers/socket.controller';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
-import { config } from '../services/config.service';
-import { generateRandomString, generateUniquePID } from '../services/pid.service';
-import { BaseRouter, sendResponse, sendTextResponse } from './base.router';
+import { BaseRouter } from './base.router';
 
 //noinspection SpellCheckingInspection
 const scopes = [
@@ -31,27 +31,27 @@ export class SSORouter extends BaseRouter {
     /**
      * Start the SSO process. Here we redirect the user to the SSO service and prepare for the callback
      * Params:
-     *  characterPid <optional>: The Pid of the Character to re-authorize, this is useful for scope updates and characters
+     *  characterUUID <optional>: The UUID of the Character to re-authorize, this is useful for scope updates and characters
      *                           that revoked access for this app.
      *                           If this is not provided, a new Character will be created
      */
-    private static async startSSOProcess(request: Request, response: Response): Promise<void> {
+    private static async startSSOProcess(request: Request, response: Response): Promise<Response> {
 
         if (!request.session!.user.id) {
             // User is not logged in and can't initiate SSO process
-            return sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
 
-        if (request.query.characterPid) {
-            // With a characterPid provided in the request, we initiate the re-authorization process
+        if (request.query.uuid) {
+            // With a characterUUID provided in the request, we initiate the re-authorization process
 
             const character: Character | undefined = await Character.doQuery()
-                .where('character.pid = :pid', {pid: request.query.characterPid})
+                .where('character.uuid = :uuid', {uuid: request.query.uuid})
                 .andWhere('character.userId = :userId', {userId: request.session!.user.id})
                 .getOne();
 
             if (character) {
-                request.session!.characterPid = character.pid;
+                request.session!.uuid = character.uuid;
             }
         }
 
@@ -69,7 +69,8 @@ export class SSORouter extends BaseRouter {
         ];
         const finalUrl = 'https://' + oauthHost + oauthPath + args.join('&');
 
-        return response.redirect(finalUrl);
+        response.redirect(finalUrl);
+        return response.send();
     }
 
     /**
@@ -78,25 +79,25 @@ export class SSORouter extends BaseRouter {
      *  code <required>: The authorization token that will be used to get a Character's access code later in the process.
      *  state <required>: The random string that was generated and sent with the request.
      */
-    private static async processCallBack(request: Request, response: Response): Promise<void> {
+    private static async processCallBack(request: Request, response: Response): Promise<Response> {
 
         if (!request.session!.user.id) {
             // User is not logged in and can't initiate SSO callback.
             // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
             // was linked directly to this page.
-            return sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
 
         if (!request.query.state) {
             // Somehow a request was done without giving a state, probably didn't come from the SSO, possibly directly linked.
-            return sendResponse(response, 400, 'BadCallback');
+            return SSORouter.sendResponse(response, 400, 'BadCallback');
         }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
             logger.warn(`Invalid state from /callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`);
-            return sendResponse(response, 400, 'InvalidState');
+            return SSORouter.sendResponse(response, 400, 'InvalidState');
         }
 
         // The state has been verified and served its purpose, delete it.
@@ -104,9 +105,9 @@ export class SSORouter extends BaseRouter {
 
         let character: Character | undefined;
 
-        if (request.session!.characterPid) {
+        if (request.session!.characterUUID) {
             character = await Character.doQuery()
-                .where('character.pid = :pid', {pid: request.session!.characterPid})
+                .where('character.uuid = :uuid', {uuid: request.session!.characterUUID})
                 .getOne();
         }
 
@@ -116,12 +117,11 @@ export class SSORouter extends BaseRouter {
                 .getOne();
 
             if (!user) {
-                return sendResponse(response, 404, 'UserNotFound');
+                return SSORouter.sendResponse(response, 404, 'UserNotFound');
             }
 
             // Create a new character
             character = new Character();
-            character.pid = await generateUniquePID(10, Character);
             character.user = user;
         }
 
@@ -142,7 +142,7 @@ export class SSORouter extends BaseRouter {
         const authResponse = await fetch(authUrl, requestOptions).catch((errorResponse) => errorResponse);
 
         if (!authResponse.ok) {
-            return sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
         const authResponseData: IAuthResponseData | undefined = await authResponse.json().catch(() => {
@@ -150,7 +150,7 @@ export class SSORouter extends BaseRouter {
         });
 
         if (!authResponseData) {
-            return sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
         character.accessToken = authResponseData.access_token;
@@ -170,13 +170,13 @@ export class SSORouter extends BaseRouter {
         const characterIdResult = await fetch(verifyUrl, characterIdRequestOptions).catch((errorResponse) => errorResponse);
 
         if (!characterIdResult.ok) {
-            return sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
         const charData: IVerifyResponseData | undefined = await characterIdResult.json().catch(() => undefined);
 
         if (!charData) {
-            return sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
         character.name = charData.CharacterName;
@@ -186,46 +186,46 @@ export class SSORouter extends BaseRouter {
 
         await character.save();
 
-        // Remove the characterPid from the session as it is no longer needed
-        delete request.session!.characterPid;
+        // Remove the characterUUID from the session as it is no longer needed
+        delete request.session!.characterUUID;
 
-        const socket: ISessionSocket | undefined = sockets.filter((_) => _.id === request.session!.socket)[0];
+        const socket: ISessionSocket | undefined = SocketServer.sockets.filter((_) => _.id === request.session!.socket)[0];
         if (socket) {
             socket.emit('SSO_END', {
-                data: character.getSanitizedCopy(),
+                data: character.sanitizedCopy,
                 message: 'SSOSuccessful',
                 state: 'success',
             });
         }
 
-        return sendTextResponse(response, 200, '<h2>You may now close this window.</h2>');
+        return response.status(200).send('<h2>You may now close this window.</h2>');
     }
 
     /**
      * Refresh the access token by requesting a new one using the refresh token
      * Params:
-     *  characterPid <required>: The Pid of the Character who's token to refresh
+     *  characterUUID <required>: The UUID of the Character who's token to refresh
      *  accessToken <required>: The Character's current access token
      */
-    private static async refreshToken(request: Request, response: Response): Promise<void> {
+    private static async refreshToken(request: Request, response: Response): Promise<Response> {
 
-        // Get the characterPid and accessToken from the request
-        const characterPid = request.query.pid;
+        // Get the characterUUID and accessToken from the request
+        const characterUUID = request.query.uuid;
         const accessToken = request.query.accessToken;
 
         // Fetch the Character who's accessToken we will refresh
         const character = await Character.doQuery()
-            .where('character.pid = :pid', {pid: characterPid})
+            .where('character.uuid = :uuid', {uuid: characterUUID})
             .getOne();
 
         if (!character) {
-            // There was no Character found with the Pid provided in the request
-            return sendResponse(response, 404, 'CharacterNotFound');
+            // There was no Character found with the UUID provided in the request
+            return SSORouter.sendResponse(response, 404, 'CharacterNotFound');
         }
 
         if (character.accessToken !== accessToken) {
             // The access token sent with the request did not match with the fetched Character
-            return sendResponse(response, 401, 'WrongAccessToken');
+            return SSORouter.sendResponse(response, 401, 'WrongAccessToken');
         }
 
         const requestOptions = {
@@ -240,13 +240,13 @@ export class SSORouter extends BaseRouter {
         const refreshResponse = await fetch(protocol + oauthHost + tokenPath, requestOptions).catch((errorResponse) => errorResponse);
 
         if (!refreshResponse.ok) {
-            return sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
         const refreshResult = await refreshResponse.json().catch(() => undefined);
 
         if (!refreshResult) {
-            return sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
         character.refreshToken = refreshResult.refresh_token;
@@ -254,7 +254,7 @@ export class SSORouter extends BaseRouter {
         character.tokenExpiry = new Date(Date.now() + (refreshResult.expires_in * 1000));
         await character.save();
 
-        return sendResponse(response, 200, 'TokenRefreshed', {
+        return SSORouter.sendResponse(response, 200, 'TokenRefreshed', {
             token: refreshResult.access_token,
         });
     }
@@ -262,57 +262,57 @@ export class SSORouter extends BaseRouter {
     /**
      * Delete a character
      * Params:
-     *  characterPid <required>: The Pid of the Character to delete
+     *  characterUUID <required>: The UUID of the Character to delete
      */
-    private static async deleteCharacter(request: Request, response: Response): Promise<void> {
+    private static async deleteCharacter(request: Request, response: Response): Promise<Response> {
 
         if (!request.session!.user.id) {
             // User is not logged in and can't initiate SSO process
-            return sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
 
-        const pid = request.body.characterPid;
+        const characterUUID = request.body.characterUUID;
 
-        if (!pid) {
+        if (!characterUUID) {
             // Missing parameters
-            return sendResponse(response, 400, 'MissingParameters');
+            return SSORouter.sendResponse(response, 400, 'MissingParameters');
         }
 
         const user: User | undefined = await User.doQuery()
-            .select(['user.id', 'user.email', 'user.pid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
+            .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
 
         if (!user) {
             // Missing parameters
-            return sendResponse(response, 404, 'UserNotFound');
+            return SSORouter.sendResponse(response, 404, 'UserNotFound');
         }
 
         const characters = user.characters;
 
-        const characterToDeleteList = characters.filter((_) => _.pid === pid);
+        const characterToDeleteList = characters.filter((_) => _.uuid === characterUUID);
 
         if (characterToDeleteList.length === 0) {
             // That character does not exist
-            return sendResponse(response, 404, 'NoCharacterFound');
+            return SSORouter.sendResponse(response, 404, 'NoCharacterFound');
         }
 
         const characterToDelete = characterToDeleteList[0];
 
         await characterToDelete.remove();
-        return sendResponse(response, 200, 'CharacterDeleted');
+        return SSORouter.sendResponse(response, 200, 'CharacterDeleted');
     }
 
     /**
      * Activate a character
      * Params:
-     *  characterPid <required>: The Pid of the Character to set as active
+     *  characterUUID <required>: The UUID of the Character to set as active
      */
-    private static async activateCharacter(request: Request, response: Response): Promise<void> {
+    private static async activateCharacter(request: Request, response: Response): Promise<Response> {
 
         if (!request.session!.user.id) {
-            return sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
 
         await Character.doQuery()
@@ -321,25 +321,25 @@ export class SSORouter extends BaseRouter {
             .where('character.userId = :id', {id: request.session!.user.id})
             .execute();
 
-        const pid = request.body.characterPid;
+        const characterUUID = request.body.characterUUID;
 
-        if (!pid) {
-            return sendResponse(response, 200, 'AllCharactersDeactivated');
+        if (!characterUUID) {
+            return SSORouter.sendResponse(response, 200, 'AllCharactersDeactivated');
         }
 
         const character = await Character.doQuery()
-            .select(['character.id', 'character.isActive', 'character.pid', 'character.userId'])
+            .select(['character.id', 'character.isActive', 'character.uuid', 'character.userId'])
             .where('character.userId = :id', {id: request.session!.user.id})
-            .andWhere('character.pid = :pid', {pid})
+            .andWhere('character.uuid = :uuid', {uuid: characterUUID})
             .getOne();
 
         if (!character) {
-            return sendResponse(response, 404, 'NoCharacterFound');
+            return SSORouter.sendResponse(response, 404, 'NoCharacterFound');
         }
 
         character.isActive = true;
         await character.save();
-        return sendResponse(response, 200, 'CharacterActivated');
+        return SSORouter.sendResponse(response, 200, 'CharacterActivated');
     }
 
     /**
@@ -356,6 +356,5 @@ export class SSORouter extends BaseRouter {
         this.createGetRoute('/refresh', SSORouter.refreshToken);
         this.createPostRoute('/delete', SSORouter.deleteCharacter);
         this.createPostRoute('/activate', SSORouter.activateCharacter);
-        logger.info('Route defined: SSO');
     }
 }

@@ -34,7 +34,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
   public refreshOnComplete: Timer;
   public skillGroups: ISkillGroupData[];
   public skillList: {
-    [groupId: number]: ISkill[],
+    [grouuuid: number]: ISkill[],
   } = {};
 
   constructor(private skillsService: SkillsService, private skillQueueService: SkillQueueService, private helpers: Helpers,

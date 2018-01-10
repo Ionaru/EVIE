@@ -1,21 +1,14 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, SelectQueryBuilder } from 'typeorm';
+import { Column, Entity, OneToMany, SelectQueryBuilder } from 'typeorm';
 
+import { BaseModel } from './base.model';
 import { Character } from './character.model';
 
 @Entity()
-export class User extends BaseEntity {
+export class User extends BaseModel {
 
     public static doQuery(): SelectQueryBuilder<User> {
         return this.createQueryBuilder('user');
     }
-
-    @PrimaryGeneratedColumn()
-    public id: number;
-
-    @Column({
-        unique: true,
-    })
-    public pid: string;
 
     @Column({
         unique: true,

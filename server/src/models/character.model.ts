@@ -1,21 +1,14 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, SelectQueryBuilder } from 'typeorm';
+import { Column, Entity, ManyToOne, SelectQueryBuilder } from 'typeorm';
 
+import { BaseModel } from './base.model';
 import { User } from './user.model';
 
 @Entity()
-export class Character extends BaseEntity {
+export class Character extends BaseModel {
 
     public static doQuery(): SelectQueryBuilder<Character> {
         return this.createQueryBuilder('character');
     }
-
-    @PrimaryGeneratedColumn()
-    public id: number;
-
-    @Column({
-        unique: true,
-    })
-    public pid?: string;
 
     @Column({
         nullable: true,
@@ -67,13 +60,15 @@ export class Character extends BaseEntity {
     })
     public user: User;
 
-    public getSanitizedCopy() {
+    public get sanitizedCopy() {
         // Delete data that should not be sent to the client.
         const copy = Object.assign({}, this);
         delete copy.id;
         delete copy.authToken;
         delete copy.refreshToken;
         delete copy.user;
+        delete copy.createdOn;
+        delete copy.updatedOn;
         return copy;
     }
 }

@@ -114,7 +114,7 @@ export class UserService {
     public authCharacter(character?: Character): void {
         let url = '/sso/start';
         if (character) {
-            url += '?characterPid=' + character.pid;
+            url += '?characterUUID=' + character.uuid;
         }
 
         const authWindow = window.open(url, '_blank', 'width=600,height=700');

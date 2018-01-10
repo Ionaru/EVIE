@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import path = require('path');
-import { logger } from 'winston-pnp-logger';
 
 import { BaseRouter } from './base.router';
 
@@ -13,6 +12,5 @@ export class AngularRedirectRouter extends BaseRouter {
     constructor() {
         super();
         this.createAllRoute('/', AngularRedirectRouter.redirectToAngular);
-        logger.info('Route defined: Angular-Redirect');
     }
 }

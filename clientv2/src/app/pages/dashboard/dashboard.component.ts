@@ -34,6 +34,10 @@ export class DashboardComponent implements OnInit {
         this.characterService.setActiveCharacter(character).then();
     }
 
+    public refreshCharacterToken(character: Character) {
+        this.characterService.refreshToken(character).then();
+    }
+
     public authCharacter(character?: Character) {
         this.userService.authCharacter(character);
     }

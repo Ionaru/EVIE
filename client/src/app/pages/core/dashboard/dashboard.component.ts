@@ -96,7 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!this.selectedCharacter) {
       return false;
     }
-    return this.selectedCharacter.pid === character.pid;
+    return this.selectedcharacter.uuid === character.uuid;
   }
 
   public setActiveCharacter(character: Character): void {

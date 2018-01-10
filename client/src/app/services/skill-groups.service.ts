@@ -73,7 +73,7 @@ export class SkillGroupsService {
     }
   }
 
-  private async getSkillGroup(groupId: number): Promise<ISkillGroupData> {
+  private async getSkillGroup(grouuuid: number): Promise<ISkillGroupData> {
     const url = this.endpointService.constructESIUrl('v1/universe/groups', groupId);
     let response: Response;
     try {

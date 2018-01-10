@@ -58,22 +58,28 @@ export class CharacterService {
     }
 
     public async refreshToken(character: Character): Promise<void> {
-        const pid = character.pid;
+        const uuid = character.uuid;
         const accessToken = character.accessToken;
-        const url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
+        const url = `/sso/refresh?uuid=${uuid}&accessToken=${accessToken}`;
         const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>().catch((e) => e);
+        if (response instanceof HttpErrorResponse) {
+            setTimeout(() => {
+                this.refreshToken(character).then();
+            }, 5 * 1000);
+            return;
+        }
         character.accessToken = response.data.token;
     }
 
     public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
 
-        let characterPid;
+        let characterUUID;
         if (character) {
-            characterPid = character.pid;
+            characterUUID = character.uuid;
         }
 
         if (!alreadyActive) {
-            this.http.post('/sso/activate', {characterPid}).toPromise().then();
+            this.http.post('/sso/activate', {characterUUID}).toPromise().then();
         }
         CharacterService._selectedCharacter = character;
         CharacterService.characterChangeEvent.next(character);
@@ -82,7 +88,7 @@ export class CharacterService {
     public async deleteCharacter(character: Character): Promise<void> {
         const url = '/sso/delete';
         const data = {
-            characterPid: character.pid,
+            characterUUID: character.uuid,
         };
 
         const response = await this.http.post<any>(url, data).toPromise<IDeleteCharacterResponse>()
@@ -92,7 +98,7 @@ export class CharacterService {
         if (response.state === 'success') {
             clearInterval(character.refreshTimer);
 
-            if (CharacterService.selectedCharacter && CharacterService.selectedCharacter.pid === character.pid) {
+            if (CharacterService.selectedCharacter && CharacterService.selectedCharacter.uuid === character.uuid) {
                 this.setActiveCharacter().then();
             }
         }

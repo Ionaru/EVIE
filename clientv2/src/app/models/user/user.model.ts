@@ -1,13 +1,13 @@
 import { Character, IApiCharacterData } from '../character/character.model';
 
 export class User {
-  public pid: string;
+  public uuid: string;
   public username: string;
   public email: string;
   public characters: Character[] = [];
 
   constructor(data: IUserApiData) {
-    this.pid = data.pid;
+    this.uuid = data.uuid;
     this.username = data.username;
     this.email = data.email;
   }
@@ -21,7 +21,7 @@ export interface ILoginResponse {
 
 export interface IUserApiData {
   username: string;
-  pid: string;
+  uuid: string;
   email: string;
   characters: IApiCharacterData[];
 }

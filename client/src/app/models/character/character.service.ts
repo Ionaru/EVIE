@@ -45,7 +45,7 @@ export class CharacterService {
   }
 
   public async refreshToken(character: Character): Promise<void> {
-    const pid = character.pid;
+    const pid = character.uuid;
     const accessToken = character.accessToken;
     const url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
     const response: Response = await this.http.get(url).toPromise().catch((e) => e);
@@ -58,7 +58,7 @@ export class CharacterService {
   public startAuthProcess(character?: Character): void {
     let url = '/sso/start';
     if (character) {
-      url += '?characterPid=' + character.pid;
+      url += '?characterUUID=' + character.uuid;
     }
 
     const w = window.open(url, '_blank', 'width=600,height=700');
@@ -79,13 +79,13 @@ export class CharacterService {
 
   public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
 
-    let characterPid;
+    let characterUUID;
     if (character) {
-      characterPid = character.pid;
+      characterUUID = character.uuid;
     }
 
     if (!alreadyActive) {
-      this.http.post('/sso/activate', {characterPid}).toPromise().then();
+      this.http.post('/sso/activate', {characterUUID}).toPromise().then();
     }
     this.globals.selectedCharacter = character;
     this.globals.characterChangeEvent.next(character);
@@ -94,14 +94,14 @@ export class CharacterService {
   public deleteCharacter(character: Character): void {
     const url = '/sso/delete';
     const data = {
-      characterPid: character.pid,
+      characterUUID: character.uuid,
     };
     this.http.post(url, data).subscribe((response: Response) => {
       const responseBody = response.json();
       if (responseBody.state === 'success') {
         clearInterval(character.refreshTimer);
 
-        if (this.globals.selectedCharacter && this.globals.selectedCharacter.pid === character.pid) {
+        if (this.globals.selectedCharacter && this.globals.selectedcharacter.uuid === character.uuid) {
           this.setActiveCharacter().then();
         }
         const index = this.globals.user.characters.indexOf(character);

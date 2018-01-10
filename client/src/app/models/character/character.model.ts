@@ -2,7 +2,7 @@ import Timer = NodeJS.Timer;
 
 export class Character {
   public characterId: number;
-  public pid: string;
+  public uuid: string;
   public name: string;
   public accessToken: string;
   public scopes: string[];
@@ -74,7 +74,7 @@ export interface IApiCharacterData {
   characterId: number;
   name: string;
   ownerHash: string;
-  pid: string;
+  uuid: string;
   scopes: string;
   tokenExpiry: string;
   isActive: boolean;
