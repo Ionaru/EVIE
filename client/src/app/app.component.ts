@@ -1,51 +1,52 @@
-import { HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { Observable, Observer } from 'rxjs';
-import * as socketIo from 'socket.io-client';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import * as io from 'socket.io-client';
+import Socket = SocketIOClient.Socket;
 
 import { AppReadyEvent } from './app-ready.event';
-import { CharacterService } from './models/character/character.service';
-import { EndpointService } from './models/endpoint/endpoint.service';
+import { User, IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
-import { NamesService } from './services/names.service';
-import { Globals } from './shared/globals';
-import { Helpers } from './shared/helpers';
+import { SocketService } from './socket/socket.service';
+
+interface IHandshakeResponse {
+    state: string;
+    message: string;
+    data?: IUserApiData;
+}
 
 @Component({
-  providers: [AppReadyEvent, UserService, CharacterService, EndpointService, NamesService, Helpers],
-  selector: 'app-root',
-  styleUrls: ['app.component.scss'],
-  templateUrl: './app.component.html',
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
 
-  constructor(private userService: UserService, private appReadyEvent: AppReadyEvent, private globals: Globals) {
-    this.boot();
-  }
+    public static socket: Socket;
+    public version = '0.2.0-INDEV';
 
-  private boot(): void {
-    this.globals.startUpObservable = Observable.create(async (observer: Observer<boolean>) => {
-      const response: HttpResponse<null> = await this.userService.shakeHands();
-      if (response.ok) {
-        this.globals.startUp = true;
-        observer.next(true);
-        observer.complete();
-      } else {
-        this.appReadyEvent.triggerFailed();
-        document.getElementById('error-info').innerText = response.body;
-        document.getElementById('error-info-detail').innerText = JSON.stringify(response);
-      }
-    }).share();
+    constructor(private appReadyEvent: AppReadyEvent, private http: HttpClient, private userService: UserService) {
+        this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Unexpected error', error));
+    }
 
-    this.globals.startUpObservable.subscribe(() => {
-      this.globals.socket = socketIo('http://localhost:3000/', {
-        reconnection: true,
-      });
-      this.globals.socket.on('STOP', (): void => {
-        // The server will send STOP upon shutting down, reloading the window ensures nobody keeps using the site while the server is down.
-        window.location.reload();
-      });
-      this.appReadyEvent.trigger();
-    });
-  }
+    private async boot(): Promise<void> {
+        await this.shakeHands();
+        new SocketService();
+        SocketService.socket.on('STOP', (): void => {
+            // The server will send STOP upon shutting down.
+            // Reloading the window ensures nobody keeps using the site while the server is down.
+            window.location.reload();
+        });
+        this.appReadyEvent.triggerSuccess();
+    }
+
+    private async shakeHands(): Promise<any> {
+        const url = 'api/handshake';
+        const response = await this.http.get<any>(url).toPromise<IHandshakeResponse>().catch((error: HttpErrorResponse) => {
+            this.appReadyEvent.triggerFailure(error.message, error.error);
+        });
+
+        if (response && response.message === 'LoggedIn') {
+            await this.userService.storeUser(response.data);
+        }
+    }
 }

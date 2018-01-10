@@ -10,6 +10,9 @@ export class Character {
   public ownerHash: string;
   public gender: string;
   public corporationId: number;
+  public birthday: Date;
+  public securityStatus: number;
+  public description: string;
   public corporation: string;
   public allianceId: number;
   public alliance: string;
@@ -40,7 +43,7 @@ export class Character {
     this.name = data.name;
     this.accessToken = data.accessToken;
     this.ownerHash = data.ownerHash;
-    this.pid = data.pid;
+    this.uuid = data.uuid;
     this.scopes = data.scopes.split(' ');
     this.tokenExpiry = new Date(data.tokenExpiry);
   }
@@ -50,7 +53,7 @@ export class Character {
     this.name = data.name;
     this.accessToken = data.accessToken;
     this.ownerHash = data.ownerHash;
-    this.pid = data.pid;
+    this.uuid = data.uuid;
     this.scopes = data.scopes.split(' ');
     this.tokenExpiry = new Date(data.tokenExpiry);
   }
@@ -92,4 +95,9 @@ export interface ITokenRefreshResponse {
   data: {
     token: string;
   };
+}
+
+export interface IDeleteCharacterResponse {
+    state: string;
+    message: string;
 }

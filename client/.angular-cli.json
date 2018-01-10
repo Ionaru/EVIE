@@ -9,8 +9,7 @@
       "outDir": "dist",
       "assets": [
         "assets",
-        "favicon.ico",
-        "robots.txt"
+        "favicon.ico"
       ],
       "index": "index.html",
       "main": "main.ts",
@@ -20,13 +19,13 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "../node_modules/font-awesome/css/font-awesome.css",
         "styles.scss"
       ],
       "scripts": [
-        "../node_modules/jquery/dist/jquery.js",
-        "../node_modules/tether/dist/js/tether.js",
-        "../node_modules/bootstrap/dist/js/bootstrap.js"
+          "../node_modules/@fortawesome/fontawesome-free-brands/index.js",
+          "../node_modules/@fortawesome/fontawesome-pro-regular/index.js",
+          "../node_modules/@fortawesome/fontawesome-pro-solid/index.js",
+          "../node_modules/@fortawesome/fontawesome/index.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
@@ -42,37 +41,25 @@
   },
   "lint": [
     {
-      "project": "src/tsconfig.app.json"
+      "project": "src/tsconfig.app.json",
+      "exclude": "**/node_modules/**"
     },
     {
-      "project": "src/tsconfig.spec.json"
+      "project": "src/tsconfig.spec.json",
+      "exclude": "**/node_modules/**"
     },
     {
-      "project": "e2e/tsconfig.json"
+      "project": "e2e/tsconfig.e2e.json",
+      "exclude": "**/node_modules/**"
     }
   ],
   "test": {
     "karma": {
-      "config": "./karma.conf.ts"
+      "config": "./karma.conf.js"
     }
   },
   "defaults": {
     "styleExt": "scss",
-    "prefixInterfaces": false,
-    "inline": {
-      "style": false,
-      "template": false
-    },
-    "spec": {
-      "class": false,
-      "component": true,
-      "directive": true,
-      "module": false,
-      "pipe": true,
-      "service": true
-    }
-  },
-  "addons": [
-    "../node_modules/font-awesome/fonts/*.+(otf|eot|svg|ttf|woff|woff2)"
-  ]
+    "component": {}
+  }
 }

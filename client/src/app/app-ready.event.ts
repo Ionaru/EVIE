@@ -1,55 +1,59 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 
 @Injectable()
 export class AppReadyEvent {
 
-  private doc: Document;
-  private isAppReady: boolean;
+    private static _appReadyObserver: Observer<void>;
+    private static _appReadyEvent: Observable<void> = Observable.create((observer: Observer<void>) => {
+        AppReadyEvent._appReadyObserver = observer;
+    });
+    public static get appReadyEvent() { return this._appReadyEvent; }
 
-  constructor(@Inject(DOCUMENT) doc: Document) {
-    this.doc = doc;
-    this.isAppReady = false;
-  }
+    private static _appReady = false;
+    public static get appReady() { return this._appReady; }
 
-  public trigger(): void {
-    // If the app-ready event has already been triggered, just ignore any subsequent
-    // calls to trigger it again.
-    if (this.isAppReady) {
-      return;
+    constructor(@Inject(DOCUMENT) private doc: Document) { }
+
+    public triggerSuccess(): void {
+        // If the app-ready event has already been triggered, just ignore any calls to trigger it again.
+        if (AppReadyEvent._appReady) {
+            return;
+        }
+
+        AppReadyEvent._appReady = true;
+        AppReadyEvent._appReadyObserver.next(null);
+        AppReadyEvent._appReadyObserver.complete();
+        document.dispatchEvent(this.createEvent('StartupSuccess'));
     }
-    const bubbles = true;
-    const cancelable = false;
-    this.doc.dispatchEvent(this.createEvent('StartupSuccess', bubbles, cancelable));
-    this.isAppReady = true;
-  }
 
-  public triggerFailed(info?: string, detail?: string): void {
-    if (this.isAppReady) {
-      return;
-    }
-    const bubbles = true;
-    const cancelable = false;
-    this.doc.dispatchEvent(this.createEvent('StartupFailed', bubbles, cancelable));
-  }
+    public triggerFailure(info = 'No info available', detail = ''): void {
+        // If the app-ready event has already been triggered, just ignore any calls to trigger it again.
+        if (AppReadyEvent._appReady) {
+            return;
+        }
 
-  private createEvent(eventType: string, bubbles: boolean, cancelable: boolean): Event {
-    // IE (shakes fist) uses some other kind of event initialization. As such,
-    // we'll default to trying the "normal" event generation and then fallback to
-    // using the IE version.
-    let customEvent: CustomEvent;
-    try {
-      customEvent = new CustomEvent(
-        eventType,
-        {
-          bubbles,
-          cancelable,
-        },
-      );
-    } catch (error) {
-      customEvent = this.doc.createEvent('CustomEvent');
-      customEvent.initCustomEvent(eventType, bubbles, cancelable, undefined);
+        // Fire StartupFailed first so the 'error-info' and 'error-info-detail' elements are created.
+        this.doc.dispatchEvent(this.createEvent('StartupFailed'));
+
+        this.doc.getElementById('error-info').innerText = info;
+        this.doc.getElementById('error-info-detail').innerText = detail;
+        AppReadyEvent._appReady = true;
     }
-    return ( customEvent );
-  }
+
+    private createEvent(eventType: string): Event {
+        // IE (shakes fist) uses some other kind of event initialization. As such,
+        // we'll default to trying the "normal" event generation and then fallback to
+        // using the IE version.
+        let customEvent: CustomEvent;
+        try {
+            customEvent = new CustomEvent(eventType);
+        } catch (error) {
+            customEvent = this.doc.createEvent('CustomEvent');
+            customEvent.initCustomEvent(eventType, false, false, undefined);
+        }
+        return (customEvent);
+    }
 }

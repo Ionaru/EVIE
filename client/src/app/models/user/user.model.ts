@@ -7,7 +7,7 @@ export class User {
   public characters: Character[] = [];
 
   constructor(data: IUserApiData) {
-    this.pid = data.pid;
+    this.uuid = data.uuid;
     this.username = data.username;
     this.email = data.email;
   }
@@ -16,7 +16,7 @@ export class User {
 export interface ILoginResponse {
   state: string;
   message: string;
-  data: IUserApiData;
+  data?: IUserApiData;
 }
 
 export interface IUserApiData {

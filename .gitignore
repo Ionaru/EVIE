@@ -12,6 +12,11 @@
 /client/dist/
 /client/node_modules/
 
+# Client_legacy files
+/client_legacy/coverage/
+/client_legacy/dist/
+/client_legacy/node_modules/
+
 # Server files
 /server/node_modules/
 /server/logs

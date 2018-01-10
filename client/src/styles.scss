@@ -1,7 +1,7 @@
-@import '../node_modules/bootswatch/superhero/variables';
-@import '../node_modules/bootstrap/scss/bootstrap';
-@import '../node_modules/bootswatch/superhero/bootswatch';
-@import 'app/variables';
+//$body-bg: #171B23;
+$body-bg: #101010;
+
+@import 'variables';
 
 * {
   // Set box-sizing: border-box on every element
@@ -148,6 +148,7 @@ html {
       }
     }
 
+    *:disabled,
     .disabled {
       pointer-events: none !important;
     }

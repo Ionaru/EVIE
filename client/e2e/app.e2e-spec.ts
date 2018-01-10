@@ -1,16 +1,14 @@
-import { expect } from 'chai';
+import { AppPage } from './app.po';
 
-import { EveTrackPage } from './app.po';
-
-describe('client App', function() {
-  let page: EveTrackPage;
+describe('client App', () => {
+  let page: AppPage;
 
   beforeEach(() => {
-    page = new EveTrackPage();
+    page = new AppPage();
   });
 
-  it('should display message saying app works', () => {
+  it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).to.equal('app works!');
+    expect(page.getParagraphText()).toEqual('Welcome to app!');
   });
 });
