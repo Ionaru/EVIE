@@ -18,6 +18,7 @@
 /client_legacy/node_modules/
 
 # Server files
+/server/dist/
 /server/node_modules/
 /server/logs
 

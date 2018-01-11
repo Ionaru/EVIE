@@ -177,7 +177,6 @@ export class RegisterModalComponent {
         this.registerError = false;
 
         const result = await this.userService.registerUser(formValues.username, formValues.email, formValues.password);
-        this.inProgress = false;
         if (result === 'username_in_use') {
             this.registerError = true;
             this.registerErrorMessage = this.usernameHint = 'That username is already in use.';
@@ -189,14 +188,14 @@ export class RegisterModalComponent {
         } else if (result === 'error') {
             this.registerError = true;
             this.registerErrorMessage = 'An unknown error occurred.';
-        } else {
+        } else if (result === 'success') {
             const response: [string, User] = await this.userService.loginUser(formValues.username, formValues.password);
             this.inProgress = false;
             if (response[0] === 'LoggedIn') {
                 this.router.navigate(['/dashboard']).then();
-            } else {
-                this.activeModal.close();
             }
+            this.activeModal.close();
         }
+        this.inProgress = false;
     }
 }

@@ -9,7 +9,7 @@
     },
     "scripts": {
         "build": "tsc --project tsconfig.json",
-        "start": "NODE_ENV=production node ./dist/index.js",
+        "start": "cross-env NODE_ENV=production node ./dist/index.js",
         "serve": "gulp clean && npm run build && npm run start",
         "lint": "tslint --project tsconfig.json -c tslint.json \"src/**/*.ts\"",
         "test": "echo \"Error: no test specified\" && exit 1",
@@ -62,6 +62,7 @@
         "@types/socket.io": "^1.4.31",
         "@types/source-map-support": "^0.4.0",
         "@types/winston": "^2.3.7",
+        "cross-env": "^5.1.3",
         "ts-node": "^4.1.0",
         "tslint": "^5.8.0"
     },
