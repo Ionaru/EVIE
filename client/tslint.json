@@ -11,6 +11,10 @@
             true,
             140
         ],
+        "no-implicit-dependencies": [
+            true, 
+            "dev"
+        ],
         "no-unused-expression": [
             true,
             "allow-new"
@@ -161,9 +165,11 @@
         "directive-class-suffix": true,
         "no-submodule-imports": [
             true,
-            "rxjs",
             "@angular",
-            "@ng-bootstrap"
+            "@ng-bootstrap",
+            "core-js",
+            "rxjs",
+            "zone.js"
         ]
     }
 }
