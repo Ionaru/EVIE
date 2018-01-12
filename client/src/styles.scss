@@ -2,6 +2,7 @@
 $body-bg: #101010;
 
 @import 'variables';
+@import 'addons';
 
 * {
     // Set box-sizing: border-box on every element
@@ -196,17 +197,17 @@ html {
         //  }
         //}
 
-        .left {
-            text-align: left;
-        }
-
-        .center {
-            text-align: center;
-        }
-
-        .right {
-            text-align: right;
-        }
+    //.left {
+    //  text-align: left;
+    //}
+    //
+    //.center {
+    //  text-align: center;
+    //}
+    //
+    //.right {
+    //  text-align: right;
+    //}
 
         //#characterInfoWindow {
         //  display: none; /* Hidden by default */
@@ -311,122 +312,47 @@ html {
             cursor: pointer;
         }
 
-        button.accordion {
-            background-color: transparent;
-            border: 0;
-            color: $eve-text-color;
-            cursor: pointer;
-            font-size: $standard-font-size;
-            font-weight: bold;
-            line-height: $standard-line-height;
-            outline: none;
-            text-align: left;
-            transition: 0.4s;
-
-            i {
-                text-align: left;
-                width: 25px;
-            }
-
-            &::after {
-                color: #777777;
-                content: '\002B';
-                float: right;
-                font-weight: bold;
-                margin-left: 5px;
-            }
-
-            &.active {
-                &::after {
-                    content: '\2212';
-                }
-
-                i::before {
-                    content: '\f07c';
-                }
-            }
-        }
-
-        div.accordion-body {
-            max-height: 0;
-            overflow: hidden;
-            padding: 0 18px;
-            transition: max-height 0.3s ease-in-out;
-        }
-    }
-}
-
-@keyframes ld {
-    0% {
-        transform: rotate(0deg) scale(1);
-    }
-
-    50% {
-        transform: rotate(180deg) scale(1.1);
-    }
-
-    100% {
-        transform: rotate(360deg) scale(1);
-    }
-}
-
-.m-progress {
-    color: transparent !important;
-    opacity: 0.8;
-    position: relative;
-    text-shadow: none !important;
-
-    &:hover,
-    &:active,
-    &:focus {
-        box-shadow: none;
-        color: transparent;
-        cursor: default;
-        outline: none !important;
-    }
-
-    &::before {
-        animation: ld 1s ease-in-out infinite;
-        background: transparent;
-        border: 1px solid #ffffff;
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        border-top-color: transparent;
-        box-sizing: border-box;
-        content: '';
-        display: inline-block;
-        height: 24px;
-        left: 50%;
-        margin-left: -12px;
-        margin-top: -12px;
-        position: absolute;
-        top: 50%;
-        width: 24px;
-    }
-}
-
-.btn-default.m-progress::before {
-    border-left-color: #333333;
-    border-right-color: #333333;
-}
-
-.btn-lg.m-progress::before {
-    height: 32px;
-    margin-left: -16px;
-    margin-top: -16px;
-    width: 32px;
-}
-
-.btn-sm.m-progress::before {
-    height: 18px;
-    margin-left: -9px;
-    margin-top: -9px;
-    width: 18px;
-}
-
-.btn-xs.m-progress::before {
-    height: 14px;
-    margin-left: -7px;
-    margin-top: -7px;
-    width: 14px;
+    //button.accordion {
+    //  background-color: transparent;
+    //  border: 0;
+    //  color: $eve-text-color;
+    //  cursor: pointer;
+    //  font-size: $standard-font-size;
+    //  font-weight: bold;
+    //  line-height: $standard-line-height;
+    //  outline: none;
+    //  text-align: left;
+    //  transition: 0.4s;
+    //
+    //  i {
+    //    text-align: left;
+    //    width: 25px;
+    //  }
+    //
+    //  &::after {
+    //    color: #777777;
+    //    content: '\002B';
+    //    float: right;
+    //    font-weight: bold;
+    //    margin-left: 5px;
+    //  }
+    //
+    //  &.active {
+    //    &::after {
+    //      content: '\2212';
+    //    }
+    //
+    //    i::before {
+    //      content: '\f07c';
+    //    }
+    //  }
+    //}
+    //
+    //div.accordion-body {
+    //  max-height: 0;
+    //  overflow: hidden;
+    //  padding: 0 18px;
+    //  transition: max-height 0.3s ease-in-out;
+    //}
+  }
 }

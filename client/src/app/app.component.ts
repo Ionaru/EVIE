@@ -1,6 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import Socket = SocketIOClient.Socket;
 
 import { AppReadyEvent } from './app-ready.event';
 import { IUserApiData } from './models/user/user.model';

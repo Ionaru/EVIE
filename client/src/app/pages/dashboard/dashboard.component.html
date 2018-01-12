@@ -19,10 +19,9 @@
             </p>
             <p *ngIf="character.currentShip">
                 <i class="fas fa-rocket"></i>
-                <ng-container *ngIf="character.currentShip.name && character.currentShip.type;then other_content">
-                    <i class="fas fa-rocket fa-spin"></i>
+                <ng-container *ngIf="character.currentShip.name && character.currentShip.type;else loading_message">
+                    {{character.currentShip.name}} ({{character.currentShip.type}})
                 </ng-container>
-                <ng-template #other_content>{{character.currentShip.name}} ({{character.currentShip.type}})</ng-template>
             </p>
         </div>
         <div class="actions-container col-2 row justify-content-end">
@@ -43,3 +42,7 @@
         </div>
     </div>
 </div>
+
+<ng-template #loading_message>
+    <span>Loading... <span class="m-progress m-progress-small"></span></span>
+</ng-template>

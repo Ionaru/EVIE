@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { INames, NamesService } from '../../data-services/names.service';
 import { ShipService } from '../../data-services/ship.service';
 import { Character } from '../../models/character/character.model';
@@ -26,7 +27,7 @@ export class DashboardComponent implements OnInit {
             this.selectedCharacter = CharacterService.selectedCharacter;
         });
         for (const character of this.characters) {
-            this.getShipData(character).then();
+            // this.getShipData(character).then();
         }
     }
 
