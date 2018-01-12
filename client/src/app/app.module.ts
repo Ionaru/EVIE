@@ -6,12 +6,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppReadyEvent } from './app-ready.event';
-import { AppReadyGuard, AppRoutingModule, AuthGuard } from './app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BalanceService } from './data-services/balance.service';
 import { NamesService } from './data-services/names.service';
 import { ShipService } from './data-services/ship.service';
 import { StatusService } from './data-services/status.service';
+import { AppReadyGuard } from './guards/app-ready.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { CharacterService } from './models/character/character.service';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
