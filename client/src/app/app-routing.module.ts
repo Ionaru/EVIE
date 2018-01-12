@@ -8,6 +8,7 @@ import { AppReadyEvent } from './app-ready.event';
 import { UserService } from './models/user/user.service';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
+import { WalletComponent } from './pages/wallet/wallet.component';
 
 @Injectable()
 export class AppReadyGuard implements Resolve<boolean> {
@@ -57,6 +58,7 @@ export class AuthGuard implements CanActivate {
 const routes: Routes = [
     {path: '', component: HomeComponent, resolve: [AppReadyGuard]},
     {path: 'dashboard', component: DashboardComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
+    {path: 'wallet', component: WalletComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: '**', component: HomeComponent, resolve: [AppReadyGuard]},
 ];
 

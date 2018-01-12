@@ -3,6 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { StatusService } from '../data-services/status.service';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
+import { CountUp } from '../shared/count-up';
+import { Observable } from 'rxjs/Observable';
+import { AppReadyEvent } from '../app-ready.event';
 // import { ClockService, IServerStatus } from '../../../services/clock.service';
 // import { CountUp } from '../../../shared/count-up';
 // import { Globals } from '../../../shared/globals';
@@ -24,6 +27,7 @@ export class NavigationComponent implements OnInit {
     public isLoggedIn = false;
     public playerCount = 0;
     public isCollapsed: boolean;
+    public playersCountUp: CountUp;
 
     constructor(private userService: UserService, private statusService: StatusService) {
         CharacterService.characterChangeEvent.subscribe((character) => {
@@ -42,14 +46,15 @@ export class NavigationComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        // this.playersCountUp = new CountUp('eve-players', 0, 0);
+        this.playersCountUp = new CountUp('eve-players', 0, 0);
         this.syncClock();
         this.getStatus().then();
     }
 
     public async getStatus(): Promise<void> {
         const status = await this.statusService.getStatus();
-        this.playerCount = status ? status.players : 0;
+        const playerCount = status ? status.players : 0;
+        this.playersCountUp.update(playerCount);
 
         setTimeout(() => {
             this.getStatus().then();

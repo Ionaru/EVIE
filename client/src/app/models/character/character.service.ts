@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { Helpers } from '../../shared/helpers';
-import { EndpointService } from '../endpoint/endpoint.service';
 import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
 
 const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
@@ -17,10 +16,10 @@ export class CharacterService {
     private static _selectedCharacter: Character;
     public static get selectedCharacter() { return this._selectedCharacter; }
 
-    constructor(private endpointService: EndpointService, private http: HttpClient) { }
+    constructor(private http: HttpClient) { }
 
     public async getPublicCharacterData(character: Character): Promise<void> {
-        const url = this.endpointService.constructESIUrl(4, 'characters', character.characterId);
+        const url = Helpers.constructESIUrl(4, 'characters', character.characterId);
         const response = await this.http.get<any>(url).toPromise<IEveCharacterData>().catch((e) => e);
         character.birthday = Helpers.eveTimeToDate(response.birthday);
         character.gender = response.gender;

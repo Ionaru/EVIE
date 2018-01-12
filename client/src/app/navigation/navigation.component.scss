@@ -39,11 +39,17 @@ nav {
                     position: absolute;
                     right: 0;
                     transform: scaleX(0);
-                    transition: all 0.2s ease-in-out;
+                    transition: transform 0.2s ease-in-out, visibility 0.2s ease-in-out;
                     visibility: hidden;
                 }
 
-                &:hover,
+                &:hover {
+                    &::before {
+                        transform: scaleX(0.8);
+                        visibility: visible;
+                    }
+                }
+
                 &.active {
                     &::before {
                         transform: scaleX(1);

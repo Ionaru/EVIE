@@ -8,17 +8,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppReadyEvent } from './app-ready.event';
 import { AppReadyGuard, AppRoutingModule, AuthGuard } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BalanceService } from './data-services/balance.service';
 import { NamesService } from './data-services/names.service';
 import { ShipService } from './data-services/ship.service';
 import { StatusService } from './data-services/status.service';
 import { CharacterService } from './models/character/character.service';
-import { EndpointService } from './models/endpoint/endpoint.service';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
+import { WalletComponent } from './pages/wallet/wallet.component';
 import { SocketService } from './socket/socket.service';
 
 @NgModule({
@@ -30,6 +31,7 @@ import { SocketService } from './socket/socket.service';
         NavigationComponent,
         HomeComponent,
         DashboardComponent,
+        WalletComponent,
         LoginModalComponent,
         RegisterModalComponent,
     ],
@@ -49,10 +51,10 @@ import { SocketService } from './socket/socket.service';
         AppReadyEvent,
         UserService,
         CharacterService,
-        EndpointService,
         NamesService,
         StatusService,
         ShipService,
+        BalanceService,
         SocketService,
         AppReadyGuard,
         AuthGuard,
