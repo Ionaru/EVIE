@@ -1,16 +1,16 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { EndpointService } from '../models/endpoint/endpoint.service';
+import { Helpers } from '../shared/helpers';
 
-export interface IEveNameData {
+export interface IESINamesData {
     category: string;
     id: number;
     name: string;
 }
 
 export interface INames {
-    [id: number]: IEveNameData;
+    [id: number]: IESINamesData;
 }
 
 @Injectable()
@@ -45,7 +45,7 @@ export class NamesService {
         NamesService.names = {};
     }
 
-    constructor(private http: HttpClient, private endpointService: EndpointService) {
+    constructor(private http: HttpClient) {
         this.getNamesFromStore();
         if (!NamesService.names || NamesService.names instanceof Array) {
             NamesService.resetNames();
@@ -86,8 +86,8 @@ export class NamesService {
     }
 
     private async getNamesFromAPI(...ids: Array<string | number>): Promise<void> {
-        const url = this.endpointService.constructESIUrl(2, 'universe/names');
-        const response = await this.http.post<any>(url, ids).toPromise<IEveNameData[]>().catch((e: HttpErrorResponse) => e);
+        const url = Helpers.constructESIUrl(2, 'universe/names');
+        const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             return;
         }
