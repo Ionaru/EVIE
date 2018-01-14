@@ -4,7 +4,7 @@ import { logger } from 'winston-pnp-logger';
 
 export class BaseRouter {
 
-    public static sendResponse(response: Response, statusCode: number, message: string, data?: object) {
+    public static sendResponse(response: Response, statusCode: number, message: string, data?: object): Response {
         let state = 'success';
         if (statusCode !== 200) {
             state = 'error';

@@ -114,9 +114,10 @@ export class UserService {
             url += '?characterUUID=' + character.uuid;
         }
 
-        const authWindow = window.open(url, '_blank', 'width=600,height=700');
+        const authWindow = window.open(url, '_blank', 'width=600,height=850');
 
-        SocketService.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
+        SocketService.socket.on('SSO_END', async (response: ISSOSocketResponse) => {
+            console.log(authWindow);
             authWindow.close();
             if (response.state === 'success') {
                 if (character) {

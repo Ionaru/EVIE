@@ -20,14 +20,11 @@
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item hidden-md-down disabled">
+            <li class="nav-item d-none d-lg-block disabled">
                 <a class="nav-link"><span id="eve-players"></span> players online</a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item">
-                <!--<div class="nav-link logout hidden-md-down" tooltip="Logout" placement="bottom">-->
-                <!--<img src="//data.saturnserver.org/eve/Icons/items/9_64_6.png" alt="Logout icon" (click)="logout()">-->
-                <!--</div>-->
-                <a class="nav-link hidden-md-up" href="#" (click)="logout()">
+                <a class="nav-link" href="#" (click)="logout()">
                     <span class="nav-link-text">Logout</span>
                 </a>
             </li>
@@ -41,6 +38,10 @@
            [ngClass]="{'disabled': true || checkAccess()}">
             <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
         </a>
+        <a routerLink="dashboard" routerLinkActive="active" class="navbar-item d-lg-none" tooltip="Dashboard"
+        placement="right" [ngClass]="{'disabled': checkAccess()}">
+         <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/recruitment.svg" alt="Character sheet icon">
+     </a>
         <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item" tooltip="Character Overview"
            placement="right"
            [ngClass]="{'disabled': true || checkAccess()}">

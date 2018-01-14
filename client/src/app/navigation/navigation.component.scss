@@ -93,11 +93,14 @@ nav {
 
     .character-item {
         cursor: pointer;
-        display: block;
-        height: 50px;
 
         &:not(.active) {
             pointer-events: none;
+        }
+
+        img {
+            height: 50px;
+            width: 50px;
         }
     }
 
@@ -109,10 +112,16 @@ nav {
         position: relative;
         text-decoration: none;
 
-        &:hover,
+        &:hover {
+            &::after {
+                transform: scaleY(0.7);
+                visibility: visible;
+            }
+        }
+
         &.active {
             &::after {
-                transform: scaleY(1);
+                transform: scaleY(0.9);
                 visibility: visible;
             }
         }

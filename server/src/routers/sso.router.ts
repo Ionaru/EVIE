@@ -209,23 +209,25 @@ export class SSORouter extends BaseRouter {
      */
     private static async refreshToken(request: Request, response: Response): Promise<Response> {
 
-        // Get the characterUUID and accessToken from the request
-        const characterUUID = request.query.uuid;
-        const accessToken = request.query.accessToken;
+        if (!request.session!.user.id) {
+            // User is not logged in and can't initiate SSO callback.
+            // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
+            // was linked directly to this page.
+            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
+        }
 
-        // Fetch the Character who's accessToken we will refresh
+        // Get the characterUUID from the request
+        const characterUUID = request.query.uuid;
+
+        // Fetch the Character who's accessToken we will refresh.
         const character = await Character.doQuery()
-            .where('character.uuid = :uuid', {uuid: characterUUID})
+            .where('character.userId = :id', {id: request.session!.user.id})
+            .andWhere('character.uuid = :uuid', {uuid: characterUUID})
             .getOne();
 
         if (!character) {
-            // There was no Character found with the UUID provided in the request
+            // There was no Character found with a matching UUID and userId.
             return SSORouter.sendResponse(response, 404, 'CharacterNotFound');
-        }
-
-        if (character.accessToken !== accessToken) {
-            // The access token sent with the request did not match with the fetched Character
-            return SSORouter.sendResponse(response, 401, 'WrongAccessToken');
         }
 
         const requestOptions = {

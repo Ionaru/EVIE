@@ -1,19 +1,29 @@
 <div class="container fluid">
     <p>
-        Welcome to the Character Dashboard,
-        here you can see and manage the characters you added to EVE-Track, or add new characters.
+        Welcome to the Character Dashboard, here you can see and manage the characters you added to EVE-Track, or add new characters.
     </p>
     <button class="btn btn-outline-primary add-character-button" (click)="authCharacter()">
         Add new character
     </button>
-    <div *ngFor="let character of characters" [ngClass]="{'selected' : isCharacterSelected(character)}"
-         class="character-container row justify-content-between">
-        <div class="info-container col-10">
-            <p ngbTooltip="Character name">
-                <i class="fas fa-user"></i>
-                {{character.name}}
-            </p>
-            <p title="Character ID">
+    <div *ngFor="let character of characters" [ngClass]="{'selected' : isCharacterSelected(character)}" class="character-container row justify-content-between">
+        <div class="image-container col-1 row justify-content-start">
+            <img src="//image.eveonline.com/Character/{{ character.characterId }}_50.jpg" alt="Character image">
+        </div>
+        <div class="info-container col-9 justify-content-between row">
+
+
+            <span>
+                <span>
+                    <i class="fas fa-user"></i>
+                    {{character.name}}
+                </span>
+                <br>
+                <span>
+                    <i class="fas fa-id-card"></i>
+                    {{character.characterId}}
+                </span>
+            </span>
+            <!-- <p title="Character ID">
                 <i class="fas fa-id-card"></i>
                 {{character.characterId}}
             </p>
@@ -22,16 +32,25 @@
                 <ng-container *ngIf="character.currentShip.name && character.currentShip.type;else loading_message">
                     {{character.currentShip.name}} ({{character.currentShip.type}})
                 </ng-container>
-            </p>
+            </p> -->
+            <span>
+                <i class="fas fa-user"></i>
+                {{character.birthday}}
+            </span>
+            <!--<p title="Character ID">-->
+            <!--<i class="fas fa-id-card"></i>-->
+            <!--{{character.characterId}}-->
+            <!--</p>-->
+            <!--<p *ngIf="character.currentShip">-->
+            <!--<i class="fas fa-rocket"></i>-->
+            <!--<ng-container *ngIf="character.currentShip.name && character.currentShip.type;else loading_message">-->
+            <!--{{character.currentShip.name}} ({{character.currentShip.type}})-->
+            <!--</ng-container>-->
+            <!--</p>-->
         </div>
         <div class="actions-container col-2 row justify-content-end">
-            <button class="btn" [disabled]="isCharacterSelected(character)"
-                    [ngClass]="getActivateButtonClass(character)"
-                    (click)="switchToCharacter(character)">
+            <button class="btn" [disabled]="isCharacterSelected(character)" [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character)">
                 <i class="far fa-check"></i>
-            </button>
-            <button class="btn btn-info" (click)="refreshCharacterToken(character)">
-                <i class="far fa-sync"></i>
             </button>
             <button class="btn btn-outline-info disabled">
                 <i class="far fa-sync"></i>
@@ -44,5 +63,7 @@
 </div>
 
 <ng-template #loading_message>
-    <span>Loading... <span class="m-progress m-progress-small"></span></span>
+    <span>Loading...
+        <span class="m-progress m-progress-small"></span>
+    </span>
 </ng-template>

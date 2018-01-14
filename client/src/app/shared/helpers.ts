@@ -88,10 +88,11 @@ export class Helpers {
     // }
 
     public static eveTimeToDate(dateString: string): Date {
+        console.log(dateString);
         try {
             return new Date(dateString.replace(/-/ig, '/').split('.')[0] + ' UTC');
         } catch (error) {
-            return new Date();
+            return new Date(dateString);
         }
     }
 

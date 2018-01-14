@@ -25,18 +25,19 @@ export class DashboardComponent implements OnInit {
         CharacterService.characterChangeEvent.subscribe(() => {
             this.characters = UserService.user.characters;
             this.selectedCharacter = CharacterService.selectedCharacter;
+            this.getCharacterInfo(this.selectedCharacter);
         });
         for (const character of this.characters) {
-            // this.getShipData(character).then();
+            this.getCharacterInfo(character);
         }
+    }
+
+    public getCharacterInfo(character: Character) {
+        this.getShipData(character).then();
     }
 
     public switchToCharacter(character: Character) {
         this.characterService.setActiveCharacter(character).then();
-    }
-
-    public refreshCharacterToken(character: Character) {
-        this.characterService.refreshToken(character).then();
     }
 
     public authCharacter(character?: Character) {

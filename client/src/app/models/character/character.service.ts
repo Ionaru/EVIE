@@ -55,8 +55,7 @@ export class CharacterService {
 
     public async refreshToken(character: Character): Promise<void> {
         const uuid = character.uuid;
-        const accessToken = character.accessToken;
-        const url = `/sso/refresh?uuid=${uuid}&accessToken=${accessToken}`;
+        const url = `/sso/refresh?uuid=${uuid}`;
         const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>().catch((e) => e);
         if (response instanceof HttpErrorResponse) {
             setTimeout(() => {
