@@ -60,7 +60,6 @@ export class Helpers {
     //     (decimals ? decimalMark + Math.abs(n - i).toFixed(decimals).slice(2) : '');
     // }
     //
-    constructor() { }
 
     //
     // public processXML(response: Response): object {
@@ -87,14 +86,15 @@ export class Helpers {
     //   return distance < -5000;
     // }
 
-    public static eveTimeToDate(dateString: string): Date {
-        console.log(dateString);
-        try {
-            return new Date(dateString.replace(/-/ig, '/').split('.')[0] + ' UTC');
-        } catch (error) {
-            return new Date(dateString);
-        }
-    }
+    // public static eveTimeToDate(dateString: string): Date {
+    //     try {
+    //         const d = dateString.replace(/-/ig, '/').split('.')[0] + ' UTC';
+    //         console.log(d);
+    //         return new Date(dateString.replace(/-/ig, '/').split('.')[0] + ' UTC');
+    //     } catch (error) {
+    //         return new Date(dateString);
+    //     }
+    // }
 
     public static constructESIUrl(version: number, path: string, ...params: Array<string | number>): string {
         let url = `https://esi.tech.ccp.is/v${version}/${path}/`;

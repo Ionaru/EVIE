@@ -6,10 +6,10 @@
         Add new character
     </button>
     <div *ngFor="let character of characters" [ngClass]="{'selected' : isCharacterSelected(character)}" class="character-container row justify-content-between">
-        <div class="image-container col-1 row justify-content-start">
+        <div class="image-container col-sm-1 col-3 row justify-content-start">
             <img src="//image.eveonline.com/Character/{{ character.characterId }}_50.jpg" alt="Character image">
         </div>
-        <div class="info-container col-9 justify-content-between row">
+        <div class="info-container col-sm-9 col-6 justify-content-between row">
 
 
             <span>
@@ -34,8 +34,36 @@
                 </ng-container>
             </p> -->
             <span>
-                <i class="fas fa-user"></i>
-                {{character.birthday}}
+                <i class="fas fa-birthday-cake"></i>
+                {{character.birthday | date:'longDate'}}
+            </span>
+            <span>
+                <i class="fas fa-birthday-cake"></i>
+                {{character.birthday | date:'longDate'}}
+            </span>
+            <span>
+                <i class="fas fa-birthday-cake"></i>
+                {{character.birthday | date:'longDate'}}
+            </span>
+            <span>
+                <i class="fas fa-birthday-cake"></i>
+                {{character.birthday | date:'longDate'}}
+            </span>
+            <span>
+                <i class="fas fa-birthday-cake"></i>
+                {{character.birthday | date:'longDate'}}
+            </span>
+            <span>
+                <i class="fas fa-birthday-cake"></i>
+                {{character.birthday | date:'longDate'}}
+            </span>
+            <span>
+                <i class="fas fa-birthday-cake"></i>
+                {{character.birthday | date:'longDate'}}
+            </span>
+            <span>
+                <i class="fas fa-birthday-cake"></i>
+                {{character.birthday | date:'longDate'}}
             </span>
             <!--<p title="Character ID">-->
             <!--<i class="fas fa-id-card"></i>-->
@@ -48,7 +76,7 @@
             <!--</ng-container>-->
             <!--</p>-->
         </div>
-        <div class="actions-container col-2 row justify-content-end">
+        <div class="actions-container col-3 row justify-content-end">
             <button class="btn" [disabled]="isCharacterSelected(character)" [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character)">
                 <i class="far fa-check"></i>
             </button>

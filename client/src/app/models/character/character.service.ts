@@ -21,7 +21,7 @@ export class CharacterService {
     public async getPublicCharacterData(character: Character): Promise<void> {
         const url = Helpers.constructESIUrl(4, 'characters', character.characterId);
         const response = await this.http.get<any>(url).toPromise<IEveCharacterData>().catch((e) => e);
-        character.birthday = Helpers.eveTimeToDate(response.birthday);
+        character.birthday = new Date(response.birthday);
         character.gender = response.gender;
         character.corporationId = response.corporation_id || 1;
         character.allianceId = response.alliance_id;
@@ -68,28 +68,26 @@ export class CharacterService {
 
     public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
 
-        let characterUUID;
-        if (character) {
-            characterUUID = character.uuid;
+        if (!alreadyActive) {
+            const url = '/sso/activate'
+            const characterUUID = character ? character.uuid : undefined;
+            this.http.post(url, {characterUUID}).toPromise().then();
         }
 
-        if (!alreadyActive) {
-            this.http.post('/sso/activate', {characterUUID}).toPromise().then();
-        }
         CharacterService._selectedCharacter = character;
         CharacterService.characterChangeEvent.next(character);
     }
 
     public async deleteCharacter(character: Character): Promise<void> {
-        const url = '/sso/delete';
-        const data = {
-            characterUUID: character.uuid,
-        };
 
-        const response = await this.http.post<any>(url, data).toPromise<IDeleteCharacterResponse>()
-            .catch((errorResponse: HttpErrorResponse) => {
-                throw errorResponse.error;
-            });
+        const url = '/sso/delete';
+        const characterUUID = character.uuid;
+
+        const response = await this.http.post<any>(url, {characterUUID}).toPromise<IDeleteCharacterResponse>().catch((e) => e);
+        if (response instanceof HttpErrorResponse) {
+            throw response.error;
+        }
+
         if (response.state === 'success') {
             clearInterval(character.refreshTimer);
 

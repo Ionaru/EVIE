@@ -13,7 +13,7 @@
         "serve": "gulp clean && npm run build && npm run start",
         "lint": "tslint --project tsconfig.json -c tslint.json \"src/**/*.ts\"",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "TS_NODE_TYPE_CHECK=true LEVEL=debug node --require ts-node/register ./src/index.ts"
+        "dev": "cross-env TS_NODE_TYPE_CHECK=true LEVEL=debug node --require ts-node/register ./src/index.ts"
     },
     "dependencies": {
         "bcryptjs": "^2.4.3",
