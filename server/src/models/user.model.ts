@@ -1,7 +1,8 @@
-import { Column, Entity, OneToMany, SelectQueryBuilder } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
 import { Character } from './character.model';
+import { Settings } from './settings.model';
 
 @Entity()
 export class User extends BaseModel {
@@ -30,6 +31,9 @@ export class User extends BaseModel {
     })
     public timesLogin: number;
 
+    @OneToOne(() => Settings, (settings) => settings.user)
+    public settings: Settings;
+
     @Column({
         default: () => 'CURRENT_TIMESTAMP',
     })
@@ -37,4 +41,10 @@ export class User extends BaseModel {
 
     @OneToMany(() => Character, (character) => character.user)
     public characters: Character[];
+
+    constructor() {
+        super();
+
+        this.settings = new Settings();
+    }
 }

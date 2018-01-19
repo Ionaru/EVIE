@@ -38,10 +38,11 @@ export class APIRouter extends BaseRouter {
 
         user.timesLogin++;
         user.lastLogin = new Date();
-        user.save().then();
+        // user.save().then();
         const userData = {
             characters: user.characters.map((character) => character.sanitizedCopy),
             email: user.email,
+            settings: user.settings.data,
             username: user.username,
             uuid: user.uuid,
         };
@@ -95,6 +96,7 @@ export class APIRouter extends BaseRouter {
         const userData = {
             characters: user.characters.map((character) => character.sanitizedCopy),
             email: user.email,
+            settings: user.settings.data,
             username: user.username,
             uuid: user.uuid,
         };
@@ -163,6 +165,7 @@ export class APIRouter extends BaseRouter {
         }
 
         const newUser = new User();
+        await newUser.settings.save();
         newUser.email = email;
         newUser.passwordHash = bcrypt.hashSync(password);
         newUser.username = username;

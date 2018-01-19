@@ -45,7 +45,7 @@
         "@angular/compiler-cli": "^5.2.0",
         "@angular/language-service": "^5.2.0",
         "@types/crypto-js": "^3.1.38",
-        "@types/jasmine": "^2.8.3",
+        "@types/jasmine": "^2.8.4",
         "@types/jasminewd2": "~2.0.2",
         "@types/node": "^9.3.0",
         "@types/socket.io-client": "^1.4.32",

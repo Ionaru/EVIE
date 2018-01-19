@@ -105,7 +105,7 @@ export class Application {
 
         this.webServer = new WebServer(expressApplication);
 
-        this. socketServer = new SocketServer(this.webServer, this.sessionParser);
+        this.socketServer = new SocketServer(this.webServer, this.sessionParser);
     }
 
     public async stop(error?: Error): Promise<void> {
@@ -122,11 +122,14 @@ export class Application {
         let quitMessage = 'Quitting';
         if (error) {
             quitMessage += ' because of an uncaught exception!';
+            logger.error('Reason: ', error);
         }
         logger.warn(quitMessage);
 
-        this.socketServer.io.emit('STOP');
-        this.socketServer.io.close();
+        if (this.socketServer) {
+            this.socketServer.io.emit('STOP');
+            this.socketServer.io.close();
+        }
 
         if (this.webServer) {
             this.webServer.server.close(async () => {

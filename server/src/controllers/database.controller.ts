@@ -6,6 +6,7 @@ import { logger } from 'winston-pnp-logger';
 
 import { QueryLogger } from '../loggers/query.logger';
 import { Character } from '../models/character.model';
+import { Settings } from '../models/settings.model';
 import { User } from '../models/user.model';
 import { config, configPath } from './configuration.controller';
 
@@ -46,6 +47,7 @@ export class DatabaseConnection {
             entities: [
                 User,
                 Character,
+                Settings,
             ],
             host: config.getProperty('db_host') as string,
             logger: new QueryLogger(),
