@@ -16,12 +16,12 @@ export class Settings extends BaseModel {
 
     @OneToOne(() => User, (user) => user.settings)
     @JoinColumn()
-    public user: User;
+    public user!: User;
 
     @Column({
         type: 'text',
     })
-    private _data: string;
+    private _data!: string;
 
     constructor(content?: ISettings) {
         super();

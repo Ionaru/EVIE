@@ -53,12 +53,12 @@ export class Character extends BaseModel {
     @Column({
         default: false,
     })
-    public isActive: boolean;
+    public isActive!: boolean;
 
     @ManyToOne(() => User, (user) => user.characters, {
         cascadeAll: true,
     })
-    public user: User;
+    public user!: User;
 
     public get sanitizedCopy() {
         // Delete data that should not be sent to the client.

@@ -1,5 +1,6 @@
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
+import * as cors from 'cors';
 import * as express from 'express';
 import * as MySQLStore from 'express-mysql-session';
 import * as es from 'express-session';
@@ -25,11 +26,11 @@ export class Application {
         process.exit(exitCode);
     }
 
-    public sessionStore: es.Store;
-    public sessionParser: express.RequestHandler;
+    public sessionStore?: es.Store;
+    public sessionParser?: express.RequestHandler;
 
-    private webServer: WebServer;
-    private socketServer: SocketServer;
+    private webServer?: WebServer;
+    private socketServer?: SocketServer;
 
     public async start() {
         await new DatabaseConnection().connect();
@@ -43,6 +44,10 @@ export class Application {
         expressApplication.use(RequestLogger.logRequest());
 
         // Security options
+        expressApplication.use(cors({
+            credentials: true,
+            origin: 'http://192.168.2.11:8100',
+        }));
         expressApplication.use(helmet());
         expressApplication.set('trust proxy', 1);
 
@@ -74,7 +79,6 @@ export class Application {
                 secure: config.getProperty('secure_only_cookies') as boolean !== false, // Default: true
             },
             name: config.getProperty('session_key') as string,
-            resave: true,
             rolling: true,
             saveUninitialized: true,
             secret: config.getProperty('session_secret') as string,

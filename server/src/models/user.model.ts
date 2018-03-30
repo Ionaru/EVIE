@@ -14,22 +14,22 @@ export class User extends BaseModel {
     @Column({
         unique: true,
     })
-    public username: string;
+    public username!: string;
 
     @Column({
         unique: true,
     })
-    public passwordHash: string;
+    public passwordHash!: string;
 
     @Column({
         unique: true,
     })
-    public email: string;
+    public email!: string;
 
     @Column({
         default: 0,
     })
-    public timesLogin: number;
+    public timesLogin!: number;
 
     @OneToOne(() => Settings, (settings) => settings.user)
     public settings: Settings;
@@ -37,10 +37,10 @@ export class User extends BaseModel {
     @Column({
         default: () => 'CURRENT_TIMESTAMP',
     })
-    public lastLogin: Date;
+    public lastLogin!: Date;
 
     @OneToMany(() => Character, (character) => character.user)
-    public characters: Character[];
+    public characters!: Character[];
 
     constructor() {
         super();

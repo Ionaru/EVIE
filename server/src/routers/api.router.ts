@@ -33,12 +33,13 @@ export class APIRouter extends BaseRouter {
 
         if (!user) {
             // No user found that matches the ID in the session.
+            delete request.session!.user.id;
             return APIRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
         }
 
         user.timesLogin++;
         user.lastLogin = new Date();
-        // user.save().then();
+        user.save().then();
         const userData = {
             characters: user.characters.map((character) => character.sanitizedCopy),
             email: user.email,
@@ -92,7 +93,9 @@ export class APIRouter extends BaseRouter {
         user.timesLogin++;
         user.lastLogin = new Date();
         await user.save();
-        logger.info(user.username + ' logged in.');
+
+        logger.info(`User login: ${user.username} (${user.email})`);
+
         const userData = {
             characters: user.characters.map((character) => character.sanitizedCopy),
             email: user.email,
@@ -104,7 +107,7 @@ export class APIRouter extends BaseRouter {
     }
 
     /**
-     * Destroy the user session and redirect them back to the homepage.
+     * Destroy the user session.
      * path: /api/logout
      * method: POST
      */
@@ -170,6 +173,8 @@ export class APIRouter extends BaseRouter {
         newUser.passwordHash = bcrypt.hashSync(password);
         newUser.username = username;
         await newUser.save();
+
+        logger.info(`New user: ${newUser.username} (${newUser.email})`);
 
         return APIRouter.sendResponse(response, httpStatus.OK, 'Registered', {
             email: newUser.email,

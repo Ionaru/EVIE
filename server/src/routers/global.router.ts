@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { BaseRouter } from './base.router';
-
 export class GlobalRouter extends BaseRouter {
 
     /**

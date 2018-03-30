@@ -69,7 +69,7 @@ export class CharacterService {
     public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
 
         if (!alreadyActive) {
-            const url = '/sso/activate'
+            const url = '/sso/activate';
             const characterUUID = character ? character.uuid : undefined;
             this.http.post(url, {characterUUID}).toPromise().then();
         }

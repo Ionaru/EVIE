@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"path": "client"
+		},
+		{
+			"path": "server"
+		},
+		{
+			"path": ".git"
+		},
+		{
+			"path": ".idea"
+		},
+		{
+			"path": "client_legacy"
+		},
+		{
+			"path": "config"
+		},
+		{
+			"path": "logs"
+		}
+	]
+}

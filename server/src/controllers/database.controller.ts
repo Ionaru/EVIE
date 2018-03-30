@@ -35,8 +35,8 @@ export let db: DatabaseConnection;
 
 export class DatabaseConnection {
 
-    public pool: Pool;
-    public orm: Connection;
+    public pool?: Pool;
+    public orm?: Connection;
 
     private dbOptions: IDBOptions;
 

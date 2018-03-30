@@ -19,15 +19,15 @@ export class BaseModel extends BaseEntity {
     }
 
     @PrimaryGeneratedColumn()
-    public id: number;
+    public id!: number;
 
     @Column()
     @Generated('uuid')
-    public uuid: string;
+    public uuid!: string;
 
     @CreateDateColumn()
-    public createdOn: Date;
+    public createdOn!: Date;
 
     @UpdateDateColumn()
-    public updatedOn: Date;
+    public updatedOn!: Date;
 }
