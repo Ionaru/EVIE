@@ -38,7 +38,7 @@ export class Application {
         logger.info('Beginning Express startup');
 
         const expressApplication = express();
-        logger.info('Express application defined');
+        logger.info('Express application constructed');
 
         // Request logger
         expressApplication.use(RequestLogger.logRequest());
@@ -52,8 +52,8 @@ export class Application {
         expressApplication.set('trust proxy', 1);
 
         // Setup bodyParser
-        expressApplication.use(bodyParser.json());
-        expressApplication.use(bodyParser.urlencoded({extended: true}));
+        expressApplication.use(bodyParser.json() as any);
+        expressApplication.use(bodyParser.urlencoded({extended: true}) as any);
 
         expressApplication.use(compression());
 
@@ -76,9 +76,10 @@ export class Application {
             cookie: {
                 httpOnly: false,
                 maxAge: 6 * 60 * 60 * 1000, // 6 hours
-                secure: config.getProperty('secure_only_cookies') as boolean !== false, // Default: true
+                secure: config.getProperty('secure_only_cookies', true) as boolean,
             },
             name: config.getProperty('session_key') as string,
+            resave: false,
             rolling: true,
             saveUninitialized: true,
             secret: config.getProperty('session_secret') as string,

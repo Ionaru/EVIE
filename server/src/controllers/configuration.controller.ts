@@ -13,7 +13,7 @@ interface IConfig {
 
 export class Configurator {
 
-    private config: IConfig = {};
+    private readonly config: IConfig = {};
 
     constructor() {
         config = this;
@@ -22,14 +22,18 @@ export class Configurator {
     /**
      * Get a property from the config file
      * @param {string} property - The name of the property to fetch
-     * @return {boolean | number | string | null} - The value of the given config property
+     * @param {boolean | number | string} defaultValue - Default value to return if the property is not set.
+     * @return {boolean | number | string | undefined} - The value of the given config property
      */
-    public getProperty(property: string): boolean | number | string | null {
+    public getProperty(property: string, defaultValue?: boolean | number | string): boolean | number | string | undefined {
         if (this.config.hasOwnProperty(property)) {
             return this.config[property];
         } else {
             logger.warn(`Property '${property}' does not exist in the current configuration.`);
-            return null;
+            if (!defaultValue) {
+                throw new Error(`No value or default value for property ${property} defined, application cannot start!`);
+            }
+            return defaultValue;
         }
     }
 

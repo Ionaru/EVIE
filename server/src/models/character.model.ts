@@ -56,7 +56,7 @@ export class Character extends BaseModel {
     public isActive!: boolean;
 
     @ManyToOne(() => User, (user) => user.characters, {
-        cascadeAll: true,
+        cascade: true,
     })
     public user!: User;
 

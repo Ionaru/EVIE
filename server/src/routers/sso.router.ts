@@ -7,7 +7,6 @@ import { generateRandomString } from '../controllers/random.controller';
 import { SocketServer } from '../controllers/socket.controller';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
-import { IAuthResponseData, ISessionSocket, IVerifyResponseData } from '../typings';
 import { BaseRouter } from './base.router';
 
 const scopes = [

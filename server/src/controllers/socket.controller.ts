@@ -2,7 +2,6 @@ import * as express from 'express';
 import * as SocketIO from 'socket.io';
 import * as SocketIOSession from 'socket.io-express-session';
 
-import { ISessionSocket } from '../typings';
 import { WebServer } from './server.controller';
 
 export class SocketServer {

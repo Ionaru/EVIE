@@ -7,7 +7,7 @@ import { config } from './configuration.controller';
 export class WebServer {
 
     public server: Server;
-    private port: number;
+    private readonly port: number;
 
     constructor(expressApplication: Application) {
         logger.info('Creating web server');

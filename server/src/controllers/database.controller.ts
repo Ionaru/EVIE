@@ -38,7 +38,7 @@ export class DatabaseConnection {
     public pool?: Pool;
     public orm?: Connection;
 
-    private dbOptions: IDBOptions;
+    private readonly dbOptions: IDBOptions;
 
     constructor() {
         this.dbOptions = {

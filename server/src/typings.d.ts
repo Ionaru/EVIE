@@ -1,4 +1,3 @@
-import * as SocketIO from 'socket.io';
 import Socket = SocketIO.Socket;
 import Session = Express.Session;
 

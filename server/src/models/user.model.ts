@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, SelectQueryBuilder } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
 import { Character } from './character.model';
