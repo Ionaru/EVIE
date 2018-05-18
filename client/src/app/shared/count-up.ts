@@ -13,7 +13,7 @@ export interface ICountUpOptions {
 
 export class CountUp {
 
-    private target: string;
+    // private target: string;
     private startVal: number;
     private endVal: number;
     private options: ICountUpOptions = {
@@ -45,7 +45,7 @@ export class CountUp {
         return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
     }
 
-    constructor(target: string, startVal: number, endVal: number, decimals = 0, duration = 1,
+    constructor(target: string | HTMLElement, startVal: number, endVal: number, decimals = 0, duration = 1,
                 options?: ICountUpOptions) {
 
         // target = id of html element or var of previously selected html element where counting occurs
@@ -55,7 +55,7 @@ export class CountUp {
         // duration = duration of animation in seconds, default 2
         // options = optional object of options (see above for possible option attributes)
 
-        this.target = target;
+        // this.target = target;
         this.startVal = startVal;
         this.endVal = endVal;
         this.decimals = decimals;

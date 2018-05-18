@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as crypto from 'crypto-js';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 import { Helpers } from '../../shared/helpers';
 import { SocketService } from '../../socket/socket.service';
@@ -34,14 +34,14 @@ export class UserService {
 
         const response = await this.http.post<any>(url, body).toPromise<ILoginResponse>()
             .catch((errorResponse: HttpErrorResponse) => {
-            if (errorResponse.error) {
-                const errorBody = errorResponse.error;
-                if (errorBody.hasOwnProperty('state') && errorBody.hasOwnProperty('message')) {
-                    return errorResponse.error as ILoginResponse;
+                if (errorResponse.error) {
+                    const errorBody = errorResponse.error;
+                    if (errorBody.hasOwnProperty('state') && errorBody.hasOwnProperty('message')) {
+                        return errorResponse.error as ILoginResponse;
+                    }
                 }
-            }
-            throw errorResponse.error;
-        });
+                throw errorResponse.error;
+            });
 
         if (response.message === 'LoggedIn') {
             const user = await this.storeUser(response.data);
@@ -67,11 +67,11 @@ export class UserService {
         };
         const response = await this.http.post<any>(url, userToRegister).toPromise<IRegisterResponse>()
             .catch((errorResponse: HttpErrorResponse) => {
-            if (errorResponse.status === 409) {
-                return errorResponse.error as IRegisterResponse;
-            }
-            throw errorResponse.error;
-        });
+                if (errorResponse.status === 409) {
+                    return errorResponse.error as IRegisterResponse;
+                }
+                throw errorResponse.error;
+            });
         if (response.data.username_in_use) {
             return 'username_in_use';
         } else if (response.data.email_in_use) {

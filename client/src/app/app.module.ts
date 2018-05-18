@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { AppReadyEvent } from './app-ready.event';
+// import { AppReadyEvent } from './app-ready.event';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BalanceService } from './data-services/balance.service';
@@ -23,6 +23,7 @@ import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { SocketService } from './socket/socket.service';
+import { AppReadyEventService } from './app-ready-event.service';
 
 @NgModule({
     bootstrap: [
@@ -50,7 +51,7 @@ import { SocketService } from './socket/socket.service';
         NgbModule.forRoot(),
     ],
     providers: [
-        AppReadyEvent,
+        AppReadyEventService,
         UserService,
         CharacterService,
         NamesService,

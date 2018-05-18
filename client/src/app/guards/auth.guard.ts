@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import 'rxjs/add/observable/of';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Observer } from 'rxjs';
 
-import { Observer } from 'rxjs/Observer';
-import { AppReadyEvent } from '../app-ready.event';
 import { UserService } from '../models/user/user.service';
+import { AppReadyEventService } from '../app-ready-event.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,7 +11,7 @@ export class AuthGuard implements CanActivate {
     constructor(private router: Router) { }
 
     public canActivate(): Observable<boolean> | boolean {
-        if (AppReadyEvent.appReady) {
+        if (AppReadyEventService.appReady) {
             if (UserService.user) {
                 return true;
             } else {
@@ -21,8 +19,8 @@ export class AuthGuard implements CanActivate {
                 return false;
             }
         } else {
-            return Observable.create((observer: Observer<boolean>) => {
-                AppReadyEvent.appReadyEvent.subscribe(() => {
+            return new Observable((observer: Observer<boolean>) => {
+                AppReadyEventService.appReadyEvent.subscribe(() => {
                     if (UserService.user) {
                         observer.next(true);
                         observer.complete();

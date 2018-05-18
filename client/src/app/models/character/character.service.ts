@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 import { Helpers } from '../../shared/helpers';
 import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
@@ -56,7 +56,8 @@ export class CharacterService {
     public async refreshToken(character: Character): Promise<void> {
         const uuid = character.uuid;
         const url = `/sso/refresh?uuid=${uuid}`;
-        const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>().catch((e) => e);
+        const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>()
+            .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             setTimeout(() => {
                 this.refreshToken(character).then();
@@ -83,7 +84,8 @@ export class CharacterService {
         const url = '/sso/delete';
         const characterUUID = character.uuid;
 
-        const response = await this.http.post<any>(url, {characterUUID}).toPromise<IDeleteCharacterResponse>().catch((e) => e);
+        const response = await this.http.post<any>(url, {characterUUID}).toPromise<IDeleteCharacterResponse>()
+            .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             throw response.error;
         }

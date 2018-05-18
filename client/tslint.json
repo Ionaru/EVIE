@@ -7,35 +7,6 @@
         "node_modules/codelyzer"
     ],
     "rules": {
-        "max-line-length": [
-            true,
-            140
-        ],
-        "no-implicit-dependencies": [
-            true, 
-            "dev"
-        ],
-        "no-unused-expression": [
-            true,
-            "allow-new"
-        ],
-        "quotemark": [
-            true,
-            "single"
-        ],
-        "trailing-comma": [
-            true,
-            {
-                "multiline": "always",
-                "singleline": "never"
-            }
-        ],
-        "variable-name": [
-            true,
-            "ban-keywords",
-            "check-format",
-            "allow-leading-underscore"
-        ],
         "arrow-return-shorthand": true,
         "callable-types": true,
         "class-name": true,
@@ -51,7 +22,6 @@
         "forin": true,
         "import-blacklist": [
             true,
-            "rxjs",
             "rxjs/Rx"
         ],
         "import-spacing": true,
@@ -61,6 +31,10 @@
         ],
         "interface-over-type-literal": true,
         "label-position": true,
+        "max-line-length": [
+            true,
+            140
+        ],
         "member-access": false,
         "member-ordering": [
             true,
@@ -101,6 +75,10 @@
         "no-switch-case-fall-through": true,
         "no-trailing-whitespace": true,
         "no-unnecessary-initializer": true,
+        "no-unused-expression": [
+            true,
+            "allow-new"
+        ],
         "no-use-before-declare": true,
         "no-var-keyword": true,
         "object-literal-sort-keys": false,
@@ -112,6 +90,10 @@
             "check-whitespace"
         ],
         "prefer-const": true,
+        "quotemark": [
+            true,
+            "single"
+        ],
         "radix": true,
         "semicolon": [
             true,
@@ -131,8 +113,8 @@
                 "variable-declaration": "nospace"
             }
         ],
-        "typeof-compare": true,
         "unified-signatures": true,
+        "variable-name": false,
         "whitespace": [
             true,
             "check-branch",
@@ -140,18 +122,6 @@
             "check-operator",
             "check-separator",
             "check-type"
-        ],
-        "directive-selector": [
-            true,
-            "attribute",
-            "app",
-            "camelCase"
-        ],
-        "component-selector": [
-            true,
-            "element",
-            "app",
-            "kebab-case"
         ],
         "no-output-on-prefix": true,
         "use-input-property-decorator": true,
@@ -162,14 +132,6 @@
         "use-life-cycle-interface": true,
         "use-pipe-transform-interface": true,
         "component-class-suffix": true,
-        "directive-class-suffix": true,
-        "no-submodule-imports": [
-            true,
-            "@angular",
-            "@ng-bootstrap",
-            "core-js",
-            "rxjs",
-            "zone.js"
-        ]
+        "directive-class-suffix": true
     }
 }

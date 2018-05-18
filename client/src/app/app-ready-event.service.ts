@@ -1,14 +1,13 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
+import { Observable, Observer } from 'rxjs';
 
 @Injectable()
-export class AppReadyEvent {
+export class AppReadyEventService {
 
     private static _appReadyObserver: Observer<void>;
-    private static _appReadyEvent: Observable<void> = Observable.create((observer: Observer<void>) => {
-        AppReadyEvent._appReadyObserver = observer;
+    private static _appReadyEvent: Observable<void> = new Observable((observer: Observer<void>) => {
+        AppReadyEventService._appReadyObserver = observer;
     });
     public static get appReadyEvent() { return this._appReadyEvent; }
 
@@ -19,19 +18,19 @@ export class AppReadyEvent {
 
     public triggerSuccess(): void {
         // If the app-ready event has already been triggered, just ignore any calls to trigger it again.
-        if (AppReadyEvent._appReady) {
+        if (AppReadyEventService._appReady) {
             return;
         }
 
-        AppReadyEvent._appReady = true;
-        AppReadyEvent._appReadyObserver.next(null);
-        AppReadyEvent._appReadyObserver.complete();
+        AppReadyEventService._appReady = true;
+        AppReadyEventService._appReadyObserver.next(null);
+        AppReadyEventService._appReadyObserver.complete();
         document.dispatchEvent(this.createEvent('StartupSuccess'));
     }
 
-    public triggerFailure(info = 'No info available', detail = ''): void {
+    public triggerFailure(info = 'Unexpected error', detail: Error): void {
         // If the app-ready event has already been triggered, just ignore any calls to trigger it again.
-        if (AppReadyEvent._appReady) {
+        if (AppReadyEventService._appReady) {
             return;
         }
 
@@ -39,14 +38,13 @@ export class AppReadyEvent {
         this.doc.dispatchEvent(this.createEvent('StartupFailed'));
 
         this.doc.getElementById('error-info').innerText = info;
-        this.doc.getElementById('error-info-detail').innerText = detail;
-        AppReadyEvent._appReady = true;
+        this.doc.getElementById('error-info-detail').innerText = detail.message;
+        AppReadyEventService._appReady = true;
     }
 
     private createEvent(eventType: string): Event {
-        // IE (shakes fist) uses some other kind of event initialization. As such,
-        // we'll default to trying the "normal" event generation and then fallback to
-        // using the IE version.
+        // IE (shakes fist) uses some other kind of event initialization. As such, we'll default to trying the "normal" event generation and
+        // then fallback to using the IE version.
         let customEvent: CustomEvent;
         try {
             customEvent = new CustomEvent(eventType);

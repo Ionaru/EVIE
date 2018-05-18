@@ -1,7 +1,7 @@
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 
-import { AppReadyEvent } from './app-ready.event';
+import { AppReadyEventService } from './app-ready-event.service';
 import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
 import { SocketService } from './socket/socket.service';
@@ -19,10 +19,10 @@ interface IHandshakeResponse {
 })
 export class AppComponent {
 
-    public version = '0.2.0-INDEV';
+    public version = '0.3.0-INDEV';
 
-    constructor(private appReadyEvent: AppReadyEvent, private http: HttpClient, private userService: UserService) {
-        this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Unexpected error', error));
+    constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
+        this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Error during app startup', error));
     }
 
     private async boot(): Promise<void> {
@@ -39,15 +39,7 @@ export class AppComponent {
     private async shakeHands(): Promise<any> {
         const url = 'api/handshake';
 
-
-        const response0 = await this.http.get<any>(url, {observe: 'response'}).toPromise<HttpResponse<IHandshakeResponse>>();
-        console.log(response0.headers.keys());
-
-
-
-        const response = await this.http.get<any>(url).toPromise<IHandshakeResponse>().catch((error: HttpErrorResponse) => {
-            this.appReadyEvent.triggerFailure(error.message, error.error);
-        });
+        const response = await this.http.get<any>(url).toPromise<IHandshakeResponse>();
 
         if (response && response.message === 'LoggedIn') {
             await this.userService.storeUser(response.data);
