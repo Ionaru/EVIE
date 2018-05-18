@@ -1,0 +1,35 @@
+@import '../../../variables';
+
+.character-container {
+    border: $primary 1px solid;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    @include transition($btn-transition);
+
+    &.selected {
+        background-color: rgba(223, 105, 26, 0.1);
+    }
+
+    .info-container {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+
+        p {
+            margin: 0;
+        }
+    }
+
+    .image-container {
+        img {
+            width: 50px;
+            height: 50px;
+        }
+    }
+}
+
+.add-character-button {
+    margin-right: -15px;
+    margin-left: -15px;
+}
