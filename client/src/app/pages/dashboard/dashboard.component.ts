@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { INames, NamesService } from '../../data-services/names.service';
 import { ShipService } from '../../data-services/ship.service';
@@ -11,25 +12,28 @@ import { UserService } from '../../models/user/user.service';
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
     public characters: Character[] = [];
-    public selectedCharacter = CharacterService.selectedCharacter;
     public deleteInProgress = false;
+    private changeSubscription: Subscription;
 
     constructor(private userService: UserService, private characterService: CharacterService, private shipService: ShipService,
-                private namesService: NamesService) { }
+                private namesService: NamesService) {
+        this.changeSubscription = CharacterService.characterChangeEvent.subscribe(() => {
+            this.ngOnInit();
+        });
+    }
 
     ngOnInit() {
         this.characters = UserService.user.characters;
-        CharacterService.characterChangeEvent.subscribe(() => {
-            this.characters = UserService.user.characters;
-            this.selectedCharacter = CharacterService.selectedCharacter;
-            this.getCharacterInfo(this.selectedCharacter);
-        });
         for (const character of this.characters) {
             this.getCharacterInfo(character);
         }
+    }
+
+    ngOnDestroy() {
+        this.changeSubscription.unsubscribe();
     }
 
     public getCharacterInfo(character: Character) {
@@ -59,8 +63,9 @@ export class DashboardComponent implements OnInit {
         character.currentShip.type = NamesService.getNameFromData(nameData, character.currentShip.id, 'Unknown ship');
     }
 
+    // noinspection JSMethodCanBeStatic
     public isCharacterSelected(character: Character): boolean {
-        return character === this.selectedCharacter;
+        return character === CharacterService.selectedCharacter;
     }
 
     public getActivateButtonClass(character: Character) {

@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 // import { AppReadyEvent } from './app-ready.event';
+import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BalanceService } from './data-services/balance.service';
@@ -14,6 +15,8 @@ import { ShipService } from './data-services/ship.service';
 import { StatusService } from './data-services/status.service';
 import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
+import { httpInterceptorProviders } from './http-interceptors';
+import { ESIRequestCache } from './http-interceptors/esi-caching-interceptor';
 import { CharacterService } from './models/character/character.service';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -23,7 +26,6 @@ import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { SocketService } from './socket/socket.service';
-import { AppReadyEventService } from './app-ready-event.service';
 
 @NgModule({
     bootstrap: [
@@ -51,6 +53,8 @@ import { AppReadyEventService } from './app-ready-event.service';
         NgbModule.forRoot(),
     ],
     providers: [
+        httpInterceptorProviders,
+        ESIRequestCache,
         AppReadyEventService,
         UserService,
         CharacterService,

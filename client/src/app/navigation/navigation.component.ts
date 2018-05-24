@@ -29,7 +29,7 @@ export class NavigationComponent implements OnInit {
     public isCollapsed: boolean;
     public playersCountUp: CountUp;
 
-    constructor(private userService: UserService, private statusService: StatusService) {
+    constructor(private userService: UserService, private statusService: StatusService, private characterService: CharacterService) {
         CharacterService.characterChangeEvent.subscribe((character) => {
           if (character) {
             this.char = character.characterId;
@@ -59,6 +59,12 @@ export class NavigationComponent implements OnInit {
         setTimeout(() => {
             this.getStatus().then();
         }, 45000);
+    }
+
+    public nextCharacter(): void {
+        const currentCharacterIndex = UserService.user.characters.indexOf(CharacterService.selectedCharacter);
+        const nextCharacterIndex = UserService.user.characters.length > (currentCharacterIndex + 1) ? currentCharacterIndex + 1 : 0;
+        this.characterService.setActiveCharacter(UserService.user.characters[nextCharacterIndex]).then();
     }
 
     public checkAccess(): boolean {

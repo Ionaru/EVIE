@@ -16,7 +16,7 @@ export class ShipService {
 
     public async getCurrentShip(character: Character): Promise<{ id, name }> {
         const url = Helpers.constructESIUrl(1, 'characters', character.characterId, 'ship');
-        const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
+        const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<IShipData>().catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             return {id: -1, name: 'Error'};

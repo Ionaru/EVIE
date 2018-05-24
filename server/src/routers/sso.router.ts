@@ -218,6 +218,11 @@ export class SSORouter extends BaseRouter {
         // Get the characterUUID from the request
         const characterUUID = request.query.uuid;
 
+        if (!characterUUID) {
+            // Missing parameters
+            return SSORouter.sendResponse(response, 400, 'MissingParameters');
+        }
+
         // Fetch the Character who's accessToken we will refresh.
         const character = await Character.doQuery()
             .where('character.userId = :id', {id: request.session!.user.id})

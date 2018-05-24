@@ -63,6 +63,11 @@
         "no-empty": false,
         "no-empty-interface": true,
         "no-eval": true,
+        "no-submodule-imports": [
+            true,
+            "rxjs",
+            "@angular"
+        ],
         "no-inferrable-types": [
             true,
             "ignore-params"

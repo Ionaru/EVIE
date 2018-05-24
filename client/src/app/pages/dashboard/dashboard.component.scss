@@ -1,35 +1,38 @@
 @import '../../../variables';
 
-.character-container {
-    border: $primary 1px solid;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding: 5px;
-    @include transition($btn-transition);
+.character-dashboard {
+    .character-container2 {
+        display: flex;
+        flex-direction: column;
+        border: $primary 1px solid;
+        margin-bottom: 5px;
+        margin-top: 5px;
 
-    &.selected {
-        background-color: rgba(223, 105, 26, 0.1);
-    }
-
-    .info-container {
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-
-        p {
+        .character-info p {
             margin: 0;
+            padding: 5px;
+            text-align: center;
+            border-top: $primary 1px solid;
+            background-color: rgba(223, 105, 26, 0.1);
+
+            &.button-row {
+                padding: 0;
+                display: flex;
+
+                button {
+                    border: none;
+                    width: 100%;
+                    transition: filter 0.5s ease-in-out, color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+                    &.disabled, &:disabled {
+                        filter: grayscale(100%);
+                    }
+                }
+            }
         }
     }
 
-    .image-container {
-        img {
-            width: 50px;
-            height: 50px;
-        }
+    .add-character-button {
+        margin-right: -15px;
+        margin-left: -15px;
     }
-}
-
-.add-character-button {
-    margin-right: -15px;
-    margin-left: -15px;
 }

@@ -8,6 +8,7 @@ nav {
 .navbar.fixed-top {
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
 
+
     .navbar-brand {
 
         svg {
@@ -29,6 +30,7 @@ nav {
 
             .nav-link {
                 position: relative;
+                color: #ffffff;
 
                 &::before {
                     background-color: #ffffff;
@@ -66,6 +68,10 @@ nav {
                     }
                 }
 
+                .nav-link-text {
+                    font-size: 16px;
+                }
+
                 //border-bottom: white 2px solid;
             }
         }
@@ -93,10 +99,6 @@ nav {
 
     .character-item {
         cursor: pointer;
-
-        &:not(.active) {
-            pointer-events: none;
-        }
 
         img {
             height: 50px;

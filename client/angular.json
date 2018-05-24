@@ -29,7 +29,11 @@
                         "styles": [
                             "src/styles.scss"
                         ],
-                        "scripts": []
+                        "scripts": [
+                            "node_modules/@fortawesome/fontawesome-pro-regular/index.js",
+                            "node_modules/@fortawesome/fontawesome-pro-solid/index.js",
+                            "node_modules/@fortawesome/fontawesome/index.js"
+                        ]
                     },
                     "configurations": {
                         "production": {
@@ -78,7 +82,11 @@
                         "styles": [
                             "styles.scss"
                         ],
-                        "scripts": [],
+                        "scripts": [
+                            "node_modules/@fortawesome/fontawesome-pro-regular/index.js",
+                            "node_modules/@fortawesome/fontawesome-pro-solid/index.js",
+                            "node_modules/@fortawesome/fontawesome/index.js"
+                        ],
                         "assets": [
                             "src/favicon.ico",
                             "src/assets"

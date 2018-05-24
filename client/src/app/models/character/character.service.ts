@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 
 import { Helpers } from '../../shared/helpers';
 import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
+import { UserService } from '../user/user.service';
 
 const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
 
@@ -40,9 +41,9 @@ export class CharacterService {
         const currentTime = Date.now();
 
         const timeLeft = (tokenExpiryTime - currentTime) - tokenRefreshInterval;
-        if (timeLeft <= 0) {
-            await this.refreshToken(character);
-        }
+        // if (timeLeft <= 0) {
+        await this.refreshToken(character);
+        // }
 
         character.refreshTimer = setInterval(() => {
             this.refreshToken(character).then();

@@ -58,6 +58,10 @@ export class Character {
         this.scopes = data.scopes.split(' ');
         this.tokenExpiry = new Date(data.tokenExpiry);
     }
+
+    public getAuthorizationHeader() {
+        return 'Bearer ' + this.accessToken;
+    }
 }
 
 export interface IEveCharacterData {
