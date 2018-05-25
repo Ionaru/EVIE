@@ -4,7 +4,6 @@ import { Subject } from 'rxjs';
 
 import { Helpers } from '../../shared/helpers';
 import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
-import { UserService } from '../user/user.service';
 
 const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
 
@@ -41,9 +40,9 @@ export class CharacterService {
         const currentTime = Date.now();
 
         const timeLeft = (tokenExpiryTime - currentTime) - tokenRefreshInterval;
-        // if (timeLeft <= 0) {
-        await this.refreshToken(character);
-        // }
+        if (timeLeft <= 0) {
+            await this.refreshToken(character);
+        }
 
         character.refreshTimer = setInterval(() => {
             this.refreshToken(character).then();
@@ -68,9 +67,9 @@ export class CharacterService {
         character.accessToken = response.data.token;
     }
 
-    public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
+    public async setActiveCharacter(character?: Character, skipServerCall?: boolean): Promise<void> {
 
-        if (!alreadyActive) {
+        if (!skipServerCall) {
             const url = '/sso/activate';
             const characterUUID = character ? character.uuid : undefined;
             this.http.post(url, {characterUUID}).toPromise().then();
