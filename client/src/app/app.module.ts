@@ -16,7 +16,6 @@ import { StatusService } from './data-services/status.service';
 import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { httpInterceptorProviders } from './http-interceptors';
-import { ESIRequestCache } from './http-interceptors/esi-caching-interceptor';
 import { CharacterService } from './models/character/character.service';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -25,6 +24,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
+import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
 
 @NgModule({

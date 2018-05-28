@@ -16,12 +16,6 @@ export interface INames {
 @Injectable()
 export class NamesService {
 
-    public static names: INames;
-    public static namesExpiry: number;
-
-    private namesMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
-    private namesStoreTag = 'names';
-
     public static getNameFromData(nameData: INames, id: number, unknownMessage: string = 'Unknown'): string {
         if (!nameData || !Object.keys(nameData).length) {
             return unknownMessage;
@@ -34,33 +28,53 @@ export class NamesService {
         }
     }
 
-    private static uniquify(array: any[]): any[] {
-        return array.filter((elem, index, self) => {
-            return index === self.indexOf(elem);
-        });
-    }
+    private static names: INames;
+    private static namesExpiry: number;
+    private static namesMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+    private static namesStoreTag = 'names';
 
     private static resetNames(): void {
         NamesService.namesExpiry = 0;
         NamesService.names = {};
     }
 
-    constructor(private http: HttpClient) {
-        this.getNamesFromStore();
-        if (!NamesService.names || NamesService.names instanceof Array) {
-            NamesService.resetNames();
+    private static getNamesFromStore(): void {
+        try {
+            const storeData = JSON.parse(localStorage.getItem(NamesService.namesStoreTag));
+            if (storeData.expiry < (Date.now() - NamesService.namesMaxAge)) {
+                return NamesService.resetNames();
+            }
+            NamesService.namesExpiry = storeData.expiry;
+            NamesService.names = storeData.names;
+        } catch (error) {
+            // An error happened while getting the Names from localStorage, this can have a number of reasons but a reset will fix all.
+            return NamesService.resetNames();
         }
+    }
+
+    private static setNames() {
+        if (!NamesService.namesExpiry) {
+            NamesService.namesExpiry = Date.now() + NamesService.namesMaxAge;
+        }
+        localStorage.setItem(NamesService.namesStoreTag, JSON.stringify({expiry: NamesService.namesExpiry, names: NamesService.names}));
+    }
+
+    private static uniquifyArray(array: any[]): any[] {
+        return array.filter((elem, index, self) => {
+            return index === self.indexOf(elem);
+        });
+    }
+
+    constructor(private http: HttpClient) {
+        NamesService.getNamesFromStore();
     }
 
     public async getNames(...ids: Array<string | number>): Promise<INames> {
 
-        ids = NamesService.uniquify(ids);
+        ids = NamesService.uniquifyArray(ids);
 
         // Check if all values in 'ids' are -1, if so then there's no point in calling the Names Endpoint
-        const allErrors = ids.every((element) => {
-            return element === -1;
-        });
-        if (allErrors) {
+        if (ids.every((element) => element === -1)) {
             return [];
         }
 
@@ -73,7 +87,11 @@ export class NamesService {
         }
 
         if (namesToGet.length) {
-            await this.getNamesFromAPI(...namesToGet);
+            const maxChunkSize = 1000;
+            for (let i = 0, j = namesToGet.length; i < j; i += 1000) {
+                const namesToGetChunk = namesToGet.slice(i, i + maxChunkSize);
+                await this.getNamesFromAPI(namesToGetChunk);
+            }
         }
 
         const returnData: INames = {};
@@ -81,11 +99,11 @@ export class NamesService {
             returnData[id] = NamesService.names[id];
         }
 
-        this.setNames();
+        NamesService.setNames();
         return returnData;
     }
 
-    private async getNamesFromAPI(...ids: Array<string | number>): Promise<void> {
+    private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
         const url = Helpers.constructESIUrl(2, 'universe/names');
         const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
@@ -94,25 +112,5 @@ export class NamesService {
         for (const name of response) {
             NamesService.names[name.id] = name;
         }
-    }
-
-    private getNamesFromStore(): void {
-        try {
-            const storeData = JSON.parse(localStorage.getItem(this.namesStoreTag));
-            if (!storeData || storeData.expiry < (Date.now() - this.namesMaxAge)) {
-                return NamesService.resetNames();
-            }
-            NamesService.namesExpiry = storeData.expiry;
-            NamesService.names = storeData.names;
-        } catch (error) {
-            return NamesService.resetNames();
-        }
-    }
-
-    private setNames() {
-        if (!NamesService.namesExpiry) {
-            NamesService.namesExpiry = Date.now() + this.namesMaxAge;
-        }
-        localStorage.setItem(this.namesStoreTag, JSON.stringify({expiry: NamesService.namesExpiry, names: NamesService.names}));
     }
 }

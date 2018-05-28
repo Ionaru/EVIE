@@ -47,7 +47,7 @@ export class UserService {
             const user = await this.storeUser(response.data);
             return [response.message, user];
         } else {
-            return [response.message, null];
+            return [response.message, undefined];
         }
     }
 
@@ -117,7 +117,6 @@ export class UserService {
         const authWindow = window.open(url, '_blank', 'width=600,height=850');
 
         SocketService.socket.on('SSO_END', async (response: ISSOSocketResponse) => {
-            console.log(authWindow);
             authWindow.close();
             if (response.state === 'success') {
                 if (character) {

@@ -9,8 +9,8 @@ import { UserService } from '../../models/user/user.service';
 
 @Component({
     selector: 'app-dashboard',
-    templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
+    templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
@@ -25,14 +25,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnInit() {
+    public ngOnInit() {
         this.characters = UserService.user.characters;
         for (const character of this.characters) {
             this.getCharacterInfo(character);
         }
     }
 
-    ngOnDestroy() {
+    public ngOnDestroy() {
         this.changeSubscription.unsubscribe();
     }
 

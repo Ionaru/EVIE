@@ -7,8 +7,8 @@ import { CountUp } from '../../shared/count-up';
 
 @Component({
     selector: 'app-wallet',
-    templateUrl: './wallet.component.html',
     styleUrls: ['./wallet.component.scss'],
+    templateUrl: './wallet.component.html',
 })
 export class WalletComponent implements OnInit, OnDestroy {
 
@@ -21,12 +21,12 @@ export class WalletComponent implements OnInit, OnDestroy {
         });
     }
 
-    ngOnInit() {
+    public ngOnInit() {
         this.balanceCountUp = new CountUp('wallet-balance', 0, 0, 2);
         this.getBalanceData().then();
     }
 
-    ngOnDestroy() {
+    public ngOnDestroy() {
         this.changeSubscription.unsubscribe();
     }
 

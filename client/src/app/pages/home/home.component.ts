@@ -6,27 +6,27 @@ import { RegisterModalComponent } from './register-modal.component';
 
 @Component({
     selector: 'app-home',
-    templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
+    templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {
 
-    isLoggedIn: boolean;
+    public isLoggedIn: boolean;
 
     constructor(private modalService: NgbModal) { }
 
-    ngOnInit() {
+    public ngOnInit() {
         this.isLoggedIn = !!UserService.user;
         UserService.userChangeEvent.subscribe((user) => {
             this.isLoggedIn = !!user;
         });
     }
 
-    openLoginModal() {
+    public openLoginModal() {
         this.modalService.open(LoginModalComponent);
     }
 
-    openRegisterModal() {
+    public openRegisterModal() {
         this.modalService.open(RegisterModalComponent);
     }
 }

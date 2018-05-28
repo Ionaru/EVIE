@@ -27,8 +27,8 @@ import { UserService } from '../../models/user/user.service';
                 )],
         ),
     ],
-    templateUrl: './login-modal.component.html',
     styleUrls: ['./login-modal.component.scss'],
+    templateUrl: './login-modal.component.html',
 })
 export class LoginModalComponent {
 

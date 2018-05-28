@@ -4,11 +4,6 @@ import { StatusService } from '../data-services/status.service';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
 import { CountUp } from '../shared/count-up';
-// import { Observable } from 'rxjs';
-// import { AppReadyEvent } from '../app-ready.event';
-// import { ClockService, IServerStatus } from '../../../services/clock.service';
-// import { CountUp } from '../../../shared/count-up';
-// import { Globals } from '../../../shared/globals';
 
 @Component({
     selector: 'app-navigation',
@@ -20,12 +15,9 @@ export class NavigationComponent implements OnInit {
     public hours = '00';
     public minutes = '00';
     public status = 'Offline';
-    // public time: IServerStatus;
     public char = 1;
-    // public playersCountUp: CountUp;
     public disable = true;
     public isLoggedIn = false;
-    public playerCount = 0;
     public isCollapsed: boolean;
     public playersCountUp: CountUp;
 
@@ -85,11 +77,11 @@ export class NavigationComponent implements OnInit {
         this.tickTime(time);
         const tickTimeout = 60 - time.getUTCSeconds();
         setTimeout(() => {
-            this.timeKeeper();
+            this.startClock();
             }, tickTimeout * 1000);
     }
 
-    private timeKeeper(): void {
+    private startClock(): void {
         this.tickTime();
         const eveTime = setInterval(() => {
             this.tickTime();

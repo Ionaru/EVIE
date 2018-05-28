@@ -1,6 +1,3 @@
-///<reference path="../../../../node_modules/@types/node/index.d.ts"/>
-import Timer = NodeJS.Timer;
-
 export class Character {
     public characterId: number;
     public uuid: string;
@@ -37,7 +34,7 @@ export class Character {
         name?: string;
         type?: string | null;
     } = {};
-    public refreshTimer: Timer;
+    public refreshTimer: number;
 
     public constructor(data: IApiCharacterData) {
         this.characterId = data.characterId;

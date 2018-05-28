@@ -13,49 +13,50 @@ export interface ICountUpOptions {
 
 export class CountUp {
 
-    // private target: string;
-    private startVal: number;
-    private endVal: number;
+    // Robert Penner's easeOutExpo
+    private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
+        return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
+    }
+
     private options: ICountUpOptions = {
         decimal: '.',
-        easingFn: null,
-        formattingFn: null,
+        easingFn: undefined,
+        formattingFn: undefined,
         prefix: '',
         separator: ',',
         suffix: '',
         useEasing: true,
         useGrouping: true,
     };
-    private paused: boolean;
-    private countDown: boolean;
-    private rAF: any;
-    private duration: number;
-    private frameVal: number;
-    private targetElement: HTMLElement;
-    private decimals: number;
+
     private callback: (...args: any[]) => any;
-    private easingFn: (...args: any[]) => any;
+    private countDown: boolean;
+    private duration: number;
+    private endVal: number;
+    private frameVal: number;
+    private paused: boolean;
+    private rAF: any;
     private remaining: number;
-    private formattingFn: (...args: any[]) => any;
-    private dec: number;
     private startTime: number;
+    private startVal: number;
+    private targetElement: HTMLElement;
 
-    // Robert Penner's easeOutExpo
-    private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
-        return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
-    }
+    private readonly dec: number;
+    private readonly decimals: number;
+    private readonly easingFn: (...args: any[]) => any;
+    private readonly formattingFn: (...args: any[]) => any;
 
+    /**
+     * @param {string | HTMLElement} target - ID of a html element or variable of an HTML element
+     * @param {number} startVal - the value you want to begin at
+     * @param {number} endVal - the value you want to arrive at
+     * @param {number} decimals - number of decimal places, default 0
+     * @param {number} duration - duration of animation in seconds, default 1
+     * @param {ICountUpOptions} options - optional object of options (see above for possible option attributes)
+     */
     constructor(target: string | HTMLElement, startVal: number, endVal: number, decimals = 0, duration = 1,
                 options?: ICountUpOptions) {
 
-        // target = id of html element or var of previously selected html element where counting occurs
-        // startVal = the value you want to begin at
-        // endVal = the value you want to arrive at
-        // decimals = number of decimal places, default 0
-        // duration = duration of animation in seconds, default 2
-        // options = optional object of options (see above for possible option attributes)
-
-        // this.target = target;
         this.startVal = startVal;
         this.endVal = endVal;
         this.decimals = decimals;
