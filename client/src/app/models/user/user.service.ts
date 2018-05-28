@@ -91,8 +91,6 @@ export class UserService {
         await Promise.all(data.characters.map(async (characterData) => {
             if (characterData.scopes) {
                 await this.addCharacter(characterData);
-                // await this.addCharacter(characterData);
-                // await this.addCharacter(characterData);
             }
         }));
 
