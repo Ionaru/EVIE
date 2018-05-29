@@ -10,19 +10,19 @@ export interface IESINamesData {
 }
 
 export interface INames {
-    [id: number]: IESINamesData;
+    [id: string]: IESINamesData;
 }
 
 @Injectable()
 export class NamesService {
 
-    public static getNameFromData(nameData: INames, id: number, unknownMessage: string = 'Unknown'): string {
-        if (!nameData || !Object.keys(nameData).length) {
+    public static getNameFromData(id: number, unknownMessage = 'Unknown'): string {
+        if (!NamesService.names || !Object.keys(NamesService.names).length) {
             return unknownMessage;
         }
 
-        if (nameData[id] && nameData[id].name) {
-            return nameData[id].name;
+        if (NamesService.names[id] && NamesService.names[id].name) {
+            return NamesService.names[id].name;
         } else {
             return unknownMessage;
         }
@@ -39,13 +39,19 @@ export class NamesService {
     }
 
     private static getNamesFromStore(): void {
+
+        const storeData = localStorage.getItem(NamesService.namesStoreTag);
+        if (!storeData) {
+            return NamesService.resetNames();
+        }
+
         try {
-            const storeData = JSON.parse(localStorage.getItem(NamesService.namesStoreTag));
-            if (storeData.expiry < (Date.now() - NamesService.namesMaxAge)) {
+            const storeJSON = JSON.parse(storeData);
+            if (storeJSON.expiry < (Date.now() - NamesService.namesMaxAge)) {
                 return NamesService.resetNames();
             }
-            NamesService.namesExpiry = storeData.expiry;
-            NamesService.names = storeData.names;
+            NamesService.namesExpiry = storeJSON.expiry;
+            NamesService.names = storeJSON.names;
         } catch (error) {
             // An error happened while getting the Names from localStorage, this can have a number of reasons but a reset will fix all.
             return NamesService.resetNames();
@@ -69,13 +75,13 @@ export class NamesService {
         NamesService.getNamesFromStore();
     }
 
-    public async getNames(...ids: Array<string | number>): Promise<INames> {
+    public async getNames(...ids: Array<string | number>): Promise<void> {
 
         ids = NamesService.uniquifyArray(ids);
 
         // Check if all values in 'ids' are -1, if so then there's no point in calling the Names Endpoint
         if (ids.every((element) => element === -1)) {
-            return [];
+            return;
         }
 
         const namesToGet: Array<string | number> = [];
@@ -100,7 +106,6 @@ export class NamesService {
         }
 
         NamesService.setNames();
-        return returnData;
     }
 
     private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {

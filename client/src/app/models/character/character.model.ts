@@ -6,17 +6,17 @@ export class Character {
     public scopes: string[];
     public tokenExpiry: Date;
     public ownerHash: string;
-    public gender: string;
-    public corporationId: number;
-    public birthday: Date;
-    public securityStatus: number;
-    public description: string;
-    public corporation: string;
-    public allianceId: number;
-    public alliance: string;
-    public race: string;
-    public bloodline: string;
-    public ancestory: string;
+    public gender?: string;
+    public corporationId?: number;
+    public birthday?: Date;
+    public securityStatus?: number;
+    public description?: string;
+    public corporation?: string;
+    public allianceId?: number;
+    public alliance?: string;
+    public race?: string;
+    public bloodline?: string;
+    public ancestory?: string;
     public balance = 0;
     public walletJournal: object[] = [];
     public walletTransactions: object[] = [];
@@ -34,7 +34,7 @@ export class Character {
         name?: string;
         type?: string | null;
     } = {};
-    public refreshTimer: number;
+    public refreshTimer?: number;
 
     public constructor(data: IApiCharacterData) {
         this.characterId = data.characterId;
@@ -88,7 +88,7 @@ export interface IApiCharacterData {
 export interface ISSOSocketResponse {
     state: string;
     message: string;
-    data: IApiCharacterData | undefined;
+    data: IApiCharacterData;
 }
 
 export interface ITokenRefreshResponse {

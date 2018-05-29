@@ -2,7 +2,7 @@ export interface ICountUpOptions {
     // All options are optional
     useEasing?: boolean;      // Whether to use easing or not, default: true
     useGrouping?: boolean;    // 1,000,000 vs 1000000, default: true
-    separator?: string;       // Character to use as seperator, default: ',' (comma). Note: if this option is set
+    separator?: string;       // Character to use as separator, default: ',' (comma). Note: if this option is set
                               // to '' (empty string), useGrouping will be disabled
     decimal?: string;         // Character to use as decimal, default: '.' (dot)
     easingFn?: (...args: any[]) => any;      // Custom easing closure function, default: Robert Penner's easeOutExpo
@@ -29,15 +29,15 @@ export class CountUp {
         useGrouping: true,
     };
 
-    private callback: (...args: any[]) => any;
+    private callback!: (...args: any[]) => any;
     private countDown: boolean;
     private duration: number;
     private endVal: number;
     private frameVal: number;
-    private paused: boolean;
+    private paused!: boolean;
     private rAF: any;
-    private remaining: number;
-    private startTime: number;
+    private remaining!: number;
+    private startTime!: number;
     private startVal: number;
     private targetElement: HTMLElement;
 
@@ -62,16 +62,20 @@ export class CountUp {
         this.decimals = decimals;
         this.duration = duration;
 
-        for (const key in options) {
-            if (options.hasOwnProperty(key)) {
-                this.options[key] = options[key];
-            }
-        }
+        // Overwrite default options with custom values.
+        Object.assign(this.options, options);
+
         if (this.options.separator === '') {
             this.options.useGrouping = false;
         }
 
-        this.targetElement = (typeof target === 'string') ? document.getElementById(target) : target;
+        const element = (typeof target === 'string') ? document.getElementById(target) : target;
+        if (element) {
+            this.targetElement = element;
+        } else {
+            throw new Error('No target element found.');
+        }
+
         this.startVal = Number(startVal);
         this.endVal = Number(endVal);
         this.countDown = (startVal > endVal);
@@ -90,7 +94,9 @@ export class CountUp {
 
     // Start the animation
     public start(callback?: (...args: any[]) => any): boolean {
-        this.callback = callback;
+        if (callback) {
+            this.callback = callback;
+        }
         this.rAF = requestAnimationFrame((_timestamp) => { this.count(_timestamp); });
         return false;
     }
@@ -130,27 +136,19 @@ export class CountUp {
 
     private init(): void {
         let lastTime = 0;
-        const vendors = ['webkit', 'moz', 'ms', 'o'];
-        for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-            window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-            window.cancelAnimationFrame =
-                window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
-        }
-        if (!window.requestAnimationFrame) {
-            window.requestAnimationFrame = (callback: (...args: any[]) => void): number => {
-                const currTime = new Date().getTime();
-                const timeToCall = Math.max(0, 16 - (currTime - lastTime));
-                const id = window.setTimeout((): void => { callback(currTime + timeToCall); },
-                    timeToCall);
-                lastTime = currTime + timeToCall;
-                return id;
-            };
-        }
-        if (!window.cancelAnimationFrame) {
-            window.cancelAnimationFrame = (id: number): void => {
-                clearTimeout(id);
-            };
-        }
+
+        window.requestAnimationFrame = (callback: (...args: any[]) => void): number => {
+            const currTime = new Date().getTime();
+            const timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            const id = window.setTimeout((): void => { callback(currTime + timeToCall); },
+                timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+
+        window.cancelAnimationFrame = (id: number): void => {
+            window.clearTimeout(id);
+        };
     }
 
     private formatNumber(nStr: any): string {

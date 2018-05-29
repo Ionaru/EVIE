@@ -13,7 +13,7 @@ export class CharacterService {
     private static _characterChangeEvent = new Subject<Character>();
     public static get characterChangeEvent() { return this._characterChangeEvent; }
 
-    private static _selectedCharacter: Character;
+    private static _selectedCharacter: Character | undefined;
     public static get selectedCharacter() { return this._selectedCharacter; }
 
     constructor(private http: HttpClient) { }
@@ -44,7 +44,7 @@ export class CharacterService {
             await this.refreshToken(character);
         }
 
-        character.refreshTimer = setInterval(() => {
+        character.refreshTimer = window.setInterval(() => {
             this.refreshToken(character).then();
         }, tokenRefreshInterval);
 
@@ -59,7 +59,7 @@ export class CharacterService {
         const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
-            setTimeout(() => {
+            window.setTimeout(() => {
                 this.refreshToken(character).then();
             }, 5 * 1000);
             return;
@@ -91,7 +91,9 @@ export class CharacterService {
         }
 
         if (response.state === 'success') {
-            clearInterval(character.refreshTimer);
+            if (character.refreshTimer) {
+                window.clearInterval(character.refreshTimer);
+            }
 
             if (CharacterService.selectedCharacter && CharacterService.selectedCharacter.uuid === character.uuid) {
                 this.setActiveCharacter().then();

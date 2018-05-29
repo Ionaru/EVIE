@@ -18,8 +18,8 @@ export class NavigationComponent implements OnInit {
     public char = 1;
     public disable = true;
     public isLoggedIn = false;
-    public isCollapsed: boolean;
-    public playersCountUp: CountUp;
+    public isCollapsed!: boolean;
+    public playersCountUp!: CountUp;
 
     constructor(private userService: UserService, private statusService: StatusService, private characterService: CharacterService) {
         CharacterService.characterChangeEvent.subscribe((character) => {
@@ -48,14 +48,17 @@ export class NavigationComponent implements OnInit {
         const playerCount = status ? status.players : 0;
         this.playersCountUp.update(playerCount);
 
-        setTimeout(() => {
+        window.setTimeout(() => {
             this.getStatus().then();
         }, 45000);
     }
 
     public nextCharacter(): void {
-        const currentCharacterIndex = UserService.user.characters.indexOf(CharacterService.selectedCharacter);
-        const nextCharacterIndex = UserService.user.characters.length > (currentCharacterIndex + 1) ? currentCharacterIndex + 1 : 0;
+        let nextCharacterIndex = 0;
+        if (CharacterService.selectedCharacter) {
+            const currentCharacterIndex = UserService.user.characters.indexOf(CharacterService.selectedCharacter);
+            nextCharacterIndex = UserService.user.characters.length > (currentCharacterIndex + 1) ? currentCharacterIndex + 1 : 0;
+        }
         this.characterService.setActiveCharacter(UserService.user.characters[nextCharacterIndex]).then();
     }
 
@@ -76,18 +79,18 @@ export class NavigationComponent implements OnInit {
         const time = new Date();
         this.tickTime(time);
         const tickTimeout = 60 - time.getUTCSeconds();
-        setTimeout(() => {
+        window.setTimeout(() => {
             this.startClock();
             }, tickTimeout * 1000);
     }
 
     private startClock(): void {
         this.tickTime();
-        const eveTime = setInterval(() => {
+        const eveTime = window.setInterval(() => {
             this.tickTime();
         }, 60000);
-        setTimeout(() => {
-            clearInterval(eveTime);
+        window.setTimeout(() => {
+            window.clearInterval(eveTime);
             this.syncClock();
         }, 180000);
     }
@@ -96,8 +99,8 @@ export class NavigationComponent implements OnInit {
         let hours: number;
         let minutes: number;
 
-        let hoursString: string;
-        let minutesString: string;
+        let hoursString = '';
+        let minutesString = '';
 
         if (newTime) {
             hours = newTime.getUTCHours();

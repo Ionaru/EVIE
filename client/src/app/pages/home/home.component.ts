@@ -11,7 +11,7 @@ import { RegisterModalComponent } from './register-modal.component';
 })
 export class HomeComponent implements OnInit {
 
-    public isLoggedIn: boolean;
+    public isLoggedIn = false;
 
     constructor(private modalService: NgbModal) { }
 

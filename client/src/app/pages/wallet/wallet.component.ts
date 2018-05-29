@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { BalanceService } from '../../data-services/balance.service';
+import { WalletService } from '../../data-services/wallet.service';
 import { CharacterService } from '../../models/character/character.service';
 import { CountUp } from '../../shared/count-up';
 
@@ -12,10 +12,10 @@ import { CountUp } from '../../shared/count-up';
 })
 export class WalletComponent implements OnInit, OnDestroy {
 
-    public balanceCountUp: CountUp;
+    public balanceCountUp!: CountUp;
     private changeSubscription: Subscription;
 
-    constructor(private balanceService: BalanceService) {
+    constructor(private walletService: WalletService) {
         this.changeSubscription = CharacterService.characterChangeEvent.subscribe(() => {
             this.ngOnInit();
         });
@@ -31,7 +31,9 @@ export class WalletComponent implements OnInit, OnDestroy {
     }
 
     public async getBalanceData() {
-        const balance = await this.balanceService.getBalance(CharacterService.selectedCharacter);
-        this.balanceCountUp.update(balance);
+        if (CharacterService.selectedCharacter) {
+            const balance = await this.walletService.getWalletBalance(CharacterService.selectedCharacter);
+            this.balanceCountUp.update(balance);
+        }
     }
 }

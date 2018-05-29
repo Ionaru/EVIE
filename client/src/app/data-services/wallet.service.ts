@@ -5,11 +5,11 @@ import { Character } from '../models/character/character.model';
 import { Helpers } from '../shared/helpers';
 
 @Injectable()
-export class BalanceService {
+export class WalletService {
 
     constructor(private http: HttpClient) { }
 
-    public async getBalance(character: Character): Promise<number> {
+    public async getWalletBalance(character: Character): Promise<number> {
         const url = Helpers.constructESIUrl(1, 'characters', character.characterId, 'wallet');
         const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
         const response = await this.http.get<any>(url, {headers}).toPromise<number>().catch((e: HttpErrorResponse) => e);

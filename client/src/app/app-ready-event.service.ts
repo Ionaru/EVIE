@@ -37,8 +37,16 @@ export class AppReadyEventService {
         // Fire StartupFailed first so the 'error-info' and 'error-info-detail' elements are created.
         this.doc.dispatchEvent(this.createEvent('StartupFailed'));
 
-        this.doc.getElementById('error-info').innerText = info;
-        this.doc.getElementById('error-info-detail').innerText = detail.message;
+        const errorInfoElement = this.doc.getElementById('error-info');
+        if (errorInfoElement) {
+            errorInfoElement.innerText = info;
+        }
+
+        const errorInfoDetailElement = this.doc.getElementById('error-info-detail');
+        if (errorInfoDetailElement) {
+            errorInfoDetailElement.innerText = detail.message;
+        }
+
         AppReadyEventService._appReady = true;
     }
 

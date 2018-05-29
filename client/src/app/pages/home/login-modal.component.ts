@@ -32,9 +32,9 @@ import { UserService } from '../../models/user/user.service';
 })
 export class LoginModalComponent {
 
-    public wrongLogin: boolean;
-    public debugging: boolean;
-    public inProgress: boolean;
+    public wrongLogin = false;
+    public debugging = false;
+    public inProgress = false;
 
     constructor(public activeModal: NgbActiveModal, private userService: UserService, private router: Router) {
         if (!environment.production) {
@@ -52,7 +52,7 @@ export class LoginModalComponent {
 
     public async login(formValues: { username: string, password: string }): Promise<void> {
         this.inProgress = true;
-        const response: [string, User] = await this.userService.loginUser(formValues.username, formValues.password);
+        const response: [string, User | undefined] = await this.userService.loginUser(formValues.username, formValues.password);
         this.inProgress = false;
         if (response[0] === 'LoggedIn') {
             this.router.navigate(['/dashboard']).then();

@@ -43,7 +43,7 @@ export class UserService {
                 throw errorResponse.error;
             });
 
-        if (response.message === 'LoggedIn') {
+        if (response.message === 'LoggedIn' && response.data) {
             const user = await this.storeUser(response.data);
             return [response.message, user];
         } else {
@@ -116,17 +116,19 @@ export class UserService {
 
         const authWindow = window.open(url, '_blank', 'width=600,height=850');
 
-        SocketService.socket.on('SSO_END', async (response: ISSOSocketResponse) => {
-            authWindow.close();
-            if (response.state === 'success') {
-                if (character) {
-                    character.updateAuth(response.data);
-                } else {
-                    character = await this.addCharacter(response.data);
+        if (authWindow) {
+            SocketService.socket.on('SSO_END', async (response: ISSOSocketResponse) => {
+                authWindow.close();
+                if (response.state === 'success') {
+                    if (character) {
+                        character.updateAuth(response.data);
+                    } else {
+                        character = await this.addCharacter(response.data);
+                    }
+                    this.characterService.setActiveCharacter(character).then();
                 }
-                this.characterService.setActiveCharacter(character).then();
-            }
-        });
+            });
+        }
     }
 
     public async deleteCharacter(character: Character): Promise<void> {

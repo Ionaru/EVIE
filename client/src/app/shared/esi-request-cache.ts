@@ -14,12 +14,15 @@ export class ESIRequestCache {
 
         this.cache[request.urlWithParams] = event;
 
-        const expiryDate = new Date(event.headers.get('expires'));
-        const expiryTime = expiryDate.getTime() - Date.now();
+        const expiryHeader = event.headers.get('expires');
+        if (expiryHeader) {
+            const expiryDate = new Date(expiryHeader);
+            const expiryTime = expiryDate.getTime() - Date.now();
 
-        setTimeout(() => {
-            this.delete(request);
-        }, expiryTime);
+            window.setTimeout(() => {
+                this.delete(request);
+            }, expiryTime);
+        }
     }
 
     public delete(request: HttpRequest<any>): void {

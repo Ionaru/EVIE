@@ -108,7 +108,7 @@ export class Helpers {
 
     public static sortArrayByObjectProperty(array: any[], property: string, inverse = false): any[] {
 
-        const compare = (a, b) => {
+        const compare = (a: any, b: any) => {
             let left = a[property];
             let right = b[property];
 

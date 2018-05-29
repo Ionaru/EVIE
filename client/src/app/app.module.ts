@@ -5,14 +5,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-// import { AppReadyEvent } from './app-ready.event';
 import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BalanceService } from './data-services/balance.service';
 import { NamesService } from './data-services/names.service';
 import { ShipService } from './data-services/ship.service';
 import { StatusService } from './data-services/status.service';
+import { WalletService } from './data-services/wallet.service';
 import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { httpInterceptorProviders } from './http-interceptors';
@@ -61,7 +60,7 @@ import { SocketService } from './socket/socket.service';
         NamesService,
         StatusService,
         ShipService,
-        BalanceService,
+        WalletService,
         SocketService,
         AppReadyGuard,
         AuthGuard,

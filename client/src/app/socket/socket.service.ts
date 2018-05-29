@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import * as io from 'socket.io-client';
+import * as SocketIOClient from 'socket.io-client';
+import Socket = SocketIOClient.Socket;
 
 @Injectable()
 export class SocketService {
-    public static socket: io.Socket;
+    public static socket: Socket;
 
     constructor() {
-        SocketService.socket = io.connect('http://localhost:3000/', {
+        SocketService.socket = SocketIOClient.connect('http://localhost:3000/', {
             reconnection: true,
         });
     }

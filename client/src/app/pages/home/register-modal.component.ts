@@ -31,26 +31,26 @@ import { UserService } from '../../models/user/user.service';
 })
 export class RegisterModalComponent {
 
-    public usernameStatus: string;
-    public usernameHint: string;
+    public usernameStatus!: string;
+    public usernameHint!: string;
 
-    public emailStatus: string;
-    public emailHint: string;
+    public emailStatus!: string;
+    public emailHint!: string;
 
-    public passwordStatus: string;
-    public passwordHint: string;
-    public passwordInput: string;
+    public passwordStatus!: string;
+    public passwordHint!: string;
+    public passwordInput!: string;
 
-    public password2Status: string;
-    public password2Hint: string;
-    public password2Input: string;
+    public password2Status!: string;
+    public password2Hint!: string;
+    public password2Input!: string;
 
-    public registerError: boolean;
-    public registerErrorMessage: string;
+    public registerError = false;
+    public registerErrorMessage = '';
 
-    public inProgress: boolean;
+    public inProgress = false;
 
-    @ViewChild('usernameInput') public usernameInput: ElementRef;
+    // @ViewChild('usernameInput') public usernameInput: ElementRef;
 
     constructor(public activeModal: NgbActiveModal, private userService: UserService, private router: Router) {
         this.setupModal();
@@ -86,12 +86,10 @@ export class RegisterModalComponent {
     }
 
     public anyFormErrors(): boolean {
-        if (this.usernameStatus === 'error'
+        return this.usernameStatus === 'error'
             || this.emailStatus === 'error'
             || this.passwordStatus === 'error'
-            || this.password2Status === 'error') {
-            return true;
-        }
+            || this.password2Status === 'error';
     }
 
     public onUsernameInput(event: any): void {
@@ -189,7 +187,7 @@ export class RegisterModalComponent {
             this.registerError = true;
             this.registerErrorMessage = 'An unknown error occurred.';
         } else if (result === 'success') {
-            const response: [string, User] = await this.userService.loginUser(formValues.username, formValues.password);
+            const response: [string, User | undefined] = await this.userService.loginUser(formValues.username, formValues.password);
             this.inProgress = false;
             if (response[0] === 'LoggedIn') {
                 this.router.navigate(['/dashboard']).then();

@@ -41,7 +41,7 @@ export class AppComponent {
 
         const response = await this.http.get<any>(url).toPromise<IHandshakeResponse>();
 
-        if (response && response.message === 'LoggedIn') {
+        if (response && response.message === 'LoggedIn' && response.data) {
             await this.userService.storeUser(response.data);
         }
     }

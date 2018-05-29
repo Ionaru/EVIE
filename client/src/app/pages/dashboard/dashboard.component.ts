@@ -58,9 +58,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         const shipData: { id: number, name: string } = await this.shipService.getCurrentShip(character);
         character.currentShip.id = shipData.id;
         character.currentShip.name = shipData.name;
-        const nameData: INames = await this.namesService.getNames(character.currentShip.id);
-        // character.location.name = NamesService.getNameFromData(nameData, character.location.id, 'Unknown location');
-        character.currentShip.type = NamesService.getNameFromData(nameData, character.currentShip.id, 'Unknown ship');
+        await this.namesService.getNames(character.currentShip.id);
+        character.currentShip.type = NamesService.getNameFromData(character.currentShip.id, 'Unknown ship');
     }
 
     // noinspection JSMethodCanBeStatic
