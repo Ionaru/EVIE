@@ -8,7 +8,6 @@ import { Helpers } from '../shared/helpers';
 
 @Injectable()
 export class ESICachingInterceptor implements HttpInterceptor {
-    constructor(private cache: ESIRequestCache) {}
 
     public intercept(request: HttpRequest<any>, next: HttpHandler) {
 
@@ -17,7 +16,7 @@ export class ESICachingInterceptor implements HttpInterceptor {
             return next.handle(request);
         }
 
-        const cachedResponse = this.cache.get(request);
+        const cachedResponse = ESIRequestCache.get(request.urlWithParams);
         if (cachedResponse) {
             return of(cachedResponse);
         }
@@ -27,8 +26,9 @@ export class ESICachingInterceptor implements HttpInterceptor {
                 // There may be other events besides the response.
                 if (event instanceof HttpResponse) {
 
+                    // Only cache when the response is successful and has an expiry header.
                     if (event.status === 200 && event.headers.has('expires')) {
-                        this.cache.put(request, event);
+                        ESIRequestCache.put(request.urlWithParams, event.body, event.headers.get('expires') as string);
                     }
                 }
             }),

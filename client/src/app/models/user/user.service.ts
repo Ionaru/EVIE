@@ -54,6 +54,7 @@ export class UserService {
     public logoutUser(): void {
         const url = 'api/logout';
         this.http.post(url, {}).toPromise().then(() => {
+            sessionStorage.clear();
             window.location.reload();
         });
     }

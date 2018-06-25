@@ -1,31 +1,36 @@
-import { HttpEvent, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
 
-@Injectable()
+interface ICacheData {
+    data: any;
+    expiry: string;
+}
+
 export class ESIRequestCache {
 
-    private cache: {[index: string]: HttpEvent<any>} = {};
+    public static get(identifier: string): HttpResponse<any> | undefined {
+        const cachedDataString = sessionStorage.getItem(identifier);
+        if (cachedDataString) {
 
-    public get(request: HttpRequest<any>): HttpEvent<any> | undefined {
-        return this.cache[request.urlWithParams];
-    }
+            const cachedData = JSON.parse(cachedDataString) as ICacheData;
 
-    public put(request: HttpRequest<any>, event: HttpResponse<any>): void {
+            const expiryDate = new Date(cachedData.expiry);
+            const now = new Date();
 
-        this.cache[request.urlWithParams] = event;
-
-        const expiryHeader = event.headers.get('expires');
-        if (expiryHeader) {
-            const expiryDate = new Date(expiryHeader);
-            const expiryTime = expiryDate.getTime() - Date.now();
-
-            window.setTimeout(() => {
-                this.delete(request);
-            }, expiryTime);
+            if (expiryDate > now) {
+                return new HttpResponse({
+                    body: cachedData.data,
+                });
+            }
         }
     }
 
-    public delete(request: HttpRequest<any>): void {
-        delete this.cache[request.urlWithParams];
+    public static put(identifier: string, data: any, expiry: string): void {
+        const cacheData: ICacheData = {
+            data,
+            expiry,
+        };
+
+        const cachedDataString = JSON.stringify(cacheData);
+        sessionStorage.setItem(identifier, cachedDataString);
     }
 }
