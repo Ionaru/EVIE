@@ -209,9 +209,7 @@ export class SSORouter extends BaseRouter {
     private static async refreshToken(request: Request, response: Response): Promise<Response> {
 
         if (!request.session!.user.id) {
-            // User is not logged in and can't initiate SSO callback.
-            // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
-            // was linked directly to this page.
+            // User is not logged in and can't refresh any API token.
             return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
 
