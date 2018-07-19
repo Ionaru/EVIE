@@ -17,13 +17,17 @@
                 <img src="//image.eveonline.com/Character/{{ character.characterId }}_256.jpg" alt="Character image">
             </div>
             <div class="character-info">
-                <p>{{ character.name }}</p>
+                <p>
+                    <strong>{{ character.name }}</strong>
+                </p>
                 <p>
                     <ng-container *ngIf="character.currentShip.name && character.currentShip.type;else loading_message">
                         {{ character.currentShip.name }} ({{ character.currentShip.type }})
                     </ng-container>
                 </p>
-                <p>{{ character.birthday | date:'longDate' }}</p>
+                <p>
+                    {{ character.birthday | date:'longDate' }}
+                </p>
                 <p class="button-row">
                     <button class="btn" [disabled]="isCharacterSelected(character)"
                             [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character)">

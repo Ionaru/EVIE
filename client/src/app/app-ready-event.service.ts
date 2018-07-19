@@ -25,7 +25,7 @@ export class AppReadyEventService {
         AppReadyEventService._appReady = true;
         AppReadyEventService._appReadyObserver.next(undefined);
         AppReadyEventService._appReadyObserver.complete();
-        document.dispatchEvent(this.createEvent('StartupSuccess'));
+        this.doc.dispatchEvent(this.createEvent('StartupSuccess'));
     }
 
     public triggerFailure(info = 'Unexpected error', detail: Error): void {

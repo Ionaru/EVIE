@@ -3,14 +3,17 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NamesService } from './data-services/names.service';
 import { ShipService } from './data-services/ship.service';
+import { SkillQueueService } from './data-services/skillqueue.service';
+import { SkillsService } from './data-services/skills.service';
 import { StatusService } from './data-services/status.service';
+import { WalletJournalService } from './data-services/wallet-journal.service';
 import { WalletService } from './data-services/wallet.service';
 import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
@@ -22,6 +25,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
+import { SkillsComponent } from './pages/skills/skills.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
@@ -36,6 +40,7 @@ import { SocketService } from './socket/socket.service';
         HomeComponent,
         DashboardComponent,
         WalletComponent,
+        SkillsComponent,
         LoginModalComponent,
         RegisterModalComponent,
     ],
@@ -50,6 +55,7 @@ import { SocketService } from './socket/socket.service';
         AppRoutingModule,
         HttpClientModule,
         NgbModule.forRoot(),
+        NgbTooltipModule,
     ],
     providers: [
         httpInterceptorProviders,
@@ -61,6 +67,9 @@ import { SocketService } from './socket/socket.service';
         StatusService,
         ShipService,
         WalletService,
+        WalletJournalService,
+        SkillQueueService,
+        SkillsService,
         SocketService,
         AppReadyGuard,
         AuthGuard,

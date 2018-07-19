@@ -94,15 +94,17 @@ export class NamesService {
 
         if (namesToGet.length) {
             const maxChunkSize = 1000;
-            for (let i = 0, j = namesToGet.length; i < j; i += 1000) {
-                const namesToGetChunk = namesToGet.slice(i, i + maxChunkSize);
-                await this.getNamesFromAPI(namesToGetChunk);
-            }
-        }
+            while (true) {
+                const namesToGetChunk = namesToGet.splice(0, maxChunkSize);
 
-        const returnData: INames = {};
-        for (const id of ids) {
-            returnData[id] = NamesService.names[id];
+                if (namesToGetChunk.length > 0) {
+                    await this.getNamesFromAPI(namesToGetChunk);
+                }
+
+                if (namesToGetChunk.length < 1000) {
+                    break;
+                }
+            }
         }
 
         NamesService.setNames();

@@ -14,7 +14,7 @@ export class CharacterService {
     public static get characterChangeEvent() { return this._characterChangeEvent; }
 
     private static _selectedCharacter: Character | undefined;
-    public static get selectedCharacter() { return this._selectedCharacter; }
+    public static get selectedCharacter(): Character | undefined { return this._selectedCharacter; }
 
     constructor(private http: HttpClient) { }
 

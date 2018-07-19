@@ -1,1 +1,22 @@
 <h2><span id="wallet-balance"></span> ISK</h2>
+
+<table *ngIf="journalData.length">
+    <thead>
+    <tr>
+        <td>Timestamp
+            <span placement="right" ngbTooltip="In EVE-Time">
+                <i class="fas fa-info-circle"></i>
+            </span>
+        </td>
+        <td>Amount</td>
+        <td>Info</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let journalEntry of journalData">
+        <td>{{ journalEntry.date | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td>{{ journalEntry.amount |  number:'0.0-2' }} ISK</td>
+        <td>{{ journalEntry.description }}</td>
+    </tr>
+    </tbody>
+</table>

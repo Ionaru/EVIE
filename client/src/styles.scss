@@ -49,6 +49,10 @@ html {
 
     body {
 
+        hr {
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
         // Set some standard rendering as the defaults might vary between browsers and operating systems
         //font-family: "open-sans", sans-serif;
         //font-family: "eve-font", sans-serif;
@@ -90,6 +94,11 @@ html {
 
         li.nav-item {
             cursor: pointer;
+        }
+
+        .underline-info {
+            border-bottom: 1px dotted;
+            cursor: help;
         }
 
         a {
@@ -197,17 +206,17 @@ html {
         //  }
         //}
 
-    //.left {
-    //  text-align: left;
-    //}
-    //
-    //.center {
-    //  text-align: center;
-    //}
-    //
-    //.right {
-    //  text-align: right;
-    //}
+        //.left {
+        //  text-align: left;
+        //}
+        //
+        //.center {
+        //  text-align: center;
+        //}
+        //
+        //.right {
+        //  text-align: right;
+        //}
 
         //#characterInfoWindow {
         //  display: none; /* Hidden by default */
@@ -312,47 +321,59 @@ html {
             cursor: pointer;
         }
 
-    //button.accordion {
-    //  background-color: transparent;
-    //  border: 0;
-    //  color: $eve-text-color;
-    //  cursor: pointer;
-    //  font-size: $standard-font-size;
-    //  font-weight: bold;
-    //  line-height: $standard-line-height;
-    //  outline: none;
-    //  text-align: left;
-    //  transition: 0.4s;
-    //
-    //  i {
-    //    text-align: left;
-    //    width: 25px;
-    //  }
-    //
-    //  &::after {
-    //    color: #777777;
-    //    content: '\002B';
-    //    float: right;
-    //    font-weight: bold;
-    //    margin-left: 5px;
-    //  }
-    //
-    //  &.active {
-    //    &::after {
-    //      content: '\2212';
-    //    }
-    //
-    //    i::before {
-    //      content: '\f07c';
-    //    }
-    //  }
-    //}
-    //
-    //div.accordion-body {
-    //  max-height: 0;
-    //  overflow: hidden;
-    //  padding: 0 18px;
-    //  transition: max-height 0.3s ease-in-out;
-    //}
-  }
+        //button.accordion {
+        //  background-color: transparent;
+        //  border: 0;
+        //  color: $eve-text-color;
+        //  cursor: pointer;
+        //  font-size: $standard-font-size;
+        //  font-weight: bold;
+        //  line-height: $standard-line-height;
+        //  outline: none;
+        //  text-align: left;
+        //  transition: 0.4s;
+        //
+        //  i {
+        //    text-align: left;
+        //    width: 25px;
+        //  }
+        //
+        //  &::after {
+        //    color: #777777;
+        //    content: '\002B';
+        //    float: right;
+        //    font-weight: bold;
+        //    margin-left: 5px;
+        //  }
+        //
+        //  &.active {
+        //    &::after {
+        //      content: '\2212';
+        //    }
+        //
+        //    i::before {
+        //      content: '\f07c';
+        //    }
+        //  }
+        //}
+        //
+        //div.accordion-body {
+        //  max-height: 0;
+        //  overflow: hidden;
+        //  padding: 0 18px;
+        //  transition: max-height 0.3s ease-in-out;
+        //}
+
+        .tooltip {
+            @each $direction in 'top', 'right', 'left', 'bottom' {
+                &.bs-tooltip-#{$direction} .arrow::before {
+                    border-#{$direction}-color: $primary;
+                }
+            }
+
+            .tooltip-inner {
+                background-color: $primary;
+            }
+        }
+    }
 }
