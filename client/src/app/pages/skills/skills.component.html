@@ -6,8 +6,8 @@
                   title="This is a calculated value and may not be 100% accurate">
                 {{ skillPoints | number:'1.0-0' }} SP
             </span>
-            <span class="unallocated" *ngIf="skills.unallocated_sp">
-                ({{ skills.unallocated_sp | number:'1.0-0' }} unallocated SP)
+            <span class="unallocated" *ngIf="skills && skills.unallocated_sp">
+                + ({{ skills.unallocated_sp | number:'1.0-0' }} unallocated SP)
             </span>
         </div>
         <div>
@@ -72,23 +72,19 @@
 
     <div class="skill-list-container">
         <h2>Skill overview ({{ skills?.skills.length || 0 }})</h2>
-        <!--<h3>{{ countLvl5Skills() || 0 }} skills at level 5</h3>-->
-        <!--<div class="skill-list" *ngIf="skillsData && loadingDone">-->
-        <!--<ng-container *ngFor="let group of skillGroups">-->
-        <!--<ng-container *ngIf="skillList[group.group_id].length">-->
-        <!--<div class="skill-group">-->
-        <!--<button (click)="toggleAccordion($event)" class="accordion">-->
-        <!--<i class="fa fa-folder"></i> {{ group.name }} ({{ skillList[group.group_id].length }})-->
-        <!--</button>-->
-        <!--<div class="skill-group-body accordion-body">-->
-        <!--<p class="skill-name" *ngFor="let skill of getSkillsInGroup(group.group_id)">-->
-        <!--<span *ngIf="skill.name">{{ skill.name }}</span>-->
-        <!--<span>{{ skill.current_skill_level }}</span>-->
-        <!--</p>-->
-        <!--</div>-->
-        <!--</div>-->
-        <!--</ng-container>-->
-        <!--</ng-container>-->
-        <!--</div>-->
+        <h3>{{ countLvl5Skills() }} skills at level 5</h3>
+        <div class="skill-list" *ngIf="skills">
+            <ngb-accordion *ngIf="skills" class="skill-list-container">
+                <ngb-panel *ngFor="let group of skillGroups">
+                    <ng-template ngbPanelTitle>{{group.name}} ({{skillList[group.group_id].length}})</ng-template>
+                    <ng-template ngbPanelContent>
+                        <p class="skill-name" *ngFor="let skill of getSkillsInGroup(group.group_id)">
+                            <span *ngIf="skill.name">{{ skill.name }}</span>
+                            <span>{{ skill.active_skill_level }}</span>
+                        </p>
+                    </ng-template>
+                </ngb-panel>
+            </ngb-accordion>
+        </div>
     </div>
 </div>

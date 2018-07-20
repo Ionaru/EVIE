@@ -10,6 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NamesService } from './data-services/names.service';
 import { ShipService } from './data-services/ship.service';
+import { SkillGroupsService } from './data-services/skill-groups.service';
 import { SkillQueueService } from './data-services/skillqueue.service';
 import { SkillsService } from './data-services/skills.service';
 import { StatusService } from './data-services/status.service';
@@ -69,6 +70,7 @@ import { SocketService } from './socket/socket.service';
         WalletService,
         WalletJournalService,
         SkillQueueService,
+        SkillGroupsService,
         SkillsService,
         SocketService,
         AppReadyGuard,

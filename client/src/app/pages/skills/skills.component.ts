@@ -1,20 +1,29 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as countdown from 'countdown';
+import Timespan = countdown.Timespan;
 import { Subscription } from 'rxjs';
 
 import { NamesService } from '../../data-services/names.service';
+import { ISkillGroupData, SkillGroupsService } from '../../data-services/skill-groups.service';
 import { ISkillQueueData, SkillQueueService } from '../../data-services/skillqueue.service';
-import { ISkillsData, SkillsService } from '../../data-services/skills.service';
+import { ISkillData, ISkillsData, SkillsService } from '../../data-services/skills.service';
 import { CharacterService } from '../../models/character/character.service';
 import { Helpers } from '../../shared/helpers';
-import Timespan = countdown.Timespan;
 
-interface IExtendedSkillData extends ISkillQueueData {
+interface IExtendedSkillQueueData extends ISkillQueueData {
     status?: 'training' | 'finished' | 'scheduled' | 'inactive';
     countdown?: number | Timespan;
     name?: string;
     spAtEnd?: number;
     spLeft?: number;
+}
+
+interface IExtendedSkillData extends ISkillData {
+    name?: string;
+}
+
+interface IExtendedSkillsData extends ISkillsData {
+    skills: IExtendedSkillData[];
 }
 
 @Component({
@@ -24,9 +33,9 @@ interface IExtendedSkillData extends ISkillQueueData {
 })
 export class SkillsComponent implements OnInit, OnDestroy {
 
-    public skillQueue: IExtendedSkillData[] = [];
+    public skillQueue: IExtendedSkillQueueData[] = [];
     public skillQueueCount = 0;
-    public skills?: ISkillsData;
+    public skills?: IExtendedSkillsData;
     public skillTrainingPaused = true;
     public totalQueueTime = 0;
     public totalQueueCountdown?: number | Timespan;
@@ -39,19 +48,25 @@ export class SkillsComponent implements OnInit, OnDestroy {
     public totalQueueTimer?: number;
     public updateQueueTimer?: number;
 
+    public skillGroups!: ISkillGroupData[];
+    public skillList: {
+        [groupid: number]: IExtendedSkillData[],
+    } = {};
+
     // tslint:disable-next-line:no-bitwise
     private countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
 
     private changeSubscription: Subscription;
 
-    constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService) {
+    constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService,
+                private skillGroupsService: SkillGroupsService) {
         this.changeSubscription = CharacterService.characterChangeEvent.subscribe(() => {
             this.ngOnInit().then();
         });
     }
 
     public async ngOnInit() {
-        await Promise.all([this.getSkillQueue(), this.getSkills()]);
+        await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
         this.parseSkillQueue();
     }
 
@@ -64,6 +79,17 @@ export class SkillsComponent implements OnInit, OnDestroy {
         if (this.skills) {
             this.skillPoints = this.skills.total_sp;
             this.skills.unallocated_sp = 500000;
+
+            for (const skill of this.skills.skills) {
+                skill.name = NamesService.getNameFromData(skill.skill_id, 'Unknown skill');
+            }
+        }
+
+        for (const group of this.skillGroups) {
+            const skillsGorGroup = this.getSkillsForGroup(group);
+            if (skillsGorGroup) {
+                this.skillList[group.group_id] = skillsGorGroup;
+            }
         }
 
         for (const skillInQueue of this.skillQueue) {
@@ -193,6 +219,38 @@ export class SkillsComponent implements OnInit, OnDestroy {
             this.skills = await this.skillsService.getSkillsData(CharacterService.selectedCharacter);
             if (this.skills) {
                 await this.namesService.getNames(...this.skills.skills.map((e) => e.skill_id));
+            }
+        }
+    }
+
+    public getSkillsForGroup(group: ISkillGroupData) {
+        if (this.skills) {
+            let skills = this.skills.skills.filter((_) => group.types.indexOf(_.skill_id) !== -1);
+            skills = Helpers.sortArrayByObjectProperty(skills, 'name');
+            return skills;
+        }
+    }
+
+    public getSkillsInGroup(groupId: number) {
+        return this.skillList[groupId];
+    }
+
+    public async setSkillGroups() {
+        this.skillGroups = await this.skillGroupsService.getSkillGroupInformation();
+    }
+
+    public countLvl5Skills(): number {
+        if (this.skills) {
+            return this.skills.skills.filter((_) => _.active_skill_level === 5).length;
+        }
+        return 0;
+    }
+
+    // noinspection JSMethodCanBeStatic
+    public toggleAccordion(acc: HTMLElement) {
+        if (!acc.classList.contains('accordion') && acc.parentElement) {
+            if (acc.parentElement.classList.contains('accordion')) {
+                acc = acc.parentElement;
             }
         }
     }
