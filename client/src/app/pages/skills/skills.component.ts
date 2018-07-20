@@ -246,12 +246,12 @@ export class SkillsComponent implements OnInit, OnDestroy {
         return 0;
     }
 
-    // noinspection JSMethodCanBeStatic
-    public toggleAccordion(acc: HTMLElement) {
-        if (!acc.classList.contains('accordion') && acc.parentElement) {
-            if (acc.parentElement.classList.contains('accordion')) {
-                acc = acc.parentElement;
-            }
-        }
-    }
+    // // noinspection JSMethodCanBeStatic
+    // public toggleAccordion(acc: HTMLElement) {
+    //     if (!acc.classList.contains('accordion') && acc.parentElement) {
+    //         if (acc.parentElement.classList.contains('accordion')) {
+    //             acc = acc.parentElement;
+    //         }
+    //     }
+    // }
 }

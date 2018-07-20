@@ -28,6 +28,7 @@ export class UserService {
 
         const url = 'api/login';
         const body = {
+            // Hash the password so it is never sent over the wire as plain text.
             password: UserService.hashPassword(password),
             username,
         };

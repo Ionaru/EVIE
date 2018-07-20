@@ -76,7 +76,7 @@
         <div class="skill-list" *ngIf="skills">
             <ngb-accordion *ngIf="skills" class="skill-list-container">
                 <ngb-panel *ngFor="let group of skillGroups">
-                    <ng-template ngbPanelTitle>{{group.name}} ({{skillList[group.group_id].length}})</ng-template>
+                    <ng-template ngbPanelTitle>{{ group.name }} ({{ skillList[group.group_id].length }})</ng-template>
                     <ng-template ngbPanelContent>
                         <p class="skill-name" *ngFor="let skill of getSkillsInGroup(group.group_id)">
                             <span *ngIf="skill.name">{{ skill.name }}</span>
