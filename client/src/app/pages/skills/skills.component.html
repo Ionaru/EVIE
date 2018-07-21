@@ -2,13 +2,12 @@
     <div class="skill-points-container">
         <div>
             <h2>Skillpoints</h2>
-            <span class="skill-points underline-info" *ngIf="skills"
-                  title="This is a calculated value and may not be 100% accurate">
+            <p class="skill-points" *ngIf="skills">
                 {{ skillPoints | number:'1.0-0' }} SP
-            </span>
-            <span class="unallocated" *ngIf="skills && skills.unallocated_sp">
-                + ({{ skills.unallocated_sp | number:'1.0-0' }} unallocated SP)
-            </span>
+                <span class="unallocated" *ngIf="skills && skills.unallocated_sp">
+                    + ({{ skills.unallocated_sp | number:'1.0-0' }} unallocated SP)
+                </span>
+            </p>
         </div>
         <div>
             <h2>Training speed</h2>
@@ -21,12 +20,15 @@
     <hr>
 
     <div class="skill-queue-container">
-        <h2>Skill queue ({{ skillQueueCount }})</h2>
+        <div class="d-flex justify-content-between">
+            <h2>Skill queue ({{ skillQueueCount }})</h2>
+            <h2 (click)="toggleSkillQueueVisible()"><i class="fas fa-chevron-down"></i></h2>
+        </div>
         <p class="skill-queue-time" *ngIf="!skillTrainingPaused" [ngClass]="{'low': skillQueueLow()}">
             <i class="fa fa-exclamation-triangle" *ngIf="skillQueueLow()"></i>
             Skill queue ends in {{ totalQueueCountdown }}
         </p>
-        <div class="skill-queue">
+        <div class="skill-queue" [ngClass]="{'d-none': !skillQueueVisible}">
             <ng-container *ngIf="skillTrainingPaused">
                 <p class="stalled"><i class="fa fa-cog"></i> Skill queue inactive</p>
             </ng-container>
@@ -34,38 +36,35 @@
                 <ng-container *ngFor="let skill of skillQueue">
                     <div class="skill-in-queue {{skill.status}}" *ngIf="skill.status !== 'finished'">
                         <div class="left-info">
-                            <ng-container *ngIf="skill.status === 'training'"><i class="fa fa-cog fa-spin"></i>
-                            </ng-container>
-                            <ng-container *ngIf="skill.status === 'scheduled'"><i class="fa fa-chevron-circle-up"></i>
-                            </ng-container>
-                            <span class="skill-name"><strong> {{ skill.name }}</strong></span>
-                            <br>
-                            <!--<span class="skill-group" *ngIf="skill.name"><i class="fa fa-folder-open"></i> {{ getSkillGroup(skill.skill_id) }}</span><br>-->
-                            <span class="skill-level">Skill level {{ skill.finished_level - 1 }} <i
-                                class="fa fa-arrow-right"></i> {{ skill.finished_level }}</span>
-                            <br>
-                            <ng-container *ngIf="skill.status === 'training'">
-                                <span class="skill-time">Finishes in {{ skill.countdown }}</span>
-                            </ng-container>
-                            <ng-container *ngIf="skill.status === 'scheduled'">
-                                <span class="skill-time">Will take {{ skill.countdown }}</span>
-                            </ng-container>
+                            <p>
+                                <ng-container *ngIf="skill.status === 'training'"><i class="fa fa-cog fa-spin"></i>
+                                </ng-container>
+                                <ng-container *ngIf="skill.status === 'scheduled'"><i
+                                    class="fa fa-chevron-circle-up"></i>
+                                </ng-container>
+                                <strong> {{ skill.name }} {{ skill.finished_level }}</strong>
+                            </p>
+                            <p class="skill-info">SP left {{ skill.spLeft | number:'1.0-0' }}</p>
+                            <p *ngIf="skill.status === 'training'" class="skill-info">
+                                Finishes in {{ skill.countdown }}
+                            </p>
+                            <p *ngIf="skill.status === 'scheduled'" class="skill-info">
+                                Will take {{ skill.countdown }}
+                            </p>
                         </div>
                         <div class="right-info">
-                            <br>
-                            <span class="underline-info"
-                                  title="This is a calculated value and may not be 100% accurate">
-                            SP left {{ skill.spLeft | number:'1.0-0' }}
-                        </span>
+                            <p class="skill-group" *ngIf="skill.name"><i class="fa fa-folder-open"></i> {{
+                                getSkillGroup(skill.skill_id) }}</p>
                             <p>Total SP when finished {{ skill.spAtEnd | number:'1.0-0' }}</p>
+                            <p>{{ skill.percentageDone || 0 | number:'1.2-2' }}%</p>
                         </div>
                     </div>
+                    <p class="skill-progressbar" *ngIf="skill.percentageDone">
+                        <ngb-progressbar [value]="skill.percentageDone" height="2px"></ngb-progressbar>
+                    </p>
                 </ng-container>
             </ng-container>
         </div>
-        <!--<div *ngIf="!loadingDone">-->
-        <!--<i class="fa fa-circle-o-notch fa-spin"></i>-->
-        <!--</div>-->
     </div>
 
     <hr>

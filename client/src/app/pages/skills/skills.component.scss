@@ -21,6 +21,9 @@
 }
 
 .skill-queue {
+
+    $skill-queue-left-margin: 20px;
+
     .stalled {
         color: #ffff00;
     }
@@ -42,11 +45,13 @@
             color: $eve-skill-trained;
         }
 
-        .skill-group,
-        .skill-level,
-        .skill-time {
-            margin-left: 25px;
+        .left-info .skill-info {
+            margin-left: $skill-queue-left-margin;
         }
+    }
+
+    .skill-progressbar {
+        margin-left: $skill-queue-left-margin;
     }
 }
 

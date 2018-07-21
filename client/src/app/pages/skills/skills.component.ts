@@ -16,6 +16,7 @@ interface IExtendedSkillQueueData extends ISkillQueueData {
     name?: string;
     spAtEnd?: number;
     spLeft?: number;
+    percentageDone?: number;
 }
 
 interface IExtendedSkillData extends ISkillData {
@@ -52,6 +53,8 @@ export class SkillsComponent implements OnInit, OnDestroy {
     public skillList: {
         [groupid: number]: IExtendedSkillData[],
     } = {};
+
+    public skillQueueVisible = true;
 
     // tslint:disable-next-line:no-bitwise
     private countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
@@ -122,17 +125,28 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
                     // Skill point calculations
                     this.spPerSec = skillInQueue.spLeft / (skillTrainingDuration / 1000);
-                    const spGained = (this.spPerSec * (timeExpired / 1000));
+                    let spGained = (this.spPerSec * (timeExpired / 1000));
                     skillInQueue.spLeft = skillInQueue.spLeft - spGained;
+
+                    // Calculate % done.
+                    if (skillInQueue.level_start_sp) {
+                        skillInQueue.percentageDone = (spGained / (skillInQueue.level_end_sp - skillInQueue.level_start_sp)) * 100;
+                    }
 
                     this.skillPoints += (this.spPerSec * (timeExpired / 1000));
                     skillInQueue.spAtEnd = this.skillPoints + skillInQueue.spLeft;
 
+                    skillInQueue.countdown = countdown(Date.now(), skillFinishDate, this.countdownUnits);
+
                     // Update spPerSec and skill time countdown every second.
-                    this.skillQueueTimer = Helpers.repeat(() => {
+                    this.skillQueueTimer = setInterval(() => {
                         this.skillPoints += this.spPerSec;
+                        spGained += this.spPerSec;
                         if (skillInQueue.spLeft) {
                             skillInQueue.spLeft = skillInQueue.spLeft -= this.spPerSec;
+                        }
+                        if (skillInQueue.level_start_sp && skillInQueue.level_end_sp) {
+                            skillInQueue.percentageDone = (spGained / (skillInQueue.level_end_sp - skillInQueue.level_start_sp)) * 100;
                         }
                         skillInQueue.countdown = countdown(Date.now(), skillFinishDate, this.countdownUnits);
                     }, 1000);
@@ -244,6 +258,14 @@ export class SkillsComponent implements OnInit, OnDestroy {
             return this.skills.skills.filter((_) => _.active_skill_level === 5).length;
         }
         return 0;
+    }
+
+    public getSkillGroup(skillId: number) {
+        return this.skillGroups.filter((_) => _.types.indexOf(skillId) !== -1)[0].name;
+    }
+
+    public toggleSkillQueueVisible() {
+        this.skillQueueVisible = !this.skillQueueVisible;
     }
 
     // // noinspection JSMethodCanBeStatic
