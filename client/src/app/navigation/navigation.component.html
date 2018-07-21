@@ -1,0 +1,91 @@
+<nav class="navbar fixed-top navbar-expand-lg">
+    <a class="navbar-brand" routerLink="/">EVIE</a>
+    <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"
+            [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
+        <i class="fa fa-chevron-down"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapseExample" [ngbCollapse]="!isCollapsed">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item" (click)="isCollapsed = !isCollapsed">
+                <a class="nav-link" routerLink="/" routerLinkActive="active"
+                   [routerLinkActiveOptions]="{ exact: true }">
+                    <span class="nav-link-text"><i class="fas fa-home"></i></span>
+                </a>
+            </li>
+            <li *ngIf="isLoggedIn" class="nav-item" (click)="isCollapsed = !isCollapsed">
+                <a class="nav-link" routerLink="dashboard" routerLinkActive="active">
+                    <span class="nav-link-text"><i class="fas fa-columns"></i></span>
+                </a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item d-none d-lg-block disabled">
+                <a class="nav-link"><span id="eve-players"></span> players online</a>
+            </li>
+            <li *ngIf="isLoggedIn" class="nav-item">
+                <a class="nav-link" href="#">
+                    <span class="nav-link-text"><i class="fas fa-user-cog"></i></span>
+                </a>
+            </li>
+            <li *ngIf="isLoggedIn" class="nav-item">
+                <a class="nav-link" href="#" (click)="logout()">
+                    <span class="nav-link-text"><i class="fas fa-sign-out"></i></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<nav class="navbar fixed-left navbar-inverse">
+    <div class="scrollContainer">
+        <a class="character-item" [ngClass]="{'disabled': checkAccess()}" (click)="nextCharacter()">
+            <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
+        </a>
+        <a routerLink="dashboard" routerLinkActive="active" class="navbar-item d-lg-none" tooltip="Dashboard"
+           placement="right" [ngClass]="{'disabled': checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/recruitment.svg" alt="Character sheet icon">
+        </a>
+        <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item" tooltip="Character Overview"
+           placement="right"
+           [ngClass]="{'disabled': true || checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">
+        </a>
+        <a routerLink="skills" routerLinkActive="active" class="navbar-item" tooltip="Skills" placement="right"
+           [ngClass]="{'disabled': checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg" alt="Skills icon">
+        </a>
+        <a routerLink="contacts" routerLinkActive="active" class="navbar-item"
+           [ngClass]="{'disabled': true || checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/contacts.svg" alt="Contacts icon">
+        </a>
+        <a routerLink="mail" routerLinkActive="active" class="navbar-item"
+           [ngClass]="{'disabled': true || checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg" alt="Mail icon">
+        </a>
+        <a routerLink="market" routerLinkActive="active" class="navbar-item" tooltip="Market orders" placement="right"
+           [ngClass]="{'disabled': checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg" alt="Market icon">
+        </a>
+        <a routerLink="wallet" routerLinkActive="active" class="navbar-item" tooltip="Wallet" placement="right"
+           [ngClass]="{'disabled': checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg" alt="Wallet icon">
+        </a>
+        <a routerLink="assets" routerLinkActive="active" class="navbar-item"
+           [ngClass]="{'disabled': true || checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg" alt="Assets icon">
+        </a>
+        <a routerLink="planets" routerLinkActive="active" class="navbar-item"
+           [ngClass]="{'disabled': true || checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg" alt="Planets icon">
+        </a>
+        <a routerLink="industry" routerLinkActive="active" class="navbar-item"
+           [ngClass]="{'disabled': true || checkAccess()}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg" alt="Industry icon">
+        </a>
+        <a class="navbar-item time"
+           [ngClass]="{'disabled': true || checkAccess()}">
+            <span id="EVETime_Hours">{{ hours }}</span>:<span id="EVETime_Minutes">{{ minutes }}</span>
+        </a>
+    </div>
+</nav>

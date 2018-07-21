@@ -1,74 +1,57 @@
-import { Request, Router } from 'express';
-import { RequestHandlerParams } from 'express-serve-static-core';
+import { NextFunction, Request, Response, Router } from 'express';
+import { PathParams, RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 import { logger } from 'winston-pnp-logger';
-import { IResponse } from './global.router';
-
-interface IRequestLogItem {
-  id;
-  request: Request;
-}
-export let requestList: IRequestLogItem[] = [];
 
 export class BaseRouter {
-  public router: Router = Router();
 
-  public createAllRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.all(url, routeFunction);
-  }
+    public static sendResponse(response: Response, statusCode: number, message: string, data?: object): Response {
+        let state = 'success';
+        if (statusCode !== 200) {
+            state = 'error';
+        }
 
-  public createGetRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.get(url, routeFunction);
-  }
+        const responseData = {
+            data,
+            message,
+            state,
+        };
 
-  public createPostRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.post(url, routeFunction);
-  }
+        if (!data) {
+            delete responseData.data;
+        }
+        response.status(statusCode);
+        return response.json(responseData);
+    }
 
-  public createPutRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.put(url, routeFunction);
-  }
+    public router = Router();
 
-  public createDeleteRoute(url: string, routeFunction: RequestHandlerParams): void {
-    this.router.delete(url, routeFunction);
-  }
-}
+    constructor() {
+        logger.info(`New router: ${this.constructor.name}`);
+    }
 
-export function sendResponse(response: IResponse, statusCode: number, message: string, data?: any): void {
-  let state = 'success';
-  if (statusCode !== 200) {
-    state = 'error';
-  }
+    public createAllRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
+        this.router.all(url, this.asyncHandler(routeFunction));
+    }
 
-  const request = requestList.filter((_) => _.id === response.id)[0].request;
+    public createGetRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
+        this.router.get(url, this.asyncHandler(routeFunction));
+    }
 
-  const responseData = {
-    data,
-    message,
-    state,
-  };
+    public createPostRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
+        this.router.post(url, this.asyncHandler(routeFunction));
+    }
 
-  if (!data) {
-    delete responseData.data;
-  }
+    public createPutRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
+        this.router.put(url, this.asyncHandler(routeFunction));
+    }
 
-  logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${statusCode} ${message}`);
+    public createDeleteRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
+        this.router.delete(url, this.asyncHandler(routeFunction));
+    }
 
-  response.status(statusCode);
-  response.type('html');
-  response.json(responseData);
-}
-
-export function sendTextResponse(response: IResponse, statusCode: number, message: string): void {
-  const request = requestList.filter((_) => _.id === response.id)[0].request;
-
-  logger.debug(`${getIp(request)} -> ${request.originalUrl} -> ${statusCode}`);
-
-  response.status(statusCode);
-  response.send(message);
-}
-
-export function getIp(request: Request): string {
-  return request.headers['x-forwarded-for'] ||
-    request.connection.remoteAddress ||
-    request.socket.remoteAddress;
+    private asyncHandler(routeFunction: any): any {
+        return (request: Request, response: Response, next: NextFunction) => {
+            Promise.resolve(routeFunction(request, response, next)).catch(next);
+        };
+    }
 }

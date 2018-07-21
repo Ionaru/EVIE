@@ -1,4 +1,4 @@
 export const environment = {
-  logLevel: 2,
-  production: true,
+    production: true,
+    socketHost: 'http://localhost:3000/',
 };

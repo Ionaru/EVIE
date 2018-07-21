@@ -1,110 +1,103 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Subject } from 'rxjs';
 
-import { Globals } from '../../shared/globals';
-import { EndpointService } from '../endpoint/endpoint.service';
-import { Character, IApiCharacterData, IEveCharacterData, ISSOSocketResponse, ITokenRefreshResponse } from './character.model';
+import { Helpers } from '../../shared/helpers';
+import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
 
-const tokenRefreshInterval = 15 * 60 * 1000;
+const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
 
 @Injectable()
 export class CharacterService {
 
-  constructor(private endpointService: EndpointService, private globals: Globals, private http: Http) { }
+    private static _characterChangeEvent = new Subject<Character>();
+    public static get characterChangeEvent() { return this._characterChangeEvent; }
 
-  public async getPublicCharacterData(character: Character): Promise<void> {
-    const url = this.endpointService.constructESIUrl('v4/characters', character.characterId);
-    const response: Response = await this.http.get(url).toPromise();
-    const characterData: IEveCharacterData = JSON.parse(response.text());
-    character.gender = characterData.gender;
-    character.corporationId = characterData.corporation_id || 1;
-    character.allianceId = characterData.alliance_id;
-  }
+    private static _selectedCharacter: Character | undefined;
+    public static get selectedCharacter(): Character | undefined { return this._selectedCharacter; }
 
-  public async registerCharacter(data: IApiCharacterData): Promise<Character> {
+    constructor(private http: HttpClient) { }
 
-    const character = new Character(data);
-    this.globals.user.characters.push(character);
-    if (data.isActive) {
-      this.setActiveCharacter(character, true).then();
+    public async getPublicCharacterData(character: Character): Promise<void> {
+        const url = Helpers.constructESIUrl(4, 'characters', character.characterId);
+        const response = await this.http.get<any>(url).toPromise<IEveCharacterData>().catch((e) => e);
+        character.birthday = new Date(response.birthday);
+        character.gender = response.gender;
+        character.corporationId = response.corporation_id || 1;
+        character.allianceId = response.alliance_id;
+        character.description = response.description;
+        character.securityStatus = response.security_status;
     }
 
-    const tokenExpiryTime = character.tokenExpiry.getTime();
-    const currentTime = Date.now();
+    public async registerCharacter(data: IApiCharacterData): Promise<Character> {
 
-    const timeLeft = (tokenExpiryTime - currentTime) - tokenRefreshInterval;
-    if (timeLeft <= 0) {
-      await this.refreshToken(character);
-    }
-
-    character.refreshTimer = setInterval(() => {
-      this.refreshToken(character).then();
-    }, tokenRefreshInterval);
-
-    return character;
-  }
-
-  public async refreshToken(character: Character): Promise<void> {
-    const pid = character.pid;
-    const accessToken = character.accessToken;
-    const url = `/sso/refresh?pid=${pid}&accessToken=${accessToken}`;
-    const response: Response = await this.http.get(url).toPromise();
-    const json: ITokenRefreshResponse = response.json();
-    character.accessToken = json.data.token;
-  }
-
-  public startAuthProcess(character?: Character): void {
-    let url = '/sso/start';
-    if (character) {
-      url += '?characterPid=' + character.pid;
-    }
-
-    const w = window.open(url, '_blank', 'width=600,height=700');
-
-    this.globals.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
-      w.close();
-      if (response.state === 'success') {
-        if (character) {
-          character.updateAuth(response.data);
-          this.globals.characterChangeEvent.next(character);
-        } else {
-          const newCharacter = await this.registerCharacter(response.data);
-          this.setActiveCharacter(newCharacter).then();
+        const character = new Character(data);
+        if (data.isActive) {
+            this.setActiveCharacter(character, true).then();
         }
-      }
-    });
-  }
 
-  public async setActiveCharacter(character?: Character, alreadyActive?: boolean): Promise<void> {
+        const tokenExpiryTime = character.tokenExpiry.getTime();
+        const currentTime = Date.now();
 
-    let characterPid;
-    if (character) {
-      characterPid = character.pid;
-    }
-
-    if (!alreadyActive) {
-      this.http.post('/sso/activate', {characterPid}).toPromise().then();
-    }
-    this.globals.selectedCharacter = character;
-    this.globals.characterChangeEvent.next(character);
-  }
-
-  public deleteCharacter(character: Character): void {
-    const url = '/sso/delete';
-    const data = {
-      characterPid: character.pid,
-    };
-    this.http.post(url, data).subscribe((response: Response) => {
-      const responseBody = response.json();
-      if (responseBody.state === 'success') {
-        clearInterval(character.refreshTimer);
-
-        if (this.globals.selectedCharacter && this.globals.selectedCharacter.pid === character.pid) {
-          this.setActiveCharacter().then();
+        const timeLeft = (tokenExpiryTime - currentTime) - tokenRefreshInterval;
+        if (timeLeft <= 0) {
+            await this.refreshToken(character);
         }
-        const index = this.globals.user.characters.indexOf(character);
-        this.globals.user.characters.splice(index, 1);
-      }
-    });
-  }
+
+        character.refreshTimer = window.setInterval(() => {
+            this.refreshToken(character).then();
+        }, tokenRefreshInterval);
+
+        this.getPublicCharacterData(character).then();
+
+        return character;
+    }
+
+    public async refreshToken(character: Character): Promise<void> {
+        const uuid = character.uuid;
+        const url = `/sso/refresh?uuid=${uuid}`;
+        const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>()
+            .catch((e: HttpErrorResponse) => e);
+        if (response instanceof HttpErrorResponse) {
+            window.setTimeout(() => {
+                this.refreshToken(character).then();
+            }, 5 * 1000);
+            return;
+        }
+        character.accessToken = response.data.token;
+    }
+
+    public async setActiveCharacter(character?: Character, skipServerCall?: boolean): Promise<void> {
+
+        if (!skipServerCall) {
+            const url = '/sso/activate';
+            const characterUUID = character ? character.uuid : undefined;
+            this.http.post(url, {characterUUID}).toPromise().then();
+        }
+
+        CharacterService._selectedCharacter = character;
+        CharacterService.characterChangeEvent.next(character);
+    }
+
+    public async deleteCharacter(character: Character): Promise<void> {
+
+        const url = '/sso/delete';
+        const characterUUID = character.uuid;
+
+        const response = await this.http.post<any>(url, {characterUUID}).toPromise<IDeleteCharacterResponse>()
+            .catch((e: HttpErrorResponse) => e);
+        if (response instanceof HttpErrorResponse) {
+            throw response.error;
+        }
+
+        if (response.state === 'success') {
+            if (character.refreshTimer) {
+                window.clearInterval(character.refreshTimer);
+            }
+
+            if (CharacterService.selectedCharacter && CharacterService.selectedCharacter.uuid === character.uuid) {
+                this.setActiveCharacter().then();
+            }
+        }
+    }
 }

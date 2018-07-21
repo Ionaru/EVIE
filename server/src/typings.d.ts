@@ -2,33 +2,32 @@ import Socket = SocketIO.Socket;
 import Session = Express.Session;
 
 interface ISessionSocket extends Socket {
-  handshake: {
-    session: Session;
-    headers: any;
-    time: string;
-    address: string;
-    xdomain: boolean;
-    secure: boolean;
-    issued: number;
-    url: string;
-    query: any;
-  };
+    handshake: {
+        session: Session;
+        headers: any;
+        time: string;
+        address: string;
+        xdomain: boolean;
+        secure: boolean;
+        issued: number;
+        url: string;
+        query: any;
+    };
 }
 
-declare module 'express-mysql-session' {
-  function ems(session: any): any;
-  namespace ems {}
-  export = ems;
+interface IAuthResponseData {
+    access_token: string;
+    token_type: string;
+    expires_in: number;
+    refresh_token: string;
 }
 
-declare module 'socket.io-express-session' {
-  function ios(session: any): any;
-  namespace ios {}
-  export = ios;
-}
-
-declare module 'winston-daily-rotate-file' {
-  function winstonDRF(arg: object): void;
-  namespace winstonDRF {}
-  export = winstonDRF;
+interface IVerifyResponseData {
+    CharacterID: number;
+    CharacterName: string;
+    ExpiresOn: string;
+    Scopes: string;
+    TokenType: string;
+    CharacterOwnerHash: string;
+    IntellectualProperty: string;
 }

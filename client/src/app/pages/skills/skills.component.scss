@@ -1,0 +1,120 @@
+@import '../../../variables';
+
+.skill-points-container {
+    display: flex;
+    justify-content: space-between;
+
+    .unallocated {
+        color: $eve-skill-training;
+    }
+
+    .training-speed {
+        display: block;
+        text-align: right;
+    }
+}
+
+.skill-queue-time {
+    &.low {
+        color: #ffff00;
+    }
+}
+
+.skill-queue {
+
+    $skill-queue-left-margin: 20px;
+
+    .stalled {
+        color: #ffff00;
+    }
+
+    .skill-in-queue {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+
+        .right-info {
+            text-align: right;
+        }
+
+        &.training {
+            color: $primary;
+        }
+
+        &.scheduled {
+            color: $eve-skill-trained;
+        }
+
+        .left-info .skill-info {
+            margin-left: $skill-queue-left-margin;
+        }
+    }
+
+    .skill-progressbar {
+        margin-left: $skill-queue-left-margin;
+    }
+}
+
+.skill-list {
+    .skill-group {
+        margin-top: 10px;
+
+        .skill-group-body {
+            padding-left: 36px;
+            position: relative;
+
+            &::after {
+                background-color: #c2c4c5;
+                bottom: 0;
+                content: '';
+                left: 12px;
+                position: absolute;
+                top: 0;
+                width: 2px;
+            }
+        }
+    }
+}
+
+button.accordion {
+    background-color: transparent;
+    border: 0;
+    color: $eve-text-color;
+    cursor: pointer;
+    font-size: $standard-font-size;
+    font-weight: bold;
+    line-height: $standard-line-height;
+    outline: none;
+    text-align: left;
+    transition: 0.4s;
+
+    i {
+        text-align: left;
+        width: 25px;
+    }
+
+    &::after {
+        color: #777777;
+        content: '\002B';
+        float: right;
+        font-weight: bold;
+        margin-left: 5px;
+    }
+
+    &.active {
+        &::after {
+            content: '\2212';
+        }
+
+        i::before {
+            content: '\f07c';
+        }
+    }
+}
+
+div.accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 18px;
+    transition: max-height 0.3s ease-in-out;
+}

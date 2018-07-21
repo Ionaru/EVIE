@@ -1,0 +1,16 @@
+.modal {
+  text-align: initial;
+
+  .login-input,
+  .password-input {
+    transition: color 0.3s linear;
+  }
+
+  .login-container {
+    transition: height 0.3s ease-in-out;
+  }
+
+  .modal-footer {
+    justify-content: center;
+  }
+}

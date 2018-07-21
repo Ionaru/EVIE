@@ -1,76 +1,81 @@
-import { NgModule, Provider } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Logger, Options } from 'angular2-logger/core';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
-import { ModalModule } from 'ngx-bootstrap/modal';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { environment } from '../environments/environment';
+import { AppReadyEventService } from './app-ready-event.service';
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { router } from './app.router';
-import { DashboardComponent } from './pages/core/dashboard/dashboard.component';
-import { IndexComponent } from './pages/core/index/index.component';
-import { LoginModalComponent } from './pages/core/index/login-modal.component';
-import { RegisterModalComponent } from './pages/core/index/register-modal.component';
-import { NavigationComponent } from './pages/core/navigation/navigation.component';
-import { AssetsComponent } from './pages/evedata/assets/assets.component';
-import { CharactersheetComponent } from './pages/evedata/charactersheet/charactersheet.component';
-import { ContactsComponent } from './pages/evedata/contacts/contacts.component';
-import { IndustryComponent } from './pages/evedata/industry/industry.component';
-import { MailComponent } from './pages/evedata/mail/mail.component';
-import { MarketComponent } from './pages/evedata/market/market.component';
-import { PlanetsComponent } from './pages/evedata/planets/planets.component';
-import { SkillsComponent } from './pages/evedata/skills/skills.component';
-import { WalletComponent } from './pages/evedata/wallet/wallet.component';
-import { AppGuard } from './pages/guards/app.guard';
-import { AuthGuard } from './pages/guards/auth.guard';
-import { CharacterGuard } from './pages/guards/character.guard';
-import { Globals } from './shared/globals';
+import { NamesService } from './data-services/names.service';
+import { ShipService } from './data-services/ship.service';
+import { SkillGroupsService } from './data-services/skill-groups.service';
+import { SkillQueueService } from './data-services/skillqueue.service';
+import { SkillsService } from './data-services/skills.service';
+import { StatusService } from './data-services/status.service';
+import { WalletJournalService } from './data-services/wallet-journal.service';
+import { WalletService } from './data-services/wallet.service';
+import { AppReadyGuard } from './guards/app-ready.guard';
+import { AuthGuard } from './guards/auth.guard';
+import { httpInterceptorProviders } from './http-interceptors';
+import { CharacterService } from './models/character/character.service';
+import { UserService } from './models/user/user.service';
+import { NavigationComponent } from './navigation/navigation.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { HomeComponent } from './pages/home/home.component';
+import { LoginModalComponent } from './pages/home/login-modal.component';
+import { RegisterModalComponent } from './pages/home/register-modal.component';
+import { SkillsComponent } from './pages/skills/skills.component';
+import { WalletComponent } from './pages/wallet/wallet.component';
+import { ESIRequestCache } from './shared/esi-request-cache';
+import { SocketService } from './socket/socket.service';
 
-export const declarations: any[] = [
-  AppComponent,
-  NavigationComponent,
-  IndexComponent,
-  DashboardComponent,
-  AssetsComponent,
-  CharactersheetComponent,
-  ContactsComponent,
-  IndustryComponent,
-  MailComponent,
-  MarketComponent,
-  SkillsComponent,
-  PlanetsComponent,
-  WalletComponent,
-  LoginModalComponent,
-  RegisterModalComponent,
-];
-
-export const imports: any[] = [
-  BrowserModule,
-  BrowserAnimationsModule,
-  FormsModule,
-  HttpModule,
-  router,
-  BsDropdownModule.forRoot(),
-  TooltipModule.forRoot(),
-  ModalModule.forRoot(),
-];
-
-export const providers: Provider[] = [
-  AppGuard,
-  AuthGuard,
-  CharacterGuard,
-  Globals,
-  Logger,
-  {provide: Options, useValue: {level: environment.logLevel}},
-];
-
-export const bootstrap: any[] = [
-  AppComponent,
-];
-
-@NgModule({declarations, imports, providers, bootstrap})
-export class AppModule {}
+@NgModule({
+    bootstrap: [
+        AppComponent,
+    ],
+    declarations: [
+        AppComponent,
+        NavigationComponent,
+        HomeComponent,
+        DashboardComponent,
+        WalletComponent,
+        SkillsComponent,
+        LoginModalComponent,
+        RegisterModalComponent,
+    ],
+    entryComponents: [
+        LoginModalComponent,
+        RegisterModalComponent,
+    ],
+    imports: [
+        FormsModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        HttpClientModule,
+        NgbModule.forRoot(),
+        NgbTooltipModule,
+    ],
+    providers: [
+        httpInterceptorProviders,
+        ESIRequestCache,
+        AppReadyEventService,
+        UserService,
+        CharacterService,
+        NamesService,
+        StatusService,
+        ShipService,
+        WalletService,
+        WalletJournalService,
+        SkillQueueService,
+        SkillGroupsService,
+        SkillsService,
+        SocketService,
+        AppReadyGuard,
+        AuthGuard,
+    ],
+})
+export class AppModule {
+}

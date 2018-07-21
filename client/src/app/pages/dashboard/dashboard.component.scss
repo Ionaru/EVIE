@@ -1,0 +1,45 @@
+@import '../../../variables';
+
+.character-dashboard {
+    .character-container2 {
+        display: flex;
+        flex-direction: column;
+        border: $primary 1px solid;
+        margin-bottom: 5px;
+        margin-top: 5px;
+        background-color: #251910;
+        max-width: 258px;
+
+        .character-info {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            p {
+                margin: 0;
+                padding: 5px;
+                text-align: center;
+
+                &.button-row {
+                    padding: 0;
+                    display: flex;
+
+                    button {
+                        border: none;
+                        width: 100%;
+                        transition: filter 0.5s ease-in-out, color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+                        &.disabled, &:disabled {
+                            filter: grayscale(100%);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .add-character-button {
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+}

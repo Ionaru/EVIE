@@ -1,0 +1,52 @@
+<div class="container fluid character-dashboard">
+    <p class="text-center">
+        Welcome to the Character Dashboard, here you can see and manage the characters you added to EVIE, or add
+        new characters.
+    </p>
+    <p class="text-center">
+        <button class="btn btn-outline-primary add-character-button" (click)="authCharacter()">
+            <i class="far fa-user-plus"></i>
+            Add a new character
+        </button>
+    </p>
+
+    <div class="row justify-content-around">
+        <div *ngFor="let character of characters" [ngClass]="{'selected' : isCharacterSelected(character)}"
+             class="character-container2">
+            <div class="character-portrait">
+                <img src="//image.eveonline.com/Character/{{ character.characterId }}_256.jpg" alt="Character image">
+            </div>
+            <div class="character-info">
+                <p>
+                    <strong>{{ character.name }}</strong>
+                </p>
+                <p>
+                    <ng-container *ngIf="character.currentShip.name && character.currentShip.type;else loading_message">
+                        {{ character.currentShip.name }} ({{ character.currentShip.type }})
+                    </ng-container>
+                </p>
+                <p>
+                    {{ character.birthday | date:'longDate' }}
+                </p>
+                <p class="button-row">
+                    <button class="btn" [disabled]="isCharacterSelected(character)"
+                            [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character)">
+                        <i class="far fa-check"></i>
+                    </button>
+                    <button class="btn btn-outline-info disabled">
+                        <i class="far fa-sync"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" (click)="deleteCharacter(character).then()">
+                        <i class="far fa-trash"></i>
+                    </button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loading_message>
+    <span>Loading...
+        <span class="m-progress m-progress-small"></span>
+    </span>
+</ng-template>
