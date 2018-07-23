@@ -1,7 +1,7 @@
-# EVE Track 
+# EVIE
 
-[![Build Status](https://travis-ci.org/Ionaru/EVE-Track.svg?branch=master)](https://travis-ci.org/Ionaru/EVE-Track)
-[![Test Coverage](https://lima.codeclimate.com/github/Ionaru/EVE-Track/badges/coverage.svg)](https://lima.codeclimate.com/github/Ionaru/EVE-Track/coverage)
+[![Build Status](https://travis-ci.org/Ionaru/EVIE.svg?branch=master)](https://travis-ci.org/Ionaru/EVIE)
+[![Test Coverage](https://lima.codeclimate.com/github/Ionaru/EVIE/badges/coverage.svg)](https://lima.codeclimate.com/github/Ionaru/EVIE/coverage)
 [![](https://img.shields.io/badge/fly-safe-2F849E.svg)](https://www.eveonline.com/)
 
 This project started as a practise exercise for me to get myself more familiar with Angular and Typescript.

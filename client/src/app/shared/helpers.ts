@@ -14,11 +14,11 @@ export class Helpers {
      */
     public static repeat(fn: (...params: any[]) => any, interval: number, ...params: any[]): number {
       fn(...params);
-      return setInterval(fn, interval, ...params);
+      return window.setInterval(fn, interval, ...params);
     }
 
     // public static createTitle(name: string): string {
-    //   return `EVE-Track - ${name}`;
+    //   return `EVIE - ${name}`;
     // }
     //
     // public static isEmpty(obj: any): boolean {
