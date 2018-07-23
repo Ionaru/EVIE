@@ -1,4 +1,3 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -8,25 +7,6 @@ import { User } from '../../models/user/user.model';
 import { UserService } from '../../models/user/user.service';
 
 @Component({
-    animations: [
-        trigger(
-            'myAnimation',
-            [
-                state('in', style({})),
-                transition(
-                    ':enter', [
-                        style({opacity: 0}),
-                        animate('0.3s', style({opacity: 1})),
-                    ],
-                ),
-                transition(
-                    ':leave', [
-                        style({opacity: 1}),
-                        animate('0.3s', style({opacity: 0})),
-                    ],
-                )],
-        ),
-    ],
     styleUrls: ['./login-modal.component.scss'],
     templateUrl: './login-modal.component.html',
 })

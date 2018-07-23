@@ -59,10 +59,11 @@
     //background-color: red;
 
     .accordion {
+        transform: translate3d(0, 0, 0);
         //background-color: blue;
 
         .card {
-            .tab {
+            .card-header {
                 padding: 0;
             }
             //background-color: green;

@@ -21,6 +21,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { httpInterceptorProviders } from './http-interceptors';
 import { CharacterService } from './models/character/character.service';
 import { UserService } from './models/user/user.service';
+import { LogoutModalComponent } from './navigation/logout-modal.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -43,10 +44,12 @@ import { SocketService } from './socket/socket.service';
         WalletComponent,
         SkillsComponent,
         LoginModalComponent,
+        LogoutModalComponent,
         RegisterModalComponent,
     ],
     entryComponents: [
         LoginModalComponent,
+        LogoutModalComponent,
         RegisterModalComponent,
     ],
     imports: [

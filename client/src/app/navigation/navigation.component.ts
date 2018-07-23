@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { StatusService } from '../data-services/status.service';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
 import { CountUp } from '../shared/count-up';
+import { LogoutModalComponent } from './logout-modal.component';
 
 @Component({
     selector: 'app-navigation',
@@ -21,7 +23,8 @@ export class NavigationComponent implements OnInit {
     public isCollapsed!: boolean;
     public playersCountUp!: CountUp;
 
-    constructor(private userService: UserService, private statusService: StatusService, private characterService: CharacterService) {
+    constructor(private userService: UserService, private statusService: StatusService,
+                private characterService: CharacterService, private modalService: NgbModal) {
         CharacterService.characterChangeEvent.subscribe((character) => {
           if (character) {
             this.char = character.characterId;
@@ -72,7 +75,7 @@ export class NavigationComponent implements OnInit {
     }
 
     public logout(): void {
-        this.userService.logoutUser();
+        this.modalService.open(LogoutModalComponent);
     }
 
     private syncClock(): void {
