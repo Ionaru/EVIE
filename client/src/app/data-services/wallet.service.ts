@@ -10,7 +10,7 @@ export class WalletService {
     constructor(private http: HttpClient) { }
 
     public async getWalletBalance(character: Character): Promise<number> {
-        const url = Helpers.constructESIUrl(1, 'characters', character.characterId, 'wallet');
+        const url = Helpers.constructESIURL(1, 'characters', character.characterId, 'wallet');
         const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
         const response = await this.http.get<any>(url, {headers}).toPromise<number>().catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {

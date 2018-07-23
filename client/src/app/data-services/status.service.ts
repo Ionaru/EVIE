@@ -14,7 +14,7 @@ export class StatusService {
     constructor(private http: HttpClient) { }
 
     public async getStatus(): Promise<IStatusData | void> {
-        const url = Helpers.constructESIUrl(1, 'status');
+        const url = Helpers.constructESIURL(1, 'status');
         const response = await this.http.get<any>(url).toPromise<IStatusData>().catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             return;

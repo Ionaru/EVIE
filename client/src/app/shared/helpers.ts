@@ -142,7 +142,7 @@ export class Helpers {
     //     }
     // }
 
-    public static constructESIUrl(version: number, ...path: Array<string | number>): string {
+    public static constructESIURL(version: number, ...path: Array<string | number>): string {
         let url = `${Helpers.ESIURL}/v${version}/`;
         if (path.length) {
             url += `${path.join('/')}/`;

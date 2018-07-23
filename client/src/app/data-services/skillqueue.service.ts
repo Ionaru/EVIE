@@ -28,7 +28,7 @@ export class SkillQueueService {
     constructor(private http: HttpClient) { }
 
     public async getSkillQueue(character: Character): Promise<ISkillQueueData[]> {
-        const url = Helpers.constructESIUrl(2, 'characters', character.characterId, 'skillqueue');
+        const url = Helpers.constructESIURL(2, 'characters', character.characterId, 'skillqueue');
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<ISkillQueueData[]>()
             .catch((e: HttpErrorResponse) => e);
