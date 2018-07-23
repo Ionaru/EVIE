@@ -19,7 +19,7 @@ export class CharacterService {
     constructor(private http: HttpClient) { }
 
     public async getPublicCharacterData(character: Character): Promise<void> {
-        const url = Helpers.constructESIUrl(4, 'characters', character.characterId);
+        const url = Helpers.constructESIURL(4, 'characters', character.characterId);
         const response = await this.http.get<any>(url).toPromise<IEveCharacterData>().catch((e) => e);
         character.birthday = new Date(response.birthday);
         character.gender = response.gender;

@@ -1,11 +1,11 @@
 {
-    "name": "eve-track-server",
+    "name": "evie-server",
     "version": "1.0.0",
     "author": "Jeroen Akkerman",
-    "description": "Server module for EVE-Track",
+    "description": "Server module for EVIE",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Ionaru/EVE-Track.git"
+        "url": "https://github.com/Ionaru/EVIE.git"
     },
     "scripts": {
         "build": "tsc --project tsconfig.json",

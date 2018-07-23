@@ -9,8 +9,8 @@ export class GlobalRouter extends BaseRouter {
     private static globalRoute(request: Request, _response: Response, next?: NextFunction): void {
 
         // Define the session user if it didn't exists already
-        if (!request.session!.user) {
-            request.session!.user = {};
+        if (request.session && !request.session.user) {
+            request.session.user = {};
         }
 
         // Continue to the other routes

@@ -36,7 +36,7 @@ export class SSORouter extends BaseRouter {
      */
     private static async startSSOProcess(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // User is not logged in and can't initiate SSO process
             return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
@@ -80,7 +80,7 @@ export class SSORouter extends BaseRouter {
      */
     private static async processCallBack(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // User is not logged in and can't initiate SSO callback.
             // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
             // was linked directly to this page.
@@ -208,7 +208,7 @@ export class SSORouter extends BaseRouter {
      */
     private static async refreshToken(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // User is not logged in and can't refresh any API token.
             return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
@@ -270,7 +270,7 @@ export class SSORouter extends BaseRouter {
      */
     private static async deleteCharacter(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // User is not logged in and can't initiate SSO process
             return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
@@ -315,7 +315,7 @@ export class SSORouter extends BaseRouter {
      */
     private static async activateCharacter(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
         }
 

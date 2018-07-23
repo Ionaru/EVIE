@@ -20,7 +20,7 @@ export class APIRouter extends BaseRouter {
      */
     private static async doHandShake(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // No user ID present in the session.
             return APIRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
         }
@@ -201,7 +201,7 @@ export class APIRouter extends BaseRouter {
      */
     private static async changeUserPassword(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // User is not logged in and isn't allowed to change an email
             return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }
@@ -260,7 +260,7 @@ export class APIRouter extends BaseRouter {
      */
     private static async changeUserEmail(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // User is not logged in and isn't allowed to change an email
             return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }
@@ -331,7 +331,7 @@ export class APIRouter extends BaseRouter {
      */
     private static async changeUserUsername(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // User is not logged in and isn't allowed to change a username
             return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }
@@ -398,7 +398,7 @@ export class APIRouter extends BaseRouter {
      */
     private static async deleteUser(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session!.user.id) {
+        if (!request.session || !request.session.user.id) {
             // No user ID present in the session.
             return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }

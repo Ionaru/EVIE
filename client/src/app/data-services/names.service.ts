@@ -111,7 +111,7 @@ export class NamesService {
     }
 
     private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
-        const url = Helpers.constructESIUrl(2, 'universe/names');
+        const url = Helpers.constructESIURL(2, 'universe/names');
         const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             return;

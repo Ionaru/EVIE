@@ -45,7 +45,7 @@ export class SkillGroupsService {
     }
 
     private async getSkillGroupIds(): Promise<number[]> {
-        const url = Helpers.constructESIUrl(1, 'universe', 'categories', this.skillCategoryId);
+        const url = Helpers.constructESIURL(1, 'universe', 'categories', this.skillCategoryId);
         const response = await this.http.get<any>(url).toPromise<ISkillCategoryData>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
@@ -55,7 +55,7 @@ export class SkillGroupsService {
     }
 
     private async getSkillGroup(groupId: number): Promise<ISkillGroupData | undefined> {
-        const url = Helpers.constructESIUrl(1, 'universe', 'groups', groupId);
+        const url = Helpers.constructESIURL(1, 'universe', 'groups', groupId);
         const response = await this.http.get<any>(url).toPromise<ISkillGroupData>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {

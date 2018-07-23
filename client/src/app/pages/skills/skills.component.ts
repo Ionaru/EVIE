@@ -81,7 +81,6 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
         if (this.skills) {
             this.skillPoints = this.skills.total_sp;
-            this.skills.unallocated_sp = 500000;
 
             for (const skill of this.skills.skills) {
                 skill.name = NamesService.getNameFromData(skill.skill_id, 'Unknown skill');
@@ -139,7 +138,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
                     skillInQueue.countdown = countdown(Date.now(), skillFinishDate, this.countdownUnits);
 
                     // Update spPerSec and skill time countdown every second.
-                    this.skillQueueTimer = setInterval(() => {
+                    this.skillQueueTimer = window.setInterval(() => {
                         this.skillPoints += this.spPerSec;
                         spGained += this.spPerSec;
                         if (skillInQueue.spLeft) {
@@ -152,7 +151,7 @@ export class SkillsComponent implements OnInit, OnDestroy {
                     }, 1000);
 
                     // Update the list when a skill finishes training.
-                    this.updateQueueTimer = setTimeout(() => {
+                    this.updateQueueTimer = window.setTimeout(() => {
                         this.parseSkillQueue();
                     }, timeLeftInSkill);
 
@@ -267,13 +266,4 @@ export class SkillsComponent implements OnInit, OnDestroy {
     public toggleSkillQueueVisible() {
         this.skillQueueVisible = !this.skillQueueVisible;
     }
-
-    // // noinspection JSMethodCanBeStatic
-    // public toggleAccordion(acc: HTMLElement) {
-    //     if (!acc.classList.contains('accordion') && acc.parentElement) {
-    //         if (acc.parentElement.classList.contains('accordion')) {
-    //             acc = acc.parentElement;
-    //         }
-    //     }
-    // }
 }

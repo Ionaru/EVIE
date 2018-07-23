@@ -60,7 +60,7 @@ export class WalletJournalService {
     constructor(private http: HttpClient) { }
 
     public async getWalletJournal(character: Character): Promise<IWalletJournalData[]> {
-        const url = Helpers.constructESIUrl(4, 'characters', character.characterId, 'wallet', 'journal');
+        const url = Helpers.constructESIURL(4, 'characters', character.characterId, 'wallet', 'journal');
         const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
         const response = await this.http.get<any>(url, {headers}).toPromise<IWalletJournalData[]>()
             .catch((e: HttpErrorResponse) => e);

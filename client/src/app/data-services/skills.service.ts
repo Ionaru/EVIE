@@ -22,7 +22,7 @@ export class SkillsService {
     constructor(private http: HttpClient) { }
 
     public async getSkillsData(character: Character): Promise<ISkillsData | undefined> {
-        const url = Helpers.constructESIUrl(4, 'characters', character.characterId, 'skills');
+        const url = Helpers.constructESIURL(4, 'characters', character.characterId, 'skills');
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<ISkillsData>().catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
