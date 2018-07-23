@@ -81,7 +81,6 @@ export class SkillsComponent implements OnInit, OnDestroy {
 
         if (this.skills) {
             this.skillPoints = this.skills.total_sp;
-            this.skills.unallocated_sp = 500000;
 
             for (const skill of this.skills.skills) {
                 skill.name = NamesService.getNameFromData(skill.skill_id, 'Unknown skill');
@@ -267,13 +266,4 @@ export class SkillsComponent implements OnInit, OnDestroy {
     public toggleSkillQueueVisible() {
         this.skillQueueVisible = !this.skillQueueVisible;
     }
-
-    // // noinspection JSMethodCanBeStatic
-    // public toggleAccordion(acc: HTMLElement) {
-    //     if (!acc.classList.contains('accordion') && acc.parentElement) {
-    //         if (acc.parentElement.classList.contains('accordion')) {
-    //             acc = acc.parentElement;
-    //         }
-    //     }
-    // }
 }
