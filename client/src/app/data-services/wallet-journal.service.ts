@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Injectable } from '@angular/core';
 
 import { Character } from '../models/character/character.model';
-import { Helpers } from '../shared/helpers';
+import { EVE } from '../shared/eve';
 
 export interface IWalletJournalData {
     // The amount of ISK given or taken from the wallet as a result of the given transaction. Positive when ISK is deposited into the wallet
@@ -60,7 +60,7 @@ export class WalletJournalService {
     constructor(private http: HttpClient) { }
 
     public async getWalletJournal(character: Character): Promise<IWalletJournalData[]> {
-        const url = Helpers.constructESIURL(4, 'characters', character.characterId, 'wallet', 'journal');
+        const url = EVE.constructESIURL(4, 'characters', character.characterId, 'wallet', 'journal');
         const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
         const response = await this.http.get<any>(url, {headers}).toPromise<IWalletJournalData[]>()
             .catch((e: HttpErrorResponse) => e);

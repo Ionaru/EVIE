@@ -3,8 +3,6 @@
  */
 export class Helpers {
 
-    public static ESIURL = 'https://esi.tech.ccp.is';
-
     /**
      * Wrapper for the setInterval function, it will execute the passed function immediately before calling setInterval
      * @param {function} fn - The function to run
@@ -141,14 +139,6 @@ export class Helpers {
     //         return new Date(dateString);
     //     }
     // }
-
-    public static constructESIURL(version: number, ...path: Array<string | number>): string {
-        let url = `${Helpers.ESIURL}/v${version}/`;
-        if (path.length) {
-            url += `${path.join('/')}/`;
-        }
-        return url;
-    }
 
     public static sortArrayByObjectProperty(array: any[], property: string, inverse = false): any[] {
 

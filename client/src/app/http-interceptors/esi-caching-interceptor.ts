@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { ESIRequestCache } from '../shared/esi-request-cache';
-import { Helpers } from '../shared/helpers';
+import { EVE } from '../shared/eve';
 
 @Injectable()
 export class ESICachingInterceptor implements HttpInterceptor {
@@ -12,7 +12,7 @@ export class ESICachingInterceptor implements HttpInterceptor {
     public intercept(request: HttpRequest<any>, next: HttpHandler) {
 
         // We only want to cache GET ESI calls.
-        if (request.method !== 'GET' || !request.url.includes(Helpers.ESIURL)) {
+        if (request.method !== 'GET' || !request.url.includes(EVE.ESIURL)) {
             return next.handle(request);
         }
 

@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { Helpers } from '../../shared/helpers';
+import { EVE } from '../../shared/eve';
 import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
 
 const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
@@ -19,7 +19,7 @@ export class CharacterService {
     constructor(private http: HttpClient) { }
 
     public async getPublicCharacterData(character: Character): Promise<void> {
-        const url = Helpers.constructESIURL(4, 'characters', character.characterId);
+        const url = EVE.constructESIURL(4, 'characters', character.characterId);
         const response = await this.http.get<any>(url).toPromise<IEveCharacterData>().catch((e) => e);
         character.birthday = new Date(response.birthday);
         character.gender = response.gender;

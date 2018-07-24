@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { EVE } from '../shared/eve';
 import { Helpers } from '../shared/helpers';
 
 export interface ISkillCategoryData {
@@ -45,7 +46,7 @@ export class SkillGroupsService {
     }
 
     private async getSkillGroupIds(): Promise<number[]> {
-        const url = Helpers.constructESIURL(1, 'universe', 'categories', this.skillCategoryId);
+        const url = EVE.constructESIURL(1, 'universe', 'categories', this.skillCategoryId);
         const response = await this.http.get<any>(url).toPromise<ISkillCategoryData>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
@@ -55,7 +56,7 @@ export class SkillGroupsService {
     }
 
     private async getSkillGroup(groupId: number): Promise<ISkillGroupData | undefined> {
-        const url = Helpers.constructESIURL(1, 'universe', 'groups', groupId);
+        const url = EVE.constructESIURL(1, 'universe', 'groups', groupId);
         const response = await this.http.get<any>(url).toPromise<ISkillGroupData>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {

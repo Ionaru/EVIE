@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Helpers } from '../shared/helpers';
+import { EVE } from '../shared/eve';
 
 export interface IESINamesData {
     category: string;
@@ -111,7 +111,7 @@ export class NamesService {
     }
 
     private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
-        const url = Helpers.constructESIURL(2, 'universe/names');
+        const url = EVE.constructESIURL(2, 'universe/names');
         const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             return;

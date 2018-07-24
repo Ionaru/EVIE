@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { Injectable } from '@angular/core';
 
 import { Character } from '../models/character/character.model';
-import { Helpers } from '../shared/helpers';
+import { EVE } from '../shared/eve';
 
 export interface ISkillQueueData {
     finish_date?: string;
@@ -28,7 +28,7 @@ export class SkillQueueService {
     constructor(private http: HttpClient) { }
 
     public async getSkillQueue(character: Character): Promise<ISkillQueueData[]> {
-        const url = Helpers.constructESIURL(2, 'characters', character.characterId, 'skillqueue');
+        const url = EVE.constructESIURL(2, 'characters', character.characterId, 'skillqueue');
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<ISkillQueueData[]>()
             .catch((e: HttpErrorResponse) => e);
