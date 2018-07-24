@@ -56,41 +56,19 @@
 }
 
 .skill-list {
-    //background-color: red;
 
-    .accordion {
-        transform: translate3d(0, 0, 0);
-        //background-color: blue;
+    padding-top: 20px;
 
-        .card {
-            .card-header {
-                padding: 0;
+    .accordion ::ng-deep .card {
+        background-color: #171B23;
+        .card-header {
+            background-color: transparent;
+            padding: 0;
+
+            .btn.btn-link {
+                width: 100%;
+                text-align: left;
             }
-            //background-color: green;
         }
     }
-    //.accordion .card {
-    //    background-color: transparent;
-    //    .tab {
-    //        padding: 0;
-    //    }
-    //}
-    //.skill-group {
-    //    margin-top: 10px;
-    //
-    //    .skill-group-body {
-    //        padding-left: 36px;
-    //        position: relative;
-    //
-    //        &::after {
-    //            background-color: #c2c4c5;
-    //            bottom: 0;
-    //            content: '';
-    //            left: 12px;
-    //            position: absolute;
-    //            top: 0;
-    //            width: 2px;
-    //        }
-    //    }
-    //}
 }
