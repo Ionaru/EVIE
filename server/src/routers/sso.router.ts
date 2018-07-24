@@ -346,6 +346,12 @@ export class SSORouter extends BaseRouter {
         return SSORouter.sendResponse(response, 200, 'CharacterActivated');
     }
 
+    private static async logDeprecation(request: Request, response: Response): Promise<Response> {
+        const route = request.body.route as string;
+        logger.warn('ESI route deprecated:', route);
+        return SSORouter.sendResponse(response, 200, 'Logged');
+    }
+
     /**
      * Get a base64 string containing the client ID and secret key
      */
@@ -360,5 +366,6 @@ export class SSORouter extends BaseRouter {
         this.createGetRoute('/refresh', SSORouter.refreshToken);
         this.createPostRoute('/delete', SSORouter.deleteCharacter);
         this.createPostRoute('/activate', SSORouter.activateCharacter);
+        this.createPostRoute('/log-deprecation', SSORouter.logDeprecation);
     }
 }
