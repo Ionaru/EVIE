@@ -14,9 +14,9 @@ import { LogoutModalComponent } from './logout-modal.component';
 })
 export class NavigationComponent implements OnInit {
 
+    public static serverOnline = false;
     public hours = '00';
     public minutes = '00';
-    public status = 'Offline';
     public char = 1;
     public disable = true;
     public isLoggedIn = false;
@@ -40,6 +40,11 @@ export class NavigationComponent implements OnInit {
         });
     }
 
+    // noinspection JSMethodCanBeStatic
+    public get serverOnline() {
+        return NavigationComponent.serverOnline;
+    }
+
     public ngOnInit(): void {
         this.playersCountUp = new CountUp('eve-players', 0, 0);
         this.syncClock();
@@ -48,6 +53,9 @@ export class NavigationComponent implements OnInit {
 
     public async getStatus(): Promise<void> {
         const status = await this.statusService.getStatus();
+
+        NavigationComponent.serverOnline = !!status;
+
         const playerCount = status ? status.players : 0;
         this.playersCountUp.update(playerCount);
 

@@ -1,3 +1,10 @@
 <app-navigation></app-navigation>
+
+<div class="container" *ngIf="!serverOnline">
+    <ngb-alert [dismissible]="false" type="danger">
+        <strong>Could not reach EVE Online API!</strong> Displayed data may not be current or correct.
+    </ngb-alert>
+</div>
+
 <router-outlet></router-outlet>
 <span class="version-tag">{{ version }}</span>

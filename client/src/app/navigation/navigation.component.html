@@ -21,7 +21,15 @@
         </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item d-none d-lg-block disabled">
-                <a class="nav-link"><span id="eve-players"></span> players online</a>
+                <a class="nav-link">
+                    <span class="nav-link-text" [ngClass]="{'d-none': !serverOnline}">
+                        <span id="eve-players"></span> players online
+                    </span>
+                    <span class="nav-link-text" [ngClass]="{'d-none': serverOnline}">
+                        <i class="fas fa-plug text-danger"></i>
+                        API server is offline
+                    </span>
+                </a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item">
                 <a class="nav-link" href="#">

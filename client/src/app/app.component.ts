@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { AppReadyEventService } from './app-ready-event.service';
 import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
+import { NavigationComponent } from './navigation/navigation.component';
 import { SocketService } from './socket/socket.service';
 
 interface IHandshakeResponse {
@@ -44,5 +45,10 @@ export class AppComponent {
         if (response && response.message === 'LoggedIn' && response.data) {
             await this.userService.storeUser(response.data);
         }
+    }
+
+    // noinspection JSMethodCanBeStatic
+    public get serverOnline() {
+        return NavigationComponent.serverOnline;
     }
 }
