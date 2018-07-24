@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs/index';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { StatusService } from '../data-services/status.service';
@@ -15,6 +16,10 @@ import { LogoutModalComponent } from './logout-modal.component';
 export class NavigationComponent implements OnInit {
 
     public static serverOnline = false;
+
+    private static _serverStatusEvent = new Subject<boolean>();
+    public static get serverStatusEvent() { return this._serverStatusEvent; }
+
     public hours = '00';
     public minutes = '00';
     public char = 1;
@@ -53,6 +58,10 @@ export class NavigationComponent implements OnInit {
 
     public async getStatus(): Promise<void> {
         const status = await this.statusService.getStatus();
+
+        if (!NavigationComponent.serverOnline && !!status) {
+            NavigationComponent.serverStatusEvent.next(true);
+        }
 
         NavigationComponent.serverOnline = !!status;
 

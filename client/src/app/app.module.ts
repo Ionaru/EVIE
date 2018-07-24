@@ -24,6 +24,7 @@ import { UserService } from './models/user/user.service';
 import { LogoutModalComponent } from './navigation/logout-modal.component';
 import { NavigationComponent } from './navigation/navigation.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
@@ -40,6 +41,7 @@ import { SocketService } from './socket/socket.service';
         AppComponent,
         NavigationComponent,
         HomeComponent,
+        DataPageComponent,
         DashboardComponent,
         WalletComponent,
         SkillsComponent,

@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as countdown from 'countdown';
 import Timespan = countdown.Timespan;
-import { Subscription } from 'rxjs';
 
 import { NamesService } from '../../data-services/names.service';
 import { ISkillGroupData, SkillGroupsService } from '../../data-services/skill-groups.service';
@@ -9,6 +8,7 @@ import { ISkillQueueData, SkillQueueService } from '../../data-services/skillque
 import { ISkillData, ISkillsData, SkillsService } from '../../data-services/skills.service';
 import { CharacterService } from '../../models/character/character.service';
 import { Helpers } from '../../shared/helpers';
+import { DataPageComponent } from '../data-page/data-page.component';
 
 interface IExtendedSkillQueueData extends ISkillQueueData {
     status?: 'training' | 'finished' | 'scheduled' | 'inactive';
@@ -32,7 +32,7 @@ interface IExtendedSkillsData extends ISkillsData {
     styleUrls: ['./skills.component.scss'],
     templateUrl: './skills.component.html',
 })
-export class SkillsComponent implements OnInit, OnDestroy {
+export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public skillQueue: IExtendedSkillQueueData[] = [];
     public skillQueueCount = 0;
@@ -59,16 +59,13 @@ export class SkillsComponent implements OnInit, OnDestroy {
     // tslint:disable-next-line:no-bitwise
     private countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
 
-    private changeSubscription: Subscription;
-
     constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService,
                 private skillGroupsService: SkillGroupsService) {
-        this.changeSubscription = CharacterService.characterChangeEvent.subscribe(() => {
-            this.ngOnInit().then();
-        });
+        super();
     }
 
     public async ngOnInit() {
+        super.ngOnInit();
         await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
         this.parseSkillQueue();
     }
@@ -209,10 +206,6 @@ export class SkillsComponent implements OnInit, OnDestroy {
         if (this.updateQueueTimer) {
             clearInterval(this.updateQueueTimer);
         }
-    }
-
-    public ngOnDestroy() {
-        this.changeSubscription.unsubscribe();
     }
 
     public skillQueueLow() {

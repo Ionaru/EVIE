@@ -1,39 +1,33 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 
-import { INames, NamesService } from '../../data-services/names.service';
+import { NamesService } from '../../data-services/names.service';
 import { ShipService } from '../../data-services/ship.service';
 import { Character } from '../../models/character/character.model';
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
+import { DataPageComponent } from '../data-page/data-page.component';
 
 @Component({
     selector: 'app-dashboard',
     styleUrls: ['./dashboard.component.scss'],
     templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent extends DataPageComponent implements OnInit {
 
     public characters: Character[] = [];
     public deleteInProgress = false;
-    private changeSubscription: Subscription;
 
     constructor(private userService: UserService, private characterService: CharacterService, private shipService: ShipService,
                 private namesService: NamesService) {
-        this.changeSubscription = CharacterService.characterChangeEvent.subscribe(() => {
-            this.ngOnInit();
-        });
+        super();
     }
 
     public ngOnInit() {
+        super.ngOnInit();
         this.characters = UserService.user.characters;
         for (const character of this.characters) {
             this.getCharacterInfo(character);
         }
-    }
-
-    public ngOnDestroy() {
-        this.changeSubscription.unsubscribe();
     }
 
     public getCharacterInfo(character: Character) {
