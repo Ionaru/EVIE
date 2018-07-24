@@ -32,10 +32,15 @@ export class ESICachingInterceptor implements HttpInterceptor {
                         const warningText = event.headers.get('warning') as string;
                         console.log('LEGACY', warningText);
                         if (warningText.includes('299 - This is a legacy route')) {
-                            console.log('LEGACY!!!!', warningText);
-                            this.http.post('sso/log-deprecation', {route: request.url}).toPromise().catch((e) => {
-                                console.log(e);
-                            });
+                            // console.log('LEGACY!!!!', warningText);
+                            console.log(this.http);
+                            // const httpClient = new HttpClient(HttpHandler);
+                            this.http.post('sso/log-deprecation', {route: request.url}).subscribe();
+                            //     .then(() => {
+                            //         console.log('Done');
+                            //     }).catch((e) => {
+                            //     console.log(e);
+                            // });
                         }
                     }
 
