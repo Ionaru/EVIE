@@ -4,7 +4,6 @@
 *.iml
 
 # Main files
-/config/*
 *.log
 
 # Client files
@@ -19,6 +18,7 @@
 
 # Server files
 /server/dist/
+/server/config/
 /server/node_modules/
 /server/logs
 

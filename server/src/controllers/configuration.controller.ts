@@ -3,7 +3,7 @@ import * as ini from 'ini';
 import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
-export const configPath = path.join(__dirname, '../../../config/');
+export const configPath = 'config/'; // Config folder in the server root directory.
 
 export let config: Configurator;
 
