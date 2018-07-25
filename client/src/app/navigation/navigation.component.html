@@ -88,7 +88,7 @@
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg" alt="Planets icon">
         </a>
         <a routerLink="industry" routerLinkActive="active" class="navbar-item"
-           [ngClass]="{'disabled': true || checkAccess()}">
+           [ngClass]="{'disabled': checkAccess()}">
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg" alt="Industry icon">
         </a>
         <a class="navbar-item time"

@@ -28,10 +28,18 @@ import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
+import { IndustryComponent } from './pages/industry/industry.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
+
+// import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+// import { library } from '@fortawesome/fontawesome-svg-core';
+// import { far } from '@fortawesome/pro-regular-svg-icons';
+// import { fas } from '@fortawesome/pro-solid-svg-icons';
+//
+// library.add(fas, far);
 
 @NgModule({
     bootstrap: [
@@ -48,6 +56,7 @@ import { SocketService } from './socket/socket.service';
         LoginModalComponent,
         LogoutModalComponent,
         RegisterModalComponent,
+        IndustryComponent,
     ],
     entryComponents: [
         LoginModalComponent,
@@ -62,6 +71,7 @@ import { SocketService } from './socket/socket.service';
         HttpClientModule,
         NgbModule.forRoot(),
         NgbTooltipModule,
+        // FontAwesomeModule,
     ],
     providers: [
         httpInterceptorProviders,
