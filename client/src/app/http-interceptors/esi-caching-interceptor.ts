@@ -30,22 +30,13 @@ export class ESICachingInterceptor implements HttpInterceptor {
 
                     if (event.status === 200 && event.headers.has('warning')) {
                         const warningText = event.headers.get('warning') as string;
-                        console.log('LEGACY', warningText);
                         if (warningText.includes('299 - This is a legacy route')) {
-                            // console.log('LEGACY!!!!', warningText);
-                            console.log(this.http);
-                            // const httpClient = new HttpClient(HttpHandler);
                             this.http.post('sso/log-deprecation', {route: request.url}).subscribe();
-                            //     .then(() => {
-                            //         console.log('Done');
-                            //     }).catch((e) => {
-                            //     console.log(e);
-                            // });
                         }
                     }
 
                     // Only cache when the response is successful and has an expiry header.
-                    else if (event.status === 200 && event.headers.has('expires')) {
+                    if (event.status === 200 && event.headers.has('expires')) {
                         ESIRequestCache.put(request.urlWithParams, event.body, event.headers.get('expires') as string);
                     }
                 }
