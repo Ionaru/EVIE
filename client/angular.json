@@ -30,9 +30,9 @@
                             "src/styles.scss"
                         ],
                         "scripts": [
-                            "node_modules/@fortawesome/fontawesome-pro-regular/index.js",
-                            "node_modules/@fortawesome/fontawesome-pro-solid/index.js",
-                            "node_modules/@fortawesome/fontawesome/index.js"
+                            "node_modules/@fortawesome/fontawesome-pro/js/regular.js",
+                            "node_modules/@fortawesome/fontawesome-pro/js/solid.js",
+                            "node_modules/@fortawesome/fontawesome-pro/js/fontawesome.js"
                         ]
                     },
                     "configurations": {
