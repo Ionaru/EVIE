@@ -24,6 +24,7 @@ const oauthHost = 'login.eveonline.com';
 const oauthPath = '/oauth/authorize?';
 const tokenPath = '/oauth/token?';
 const verifyPath = '/oauth/verify?';
+const deprecationLogged: string[] = [];
 
 export class SSORouter extends BaseRouter {
 
@@ -348,7 +349,10 @@ export class SSORouter extends BaseRouter {
 
     private static async logDeprecation(request: Request, response: Response): Promise<Response> {
         const route = request.body.route as string;
-        logger.warn('ESI route deprecated:', route);
+        if (!deprecationLogged.includes(route)) {
+            logger.warn('ESI route deprecated:', route);
+            deprecationLogged.push(route);
+        }
         return SSORouter.sendResponse(response, 200, 'Logged');
     }
 
