@@ -15,7 +15,7 @@ import { LogoutModalComponent } from './logout-modal.component';
 })
 export class NavigationComponent implements OnInit {
 
-    public static serverOnline = false;
+    public static serverOnline = true;
 
     private static _serverStatusEvent = new Subject<boolean>();
     public static get serverStatusEvent() { return this._serverStatusEvent; }
