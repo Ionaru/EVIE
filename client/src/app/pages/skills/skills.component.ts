@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as countdown from 'countdown';
 import Timespan = countdown.Timespan;
 
-import { NamesService } from '../../data-services/names.service';
+import { IESINamesData, INames, NamesService } from '../../data-services/names.service';
 import { ISkillGroupData, SkillGroupsService } from '../../data-services/skill-groups.service';
 import { ISkillQueueData, SkillQueueService } from '../../data-services/skillqueue.service';
 import { ISkillData, ISkillsData, SkillsService } from '../../data-services/skills.service';
@@ -23,8 +23,24 @@ interface IExtendedSkillData extends ISkillData {
     name?: string;
 }
 
+interface ISKILLNAME {
+    name?: string;
+}
+
 interface IExtendedSkillsData extends ISkillsData {
     skills: IExtendedSkillData[];
+}
+
+interface ISKILLS {
+    [skillId: number]: IExtendedSkillData | ISKILLNAME;
+}
+
+interface IGROUPS extends ISkillGroupData {
+    skills?: ISKILLS;
+}
+
+interface IALL {
+    [groupId: number]: IGROUPS;
 }
 
 @Component({
@@ -51,10 +67,12 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public skillGroups!: ISkillGroupData[];
     public skillList: {
-        [groupid: number]: IExtendedSkillData[],
+        [groupId: number]: IExtendedSkillData[],
     } = {};
 
     public skillQueueVisible = true;
+
+    public allSkills: IALL = {};
 
     // tslint:disable-next-line:no-bitwise
     private countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
@@ -66,11 +84,14 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public async ngOnInit() {
         super.ngOnInit();
+        this.allSkills = {};
         await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
         this.parseSkillQueue();
     }
 
     public parseSkillQueue() {
+
+        // this.allSkills = {};
 
         this.resetTimers();
         this.totalQueueTime = Date.now();
@@ -88,8 +109,19 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
             const skillsGorGroup = this.getSkillsForGroup(group);
             if (skillsGorGroup) {
                 this.skillList[group.group_id] = skillsGorGroup;
+
+                // console.log(this.allSkills[group.group_id]);
+
+                for (const skill of skillsGorGroup) {
+                    // console.log(skill.skill_id);
+
+                    // TODO: CHECK /TYPES/TYPEID IF SKILL IS PUBLISHED
+                    this.allSkills[group.group_id].skills[skill.skill_id] = skill;
+                }
             }
         }
+
+        // console.log(this.allSkills);
 
         for (const skillInQueue of this.skillQueue) {
             skillInQueue.name = NamesService.getNameFromData(skillInQueue.skill_id, 'Unknown skill');
@@ -238,11 +270,26 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
     }
 
     public getSkillsInGroup(groupId: number) {
-        return this.skillList[groupId];
+        console.log(this.allSkills[groupId].skills);
+        return Helpers.sortArrayByObjectProperty(Object.values(this.allSkills[groupId].skills), 'name');
     }
 
     public async setSkillGroups() {
         this.skillGroups = await this.skillGroupsService.getSkillGroupInformation();
+        const groupedSkillIds = this.skillGroups.map((group) => group.types);
+        const allSkills = [].concat(...groupedSkillIds as any);
+        await this.namesService.getNames(...allSkills);
+
+        for (const group of this.skillGroups) {
+            this.allSkills[group.group_id] = group;
+            this.allSkills[group.group_id].skills = {};
+
+            for (const type of group.types) {
+                this.allSkills[group.group_id].skills[type] = {name: NamesService.getNameFromData(type)};
+            }
+        }
+
+        // console.log(this.allSkills);
     }
 
     public countLvl5Skills(): number {
@@ -258,5 +305,13 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public toggleSkillQueueVisible() {
         this.skillQueueVisible = !this.skillQueueVisible;
+    }
+
+    public getSPInGroup(groupId: number) {
+        let sp = 0;
+        for (const skill of this.skillList[groupId]) {
+            sp += skill.skillpoints_in_skill;
+        }
+        return sp;
     }
 }

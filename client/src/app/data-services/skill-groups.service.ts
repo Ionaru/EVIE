@@ -34,8 +34,9 @@ export class SkillGroupsService {
         await Promise.all(skillGroups.map(async (skillGroup) => {
             const group = await this.getSkillGroup(skillGroup);
 
-            // Remove group 505 (Fake Skills)
-            if (group && group.group_id !== 505) {
+            console.log(group);
+
+            if (group && group.published) {
                 skillInfo.push(group);
             }
         }));

@@ -4,8 +4,8 @@
             <h2>Skillpoints</h2>
             <p class="skill-points" *ngIf="skills">
                 {{ skillPoints | number:'1.0-0' }} SP
-                <span class="unallocated" *ngIf="skills && skills.unallocated_sp">
-                    + ({{ skills.unallocated_sp | number:'1.0-0' }} unallocated SP)
+                <span class="unallocated" *ngIf="skills?.unallocated_sp">
+                    + ({{ skills?.unallocated_sp | number:'1.0-0' }} unallocated SP)
                 </span>
             </p>
         </div>
@@ -76,12 +76,28 @@
             <ngb-accordion *ngIf="skills">
                 <ngb-panel *ngFor="let group of skillGroups">
                     <ng-template ngbPanelTitle>
-                        <i class="fa fa-folder-open"></i>
-                        {{ group.name }} ({{ skillList[group.group_id].length }})
+                        <div class="d-flex justify-content-between">
+                            <span>
+                                <i class="fa fa-folder-open"></i>
+                                {{ group.name }} ({{ skillList[group.group_id].length }} / {{ group.types.length }})
+                            </span>
+                            <span>
+                                {{ getSPInGroup(group.group_id) | number:'1.0-0' }} SP
+                            </span>
+                        </div>
                     </ng-template>
                     <ng-template ngbPanelContent>
-                        <p class="skill-name" *ngFor="let skill of getSkillsInGroup(group.group_id)">
-                            <span *ngIf="skill.name">{{ skill.name }} {{ skill.active_skill_level }}</span>
+                        <p class="skill-name d-flex justify-content-between" *ngFor="let skill of getSkillsInGroup(group.group_id)">
+                            <span>
+                                {{ skill.name }} {{ skill.trained_skill_level }}
+                                <ng-container *ngIf="skill.active_skill_level !== skill.trained_skill_level">
+                                    ({{ skill.active_skill_level }})
+                                </ng-container>
+                                <ng-container *ngIf="skill.trained_skill_level"></ng-container>
+                            </span>
+                            <span>
+                                {{ skill.skillpoints_in_skill || 0 | number:'1.0-0' }} SP
+                            </span>
                         </p>
                     </ng-template>
                 </ngb-panel>
