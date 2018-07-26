@@ -30,8 +30,8 @@ export class ESICachingInterceptor implements HttpInterceptor {
 
                     if (event.status === 200 && event.headers.has('warning')) {
                         const warningText = event.headers.get('warning') as string;
-                        if (warningText.includes('299 - This is a legacy route')) {
-                            this.http.post('sso/log-deprecation', {route: request.url}).subscribe();
+                        if (warningText.includes('199') || warningText.includes('299')) {
+                            this.http.post('sso/log-route-warning', {route: request.url, text: warningText}).subscribe();
                         }
                     }
 

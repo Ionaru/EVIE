@@ -350,7 +350,8 @@ export class SSORouter extends BaseRouter {
     private static async logDeprecation(request: Request, response: Response): Promise<Response> {
         const route = request.body.route as string;
         if (!deprecationLogged.includes(route)) {
-            logger.warn('ESI route deprecated:', route);
+            const text = request.body.text as string;
+            logger.warn('ESI route warning:', route, text);
             deprecationLogged.push(route);
         }
         return SSORouter.sendResponse(response, 200, 'Logged');
@@ -370,6 +371,6 @@ export class SSORouter extends BaseRouter {
         this.createGetRoute('/refresh', SSORouter.refreshToken);
         this.createPostRoute('/delete', SSORouter.deleteCharacter);
         this.createPostRoute('/activate', SSORouter.activateCharacter);
-        this.createPostRoute('/log-deprecation', SSORouter.logDeprecation);
+        this.createPostRoute('/log-route-warning', SSORouter.logDeprecation);
     }
 }
