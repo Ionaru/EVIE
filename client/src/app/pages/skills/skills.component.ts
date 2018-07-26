@@ -116,7 +116,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
                     // console.log(skill.skill_id);
 
                     // TODO: CHECK /TYPES/TYPEID IF SKILL IS PUBLISHED
-                    this.allSkills[group.group_id].skills[skill.skill_id] = skill;
+                    this.allSkills[group.group_id].skills![skill.skill_id] = skill;
                 }
             }
         }
@@ -271,7 +271,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public getSkillsInGroup(groupId: number) {
         console.log(this.allSkills[groupId].skills);
-        return Helpers.sortArrayByObjectProperty(Object.values(this.allSkills[groupId].skills), 'name');
+        return Helpers.sortArrayByObjectProperty(Object.values(this.allSkills[groupId].skills!), 'name');
     }
 
     public async setSkillGroups() {
@@ -285,7 +285,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
             this.allSkills[group.group_id].skills = {};
 
             for (const type of group.types) {
-                this.allSkills[group.group_id].skills[type] = {name: NamesService.getNameFromData(type)};
+                this.allSkills[group.group_id].skills![type] = {name: NamesService.getNameFromData(type)};
             }
         }
 

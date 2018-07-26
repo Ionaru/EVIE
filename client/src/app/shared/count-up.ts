@@ -138,7 +138,7 @@ export class CountUp {
         let lastTime = 0;
 
         window.requestAnimationFrame = (callback: (...args: any[]) => void): number => {
-            const currTime = new Date().getTime();
+            const currTime = Date.now();
             const timeToCall = Math.max(0, 16 - (currTime - lastTime));
             const id = window.setTimeout((): void => { callback(currTime + timeToCall); },
                 timeToCall);

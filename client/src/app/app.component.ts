@@ -6,6 +6,7 @@ import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
 import { SocketService } from './socket/socket.service';
+import { TypesService } from './data-services/types.service';
 
 interface IHandshakeResponse {
     state: string;
@@ -22,7 +23,8 @@ export class AppComponent {
 
     public version = '0.3.0-INDEV';
 
-    constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
+    constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService,
+                private types: TypesService) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Error during app startup', error));
     }
 
@@ -35,6 +37,7 @@ export class AppComponent {
             window.location.reload();
         });
         this.appReadyEvent.triggerSuccess();
+        await this.types.getTypes();
     }
 
     private async shakeHands(): Promise<any> {

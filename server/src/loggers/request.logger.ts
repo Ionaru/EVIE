@@ -10,13 +10,13 @@ export class RequestLogger {
     public static logRequest(): any {
         return function log(request: Request, response: Response, next: NextFunction) {
 
-            const requestStartTime = new Date().getTime();
+            const requestStartTime = Date.now();
 
             // Runs when the request has finished.
             onFinished(response, async (_err, endResponse: Response) => {
 
                 // Calculate the request duration.
-                const requestDuration = (new Date().getTime()) - requestStartTime;
+                const requestDuration = Date.now() - requestStartTime;
 
                 const ignoredMatch = RequestLogger.ignoredUrls.filter(
                     (ignoredEntry) => request.originalUrl.startsWith(ignoredEntry)).length;

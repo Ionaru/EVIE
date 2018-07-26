@@ -12,7 +12,7 @@ export class SocketServer {
 
     constructor(webServer: WebServer, sessionParser: express.RequestHandler) {
 
-        // Create the HTTP server and give it the Express application for settings
+        // Pass the HTTP server to SocketIO for configuration.
         this.io = SocketIO.listen(webServer.server);
 
         // The websocket server listens on '/'

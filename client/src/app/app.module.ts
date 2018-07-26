@@ -14,6 +14,7 @@ import { SkillGroupsService } from './data-services/skill-groups.service';
 import { SkillQueueService } from './data-services/skillqueue.service';
 import { SkillsService } from './data-services/skills.service';
 import { StatusService } from './data-services/status.service';
+import { TypesService } from './data-services/types.service';
 import { WalletJournalService } from './data-services/wallet-journal.service';
 import { WalletService } from './data-services/wallet.service';
 import { AppReadyGuard } from './guards/app-ready.guard';
@@ -33,13 +34,6 @@ import { SkillsComponent } from './pages/skills/skills.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
-
-// import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-// import { library } from '@fortawesome/fontawesome-svg-core';
-// import { far } from '@fortawesome/pro-regular-svg-icons';
-// import { fas } from '@fortawesome/pro-solid-svg-icons';
-//
-// library.add(fas, far);
 
 @NgModule({
     bootstrap: [
@@ -81,6 +75,7 @@ import { SocketService } from './socket/socket.service';
         CharacterService,
         NamesService,
         StatusService,
+        TypesService,
         ShipService,
         WalletService,
         WalletJournalService,

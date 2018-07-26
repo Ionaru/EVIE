@@ -11,6 +11,7 @@ import { logger } from 'winston-pnp-logger';
 import { RequestLogger } from '../loggers/request.logger';
 import { AngularRedirectRouter } from '../routers/angular.router';
 import { APIRouter } from '../routers/api.router';
+import { DataRouter } from '../routers/data.router';
 import { ErrorRouter } from '../routers/error.router';
 import { GlobalRouter } from '../routers/global.router';
 import { SSORouter } from '../routers/sso.router';
@@ -57,8 +58,6 @@ export class Application {
 
         expressApplication.use(compression());
 
-        logger.info('Express configuration set');
-
         // Setup MySQL Session Storage
         this.sessionStore = new MySQLStore({
             schema: {
@@ -94,17 +93,22 @@ export class Application {
         expressApplication.use(express.static(path.join(__dirname, '../../../client/dist')));
 
         // Global router.
-        expressApplication.use('*', (new GlobalRouter()).router);
+        expressApplication.use('*', new GlobalRouter().router);
 
         // Application routers.
-        expressApplication.use('/api', (new APIRouter()).router);
-        expressApplication.use('/sso', (new SSORouter()).router);
+        expressApplication.use('/api', new APIRouter().router);
+        expressApplication.use('/sso', new SSORouter().router);
+        expressApplication.use('/data', new DataRouter().router);
 
         // Re-route all other requests to the Angular app.
-        expressApplication.use('*', (new AngularRedirectRouter()).router);
+        expressApplication.use('*', new AngularRedirectRouter().router);
 
         // Error router.
         expressApplication.use(ErrorRouter.errorRoute);
+
+        logger.info('Express configuration set');
+
+        // Do caching here.
 
         logger.info('App startup done');
 
