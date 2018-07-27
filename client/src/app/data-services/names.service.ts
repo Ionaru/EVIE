@@ -1,17 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { EVE } from '../shared/eve';
-
-export interface IESINamesData {
-    category: string;
-    id: number;
-    name: string;
-}
-
-export interface INames {
-    [id: string]: IESINamesData;
-}
+import { Common } from '../../shared/common.helper';
+import { EVE } from '../../shared/eve.helper';
+import { IESINamesData, INames } from '../../shared/interface.helper';
 
 @Injectable()
 export class NamesService {
@@ -112,7 +104,7 @@ export class NamesService {
 
     private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
         const url = EVE.constructESIURL(2, 'universe/names');
-        const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch((e: HttpErrorResponse) => e);
+        const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
             return;
         }

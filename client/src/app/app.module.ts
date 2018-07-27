@@ -65,7 +65,6 @@ import { SocketService } from './socket/socket.service';
         HttpClientModule,
         NgbModule.forRoot(),
         NgbTooltipModule,
-        // FontAwesomeModule,
     ],
     providers: [
         httpInterceptorProviders,

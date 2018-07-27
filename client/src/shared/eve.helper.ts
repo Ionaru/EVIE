@@ -1,9 +1,9 @@
 /**
- * Several static helper functions.
+ * Several static helper functions for the EVE Online ESI.
  */
 export class EVE {
 
-    public static ESIURL = 'https://esi.evetech.net';
+    public static readonly ESIURL = 'https://esi.evetech.net';
     public static useTestServer = false;
 
     public static constructESIURL(version: number | string, ...path: Array<string | number>): string {
@@ -17,5 +17,13 @@ export class EVE {
         }
 
         return url;
+    }
+
+    public static getStatusUrl() {
+        return EVE.constructESIURL(1, 'status');
+    }
+
+    public static getUniverseTypesUrl(typeId: number) {
+        return EVE.constructESIURL(3, 'universe', 'types', typeId);
     }
 }

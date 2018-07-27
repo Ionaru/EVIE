@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import * as countdown from 'countdown';
 import Timespan = countdown.Timespan;
 
-import { IESINamesData, INames, NamesService } from '../../data-services/names.service';
-import { ISkillGroupData, SkillGroupsService } from '../../data-services/skill-groups.service';
-import { ISkillQueueData, SkillQueueService } from '../../data-services/skillqueue.service';
-import { ISkillData, ISkillsData, SkillsService } from '../../data-services/skills.service';
+import { Common } from '../../../shared/common.helper';
+import { ISkillData, ISkillGroupData, ISkillQueueData, ISkillsData } from '../../../shared/interface.helper';
+import { NamesService } from '../../data-services/names.service';
+import { SkillGroupsService } from '../../data-services/skill-groups.service';
+import { SkillQueueService } from '../../data-services/skillqueue.service';
+import { SkillsService } from '../../data-services/skills.service';
 import { CharacterService } from '../../models/character/character.service';
-import { Helpers } from '../../shared/helpers';
 import { DataPageComponent } from '../data-page/data-page.component';
 
 interface IExtendedSkillQueueData extends ISkillQueueData {
@@ -218,7 +219,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         this.skillQueue = this.skillQueue.filter((skill) => skill.status !== 'inactive');
         this.skillQueueCount = this.skillQueue.filter((_) => _.status && ['training', 'scheduled'].includes(_.status)).length;
         if (this.skillQueueCount) {
-            this.totalQueueTimer = Helpers.repeat(() => {
+            this.totalQueueTimer = Common.repeat(() => {
                 const now = Date.now();
                 this.skillQueueTimeLeft = this.totalQueueTime - now;
                 this.totalQueueCountdown = countdown(now, this.totalQueueTime, this.countdownUnits);
@@ -264,14 +265,14 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
     public getSkillsForGroup(group: ISkillGroupData) {
         if (this.skills) {
             let skills = this.skills.skills.filter((_) => group.types.indexOf(_.skill_id) !== -1);
-            skills = Helpers.sortArrayByObjectProperty(skills, 'name');
+            skills = Common.sortArrayByObjectProperty(skills, 'name');
             return skills;
         }
     }
 
     public getSkillsInGroup(groupId: number) {
         console.log(this.allSkills[groupId].skills);
-        return Helpers.sortArrayByObjectProperty(Object.values(this.allSkills[groupId].skills!), 'name');
+        return Common.sortArrayByObjectProperty(Object.values(this.allSkills[groupId].skills!), 'name');
     }
 
     public async setSkillGroups() {

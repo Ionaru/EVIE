@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { EVE } from '../../shared/eve';
+import { EVE } from '../../../shared/eve.helper';
 import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
 
 const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes

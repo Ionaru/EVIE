@@ -1,23 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { EVE } from '../shared/eve';
-import { Helpers } from '../shared/helpers';
-
-export interface ISkillCategoryData {
-    category_id: number;
-    name: string;
-    published: boolean;
-    groups: number[];
-}
-
-export interface ISkillGroupData {
-    group_id: number;
-    name: string;
-    published: boolean;
-    category_id: number;
-    types: number[];
-}
+import { Common } from '../../shared/common.helper';
+import { EVE } from '../../shared/eve.helper';
+import { ISkillCategoryData, ISkillGroupData } from '../../shared/interface.helper';
 
 @Injectable()
 export class SkillGroupsService {
@@ -41,15 +27,14 @@ export class SkillGroupsService {
             }
         }));
 
-        Helpers.sortArrayByObjectProperty(skillInfo, 'name');
+        Common.sortArrayByObjectProperty(skillInfo, 'name');
 
         return skillInfo;
     }
 
     private async getSkillGroupIds(): Promise<number[]> {
         const url = EVE.constructESIURL(1, 'universe', 'categories', this.skillCategoryId);
-        const response = await this.http.get<any>(url).toPromise<ISkillCategoryData>()
-            .catch((e: HttpErrorResponse) => e);
+        const response = await this.http.get<any>(url).toPromise<ISkillCategoryData>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
             return [];
         }
@@ -58,8 +43,7 @@ export class SkillGroupsService {
 
     private async getSkillGroup(groupId: number): Promise<ISkillGroupData | undefined> {
         const url = EVE.constructESIURL(1, 'universe', 'groups', groupId);
-        const response = await this.http.get<any>(url).toPromise<ISkillGroupData>()
-            .catch((e: HttpErrorResponse) => e);
+        const response = await this.http.get<any>(url).toPromise<ISkillGroupData>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
             return;
         }

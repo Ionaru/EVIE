@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
 import { UserService } from '../../models/user/user.service';
 import { LoginModalComponent } from './login-modal.component';
 import { RegisterModalComponent } from './register-modal.component';

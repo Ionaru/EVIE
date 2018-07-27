@@ -3,6 +3,7 @@ import * as httpStatus from 'http-status-codes';
 import fetch from 'node-fetch';
 
 import { BaseRouter } from './base.router';
+import { ISkillGroupData, ISkillCategoryData, ITypesData } from '../../../client/src/shared/interface.helper';
 
 export class DataRouter extends BaseRouter {
 
@@ -56,7 +57,7 @@ export class DataRouter extends BaseRouter {
         //     });
         // });
 
-        this.getSkills().then();
+        // this.getSkills().then();
 
         // this.createGetRoute('/handshake', DataRouter.doHandShake);
         this.createPostRoute('/types', DataRouter.getTypes);
@@ -104,48 +105,4 @@ export class DataRouter extends BaseRouter {
 
         // console.log(body);
     }
-}
-
-export interface ISkillCategoryData {
-    category_id: number;
-    name: string;
-    published: boolean;
-    groups: number[];
-}
-
-export interface ISkillGroupData {
-    group_id: number;
-    name: string;
-    published: boolean;
-    category_id: number;
-    types: number[];
-}
-
-export interface IDogmaAttributes {
-    attribute_id: number;
-    value: number;
-}
-
-export interface IDogmaEffects {
-    effect_id: number;
-    is_default: boolean;
-}
-
-export interface ITypesData {
-    capacity: number;
-    description: string;
-    dogma_attributes: IDogmaAttributes[];
-    dogma_effects: IDogmaEffects[];
-    graphic_id: number;
-    group_id: number;
-    icon_id: number;
-    market_group_id: number;
-    mass: number;
-    name: string;
-    packaged_volume: number;
-    portion_size: number;
-    published: boolean;
-    radius: number;
-    type_id: number;
-    volume: number;
 }

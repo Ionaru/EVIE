@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject } from 'rxjs/index';
+import { Subject } from 'rxjs';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { StatusService } from '../data-services/status.service';

@@ -15,6 +15,7 @@ import { DataRouter } from '../routers/data.router';
 import { ErrorRouter } from '../routers/error.router';
 import { GlobalRouter } from '../routers/global.router';
 import { SSORouter } from '../routers/sso.router';
+import { CacheController } from './cache.controller';
 import { config } from './configuration.controller';
 import { DatabaseConnection, db } from './database.controller';
 import { WebServer } from './server.controller';
@@ -109,6 +110,7 @@ export class Application {
         logger.info('Express configuration set');
 
         // Do caching here.
+        new CacheController();
 
         logger.info('App startup done');
 

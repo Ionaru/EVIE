@@ -1,11 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-// export interface IStatusData {
-//     start_time: string;
-//     players: number;
-//     server_version: string;
-// }
+import { Common } from '../../shared/common.helper';
 
 @Injectable()
 export class TypesService {
@@ -13,7 +9,7 @@ export class TypesService {
 
     public async getTypes(): Promise<void> {
         const url = 'data/types';
-        const response = await this.http.post<any>(url, [1, 2, 3]).toPromise<any>().catch((e: HttpErrorResponse) => e);
+        const response = await this.http.post<any>(url, [1, 2, 3]).toPromise<any>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
             return;
         }

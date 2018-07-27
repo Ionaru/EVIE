@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { DataPageComponent } from '../data-page/data-page.component';
 
 @Component({

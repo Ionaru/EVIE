@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+import { EVE } from '../../shared/eve.helper';
 import { ESIRequestCache } from '../shared/esi-request-cache';
-import { EVE } from '../shared/eve';
 
 @Injectable()
 export class ESICachingInterceptor implements HttpInterceptor {

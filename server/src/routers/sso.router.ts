@@ -8,6 +8,7 @@ import { SocketServer } from '../controllers/socket.controller';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
+import { DataController } from '../controllers/data.controller';
 
 const scopes = [
     'characterWalletRead',
@@ -47,7 +48,7 @@ export class SSORouter extends BaseRouter {
 
             const character: Character | undefined = await Character.doQuery()
                 .where('character.uuid = :uuid', {uuid: request.query.uuid})
-                .andWhere('character.userId = :userId', {userId: request.session!.user.id})
+                .andWhere('character.userId = :userId', {userId: request.session.user.id})
                 .getOne();
 
             if (character) {
@@ -139,6 +140,7 @@ export class SSORouter extends BaseRouter {
         ];
 
         const authUrl = protocol + oauthHost + tokenPath + requestArgs.join('&');
+        logger.debug(authUrl);
         const authResponse = await fetch(authUrl, requestOptions).catch((errorResponse) => errorResponse);
 
         if (!authResponse.ok) {
@@ -167,6 +169,7 @@ export class SSORouter extends BaseRouter {
         };
 
         const verifyUrl = protocol + oauthHost + verifyPath;
+        logger.debug(verifyUrl);
         const characterIdResult = await fetch(verifyUrl, characterIdRequestOptions).catch((errorResponse) => errorResponse);
 
         if (!characterIdResult.ok) {
@@ -242,7 +245,9 @@ export class SSORouter extends BaseRouter {
             method: 'POST',
         };
 
-        const refreshResponse = await fetch(protocol + oauthHost + tokenPath, requestOptions).catch((errorResponse) => errorResponse);
+        const refreshUrl = protocol + oauthHost + tokenPath;
+        logger.debug(refreshUrl);
+        const refreshResponse = await fetch(refreshUrl, requestOptions).catch((errorResponse) => errorResponse);
 
         if (!refreshResponse.ok) {
             return SSORouter.sendResponse(response, 502, 'SSOResponseError');
@@ -348,12 +353,11 @@ export class SSORouter extends BaseRouter {
     }
 
     private static async logDeprecation(request: Request, response: Response): Promise<Response> {
+
         const route = request.body.route as string;
-        if (!deprecationLogged.includes(route)) {
-            const text = request.body.text as string;
-            logger.warn('ESI route warning:', route, text);
-            deprecationLogged.push(route);
-        }
+        const text = request.body.text as string;
+        DataController.logDeprecation(route, text);
+
         return SSORouter.sendResponse(response, 200, 'Logged');
     }
 

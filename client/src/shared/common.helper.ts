@@ -1,7 +1,7 @@
 /**
  * Several static helper functions.
  */
-export class Helpers {
+export class Common {
 
     /**
      * Wrapper for the setInterval function, it will execute the passed function immediately before calling setInterval
@@ -11,8 +11,12 @@ export class Helpers {
      * @return {Timer} - Timer object for the interval function, used for clearInterval()
      */
     public static repeat(fn: (...params: any[]) => any, interval: number, ...params: any[]): number {
-      fn(...params);
-      return window.setInterval(fn, interval, ...params);
+        fn(...params);
+        return window.setInterval(fn, interval, ...params);
+    }
+
+    public static return(parameter: any) {
+        return parameter;
     }
 
     // public static createTitle(name: string): string {

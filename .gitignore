@@ -17,6 +17,8 @@
 /client_legacy/node_modules/
 
 # Server files
+/server/data/*.txt
+/server/data/*.json
 /server/dist/
 /server/config/
 /server/node_modules/

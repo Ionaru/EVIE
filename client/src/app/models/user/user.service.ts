@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import * as crypto from 'crypto-js';
 import { Subject } from 'rxjs';
 
-import { Helpers } from '../../shared/helpers';
+import { Common } from '../../../shared/common.helper';
 import { SocketService } from '../../socket/socket.service';
 import { Character, IApiCharacterData, ISSOSocketResponse } from '../character/character.model';
 import { CharacterService } from '../character/character.service';
@@ -106,7 +106,7 @@ export class UserService {
     public async addCharacter(data: IApiCharacterData): Promise<Character> {
         const character = await this.characterService.registerCharacter(data);
         UserService.user.characters.push(character);
-        Helpers.sortArrayByObjectProperty(UserService.user.characters, 'name');
+        Common.sortArrayByObjectProperty(UserService.user.characters, 'name');
         return character;
     }
 

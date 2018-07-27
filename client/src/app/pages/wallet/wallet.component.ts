@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { IWalletJournalData, WalletJournalService } from '../../data-services/wallet-journal.service';
+import { IWalletJournalData } from '../../../shared/interface.helper';
+import { WalletJournalService } from '../../data-services/wallet-journal.service';
 import { WalletService } from '../../data-services/wallet.service';
 import { CharacterService } from '../../models/character/character.service';
 import { CountUp } from '../../shared/count-up';

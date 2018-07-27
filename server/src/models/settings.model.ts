@@ -4,7 +4,8 @@ import { BaseModel } from './base.model';
 import { User } from './user.model';
 
 interface ISettings {
-    theme: 'light' | 'dark';
+    theme?: 'light' | 'dark';
+    useTestServer?: boolean;
 }
 
 @Entity()
@@ -29,8 +30,10 @@ export class Settings extends BaseModel {
         if (content) {
             this.data = content;
         } else {
+            // Set defaults.
             this.data = {
                 theme: 'dark',
+                useTestServer: false,
             };
         }
     }

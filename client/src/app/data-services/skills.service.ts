@@ -1,21 +1,10 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { Common } from '../../shared/common.helper';
+import { EVE } from '../../shared/eve.helper';
+import { ISkillsData } from '../../shared/interface.helper';
 import { Character } from '../models/character/character.model';
-import { EVE } from '../shared/eve';
-
-export interface ISkillData {
-    active_skill_level: number;
-    skill_id: number;
-    skillpoints_in_skill: number;
-    trained_skill_level: number;
-}
-
-export interface ISkillsData {
-    skills: ISkillData[];
-    total_sp: number;
-    unallocated_sp?: number;
-}
 
 @Injectable()
 export class SkillsService {
@@ -24,7 +13,7 @@ export class SkillsService {
     public async getSkillsData(character: Character): Promise<ISkillsData | undefined> {
         const url = EVE.constructESIURL(4, 'characters', character.characterId, 'skills');
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
-        const response = await this.http.get<any>(url, {headers}).toPromise<ISkillsData>().catch((e: HttpErrorResponse) => e);
+        const response = await this.http.get<any>(url, {headers}).toPromise<ISkillsData>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
             return;
         }
