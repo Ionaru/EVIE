@@ -88,7 +88,7 @@ export class Application {
 
         expressApplication.use(this.sessionParser);
 
-        logger.info('Session store loaded');
+        logger.info('Express session store loaded');
 
         // Use static client folder for serving assets
         expressApplication.use(express.static(path.join(__dirname, '../../../client/dist')));

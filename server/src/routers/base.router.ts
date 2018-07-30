@@ -26,7 +26,7 @@ export class BaseRouter {
     public router = Router();
 
     constructor() {
-        logger.info(`New router: ${this.constructor.name}`);
+        logger.info(`New express router: ${this.constructor.name}`);
     }
 
     public createAllRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {

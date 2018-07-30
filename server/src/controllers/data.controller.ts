@@ -40,14 +40,34 @@ export class DataController {
     }
 
     public static async getEveStatus() {
-        return DataController.fetchESIData(EVE.getStatusUrl()) as Promise<IStatusData | undefined>;
+        return DataController.fetchESIData<IStatusData>(EVE.getStatusUrl());
     }
 
-    public static async getTypeInfo(typeId: number) {
-        return DataController.fetchESIData(EVE.getUniverseTypesUrl(typeId)) as Promise<ITypesData | undefined>;
+    public static async getUniverseTypes(...typeIds: number[]) {
+
+        const typeData: ITypesData[] = [];
+
+        await Promise.all(typeIds.map(async (typeId) => {
+            let tries = 0;
+
+            let type: ITypesData | undefined;
+
+            while (!type) {
+                tries++;
+                type = await DataController.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
+
+                if (tries > 3) {
+                    throw new Error(`Unable to get Type ${typeId}`);
+                }
+            }
+
+            typeData.push(type);
+        }));
+
+        return typeData;
     }
 
-    public static async fetchESIData(url: string): Promise<object | undefined> {
+    public static async fetchESIData<T>(url: string): Promise<T | undefined> {
         logger.debug(url);
         const response: Response | undefined = await fetch(url).catch((errorResponse: FetchError) => {
             logger.error('Request failed:', url, errorResponse);
