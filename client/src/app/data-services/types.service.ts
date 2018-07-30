@@ -2,17 +2,19 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Common } from '../../shared/common.helper';
+import { EVE } from '../../shared/eve.helper';
+import { ITypesData } from '../../shared/interface.helper';
 
 @Injectable()
 export class TypesService {
     constructor(private http: HttpClient) { }
 
-    public async getTypes(): Promise<void> {
-        const url = 'data/types';
-        const response = await this.http.post<any>(url, [1, 2, 3]).toPromise<any>().catch(Common.return);
+    public async getTypes(typeId: number): Promise<void> {
+        const url = EVE.getUniverseTypesUrl(typeId);
+        const response = await this.http.get<any>(url).toPromise<ITypesData>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
-            return;
+            return undefined;
         }
-        console.log(response);
+        return response.groups;
     }
 }

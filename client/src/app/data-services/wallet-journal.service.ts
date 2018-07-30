@@ -12,7 +12,7 @@ export class WalletJournalService {
     constructor(private http: HttpClient) { }
 
     public async getWalletJournal(character: Character): Promise<IWalletJournalData[]> {
-        const url = EVE.constructESIURL(4, 'characters', character.characterId, 'wallet', 'journal');
+        const url = EVE.getCharacterWalletJournalUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
         const response = await this.http.get<any>(url, {headers}).toPromise<IWalletJournalData[]>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {

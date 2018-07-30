@@ -11,7 +11,7 @@ export class WalletService {
     constructor(private http: HttpClient) { }
 
     public async getWalletBalance(character: Character): Promise<number> {
-        const url = EVE.constructESIURL(1, 'characters', character.characterId, 'wallet');
+        const url = EVE.getCharacterWalletUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
         const response = await this.http.get<any>(url, {headers}).toPromise<number>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {

@@ -11,7 +11,7 @@ export class ShipService {
     constructor(private http: HttpClient) { }
 
     public async getCurrentShip(character: Character): Promise<{ id: number, name: string }> {
-        const url = EVE.constructESIURL(1, 'characters', character.characterId, 'ship');
+        const url = EVE.getCharacterShipUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<IShipData>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {

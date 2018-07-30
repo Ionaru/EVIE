@@ -11,7 +11,7 @@ export class SkillQueueService {
     constructor(private http: HttpClient) { }
 
     public async getSkillQueue(character: Character): Promise<ISkillQueueData[]> {
-        const url = EVE.constructESIURL(2, 'characters', character.characterId, 'skillqueue');
+        const url = EVE.getCharacterSkillQueueUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<ISkillQueueData[]>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {

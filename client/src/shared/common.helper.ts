@@ -2,27 +2,15 @@
  * Several static helper functions.
  */
 export class Common {
-
     /**
-     * Wrapper for the setInterval function, it will execute the passed function immediately before calling setInterval
-     * @param {function} fn - The function to run
-     * @param {number} interval - The interval of the repeat
-     * @param {Array} params - Additional parameters to pass to fn
-     * @return {Timer} - Timer object for the interval function, used for clearInterval()
+     * Simple function to return the input argument, usable in .catch() functions for promises.
+     * @param {T} parameter - Parameter to return.
+     * @return {T}
      */
-    public static repeat(fn: (...params: any[]) => any, interval: number, ...params: any[]): number {
-        fn(...params);
-        return window.setInterval(fn, interval, ...params);
-    }
-
-    public static return(parameter: any) {
+    public static return<T>(parameter: T): T {
         return parameter;
     }
 
-    // public static createTitle(name: string): string {
-    //   return `EVIE - ${name}`;
-    // }
-    //
     // public static isEmpty(obj: any): boolean {
     //   // null and undefined are "empty"
     //   if (obj == null) {
@@ -110,47 +98,19 @@ export class Common {
         return negativeMarker + firstDigits + middleText + decimalText;
     }
 
-    // public processXML(response: Response): object {
-    //   try {
-    //     let jsonObject = {};
-    //
-    //     parseString(response.text(), (error, json) => {
-    //       if (error) {
-    //         throw error;
-    //       }
-    //       jsonObject = json;
-    //     });
-    //     return jsonObject;
-    //   } catch (error) {
-    //     // this.logger.error(error);
-    //     return {err: 'XMLParseError'};
-    //   }
-    // }
-    //
-    // public isCacheExpired(cacheEndTime: string): boolean {
-    //   const cacheEndTimeDate = Helpers.eveTimeToDate(cacheEndTime).getTime();
-    //   const currentTime = new Date().getTime();
-    //   const distance = cacheEndTimeDate - currentTime;
-    //   return distance < -5000;
-    // }
-
-    // public static eveTimeToDate(dateString: string): Date {
-    //     try {
-    //         const d = dateString.replace(/-/ig, '/').split('.')[0] + ' UTC';
-    //         console.log(d);
-    //         return new Date(dateString.replace(/-/ig, '/').split('.')[0] + ' UTC');
-    //     } catch (error) {
-    //         return new Date(dateString);
-    //     }
-    // }
-
-    public static sortArrayByObjectProperty(array: any[], property: string, inverse = false): any[] {
+    /**
+     * Sort an array of objects by one of the object's properties
+     * @param array - The array to sort.
+     * @param property - The property name to sort by.
+     * @param inverse - Inverse the output (descending).
+     */
+    public static sortArrayByObjectProperty<T>(array: T[], property: string, inverse = false): T[] {
 
         const compare = (a: any, b: any) => {
             let left = a[property];
             let right = b[property];
 
-            if (!left || !right) {
+            if (left === undefined || right === undefined) {
                 throw new Error(`Unable to compare values '${left}' and '${right}'`);
             }
 

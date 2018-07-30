@@ -103,7 +103,7 @@ export class NamesService {
     }
 
     private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
-        const url = EVE.constructESIURL(2, 'universe/names');
+        const url = EVE.getUniverseNamesUrl();
         const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
             return;

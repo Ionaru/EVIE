@@ -219,11 +219,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         this.skillQueue = this.skillQueue.filter((skill) => skill.status !== 'inactive');
         this.skillQueueCount = this.skillQueue.filter((_) => _.status && ['training', 'scheduled'].includes(_.status)).length;
         if (this.skillQueueCount) {
-            this.totalQueueTimer = Common.repeat(() => {
-                const now = Date.now();
-                this.skillQueueTimeLeft = this.totalQueueTime - now;
-                this.totalQueueCountdown = countdown(now, this.totalQueueTime, this.countdownUnits);
-            }, 1000);
+            this.totalQueueTimer = window.setInterval(this.updateQueueCountdown, 1000);
         }
     }
 
@@ -314,5 +310,11 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
             sp += skill.skillpoints_in_skill;
         }
         return sp;
+    }
+
+    private updateQueueCountdown() {
+        const now = Date.now();
+        this.skillQueueTimeLeft = this.totalQueueTime - now;
+        this.totalQueueCountdown = countdown(now, this.totalQueueTime, this.countdownUnits);
     }
 }

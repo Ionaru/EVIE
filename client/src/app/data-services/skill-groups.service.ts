@@ -8,17 +8,21 @@ import { ISkillCategoryData, ISkillGroupData } from '../../shared/interface.help
 @Injectable()
 export class SkillGroupsService {
 
-    private skillCategoryId = 16;
-
     constructor(private http: HttpClient) { }
 
     public async getSkillGroupInformation(): Promise<ISkillGroupData[]> {
         const skillInfo: ISkillGroupData[] = [];
 
-        const skillGroups = await this.getSkillGroupIds();
+        const skillCategory = await this.getSkillCategory();
 
-        await Promise.all(skillGroups.map(async (skillGroup) => {
-            const group = await this.getSkillGroup(skillGroup);
+        if (!skillCategory) {
+            return skillInfo;
+        }
+
+        const skillGroupIds = skillCategory.groups;
+
+        await Promise.all(skillGroupIds.map(async (skillGroupId) => {
+            const group = await this.getSkillGroup(skillGroupId);
 
             console.log(group);
 
@@ -32,17 +36,17 @@ export class SkillGroupsService {
         return skillInfo;
     }
 
-    private async getSkillGroupIds(): Promise<number[]> {
-        const url = EVE.constructESIURL(1, 'universe', 'categories', this.skillCategoryId);
+    private async getSkillCategory(): Promise<ISkillCategoryData | undefined> {
+        const url = EVE.getUniverseCategoriesUrl(EVE.skillCategoryId);
         const response = await this.http.get<any>(url).toPromise<ISkillCategoryData>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
-            return [];
+            return;
         }
-        return response.groups;
+        return response;
     }
 
     private async getSkillGroup(groupId: number): Promise<ISkillGroupData | undefined> {
-        const url = EVE.constructESIURL(1, 'universe', 'groups', groupId);
+        const url = EVE.getUniverseGroupsUrl(groupId);
         const response = await this.http.get<any>(url).toPromise<ISkillGroupData>().catch(Common.return);
         if (response instanceof HttpErrorResponse) {
             return;
