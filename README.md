@@ -20,12 +20,14 @@ Cross-browser testing for guaranteed compatibility, provided by
 
 ### TODO
 
+#### General
+* Option to switch between TQ and SiSi.
+* Caching of types in the server.
+* Use shared functions between client and server
+
 #### Skills page
 * Toggle option to show all skills in skills page
-    * Fetch all published skills
-    * Build data fetching and caching into server
-        * Keep SiSi in mind!
-    * Use shared functions between client and server
+    * Fetch all published skills from server.
 
 #### Industry page
 * Everything
