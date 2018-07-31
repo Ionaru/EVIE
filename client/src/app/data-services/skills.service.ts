@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
-import { ISkillsData } from '../../shared/interface.helper';
+import { ISkillsData, ITypesData } from '../../shared/interface.helper';
 import { Character } from '../models/character/character.model';
 
 @Injectable()
@@ -21,6 +21,11 @@ export class SkillsService {
     }
 
     public async getAllSkills(): Promise<any | undefined> {
-
+        const url = 'data/skill-types';
+        const response = await this.http.get<any>(url).toPromise<ITypesData>().catch(Common.return);
+        if (response instanceof HttpErrorResponse) {
+            return;
+        }
+        return response;
     }
 }

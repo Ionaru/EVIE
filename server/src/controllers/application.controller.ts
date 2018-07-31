@@ -110,7 +110,7 @@ export class Application {
         logger.info('Express configuration set');
 
         // Do caching here.
-        new CacheController();
+        // await CacheController.bleeeeh();
 
         logger.info('App startup done');
 

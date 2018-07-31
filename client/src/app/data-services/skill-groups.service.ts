@@ -24,8 +24,6 @@ export class SkillGroupsService {
         await Promise.all(skillGroupIds.map(async (skillGroupId) => {
             const group = await this.getSkillGroup(skillGroupId);
 
-            console.log(group);
-
             if (group && group.published) {
                 skillInfo.push(group);
             }

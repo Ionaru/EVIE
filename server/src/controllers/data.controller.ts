@@ -3,40 +3,94 @@ import { logger } from 'winston-pnp-logger';
 
 import { EVE } from '../../../client/src/shared/eve.helper';
 import { ISkillCategoryData, ISkillGroupData, IStatusData, ITypesData } from '../../../client/src/shared/interface.helper';
+import { CacheController } from './cache.controller';
 
 export class DataController {
 
     public static deprecationsLogged: string[] = [];
+    //
+    // public static async _getSkillTypes() {
+    //     const response = await fetch(EVE.getUniverseCategoriesUrl(EVE.skillCategoryId));
+    //     const body = await response.json() as ISkillCategoryData;
+    //
+    //     const skillIds: number[] = [];
+    //
+    //     await Promise.all(body.groups.map(async (groupId) => {
+    //         const groupResponse = await fetch(`https://esi.evetech.net/v1/universe/groups/${groupId}/`);
+    //         const groupData = await groupResponse.json() as ISkillGroupData;
+    //
+    //         if (groupData.published) {
+    //             skillIds.push(...groupData.types);
+    //         }
+    //     }));
+    //
+    //     const skills: ITypesData[] = [];
+    //
+    //     await Promise.all(skillIds.map(async (typeId) => {
+    //         const typesResponse = await fetch(`https://esi.evetech.net/v3/universe/types/${typeId}/`);
+    //         const typesData = await typesResponse.json() as ITypesData;
+    //
+    //         console.log(typesData);
+    //
+    //         if (typesData.published) {
+    //             skills.push(typesData);
+    //         }
+    //     }));
+    //
+    //     console.log(skills);
+    // }
 
     public static async getSkillTypes() {
-        const response = await fetch('https://esi.evetech.net/v1/universe/categories/16/');
-        const body = await response.json() as ISkillCategoryData;
 
-        const skillIds: number[] = [];
+        let skillsCategory: ISkillCategoryData | undefined;
 
-        await Promise.all(body.groups.map(async (groupId) => {
-            const groupResponse = await fetch(`https://esi.evetech.net/v1/universe/groups/${groupId}/`);
-            const groupData = await groupResponse.json() as ISkillGroupData;
-
-            if (groupData.published) {
-                skillIds.push(...groupData.types);
-            }
-        }));
+        if (CacheController.eveDataCache.categories && CacheController.eveDataCache.categories[EVE.skillCategoryId]) {
+            skillsCategory = CacheController.eveDataCache.categories[EVE.skillCategoryId];
+        } else {
+            skillsCategory = await DataController.fetchESIData<ISkillCategoryData>(EVE.getUniverseCategoriesUrl(EVE.skillCategoryId));
+            CacheController.eveDataCache.categories = CacheController.eveDataCache.categories || {};
+            CacheController.eveDataCache.categories[EVE.skillCategoryId] = skillsCategory;
+        }
 
         const skills: ITypesData[] = [];
 
-        await Promise.all(skillIds.map(async (typeId) => {
-            const typesResponse = await fetch(`https://esi.evetech.net/v3/universe/types/${typeId}/`);
-            const typesData = await typesResponse.json() as ITypesData;
+        if (skillsCategory) {
+            await Promise.all(skillsCategory.groups.map(async (groupId) => {
 
-            console.log(typesData);
+                let skillGroup: ISkillGroupData | undefined;
 
-            if (typesData.published) {
-                skills.push(typesData);
-            }
-        }));
+                if (CacheController.eveDataCache.groups && CacheController.eveDataCache.groups[groupId]) {
+                    skillGroup = CacheController.eveDataCache.groups[groupId];
+                } else {
+                    skillGroup = await DataController.fetchESIData<ISkillGroupData>(EVE.getUniverseGroupsUrl(groupId));
+                    CacheController.eveDataCache.groups = CacheController.eveDataCache.groups || {};
+                    CacheController.eveDataCache.groups[groupId] = skillGroup;
+                }
 
-        console.log(skills);
+                if (skillGroup && skillGroup.published) {
+
+                    await Promise.all(skillGroup.types.map(async (typeId) => {
+                        // const skillType = await DataController.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
+
+                        let skillType: ITypesData | undefined;
+
+                        if (CacheController.eveDataCache.types && CacheController.eveDataCache.types[typeId]) {
+                            skillType = CacheController.eveDataCache.types[typeId];
+                        } else {
+                            skillType = await DataController.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
+                            CacheController.eveDataCache.types = CacheController.eveDataCache.types || {};
+                            CacheController.eveDataCache.types[typeId] = skillType;
+                        }
+
+                        if (skillType && skillType.published) {
+                            skills.push(skillType);
+                        }
+                    }));
+                }
+            }));
+        }
+
+        return skills;
     }
 
     public static async getEveStatus() {

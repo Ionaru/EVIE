@@ -73,7 +73,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public skillQueueVisible = true;
 
-    public allSkills: IALL = {};
+    // public allSkills: IALL = {};
 
     // tslint:disable-next-line:no-bitwise
     private countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
@@ -85,8 +85,11 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public async ngOnInit() {
         super.ngOnInit();
-        this.allSkills = {};
+        // this.allSkills = {};
         await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
+
+        await this.skillsService.getAllSkills();
+
         this.parseSkillQueue();
     }
 
@@ -113,12 +116,12 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
                 // console.log(this.allSkills[group.group_id]);
 
-                for (const skill of skillsGorGroup) {
-                    // console.log(skill.skill_id);
-
-                    // TODO: CHECK /TYPES/TYPEID IF SKILL IS PUBLISHED
-                    this.allSkills[group.group_id].skills![skill.skill_id] = skill;
-                }
+                // for (const skill of skillsGorGroup) {
+                //     // console.log(skill.skill_id);
+                //
+                //     // TODO: CHECK /TYPES/TYPEID IF SKILL IS PUBLISHED
+                //     this.allSkills[group.group_id].skills![skill.skill_id] = skill;
+                // }
             }
         }
 
@@ -219,7 +222,9 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         this.skillQueue = this.skillQueue.filter((skill) => skill.status !== 'inactive');
         this.skillQueueCount = this.skillQueue.filter((_) => _.status && ['training', 'scheduled'].includes(_.status)).length;
         if (this.skillQueueCount) {
-            this.totalQueueTimer = window.setInterval(this.updateQueueCountdown, 1000);
+            this.totalQueueTimer = window.setInterval(() => {
+                this.updateQueueCountdown();
+            }, 1000);
         }
     }
 
@@ -266,25 +271,25 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         }
     }
 
-    public getSkillsInGroup(groupId: number) {
-        console.log(this.allSkills[groupId].skills);
-        return Common.sortArrayByObjectProperty(Object.values(this.allSkills[groupId].skills!), 'name');
-    }
+    // public getSkillsInGroup(groupId: number) {
+    //     console.log(this.allSkills[groupId].skills);
+    //     return Common.sortArrayByObjectProperty(Object.values(this.allSkills[groupId].skills!), 'name');
+    // }
 
     public async setSkillGroups() {
         this.skillGroups = await this.skillGroupsService.getSkillGroupInformation();
-        const groupedSkillIds = this.skillGroups.map((group) => group.types);
-        const allSkills = [].concat(...groupedSkillIds as any);
-        await this.namesService.getNames(...allSkills);
+        // const groupedSkillIds = this.skillGroups.map((group) => group.types);
+        // const allSkills = [].concat(...groupedSkillIds as any);
+        // await this.namesService.getNames(...allSkills);
 
-        for (const group of this.skillGroups) {
-            this.allSkills[group.group_id] = group;
-            this.allSkills[group.group_id].skills = {};
+        // for (const group of this.skillGroups) {
+            // this.allSkills[group.group_id] = group;
+            // this.allSkills[group.group_id].skills = {};
 
-            for (const type of group.types) {
-                this.allSkills[group.group_id].skills![type] = {name: NamesService.getNameFromData(type)};
-            }
-        }
+            // for (const type of group.types) {
+            //     this.allSkills[group.group_id].skills![type] = {name: NamesService.getNameFromData(type)};
+            // }
+        // }
 
         // console.log(this.allSkills);
     }
@@ -306,8 +311,10 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public getSPInGroup(groupId: number) {
         let sp = 0;
-        for (const skill of this.skillList[groupId]) {
-            sp += skill.skillpoints_in_skill;
+        if (this.skillList[groupId]) {
+            for (const skill of this.skillList[groupId]) {
+                sp += skill.skillpoints_in_skill;
+            }
         }
         return sp;
     }

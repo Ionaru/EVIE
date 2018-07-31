@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { environment } from '../../environments/environment';
 import { StatusService } from '../data-services/status.service';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
@@ -89,6 +90,10 @@ export class NavigationComponent implements OnInit {
         // // return this.char !== 1;
         // return true;
         return this.disable;
+    }
+
+    public debugOnly(): boolean {
+        return !environment.production;
     }
 
     public logout(): void {

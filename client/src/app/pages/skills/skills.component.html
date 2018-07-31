@@ -79,7 +79,7 @@
                         <div class="d-flex justify-content-between">
                             <span>
                                 <i class="fa fa-folder-open"></i>
-                                {{ group.name }} ({{ skillList[group.group_id].length }} / {{ group.types.length }})
+                                {{ group.name }} <!--({{ skillList[group.group_id].length }} / {{ group.types.length }})-->
                             </span>
                             <span>
                                 {{ getSPInGroup(group.group_id) | number:'1.0-0' }} SP
@@ -87,7 +87,7 @@
                         </div>
                     </ng-template>
                     <ng-template ngbPanelContent>
-                        <p class="skill-name d-flex justify-content-between" *ngFor="let skill of getSkillsInGroup(group.group_id)">
+                        <p class="skill-name d-flex justify-content-between" *ngFor="let skill of getSkillsForGroup(group)">
                             <span>
                                 {{ skill.name }} {{ skill.trained_skill_level }}
                                 <ng-container *ngIf="skill.active_skill_level !== skill.trained_skill_level">
