@@ -2,7 +2,9 @@
 
 <div class="container" *ngIf="!serverOnline">
     <ngb-alert [dismissible]="false" type="danger">
-        <strong>Could not reach EVE Online API!</strong> Displayed data may not be current or correct.
+        <strong>Could not reach EVE Online API server!</strong> Displayed data may not be current or correct.
+        <br>
+        The page will refresh automatically when the API server is online again.
     </ngb-alert>
 </div>
 

@@ -7,15 +7,17 @@ export class Common {
      * @param {T} parameter - Parameter to return.
      * @return {T}
      */
-    public static return<T>(parameter: T): T {
-        return parameter;
-    }
+    public static return = <T> (parameter: T): T => parameter;
 
-    public static objectsArrayToObject(array: any[], key: string) {
-        return array.reduce((o: any, val) => {
-            o[val[key]] = val;
-            return o;
-        });
+    public static objectsArrayToObject<T>(array: any[], key: string): T {
+
+        const object: any = {};
+
+        for (const item of array) {
+            object[item[key]] = item;
+        }
+
+        return object;
     }
 
     public static romanize(num: number) {
@@ -30,7 +32,7 @@ export class Common {
         let roman = '';
         let i = 3;
         while (i--) {
-            roman = (key[+digits.pop()! + (i * 10)] || '') + roman;
+            roman = (key[+(digits.pop() as string) + (i * 10)] || '') + roman;
         }
         return Array(+digits.join('') + 1).join('M') + roman;
     }
