@@ -26,6 +26,6 @@ export class SkillsService {
         if (response instanceof HttpErrorResponse) {
             return;
         }
-        return response;
+        return response.data;
     }
 }

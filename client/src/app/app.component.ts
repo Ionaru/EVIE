@@ -6,7 +6,6 @@ import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
 import { SocketService } from './socket/socket.service';
-import { TypesService } from './data-services/types.service';
 
 interface IHandshakeResponse {
     state: string;

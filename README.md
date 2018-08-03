@@ -24,6 +24,8 @@ Cross-browser testing for guaranteed compatibility, provided by
 * Option to switch between TQ and SiSi.
 * Caching of types in the server.
 * Use shared functions between client and server
+* Selecting a subset of scopes
+* Something special on character birthday / april fools
 
 #### Skills page
 * Toggle option to show all skills in skills page

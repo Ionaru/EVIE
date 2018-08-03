@@ -4,7 +4,7 @@
             <h2>Skillpoints</h2>
             <p class="skill-points" *ngIf="skills">
                 {{ skillPoints | number:'1.0-0' }} SP
-                <span class="unallocated" *ngIf="skills?.unallocated_sp">
+                <span class="unallocated text-info" *ngIf="skills?.unallocated_sp">
                     + ({{ skills?.unallocated_sp | number:'1.0-0' }} unallocated SP)
                 </span>
             </p>
@@ -24,25 +24,35 @@
             <h2>Skill queue ({{ skillQueueCount }})</h2>
             <h2 (click)="toggleSkillQueueVisible()"><i class="fas fa-chevron-down"></i></h2>
         </div>
-        <p class="skill-queue-time" *ngIf="!skillTrainingPaused" [ngClass]="{'low': skillQueueLow()}">
-            <i class="fa fa-exclamation-triangle" *ngIf="skillQueueLow()"></i>
+        <p class="skill-queue-time" *ngIf="!skillTrainingPaused" [ngClass]="{'text-warning': skillQueueLow()}">
+            <span *ngIf="skillQueueLow()"><i class="fas fa-exclamation-triangle"></i></span>
             Skill queue ends in {{ totalQueueCountdown }}
         </p>
         <div class="skill-queue" *ngIf="skillQueueVisible">
             <ng-container *ngIf="skillTrainingPaused">
-                <p class="stalled"><i class="fa fa-cog"></i> Skill queue inactive</p>
+                <p class="stalled"><i class="fas fa-cog"></i> Skill queue inactive</p>
             </ng-container>
             <ng-container *ngIf="skillQueue.length && skills">
                 <ng-container *ngFor="let skill of skillQueue">
                     <div class="skill-in-queue {{skill.status}}" *ngIf="skill.status !== 'finished'">
                         <div class="left-info">
                             <p>
-                                <ng-container *ngIf="skill.status === 'training'"><i class="fa fa-cog fa-spin"></i>
+                                <ng-container *ngIf="skill.status === 'training'">
+                                    <i class="fas fa-cog fa-spin"></i>
                                 </ng-container>
-                                <ng-container *ngIf="skill.status === 'scheduled'"><i
-                                    class="fa fa-chevron-circle-up"></i>
+                                <ng-container *ngIf="skill.status === 'scheduled'">
+                                    <i class="fas fa-clock" title="Scheduled"></i>
                                 </ng-container>
-                                <strong> {{ skill.name }} {{ skill.finished_level }}</strong>
+                                <strong>
+                                    {{ skill.name }}
+                                    <span class="text-info">
+                                    {{ romanize(skill.finished_level - 1) }}
+                                    </span>
+                                    <i class="fas fa-arrow-alt-right"></i>
+                                    <span class="text-info">
+                                    {{ romanize(skill.finished_level) }}
+                                    </span>
+                                </strong>
                             </p>
                             <p class="skill-info">SP left {{ skill.spLeft | number:'1.0-0' }}</p>
                             <p *ngIf="skill.status === 'training'" class="skill-info">
@@ -54,7 +64,7 @@
                         </div>
                         <div class="right-info">
                             <p class="skill-group" *ngIf="skill.name">
-                                <i class="fa fa-folder-open"></i> {{ getSkillGroup(skill.skill_id) }}</p>
+                                <i class="fas fa-folder-open"></i> {{ getSkillGroup(skill.skill_id) }}</p>
                             <p>Total SP when finished {{ skill.spAtEnd | number:'1.0-0' }}</p>
                             <p *ngIf="skill.status === 'training'">{{ skill.percentageDone || 0 | number:'1.2-2' }}%</p>
                         </div>
@@ -71,15 +81,22 @@
 
     <div class="skill-list-container">
         <h2>Skill overview ({{ skills?.skills.length || 0 }})</h2>
-        <h4>{{ countLvl5Skills() }} skills at level 5</h4>
+        <div class="d-flex justify-content-between">
+            <h4>{{ countLvl5Skills() }} skills at level 5</h4>
+            <div>
+                <button class="btn btn-outline-primary">Show untrained skills <i class="far fa-eye"></i></button>
+            </div>
+        </div>
         <div class="skill-list" *ngIf="skills">
             <ngb-accordion *ngIf="skills">
                 <ngb-panel *ngFor="let group of skillGroups">
                     <ng-template ngbPanelTitle>
                         <div class="d-flex justify-content-between">
                             <span>
-                                <i class="fa fa-folder-open"></i>
-                                {{ group.name }} <!--({{ skillList[group.group_id].length }} / {{ group.types.length }})-->
+                                <i class="fas fa-chevron-down"></i>
+                                <strong> {{ group.name }}</strong>
+                                <!-- TODO: OPTIMIZE!!!! Variable or something -->
+                                ({{ getSkillList(group, false).length }} / {{ getSkillList(group).length }})
                             </span>
                             <span>
                                 {{ getSPInGroup(group.group_id) | number:'1.0-0' }} SP
@@ -87,16 +104,23 @@
                         </div>
                     </ng-template>
                     <ng-template ngbPanelContent>
-                        <p class="skill-name d-flex justify-content-between" *ngFor="let skill of getSkillsForGroup(group)">
-                            <span>
-                                {{ skill.name }} {{ skill.trained_skill_level }}
-                                <ng-container *ngIf="skill.active_skill_level !== skill.trained_skill_level">
-                                    ({{ skill.active_skill_level }})
-                                </ng-container>
-                                <ng-container *ngIf="skill.trained_skill_level"></ng-container>
+                        <p class="skill-name d-flex justify-content-between"
+                           [ngClass]="{'text-muted': !trainedSkills[skill.type_id]}"
+                           *ngFor="let skill of getSkillList(group)">
+                            <span style="max-height: 24px" [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id]?.skill_id}">
+                                {{ skill.name }}
+                                <span *ngIf="trainedSkills[skill.type_id]" class="text-info">
+                                    {{ romanize(trainedSkills[skill.type_id].trained_skill_level) || 'Injected' }}
+                                    <span *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">
+                                        <span class="text-primary">
+                                        <i class="fas fa-arrow-alt-right"></i>
+                                        </span>
+                                        {{ romanize(trainedSkills[skill.type_id].trained_skill_level + 1)}}
+                                    </span>
+                                </span>
                             </span>
-                            <span>
-                                {{ skill.skillpoints_in_skill || 0 | number:'1.0-0' }} SP
+                            <span *ngIf="trainedSkills[skill.type_id]" [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id].skill_id}">
+                                {{ (currentTrainingSkill === trainedSkills[skill.type_id].skill_id ? trainedSkills[skill.type_id].skillpoints_in_skill + (currentTrainingSPGain || 0) : trainedSkills[skill.type_id].skillpoints_in_skill) || 0 | number:'1.0-0' }} SP
                             </span>
                         </p>
                     </ng-template>

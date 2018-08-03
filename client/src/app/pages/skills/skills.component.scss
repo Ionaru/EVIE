@@ -4,10 +4,6 @@
     display: flex;
     justify-content: space-between;
 
-    .unallocated {
-        color: $eve-skill-training;
-    }
-
     .training-speed {
         display: block;
         text-align: right;
@@ -16,7 +12,7 @@
 
 .skill-queue-time {
     &.low {
-        color: #ffff00;
+        color: $warning;
     }
 }
 
@@ -25,7 +21,7 @@
     $skill-queue-left-margin: 20px;
 
     .stalled {
-        color: #ffff00;
+        color: $warning;
     }
 
     .skill-in-queue {
@@ -39,10 +35,6 @@
 
         &.training {
             color: $primary;
-        }
-
-        &.scheduled {
-            color: $eve-skill-trained;
         }
 
         .left-info .skill-info {
@@ -60,12 +52,13 @@
     padding-top: 20px;
 
     .accordion ::ng-deep .card {
-        background-color: #171B23;
+        background-color: $body-secondary;
         .card-header {
             background-color: transparent;
             padding: 0;
 
             .btn.btn-link {
+                color: $body-color;
                 width: 100%;
                 text-align: left;
             }

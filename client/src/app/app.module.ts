@@ -1,3 +1,4 @@
+import { ContribNgHostModule, ContribNgNoCheckModule } from '@angular-contrib/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -65,6 +66,8 @@ import { SocketService } from './socket/socket.service';
         HttpClientModule,
         NgbModule.forRoot(),
         NgbTooltipModule,
+        ContribNgHostModule,
+        ContribNgNoCheckModule,
     ],
     providers: [
         httpInterceptorProviders,

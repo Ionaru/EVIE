@@ -3,7 +3,7 @@ import * as countdown from 'countdown';
 import Timespan = countdown.Timespan;
 
 import { Common } from '../../../shared/common.helper';
-import { ISkillData, ISkillGroupData, ISkillQueueData, ISkillsData } from '../../../shared/interface.helper';
+import { ISkillData, ISkillGroupData, ISkillQueueData, ISkillsData, ITypesData } from '../../../shared/interface.helper';
 import { NamesService } from '../../data-services/names.service';
 import { SkillGroupsService } from '../../data-services/skill-groups.service';
 import { SkillQueueService } from '../../data-services/skillqueue.service';
@@ -40,8 +40,8 @@ interface IGROUPS extends ISkillGroupData {
     skills?: ISKILLS;
 }
 
-interface IALL {
-    [groupId: number]: IGROUPS;
+interface ITrainedSkills {
+    [skillId: number]: IExtendedSkillData;
 }
 
 @Component({
@@ -54,7 +54,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
     public skillQueue: IExtendedSkillQueueData[] = [];
     public skillQueueCount = 0;
     public skills?: IExtendedSkillsData;
-    public skillTrainingPaused = true;
+    public skillTrainingPaused = false;
     public totalQueueTime = 0;
     public totalQueueCountdown?: number | Timespan;
     public skillQueueTimeLeft = 0;
@@ -73,6 +73,13 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public skillQueueVisible = true;
 
+    public skillTypes?: ITypesData[];
+
+    public trainedSkills?: ITrainedSkills;
+
+    public currentTrainingSkill?: number;
+    public currentTrainingSPGain?: number;
+
     // public allSkills: IALL = {};
 
     // tslint:disable-next-line:no-bitwise
@@ -85,17 +92,12 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public async ngOnInit() {
         super.ngOnInit();
-        // this.allSkills = {};
         await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
-
-        await this.skillsService.getAllSkills();
 
         this.parseSkillQueue();
     }
 
     public parseSkillQueue() {
-
-        // this.allSkills = {};
 
         this.resetTimers();
         this.totalQueueTime = Date.now();
@@ -104,28 +106,15 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         if (this.skills) {
             this.skillPoints = this.skills.total_sp;
 
-            for (const skill of this.skills.skills) {
-                skill.name = NamesService.getNameFromData(skill.skill_id, 'Unknown skill');
-            }
+            this.trainedSkills = Common.objectsArrayToObject(this.skills.skills, 'skill_id');
         }
 
         for (const group of this.skillGroups) {
             const skillsGorGroup = this.getSkillsForGroup(group);
             if (skillsGorGroup) {
                 this.skillList[group.group_id] = skillsGorGroup;
-
-                // console.log(this.allSkills[group.group_id]);
-
-                // for (const skill of skillsGorGroup) {
-                //     // console.log(skill.skill_id);
-                //
-                //     // TODO: CHECK /TYPES/TYPEID IF SKILL IS PUBLISHED
-                //     this.allSkills[group.group_id].skills![skill.skill_id] = skill;
-                // }
             }
         }
-
-        // console.log(this.allSkills);
 
         for (const skillInQueue of this.skillQueue) {
             skillInQueue.name = NamesService.getNameFromData(skillInQueue.skill_id, 'Unknown skill');
@@ -165,10 +154,13 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
                         skillInQueue.percentageDone = (spGained / (skillInQueue.level_end_sp - skillInQueue.level_start_sp)) * 100;
                     }
 
-                    this.skillPoints += (this.spPerSec * (timeExpired / 1000));
+                    this.skillPoints += spGained;
                     skillInQueue.spAtEnd = this.skillPoints + skillInQueue.spLeft;
 
                     skillInQueue.countdown = countdown(Date.now(), skillFinishDate, this.countdownUnits);
+
+                    this.currentTrainingSkill = skillInQueue.skill_id;
+                    this.currentTrainingSPGain = spGained;
 
                     // Update spPerSec and skill time countdown every second.
                     this.skillQueueTimer = window.setInterval(() => {
@@ -180,6 +172,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
                         if (skillInQueue.level_start_sp && skillInQueue.level_end_sp) {
                             skillInQueue.percentageDone = (spGained / (skillInQueue.level_end_sp - skillInQueue.level_start_sp)) * 100;
                         }
+                        this.currentTrainingSPGain = spGained;
                         skillInQueue.countdown = countdown(Date.now(), skillFinishDate, this.countdownUnits);
                     }, 1000);
 
@@ -242,6 +235,12 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         }
     }
 
+    public getTrainedSkill(id: number) {
+        if (this.skills) {
+            return this.skills.skills.filter((skill) => skill.skill_id === id);
+        }
+    }
+
     public skillQueueLow() {
         return !this.skillTrainingPaused && this.skillQueueTimeLeft < (24 * 60 * 60 * 1000);
     }
@@ -256,11 +255,18 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public async getSkills() {
         if (CharacterService.selectedCharacter) {
-            this.skills = await this.skillsService.getSkillsData(CharacterService.selectedCharacter);
-            if (this.skills) {
-                await this.namesService.getNames(...this.skills.skills.map((e) => e.skill_id));
+            const skills = await this.skillsService.getSkillsData(CharacterService.selectedCharacter);
+            if (skills) {
+                await this.namesService.getNames(...skills.skills.map((e) => e.skill_id));
+                for (const skill of skills.skills) {
+                    (skill as IExtendedSkillData).name = NamesService.getNameFromData(skill.skill_id, 'Unknown skill');
+                }
             }
+
+            this.skills = skills;
         }
+
+        this.skillTypes = await this.skillsService.getAllSkills();
     }
 
     public getSkillsForGroup(group: ISkillGroupData) {
@@ -269,12 +275,31 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
             skills = Common.sortArrayByObjectProperty(skills, 'name');
             return skills;
         }
+        return [];
     }
 
-    // public getSkillsInGroup(groupId: number) {
-    //     console.log(this.allSkills[groupId].skills);
-    //     return Common.sortArrayByObjectProperty(Object.values(this.allSkills[groupId].skills!), 'name');
-    // }
+    public getSkillsInGroup(group: ISkillGroupData) {
+        // console.log(this.allSkills[groupId].skills);
+        if (this.skillTypes) {
+            return Common.sortArrayByObjectProperty(this.skillTypes.filter((skill) => skill.group_id === group.group_id), 'name');
+        }
+        return [];
+    }
+
+    public getSkillList(group: ISkillGroupData, allSkills = true) {
+
+        let skills: ITypesData[] = [];
+
+        if (this.skillTypes) {
+            skills = this.skillTypes.filter((skill) => skill.group_id === group.group_id);
+            console.log(allSkills);
+            if (!allSkills && this.skills) {
+                skills.filter((skill) => this.skills!.skills.map((trainedSkill) => trainedSkill.skill_id).includes(skill.type_id));
+            }
+        }
+
+        return Common.sortArrayByObjectProperty(skills, 'name');
+    }
 
     public async setSkillGroups() {
         this.skillGroups = await this.skillGroupsService.getSkillGroupInformation();
@@ -317,6 +342,10 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
             }
         }
         return sp;
+    }
+
+    public romanize(num: number) {
+        return Common.romanize(num);
     }
 
     private updateQueueCountdown() {
