@@ -1,3 +1,6 @@
+import * as countdown from 'countdown';
+import { ISkillQueueData } from '../../../shared/interface.helper';
+
 export class Character {
     public characterId: number;
     public uuid: string;
@@ -20,7 +23,9 @@ export class Character {
     public balance = 0;
     public walletJournal: object[] = [];
     public walletTransactions: object[] = [];
-    public currentlyTraining = 0;
+    public currentTrainingSkill?: ISkillQueueDataWithName;
+    public currentTrainingFinish?: Date;
+    public currentTrainingCountdown?: number | countdown.Timespan;
     public skillQueue: number[] = [];
     public assets: object[] = [];
     public planets: object[] = [];
@@ -102,4 +107,8 @@ export interface ITokenRefreshResponse {
 export interface IDeleteCharacterResponse {
     state: string;
     message: string;
+}
+
+export interface ISkillQueueDataWithName extends ISkillQueueData {
+    name?: string;
 }

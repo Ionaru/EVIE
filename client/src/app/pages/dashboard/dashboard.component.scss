@@ -16,6 +16,14 @@
             flex-direction: column;
             justify-content: space-between;
 
+            .character-link {
+                transition: filter 0.5s ease-in-out, color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+
+                &:hover {
+                    background-color: $primary;
+                }
+            }
+
             p {
                 margin: 0;
                 padding: 5px;

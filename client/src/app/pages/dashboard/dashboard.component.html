@@ -25,9 +25,16 @@
                         {{ character.currentShip.name }} ({{ character.currentShip.type }})
                     </ng-container>
                 </p>
-                <p>
-                    {{ character.birthday | date:'longDate' }}
-                </p>
+                <a class="character-link" (click)="goToCharacterSkillPage(character).then()">
+                    <p>
+                        {{ character.currentTrainingSkill?.name || 'No skill in training' }}
+                        <span *ngIf="character.currentTrainingSkill" class="text-info">
+                            {{ romanize(character.currentTrainingSkill?.finished_level) }}
+                        </span>
+                        <br>
+                        {{ character.currentTrainingCountdown }}
+                    </p>
+                </a>
                 <p class="button-row">
                     <button class="btn" [disabled]="isCharacterSelected(character)"
                             [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character)">

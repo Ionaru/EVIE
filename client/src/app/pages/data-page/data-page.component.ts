@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import * as countdown from 'countdown';
 import { Subscription } from 'rxjs';
 
 import { CharacterService } from '../../models/character/character.service';
@@ -20,6 +21,9 @@ export class DataPageComponent implements OnInit, OnDestroy {
         this.serverStatusSubscription = NavigationComponent.serverStatusEvent.subscribe(() => {
             this.ngOnInit();
         });
+
+        countdown.resetLabels();
+        countdown.resetFormat();
     }
 
     public ngOnInit() {
@@ -29,5 +33,10 @@ export class DataPageComponent implements OnInit, OnDestroy {
     public ngOnDestroy() {
         this.changeSubscription.unsubscribe();
         this.serverStatusSubscription.unsubscribe();
+    }
+
+    public softReload() {
+        this.ngOnInit();
+        this.ngOnDestroy();
     }
 }
