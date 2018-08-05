@@ -10,6 +10,7 @@ import { Character } from '../../models/character/character.model';
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { WalletService } from '../../data-services/wallet.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -28,7 +29,8 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
 
     constructor(private userService: UserService, private characterService: CharacterService, private shipService: ShipService,
-                private namesService: NamesService, private skillQueueService: SkillQueueService, private router: Router) {
+                private namesService: NamesService, private skillQueueService: SkillQueueService, private router: Router,
+                private walletService: WalletService) {
         super();
 
         countdown.setLabels(
@@ -86,6 +88,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         await Promise.all([
             this.getShipData(character),
             this.getSkillQueueData(character),
+            this.getCharacterWalletBalance(character),
         ]);
     }
 
@@ -93,6 +96,10 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         this.deleteInProgress = true;
         await this.userService.deleteCharacter(character);
         this.deleteInProgress = false;
+    }
+
+    public async getCharacterWalletBalance(character: Character) {
+        character.balance = await this.walletService.getWalletBalance(character);
     }
 
     public async getShipData(character: Character): Promise<void> {
@@ -106,6 +113,11 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     public async goToCharacterSkillPage(character: Character) {
         await this.characterService.setActiveCharacter(character);
         this.router.navigate(['/skills']).then();
+    }
+
+    public async goToCharacterWalletPage(character: Character) {
+        await this.characterService.setActiveCharacter(character);
+        this.router.navigate(['/wallet']).then();
     }
 
     public async getSkillQueueData(character: Character): Promise<void> {

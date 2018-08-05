@@ -25,6 +25,11 @@
                         {{ character.currentShip.name }} ({{ character.currentShip.type }})
                     </ng-container>
                 </p>
+                <a class="character-link" (click)="goToCharacterWalletPage(character).then()">
+                    <p>
+                        {{ character.balance || 0 | number:'0.2-2' }} ISK
+                    </p>
+                </a>
                 <a class="character-link" (click)="goToCharacterSkillPage(character).then()">
                     <p>
                         {{ character.currentTrainingSkill?.name || 'No skill in training' }}
@@ -37,7 +42,7 @@
                 </a>
                 <p class="button-row">
                     <button class="btn" [disabled]="isCharacterSelected(character)"
-                            [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character)">
+                            [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character).then()">
                         <i class="far fa-check"></i>
                     </button>
                     <button class="btn btn-outline-info disabled">
