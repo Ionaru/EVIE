@@ -21,11 +21,11 @@
 
     <div class="skill-queue-container">
         <div class="d-flex justify-content-between">
-            <h2>Skill queue ({{ skillQueueCount }})</h2>
+            <h2>Skill queue ( {{ skillQueueCount }} )</h2>
             <h2 (click)="skillQueueVisible = !skillQueueVisible"><i class="fas fa-chevron-down"></i></h2>
         </div>
-        <p class="skill-queue-time" *ngIf="!skillTrainingPaused" [ngClass]="{'text-warning': skillQueueLow()}">
-            <span *ngIf="skillQueueLow()"><i class="fas fa-exclamation-triangle"></i></span>
+        <p class="skill-queue-time" *ngIf="!skillTrainingPaused" [ngClass]="{'text-warning': hasLowSkillQueue}">
+            <span *ngIf="hasLowSkillQueue"><i class="fas fa-exclamation-triangle"></i></span>
             Skill queue ends in {{ totalQueueCountdown }}
         </p>
         <div class="skill-queue" *ngIf="skillQueueVisible">
@@ -80,7 +80,13 @@
     <hr>
 
     <div class="skill-list-container">
-        <h2>Skill overview ({{ skills?.skills.length || 0 }})</h2>
+        <h2>
+            Skill overview ( {{ skills?.skills.length || 0 }}
+            <ng-container *ngIf="showUntrainedSkills">
+                / {{ skillTypes?.length }}
+            </ng-container>
+            )
+        </h2>
         <div class="d-flex justify-content-between">
             <h4>{{ countLvl5Skills() }} skills at level 5</h4>
             <div>
@@ -131,7 +137,9 @@
                                 </span>
                             </span>
                             <span *ngIf="trainedSkills[skill.type_id]" [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id].skill_id}">
-                                {{ (currentTrainingSkill === trainedSkills[skill.type_id].skill_id ? trainedSkills[skill.type_id].skillpoints_in_skill + (currentTrainingSPGain || 0) : trainedSkills[skill.type_id].skillpoints_in_skill) || 0 | number:'1.0-0' }} SP
+                                {{ (currentTrainingSkill === trainedSkills[skill.type_id].skill_id ? trainedSkills[skill.type_id].skillpoints_in_skill + (currentTrainingSPGain || 0) : trainedSkills[skill.type_id].skillpoints_in_skill) || 0 | number:'1.0-0' }}
+                                <ng-container *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">/ {{ currentTrainingSPEnd | number:'1.0-0' }}</ng-container>
+                                SP
                             </span>
                         </p>
                     </ng-template>

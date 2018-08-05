@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as countdown from 'countdown';
-import Timespan = countdown.Timespan;
 
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
@@ -14,7 +13,7 @@ import { DataPageComponent } from '../data-page/data-page.component';
 
 interface IExtendedSkillQueueData extends ISkillQueueData {
     status?: 'training' | 'finished' | 'scheduled' | 'inactive';
-    countdown?: number | Timespan;
+    countdown?: number | countdown.Timespan;
     name?: string;
     spAtEnd?: number;
     spLeft?: number;
@@ -46,19 +45,21 @@ interface IGroupedSkillTypes {
     styleUrls: ['./skills.component.scss'],
     templateUrl: './skills.component.html',
 })
-export class SkillsComponent extends DataPageComponent implements OnInit {
+export class SkillsComponent extends DataPageComponent implements OnInit, OnDestroy {
 
     public skillQueue: IExtendedSkillQueueData[] = [];
     public skillQueueCount = 0;
     public skills?: IExtendedSkillsData;
     public skillTrainingPaused = false;
     public totalQueueTime = 0;
-    public totalQueueCountdown?: number | Timespan;
+    public totalQueueCountdown?: number | countdown.Timespan;
     public skillQueueTimeLeft = 0;
 
     public totalSP = 0;
 
     public showUntrainedSkills = false;
+
+    public hasLowSkillQueue = false;
 
     public spPerSec = 0;
     public skillQueueTimer?: number;
@@ -76,6 +77,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
     public currentTrainingSkill?: number;
     public currentTrainingSPGain?: number;
+    public currentTrainingSPEnd?: number;
 
     public trainedSkillsGrouped: IGroupedSkillTypes = {};
     public skillsGrouped: IGroupedSkillTypes = {};
@@ -94,6 +96,11 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
 
         this.parseSkillQueue();
+    }
+
+    public async ngOnDestroy() {
+        super.ngOnDestroy();
+        this.resetTimers();
     }
 
     public romanize = (num: number) => Common.romanize(num);
@@ -141,6 +148,10 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         const now = Date.now();
         this.skillQueueTimeLeft = this.totalQueueTime - now;
         this.totalQueueCountdown = countdown(now, this.totalQueueTime, this.countdownUnits);
+
+        if (this.skillQueueLow()) {
+            this.hasLowSkillQueue = true;
+        }
     }
 
     private async setSkillGroups() {
@@ -212,11 +223,15 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
         for (const skillInQueue of this.skillQueue) {
             skillInQueue.name = NamesService.getNameFromData(skillInQueue.skill_id, 'Unknown skill');
 
-            if (skillInQueue.start_date && skillInQueue.finish_date && skillInQueue.training_start_sp && skillInQueue.level_end_sp) {
+            if (skillInQueue.start_date && skillInQueue.finish_date && skillInQueue.training_start_sp &&
+                skillInQueue.level_end_sp && skillInQueue.level_start_sp) {
+
                 const now = new Date();
+                const nowTime = now.getTime();
                 const skillFinishDate = new Date(skillInQueue.finish_date);
                 const skillStartDate = new Date(skillInQueue.start_date);
                 skillInQueue.spLeft = skillInQueue.level_end_sp - skillInQueue.training_start_sp;
+                // const spForLevel = skillInQueue.level_end_sp - skillInQueue.level_start_sp;
 
                 if (skillFinishDate < now) {
                     // This skill finished training sometime in the past.
@@ -227,47 +242,49 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
                     // This skill was started sometime in the past, and because the above statement failed,
                     // we can assume it's not finished yet.
                     skillInQueue.status = 'training';
+                    this.skillTrainingPaused = false;
+                    this.currentTrainingSkill = skillInQueue.skill_id;
 
-                    const timeLeftInSkill = (skillFinishDate.getTime() - now.getTime());
+                    const startTrainingToFinishTime = skillFinishDate.getTime() - skillStartDate.getTime();
+
+                    const startTrainingToFinishSP = skillInQueue.level_end_sp - skillInQueue.training_start_sp;
+
+                    this.spPerSec = startTrainingToFinishSP / (startTrainingToFinishTime / 1000);
+
+                    const timeSpentSinceStartTraining = nowTime - skillStartDate.getTime();
+                    const currentSPInSkill = skillInQueue.training_start_sp + (this.spPerSec * (timeSpentSinceStartTraining / 1000));
+
+                    const currentSPInSkillLevel = currentSPInSkill - skillInQueue.level_start_sp;
+                    const skillLevelSP = skillInQueue.level_end_sp - skillInQueue.level_start_sp;
+
+                    let spGained = currentSPInSkillLevel - (skillInQueue.training_start_sp - skillInQueue.level_start_sp);
+                    this.totalSP += spGained;
+                    const timeLeftInSkill = skillFinishDate.getTime() - nowTime;
                     this.totalQueueTime += timeLeftInSkill;
 
-                    this.skillTrainingPaused = false;
-
-                    // SKill time calculations
-                    const skillTrainingDuration = skillFinishDate.getTime() - skillStartDate.getTime();
-                    const timeExpired = skillTrainingDuration - timeLeftInSkill;
-
-                    // Skill point calculations
-                    this.spPerSec = skillInQueue.spLeft / (skillTrainingDuration / 1000);
-                    let spGained = (this.spPerSec * (timeExpired / 1000));
+                    skillInQueue.countdown = countdown(nowTime, skillFinishDate, this.countdownUnits);
                     skillInQueue.spLeft = skillInQueue.spLeft - spGained;
-
-                    // Calculate % done.
-                    if (skillInQueue.level_start_sp) {
-                        const levelSkillpoints = skillInQueue.level_end_sp - skillInQueue.level_start_sp;
-                        skillInQueue.percentageDone = Calc.partPercentage(spGained, levelSkillpoints);
-                    }
-
-                    this.totalSP += spGained;
+                    skillInQueue.percentageDone = Calc.partPercentage(currentSPInSkillLevel, skillLevelSP);
                     skillInQueue.spAtEnd = this.totalSP + skillInQueue.spLeft;
 
-                    skillInQueue.countdown = countdown(Date.now(), skillFinishDate, this.countdownUnits);
-
-                    this.currentTrainingSkill = skillInQueue.skill_id;
                     this.currentTrainingSPGain = spGained;
+                    this.currentTrainingSPEnd = skillInQueue.level_end_sp;
 
                     // Update spPerSec and skill time countdown every second.
                     this.skillQueueTimer = window.setInterval(() => {
-                        this.totalSP += this.spPerSec;
-                        spGained += this.spPerSec;
+
                         if (skillInQueue.spLeft) {
                             skillInQueue.spLeft = skillInQueue.spLeft -= this.spPerSec;
                         }
                         if (skillInQueue.level_start_sp && skillInQueue.level_end_sp) {
-                            const levelSkillpoints = skillInQueue.level_end_sp - skillInQueue.level_start_sp;
-                            skillInQueue.percentageDone = Calc.partPercentage(spGained, levelSkillpoints);
+                            skillInQueue.percentageDone = Calc.partPercentage(currentSPInSkillLevel, skillLevelSP);
                         }
+
+                        this.totalSP += this.spPerSec;
+
+                        spGained += this.spPerSec;
                         this.currentTrainingSPGain = spGained;
+
                         skillInQueue.countdown = countdown(Date.now(), skillFinishDate, this.countdownUnits);
                     }, 1000);
 
@@ -313,6 +330,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit {
 
         this.skillQueue = this.skillQueue.filter((skill) => skill.status !== 'inactive');
         this.skillQueueCount = this.skillQueue.filter((_) => _.status && ['training', 'scheduled'].includes(_.status)).length;
+        this.updateQueueCountdown();
         if (this.skillQueueCount) {
             this.totalQueueTimer = window.setInterval(() => {
                 this.updateQueueCountdown();
