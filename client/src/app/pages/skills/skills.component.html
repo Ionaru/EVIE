@@ -46,7 +46,7 @@
                                 <strong>
                                     {{ skill.name }}
                                     <span class="text-info">
-                                    {{ romanize(skill.finished_level - 1) }}
+                                    {{ romanize(skill.finished_level - 1) || 'Injected' }}
                                     </span>
                                     <i class="fas fa-arrow-alt-right"></i>
                                     <span class="text-info">
