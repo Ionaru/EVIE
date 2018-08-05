@@ -26,6 +26,7 @@ Cross-browser testing for guaranteed compatibility, provided by
 * Use shared functions between client and server
 * Selecting a subset of scopes
 * Something special on character birthday / april fools
+* Responsiveness
 
 #### Skills page
 * Toggle option to show all skills in skills page
