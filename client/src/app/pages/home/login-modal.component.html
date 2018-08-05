@@ -24,14 +24,14 @@
                        class="form-control" type="password" id="login-password" required ngModel name="password">
             </div>
 
-            <button [ngClass]="{'m-progress' : inProgress}"
+            <button [ngClass]="{'m-progress' : inProgress, 'disabled': inProgress}"
                     class="btn btn-primary " type="submit" [disabled]="!loginForm.valid || wrongLogin">
                 Here I am again!
             </button>
         </form>
         <ng-container *ngIf="debugging">
             <hr>
-            <button class="btn btn-danger" (click)="loginDebug()">
+            <button class="btn btn-danger" (click)="loginDebug()" [ngClass]="{'disabled': inProgress}">
                 <i class="fa fa-exclamation-triangle"></i>
                 Login debug
             </button>
@@ -39,7 +39,7 @@
     </div>
 </div>
 <div class="modal-footer" *ngIf="wrongLogin">
-    <p [@myAnimation]="wrongLogin">
+    <p>
         <i class="text-danger fa fa-exclamation-triangle"></i>
         Incorrect login, please try again.
     </p>
