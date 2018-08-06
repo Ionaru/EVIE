@@ -223,8 +223,8 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         for (const skillInQueue of this.skillQueue) {
             skillInQueue.name = NamesService.getNameFromData(skillInQueue.skill_id, 'Unknown skill');
 
-            if (skillInQueue.start_date && skillInQueue.finish_date && skillInQueue.training_start_sp &&
-                skillInQueue.level_end_sp && skillInQueue.level_start_sp) {
+            if (skillInQueue.start_date && skillInQueue.finish_date && skillInQueue.training_start_sp !== undefined &&
+                skillInQueue.level_end_sp && skillInQueue.level_start_sp !== undefined) {
 
                 const now = new Date();
                 const nowTime = now.getTime();
