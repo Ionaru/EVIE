@@ -30,8 +30,6 @@ export class RegisterModalComponent {
 
     public inProgress = false;
 
-    // @ViewChild('usernameInput') public usernameInput: ElementRef;
-
     constructor(public activeModal: NgbActiveModal, private userService: UserService, private router: Router) {
         this.setupModal();
     }

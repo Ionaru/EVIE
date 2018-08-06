@@ -11,7 +11,5 @@ export class LogoutModalComponent {
 
     constructor(public activeModal: NgbActiveModal, private userService: UserService) { }
 
-    public logout(): void {
-        this.userService.logoutUser();
-    }
+    public logout = () => this.userService.logoutUser();
 }

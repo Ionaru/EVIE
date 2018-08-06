@@ -23,11 +23,7 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    public openLoginModal() {
-        this.modalService.open(LoginModalComponent);
-    }
+    public openLoginModal = () => this.modalService.open(LoginModalComponent);
 
-    public openRegisterModal() {
-        this.modalService.open(RegisterModalComponent);
-    }
+    public openRegisterModal = () => this.modalService.open(RegisterModalComponent);
 }

@@ -22,9 +22,7 @@ export class LoginModalComponent {
         }
     }
 
-    public loginDebug(): void {
-        this.login({username: 'testUser', password: '000999888'}).then();
-    }
+    public loginDebug = () => this.login({username: 'testUser', password: '000999888'}).then();
 
     public resetStyle() {
         this.wrongLogin = false;
