@@ -46,11 +46,7 @@
                                 <strong>
                                     {{ skill.name }}
                                     <span class="text-info">
-                                    {{ romanize(skill.finished_level - 1) || 'Injected' }}
-                                    </span>
-                                    <i class="fas fa-arrow-alt-right"></i>
-                                    <span class="text-info">
-                                    {{ romanize(skill.finished_level) }}
+                                        {{ romanize(skill.finished_level) }}
                                     </span>
                                 </strong>
                             </p>
@@ -124,7 +120,8 @@
                         <p class="skill-name d-flex justify-content-between"
                            [ngClass]="{'text-muted': !trainedSkills[skill.type_id]}"
                            *ngFor="let skill of (showUntrainedSkills ? skillsGrouped[group.group_id] : trainedSkillsGrouped[group.group_id])">
-                            <span [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id]?.skill_id}">
+                            <span
+                                [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id]?.skill_id}">
                                 {{ skill.name }}
                                 <span *ngIf="trainedSkills[skill.type_id]" class="text-info">
                                     {{ romanize(trainedSkills[skill.type_id].trained_skill_level) || 'Injected' }}
@@ -136,7 +133,8 @@
                                     </span>
                                 </span>
                             </span>
-                            <span *ngIf="trainedSkills[skill.type_id]" [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id].skill_id}">
+                            <span *ngIf="trainedSkills[skill.type_id]"
+                                  [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id].skill_id}">
                                 {{ (currentTrainingSkill === trainedSkills[skill.type_id].skill_id ? trainedSkills[skill.type_id].skillpoints_in_skill + (currentTrainingSPGain || 0) : trainedSkills[skill.type_id].skillpoints_in_skill) || 0 | number:'1.0-0' }}
                                 <ng-container *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">/ {{ currentTrainingSPEnd | number:'1.0-0' }}</ng-container>
                                 SP
