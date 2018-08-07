@@ -1,5 +1,6 @@
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
-import fetch from 'node-fetch';
+import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
 import { config } from '../controllers/configuration.controller';
@@ -125,12 +126,11 @@ export class SSORouter extends BaseRouter {
             character.user = user;
         }
 
-        const requestOptions = {
+        const requestOptions: AxiosRequestConfig = {
             headers: {
                 'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            method: 'POST',
         };
 
         const requestArgs = [
@@ -138,53 +138,42 @@ export class SSORouter extends BaseRouter {
             `code=${request.query.code}`,
         ];
 
-        const authUrl = protocol + oauthHost + tokenPath + requestArgs.join('&');
+        const authUrl = `${protocol}${oauthHost}${tokenPath}${requestArgs.join('&')}`;
         logger.debug(authUrl);
-        const authResponse = await fetch(authUrl, requestOptions).catch((errorResponse) => errorResponse);
-
-        if (!authResponse.ok) {
-            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
-        }
-
-        const authResponseData: IAuthResponseData | undefined = await authResponse.json().catch(() => {
-            return undefined;
+        const authResponse = await axios.post<IAuthResponseData>(authUrl, null, requestOptions).catch((error: AxiosError) => {
+            logger.error('Request failed:', authUrl, error);
+            return;
         });
 
-        if (!authResponseData) {
+        if (!authResponse || authResponse.status !== httpStatus.OK) {
             return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
-        character.accessToken = authResponseData.access_token;
-        character.refreshToken = authResponseData.refresh_token;
-        character.tokenExpiry = new Date(Date.now() + (authResponseData.expires_in * 1000));
+        character.accessToken = authResponse.data.access_token;
+        character.refreshToken = authResponse.data.refresh_token;
+        character.tokenExpiry = new Date(Date.now() + (authResponse.data.expires_in * 1000));
 
-        const characterIdRequestOptions = {
+        const verifyRequestConfig: AxiosRequestConfig = {
             headers: {
-                'Authorization': 'Bearer ' + authResponseData.access_token,
-                'Content-Type': 'application/x-www-form-urlencoded',
+                authorization: 'Bearer ' + authResponse.data.access_token,
             },
-            host: oauthHost,
-            path: '',
         };
 
         const verifyUrl = protocol + oauthHost + verifyPath;
         logger.debug(verifyUrl);
-        const characterIdResult = await fetch(verifyUrl, characterIdRequestOptions).catch((errorResponse) => errorResponse);
+        const verifyResult = await axios.get<IVerifyResponseData>(verifyUrl, verifyRequestConfig).catch((error: AxiosError) => {
+            logger.error('Request failed:', verifyUrl, error);
+            return;
+        });
 
-        if (!characterIdResult.ok) {
+        if (!verifyResult || verifyResult.status !== httpStatus.OK) {
             return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
-        const charData: IVerifyResponseData | undefined = await characterIdResult.json().catch(() => undefined);
-
-        if (!charData) {
-            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
-        }
-
-        character.name = charData.CharacterName;
-        character.characterId = charData.CharacterID;
-        character.scopes = charData.Scopes;
-        character.ownerHash = charData.CharacterOwnerHash;
+        character.name = verifyResult.data.CharacterName;
+        character.characterId = verifyResult.data.CharacterID;
+        character.scopes = verifyResult.data.Scopes;
+        character.ownerHash = verifyResult.data.CharacterOwnerHash;
 
         await character.save();
 
@@ -236,36 +225,32 @@ export class SSORouter extends BaseRouter {
             return SSORouter.sendResponse(response, 404, 'CharacterNotFound');
         }
 
-        const requestOptions = {
-            body: `grant_type=refresh_token&refresh_token=${character.refreshToken}`,
+        const requestOptions: AxiosRequestConfig = {
             headers: {
                 'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            method: 'POST',
         };
 
         const refreshUrl = protocol + oauthHost + tokenPath;
+        const data = `grant_type=refresh_token&refresh_token=${character.refreshToken}`;
         logger.debug(refreshUrl);
-        const refreshResponse = await fetch(refreshUrl, requestOptions).catch((errorResponse) => errorResponse);
+        const refreshResponse = await axios.post(refreshUrl, data, requestOptions).catch((error: AxiosError) => {
+            logger.error('Request failed:', refreshUrl, error);
+            return;
+        });
 
-        if (!refreshResponse.ok) {
+        if (!refreshResponse || refreshResponse.status !== httpStatus.OK) {
             return SSORouter.sendResponse(response, 502, 'SSOResponseError');
         }
 
-        const refreshResult = await refreshResponse.json().catch(() => undefined);
-
-        if (!refreshResult) {
-            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
-        }
-
-        character.refreshToken = refreshResult.refresh_token;
-        character.accessToken = refreshResult.access_token;
-        character.tokenExpiry = new Date(Date.now() + (refreshResult.expires_in * 1000));
+        character.refreshToken = refreshResponse.data.refresh_token;
+        character.accessToken = refreshResponse.data.access_token;
+        character.tokenExpiry = new Date(Date.now() + (refreshResponse.data.expires_in * 1000));
         await character.save();
 
         return SSORouter.sendResponse(response, 200, 'TokenRefreshed', {
-            token: refreshResult.access_token,
+            token: refreshResponse.data.access_token,
         });
     }
 
