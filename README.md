@@ -24,13 +24,14 @@ Cross-browser testing for guaranteed compatibility, provided by
 * Option to switch between TQ and SiSi.
 * Caching of types in the server.
 * Use shared functions between client and server
-* Selecting a subset of scopes
-* Something special on character birthday / april fools
+* Selecting a subset of scopes for SSO
+* Something special on character birthday / april fools / christmas
 * Responsiveness
 
 #### Skills page
-* Toggle option to show all skills in skills page
-    * Fetch all published skills from server.
+* Attribute levels
 
 #### Industry page
-* Everything
+* Fetch industry information from SDE(-like API) to server
+* Create routes so client can fetch industry info in small portions
+* Do cost calculations on resources, recursively
