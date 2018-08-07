@@ -1,4 +1,5 @@
-import fetch, { FetchError, Response } from 'node-fetch';
+import axios, { AxiosError } from 'axios';
+import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
 import { EVE } from '../../../client/src/shared/eve.helper';
@@ -8,37 +9,6 @@ import { CacheController } from './cache.controller';
 export class DataController {
 
     public static deprecationsLogged: string[] = [];
-    //
-    // public static async _getSkillTypes() {
-    //     const response = await fetch(EVE.getUniverseCategoriesUrl(EVE.skillCategoryId));
-    //     const body = await response.json() as ISkillCategoryData;
-    //
-    //     const skillIds: number[] = [];
-    //
-    //     await Promise.all(body.groups.map(async (groupId) => {
-    //         const groupResponse = await fetch(`https://esi.evetech.net/v1/universe/groups/${groupId}/`);
-    //         const groupData = await groupResponse.json() as ISkillGroupData;
-    //
-    //         if (groupData.published) {
-    //             skillIds.push(...groupData.types);
-    //         }
-    //     }));
-    //
-    //     const skills: ITypesData[] = [];
-    //
-    //     await Promise.all(skillIds.map(async (typeId) => {
-    //         const typesResponse = await fetch(`https://esi.evetech.net/v3/universe/types/${typeId}/`);
-    //         const typesData = await typesResponse.json() as ITypesData;
-    //
-    //         console.log(typesData);
-    //
-    //         if (typesData.published) {
-    //             skills.push(typesData);
-    //         }
-    //     }));
-    //
-    //     console.log(skills);
-    // }
 
     public static async getSkillTypes() {
 
@@ -77,7 +47,7 @@ export class DataController {
                         if (CacheController.eveDataCache.types && CacheController.eveDataCache.types[typeId]) {
                             skillType = CacheController.eveDataCache.types[typeId];
                         } else {
-                            skillType = await DataController.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
+                            skillType = (await DataController.getUniverseTypes(typeId))[0];
                             CacheController.eveDataCache.types = CacheController.eveDataCache.types || {};
                             CacheController.eveDataCache.types[typeId] = skillType;
                         }
@@ -107,12 +77,12 @@ export class DataController {
             let type: ITypesData | undefined;
 
             while (!type) {
-                tries++;
-                type = await DataController.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
-
                 if (tries > 3) {
                     throw new Error(`Unable to get Type ${typeId}`);
                 }
+
+                type = await DataController.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
+                tries++;
             }
 
             typeData.push(type);
@@ -123,33 +93,31 @@ export class DataController {
 
     public static async fetchESIData<T>(url: string): Promise<T | undefined> {
         logger.debug(url);
-        const response: Response | undefined = await fetch(url).catch((errorResponse: FetchError) => {
-            logger.error('Request failed:', url, errorResponse);
-            return undefined;
-        });
-        if (response) {
-            if (response.ok) {
 
-                // Log warnings on ESI routes.
-                if (response.headers.get('warning')) {
-                    DataController.logDeprecation(url, response.headers.get('warning') || undefined);
+        const response = await axios.get(url).catch((error: AxiosError) => {
+            logger.error('Request failed:', url, error);
+            return;
+        });
+
+        if (response) {
+            if (response.status === httpStatus.OK) {
+                if (response.headers.warning) {
+                    DataController.logDeprecation(url, response.headers.warning);
                 }
 
-                return response.json().catch((error) => {
-                    logger.error('Unable to parse JSON:', error);
-                    return undefined;
-                });
+                return response.data as T;
+
             } else {
-                const text = await response.text();
-                logger.error('Request not OK:', url, response.status, response.statusText, text);
+                logger.error('Request not OK:', url, response.status, response.statusText, response.data);
             }
         }
-        return undefined;
+
+        return;
     }
 
     public static logDeprecation(route: string, text?: string) {
         if (!DataController.deprecationsLogged.includes(route)) {
-            logger.warn('ESI route warning:', route, text);
+            logger.warn('HTTP request warning:', route, text);
             DataController.deprecationsLogged.push(route);
         }
     }
