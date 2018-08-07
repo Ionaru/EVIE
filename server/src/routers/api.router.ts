@@ -28,12 +28,12 @@ export class APIRouter extends BaseRouter {
         const user: User | undefined = await User.doQuery()
             .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session!.user.id})
+            .where('user.id = :id', {id: request.session.user.id})
             .getOne();
 
         if (!user) {
             // No user found that matches the ID in the session.
-            delete request.session!.user.id;
+            delete request.session.user.id;
             return APIRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
         }
 
@@ -63,6 +63,12 @@ export class APIRouter extends BaseRouter {
      *  401 IncorrectLogin: When the password did not match the found username
      */
     private static async loginUser(request: Request, response: Response): Promise<Response> {
+
+        if (!request.session) {
+            // Request has no session.
+            return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoSession');
+        }
+
         // Extract the username/email and password from the request
         const username = request.body.username;
         const password = request.body.password;
@@ -88,8 +94,8 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'IncorrectLogin');
         }
 
-        request.session!.user.id = user.id;
-        request.session!.user.uuid = user.uuid;
+        request.session.user.id = user.id;
+        request.session.user.uuid = user.uuid;
         user.timesLogin++;
         user.lastLogin = new Date();
         await user.save();
@@ -111,8 +117,14 @@ export class APIRouter extends BaseRouter {
      * path: /api/logout
      * method: POST
      */
-    private static async logoutUser(request: Request, response: Response): Promise<void> {
-        request.session!.destroy(() => {
+    private static async logoutUser(request: Request, response: Response): Promise<Response | void> {
+
+        if (!request.session) {
+            // Request has no session.
+            return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoSession');
+        }
+
+        request.session.destroy(() => {
             response.end();
         });
     }
@@ -215,7 +227,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -274,7 +286,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -344,7 +356,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -411,7 +423,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to delete, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
