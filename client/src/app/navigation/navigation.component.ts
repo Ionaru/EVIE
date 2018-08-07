@@ -24,34 +24,29 @@ export class NavigationComponent implements OnInit {
     public hours = '00';
     public minutes = '00';
     public char = 1;
-    public disable = true;
+    public activatedCharacter = false;
     public isLoggedIn = false;
     public isCollapsed!: boolean;
     public playersCountUp!: CountUp;
 
-    constructor(private userService: UserService, private statusService: StatusService,
-                private characterService: CharacterService, private modalService: NgbModal) {
+    constructor(private userService: UserService, private statusService: StatusService, private modalService: NgbModal,
+                private characterService: CharacterService) { }
+
+    public ngOnInit(): void {
         CharacterService.characterChangeEvent.subscribe((character) => {
-          if (character) {
-            this.char = character.characterId;
-            this.disable = false;
-          } else {
-            this.char = 1;
-            this.disable = true;
-          }
+            if (character) {
+                this.char = character.characterId;
+                this.activatedCharacter = true;
+            } else {
+                this.char = 1;
+                this.activatedCharacter = false;
+            }
         });
 
         UserService.userChangeEvent.subscribe((user) => {
-          this.isLoggedIn = !!user;
+            this.isLoggedIn = !!user;
         });
-    }
 
-    // noinspection JSMethodCanBeStatic
-    public get serverOnline() {
-        return NavigationComponent.serverOnline;
-    }
-
-    public ngOnInit(): void {
         this.playersCountUp = new CountUp('eve-players', 0, 0);
         this.syncClock();
         this.getStatus().then();
@@ -83,22 +78,17 @@ export class NavigationComponent implements OnInit {
         this.characterService.setActiveCharacter(UserService.user.characters[nextCharacterIndex]).then();
     }
 
-    public checkAccess(): boolean {
-        // if (this.disable) {
-        //   return false;
-        // }
-        // // return this.char !== 1;
-        // return true;
-        return this.disable;
+    // noinspection JSMethodCanBeStatic
+    public get serverOnline() {
+        return NavigationComponent.serverOnline;
     }
 
-    public debugOnly(): boolean {
+    // noinspection JSMethodCanBeStatic
+    public get devEnvironment(): boolean {
         return !environment.production;
     }
 
-    public logout(): void {
-        this.modalService.open(LogoutModalComponent);
-    }
+    public logout = () => this.modalService.open(LogoutModalComponent);
 
     private syncClock(): void {
         const time = new Date();

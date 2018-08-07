@@ -47,20 +47,19 @@
 
 <nav class="navbar fixed-left navbar-inverse">
     <div class="scrollContainer">
-        <a class="character-item" [ngClass]="{'disabled': checkAccess()}" (click)="nextCharacter()">
+        <a class="character-item" [ngClass]="{'disabled': !activatedCharacter}" (click)="nextCharacter()">
             <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
         </a>
-        <a routerLink="dashboard" routerLinkActive="active" class="navbar-item d-lg-none" ngbTooltip="Tooltip on right"
-           placement="right" [ngClass]="{'disabled': checkAccess()}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/recruitment.svg" alt="Character sheet icon">
+        <a routerLink="dashboard" routerLinkActive="active" class="navbar-item d-lg-none"
+           [ngClass]="{'disabled': !activatedCharacter}">
+            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/recruitment.svg" alt="Dashboard sheet icon">
         </a>
-        <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item" tooltip="Character Overview"
-           placement="right"
+        <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': true}">
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">
         </a>
-        <a routerLink="skills" routerLinkActive="active" class="navbar-item" tooltip="Skills" placement="right"
-           [ngClass]="{'disabled': checkAccess()}">
+        <a routerLink="skills" routerLinkActive="active" class="navbar-item"
+           [ngClass]="{'disabled': !activatedCharacter}">
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg" alt="Skills icon">
         </a>
         <a routerLink="contacts" routerLinkActive="active" class="navbar-item"
@@ -71,12 +70,12 @@
            [ngClass]="{'disabled': true }">
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg" alt="Mail icon">
         </a>
-        <a routerLink="market" routerLinkActive="active" class="navbar-item" tooltip="Market orders" placement="right"
-           [ngClass]="{'disabled': debugOnly()}">
+        <a routerLink="market" routerLinkActive="active" class="navbar-item"
+           [ngClass]="{'disabled': !activatedCharacter || !devEnvironment}">
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg" alt="Market icon">
         </a>
-        <a routerLink="wallet" routerLinkActive="active" class="navbar-item" tooltip="Wallet" placement="right"
-           [ngClass]="{'disabled': checkAccess()}">
+        <a routerLink="wallet" routerLinkActive="active" class="navbar-item"
+           [ngClass]="{'disabled': !activatedCharacter}">
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg" alt="Wallet icon">
         </a>
         <a routerLink="assets" routerLinkActive="active" class="navbar-item"
@@ -88,11 +87,11 @@
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg" alt="Planets icon">
         </a>
         <a routerLink="industry" routerLinkActive="active" class="navbar-item"
-           [ngClass]="{'disabled': debugOnly()}">
+           [ngClass]="{'disabled': !activatedCharacter || !devEnvironment}">
             <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg" alt="Industry icon">
         </a>
         <a class="navbar-item time"
-           [ngClass]="{'disabled': true || checkAccess()}">
+           [ngClass]="{'disabled': true}">
             <span id="EVETime_Hours">{{ hours }}</span>:<span id="EVETime_Minutes">{{ minutes }}</span>
         </a>
     </div>
