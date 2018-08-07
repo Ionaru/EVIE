@@ -3,12 +3,12 @@ import fetch from 'node-fetch';
 import { logger } from 'winston-pnp-logger';
 
 import { config } from '../controllers/configuration.controller';
+import { DataController } from '../controllers/data.controller';
 import { generateRandomString } from '../controllers/random.controller';
 import { SocketServer } from '../controllers/socket.controller';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
-import { DataController } from '../controllers/data.controller';
 
 const scopes = [
     'characterWalletRead',
@@ -25,7 +25,6 @@ const oauthHost = 'login.eveonline.com';
 const oauthPath = '/oauth/authorize?';
 const tokenPath = '/oauth/token?';
 const verifyPath = '/oauth/verify?';
-const deprecationLogged: string[] = [];
 
 export class SSORouter extends BaseRouter {
 
