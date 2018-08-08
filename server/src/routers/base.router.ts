@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { PathParams, RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
+import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
 export class BaseRouter {
 
     public static sendResponse(response: Response, statusCode: number, message: string, data?: object): Response {
         let state = 'success';
-        if (statusCode !== 200) {
+        if (statusCode !== httpStatus.OK) {
             state = 'error';
         }
 

@@ -40,7 +40,7 @@ export class SSORouter extends BaseRouter {
 
         if (!request.session || !request.session.user.id) {
             // User is not logged in and can't initiate SSO process
-            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }
 
         if (request.query.uuid) {
@@ -86,19 +86,19 @@ export class SSORouter extends BaseRouter {
             // User is not logged in and can't initiate SSO callback.
             // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
             // was linked directly to this page.
-            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }
 
         if (!request.query.state) {
             // Somehow a request was done without giving a state, probably didn't come from the SSO, possibly directly linked.
-            return SSORouter.sendResponse(response, 400, 'BadCallback');
+            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'BadCallback');
         }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
             logger.warn(`Invalid state from /callback request! Expected '${request.session.state}' and got '${request.query.state}'.`);
-            return SSORouter.sendResponse(response, 400, 'InvalidState');
+            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
         }
 
         // The state has been verified and served its purpose, delete it.
@@ -118,7 +118,7 @@ export class SSORouter extends BaseRouter {
                 .getOne();
 
             if (!user) {
-                return SSORouter.sendResponse(response, 404, 'UserNotFound');
+                return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
             }
 
             // Create a new character
@@ -146,7 +146,7 @@ export class SSORouter extends BaseRouter {
         });
 
         if (!authResponse || authResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
         }
 
         character.accessToken = authResponse.data.access_token;
@@ -167,7 +167,7 @@ export class SSORouter extends BaseRouter {
         });
 
         if (!verifyResult || verifyResult.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
         }
 
         character.name = verifyResult.data.CharacterName;
@@ -190,7 +190,7 @@ export class SSORouter extends BaseRouter {
             });
         }
 
-        return response.status(200).send('<h2>You may now close this window.</h2>');
+        return response.status(httpStatus.OK).send('<h2>You may now close this window.</h2>');
     }
 
     /**
@@ -203,7 +203,7 @@ export class SSORouter extends BaseRouter {
 
         if (!request.session || !request.session.user.id) {
             // User is not logged in and can't refresh any API token.
-            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }
 
         // Get the characterUUID from the request
@@ -211,7 +211,7 @@ export class SSORouter extends BaseRouter {
 
         if (!characterUUID) {
             // Missing parameters
-            return SSORouter.sendResponse(response, 400, 'MissingParameters');
+            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
         // Fetch the Character who's accessToken we will refresh.
@@ -222,7 +222,7 @@ export class SSORouter extends BaseRouter {
 
         if (!character) {
             // There was no Character found with a matching UUID and userId.
-            return SSORouter.sendResponse(response, 404, 'CharacterNotFound');
+            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'CharacterNotFound');
         }
 
         const requestOptions: AxiosRequestConfig = {
@@ -241,7 +241,7 @@ export class SSORouter extends BaseRouter {
         });
 
         if (!refreshResponse || refreshResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, 502, 'SSOResponseError');
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
         }
 
         character.refreshToken = refreshResponse.data.refresh_token;
@@ -249,7 +249,7 @@ export class SSORouter extends BaseRouter {
         character.tokenExpiry = new Date(Date.now() + (refreshResponse.data.expires_in * 1000));
         await character.save();
 
-        return SSORouter.sendResponse(response, 200, 'TokenRefreshed', {
+        return SSORouter.sendResponse(response, httpStatus.OK, 'TokenRefreshed', {
             token: refreshResponse.data.access_token,
         });
     }
@@ -263,14 +263,14 @@ export class SSORouter extends BaseRouter {
 
         if (!request.session || !request.session.user.id) {
             // User is not logged in and can't initiate SSO process
-            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }
 
         const characterUUID = request.body.characterUUID;
 
         if (!characterUUID) {
             // Missing parameters
-            return SSORouter.sendResponse(response, 400, 'MissingParameters');
+            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
         const user: User | undefined = await User.doQuery()
@@ -281,7 +281,7 @@ export class SSORouter extends BaseRouter {
 
         if (!user) {
             // Missing parameters
-            return SSORouter.sendResponse(response, 404, 'UserNotFound');
+            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
         }
 
         const characters = user.characters;
@@ -290,13 +290,13 @@ export class SSORouter extends BaseRouter {
 
         if (characterToDeleteList.length === 0) {
             // That character does not exist
-            return SSORouter.sendResponse(response, 404, 'NoCharacterFound');
+            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'NoCharacterFound');
         }
 
         const characterToDelete = characterToDeleteList[0];
 
         await characterToDelete.remove();
-        return SSORouter.sendResponse(response, 200, 'CharacterDeleted');
+        return SSORouter.sendResponse(response, httpStatus.OK, 'CharacterDeleted');
     }
 
     /**
@@ -307,7 +307,7 @@ export class SSORouter extends BaseRouter {
     private static async activateCharacter(request: Request, response: Response): Promise<Response> {
 
         if (!request.session || !request.session.user.id) {
-            return SSORouter.sendResponse(response, 401, 'NotLoggedIn');
+            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
         }
 
         await Character.doQuery()
@@ -319,7 +319,7 @@ export class SSORouter extends BaseRouter {
         const characterUUID = request.body.characterUUID;
 
         if (!characterUUID) {
-            return SSORouter.sendResponse(response, 200, 'AllCharactersDeactivated');
+            return SSORouter.sendResponse(response, httpStatus.OK, 'AllCharactersDeactivated');
         }
 
         const character = await Character.doQuery()
@@ -329,12 +329,12 @@ export class SSORouter extends BaseRouter {
             .getOne();
 
         if (!character) {
-            return SSORouter.sendResponse(response, 404, 'NoCharacterFound');
+            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'NoCharacterFound');
         }
 
         character.isActive = true;
         await character.save();
-        return SSORouter.sendResponse(response, 200, 'CharacterActivated');
+        return SSORouter.sendResponse(response, httpStatus.OK, 'CharacterActivated');
     }
 
     private static async logDeprecation(request: Request, response: Response): Promise<Response> {
@@ -343,7 +343,7 @@ export class SSORouter extends BaseRouter {
         const text = request.body.text as string;
         DataController.logDeprecation(route, text);
 
-        return SSORouter.sendResponse(response, 200, 'Logged');
+        return SSORouter.sendResponse(response, httpStatus.OK, 'Logged');
     }
 
     /**

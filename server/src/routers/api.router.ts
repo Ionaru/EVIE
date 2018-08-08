@@ -250,7 +250,7 @@ export class APIRouter extends BaseRouter {
 
         user.passwordHash = bcrypt.hashSync(newPassword, 8);
         await user.save();
-        return APIRouter.sendResponse(response, 200, 'PasswordChanged');
+        return APIRouter.sendResponse(response, httpStatus.OK, 'PasswordChanged');
     }
 
     /**
