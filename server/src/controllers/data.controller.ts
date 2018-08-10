@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
@@ -10,8 +10,7 @@ export class DataController {
 
     public static deprecationsLogged: string[] = [];
 
-    public static async getSkillTypes() {
-
+    public static async getSkillIds() {
         let skillsCategory: ISkillCategoryData | undefined;
 
         if (CacheController.eveDataCache.categories && CacheController.eveDataCache.categories[EVE.skillCategoryId]) {
@@ -22,11 +21,10 @@ export class DataController {
             CacheController.eveDataCache.categories[EVE.skillCategoryId] = skillsCategory;
         }
 
-        const skills: ITypesData[] = [];
+        const skillIds: number[] = [];
 
         if (skillsCategory) {
             await Promise.all(skillsCategory.groups.map(async (groupId) => {
-
                 let skillGroup: ISkillGroupData | undefined;
 
                 if (CacheController.eveDataCache.groups && CacheController.eveDataCache.groups[groupId]) {
@@ -38,29 +36,41 @@ export class DataController {
                 }
 
                 if (skillGroup && skillGroup.published) {
-
-                    await Promise.all(skillGroup.types.map(async (typeId) => {
-                        // const skillType = await DataController.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
-
-                        let skillType: ITypesData | undefined;
-
-                        if (CacheController.eveDataCache.types && CacheController.eveDataCache.types[typeId]) {
-                            skillType = CacheController.eveDataCache.types[typeId];
-                        } else {
-                            skillType = (await DataController.getUniverseTypes(typeId))[0];
-                            CacheController.eveDataCache.types = CacheController.eveDataCache.types || {};
-                            CacheController.eveDataCache.types[typeId] = skillType;
-                        }
-
-                        if (skillType && skillType.published) {
-                            skills.push(skillType);
-                        }
-                    }));
+                    skillIds.push(...skillGroup.types);
                 }
             }));
         }
 
-        return skills;
+        return skillIds;
+    }
+
+    public static async getSkillGroups() {
+
+    }
+
+    public static async getSkillTypes() {
+
+        const skillIds = await DataController.getSkillIds();
+
+        const skillTypes: ITypesData[] = [];
+
+        await Promise.all(skillIds.map(async (typeId) => {
+            let skillType: ITypesData | undefined;
+
+            if (CacheController.eveDataCache.types && CacheController.eveDataCache.types[typeId]) {
+                skillType = CacheController.eveDataCache.types[typeId];
+            } else {
+                skillType = (await DataController.getUniverseTypes(typeId))[0];
+                CacheController.eveDataCache.types = CacheController.eveDataCache.types || {};
+                CacheController.eveDataCache.types[typeId] = skillType;
+            }
+
+            if (skillType && skillType.published) {
+                skillTypes.push(skillType);
+            }
+        }));
+
+        return skillTypes;
     }
 
     public static async getEveStatus() {
@@ -94,10 +104,16 @@ export class DataController {
     public static async fetchESIData<T>(url: string): Promise<T | undefined> {
         logger.debug(url);
 
-        const response = await axios.get(url).catch((error: AxiosError) => {
-            logger.error('Request failed:', url, error);
-            return;
-        });
+        let response: AxiosResponse<any> | undefined;
+
+        if (DataController.responseCache[url]) {
+            response = DataController.responseCache[url];
+        } else {
+            response = await axios.get(url).catch((error: AxiosError) => {
+                logger.error('Request failed:', url, error);
+                return undefined;
+            });
+        }
 
         if (response) {
             if (response.status === httpStatus.OK) {
@@ -121,4 +137,6 @@ export class DataController {
             DataController.deprecationsLogged.push(route);
         }
     }
+
+    private static responseCache: {[index: string]: AxiosResponse} = {};
 }
