@@ -15,9 +15,6 @@ export class RequestLogger {
             // Runs when the request has finished.
             onFinished(response, async (_err, endResponse: Response) => {
 
-                // Calculate the request duration.
-                const requestDuration = Date.now() - requestStartTime;
-
                 const ignoredMatch = RequestLogger.ignoredUrls.filter(
                     (ignoredEntry) => request.originalUrl.startsWith(ignoredEntry)).length;
 
@@ -29,9 +26,9 @@ export class RequestLogger {
                     const ip = RequestLogger.getIp(request);
 
                     const requestText = `${request.method} ${request.originalUrl}`;
-                    const responseText = `${status}, ${requestDuration}ms`;
 
-                    const logContent = `${ip} ${RequestLogger.arrow} ${requestText} ${RequestLogger.arrow} ${responseText}`;
+                    const requestDuration = Date.now() - requestStartTime;
+                    const logContent = `${ip} ${RequestLogger.arrow} ${requestText} ${RequestLogger.arrow} ${status}, ${requestDuration}ms`;
                     if (endResponse.statusCode >= 500) {
                         logger.error(logContent);
                     } else if (endResponse.statusCode >= 400) {
