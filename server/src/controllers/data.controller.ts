@@ -102,23 +102,29 @@ export class DataController {
     }
 
     public static async fetchESIData<T>(url: string): Promise<T | undefined> {
-        logger.debug(url);
-
         let response: AxiosResponse<any> | undefined;
 
-        if (DataController.responseCache[url]) {
-            response = DataController.responseCache[url];
-        } else {
-            response = await axios.get(url).catch((error: AxiosError) => {
-                logger.error('Request failed:', url, error);
-                return undefined;
-            });
+        if (CacheController.responseCache[url] && !CacheController.isExpired(CacheController.responseCache[url])) {
+            return CacheController.responseCache[url].data as T;
         }
+
+        logger.debug(url);
+        response = await axios.get(url).catch((error: AxiosError) => {
+            logger.error('Request failed:', url, error);
+            return undefined;
+        });
 
         if (response) {
             if (response.status === httpStatus.OK) {
                 if (response.headers.warning) {
                     DataController.logDeprecation(url, response.headers.warning);
+                }
+
+                if (response.headers.expires) {
+                    CacheController.responseCache[url] = {
+                        data: response.data,
+                        expiry: new Date(response.headers.expires).getTime(),
+                    };
                 }
 
                 return response.data as T;
@@ -137,6 +143,4 @@ export class DataController {
             DataController.deprecationsLogged.push(route);
         }
     }
-
-    private static responseCache: {[index: string]: AxiosResponse} = {};
 }

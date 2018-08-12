@@ -109,8 +109,8 @@ export class Application {
 
         logger.info('Express configuration set');
 
-        // Do caching here.
-        // await CacheController.bleeeeh();
+        logger.info('Reading files into cache');
+        CacheController.readCache();
 
         logger.info('App startup done');
 
@@ -136,6 +136,9 @@ export class Application {
             logger.error('Reason: ', error);
         }
         logger.warn(quitMessage);
+
+        logger.info('Dumping cache to files');
+        CacheController.dumpCache();
 
         if (this.socketServer) {
             this.socketServer.io.emit('STOP');
