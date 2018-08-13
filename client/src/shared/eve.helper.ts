@@ -30,6 +30,10 @@ export class EVE {
         return `${EVE.SDEURL}/industryActivityMaterials.json`;
     }
 
+    public static getIndustryJobsUrl(characterId: number) {
+        return EVE.constructESIURL(1, 'characters', characterId, 'industry', 'jobs');
+    }
+
     public static getStatusUrl() {
         return EVE.constructESIURL(1, 'status');
     }

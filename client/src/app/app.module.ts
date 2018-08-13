@@ -8,6 +8,7 @@ import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { NamesService } from './data-services/names.service';
 import { ShipService } from './data-services/ship.service';
 import { SkillGroupsService } from './data-services/skill-groups.service';
@@ -81,6 +82,7 @@ import { SocketService } from './socket/socket.service';
         SkillQueueService,
         SkillGroupsService,
         SkillsService,
+        IndustryJobsService,
         SocketService,
         AppReadyGuard,
         AuthGuard,

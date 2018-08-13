@@ -42,6 +42,7 @@ export class Character extends BaseModel {
 
     @Column({
         nullable: true,
+        type: 'text',
     })
     public scopes?: string;
 

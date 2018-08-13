@@ -145,3 +145,73 @@ export interface IWalletJournalData {
     // The corporation ID receiving any tax paid. Only applies to tax related transactions
     tax_receiver_id?: number;
 }
+
+export interface IIndustryJobsData {
+    // Job activity ID
+    activityId: number;
+
+    // blueprint_id integer
+    blueprintId: number;
+
+    // Location ID of the location from which the blueprint was installed. Normally a station ID, but can also be an asset (e.g. container)
+    // or corporation facility
+    blueprintLocationId: number;
+
+    // blueprint_type_id integer
+    blueprintTypeId: number;
+
+    // ID of the character which completed this job
+    completedCharacterId: number;
+
+    // Date and time when this job was completed
+    completedDate: Date;
+
+    // The sume of job installation fee and industry facility tax
+    cost: number;
+
+    // Job duration in seconds
+    duration: number;
+
+    // Date and time when this job finished
+    endDate: Date;
+
+    // ID of the facility where this job is running
+    facilityId: number;
+
+    // ID of the character which installed this job
+    installerId: number;
+
+    // Unique job ID
+    jobId: number;
+
+    // Number of runs blueprint is licensed for
+    licensedRuns: number;
+
+    // Location ID of the location to which the output of the job will be delivered. Normally a station ID, but can also be a
+    // corporation facility.
+    outputLocationId: number;
+
+    // Date and time when this job was paused (i.e. time when the facility where this job was installed went offline)
+    pauseDate: Date;
+
+    // Chance of success for invention
+    probability: number;
+
+    // Type ID of product (manufactured, copied or invented)
+    productTypeId: number;
+
+    // Number of runs for a manufacturing job, or number of copies to make for a blueprint copy
+    runs: number;
+
+    // Date and time when this job started
+    startDate: Date;
+
+    // ID of the station where industry facility is located
+    stationId: number;
+
+    // Status string
+    status: 'active' | 'cancelled' | 'delivered' | 'paused' | 'ready' | 'reverted';
+
+    // Number of successful runs for this job. Equal to runs unless this is an invention job
+    successfulRuns: number;
+}

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { IndustryJobsService } from '../../data-services/industry-jobs.service';
+import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 
 @Component({
@@ -9,12 +11,14 @@ import { DataPageComponent } from '../data-page/data-page.component';
 })
 export class IndustryComponent extends DataPageComponent implements OnInit {
 
-    constructor() {
+    constructor(private industryJobsService: IndustryJobsService) {
         super();
     }
 
     public ngOnInit() {
         super.ngOnInit();
+        if (CharacterService.selectedCharacter) {
+            this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter).then();
+        }
     }
-
 }
