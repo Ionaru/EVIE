@@ -6,11 +6,11 @@ import { Common } from '../../../shared/common.helper';
 import { NamesService } from '../../data-services/names.service';
 import { ShipService } from '../../data-services/ship.service';
 import { SkillQueueService } from '../../data-services/skillqueue.service';
+import { WalletService } from '../../data-services/wallet.service';
 import { Character } from '../../models/character/character.model';
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
-import { WalletService } from '../../data-services/wallet.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -57,13 +57,16 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
 
         let earliestSkillComplete = Infinity;
         for (const character of this.characters) {
-            if (character.currentTrainingFinish && character.currentTrainingFinish.getTime() < earliestSkillComplete) {
-                earliestSkillComplete = character.currentTrainingFinish.getTime();
+            if (character.currentTrainingFinish) {
+                const timeUntilSkillComplete = character.currentTrainingFinish.getTime() - Date.now();
+                if (timeUntilSkillComplete > 0 && character.currentTrainingFinish.getTime() < earliestSkillComplete) {
+                    earliestSkillComplete = character.currentTrainingFinish.getTime();
+                }
             }
         }
 
-        if (earliestSkillComplete < Infinity) {
-            this.skillQueueTimer = window.setTimeout(() => this.softReload(), earliestSkillComplete);
+        if (earliestSkillComplete < Infinity && earliestSkillComplete - Date.now() > 0) {
+            this.skillQueueTimer = window.setTimeout(() => this.softReload, earliestSkillComplete - Date.now());
         }
     }
 
