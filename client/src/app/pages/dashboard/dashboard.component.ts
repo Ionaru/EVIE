@@ -72,6 +72,9 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         if (this.skillQueueInterval) {
             clearInterval(this.skillQueueInterval);
         }
+        if (this.skillQueueTimer) {
+            clearTimeout(this.skillQueueTimer);
+        }
     }
 
     public isCharacterSelected = (character: Character) => character === CharacterService.selectedCharacter;
