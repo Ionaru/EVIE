@@ -25,18 +25,16 @@ export class DataRouter extends BaseRouter {
 
         const typeIds = request.body;
 
-        // Check if request body contains an array with only numbers.
+        // Check if request body contains an array with only positive numbers.
         if (typeIds instanceof Array) {
-            for (const item of typeIds) {
-                if (typeof item !== 'number') {
-                    return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidElements');
-                }
+            if (typeIds.filter((item) => typeof item !== 'number' || item < 0).length) {
+                return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidElements');
             }
         }
 
-        const skills = await DataController.getSkillTypes();
+        const types = await DataController.getUniverseTypes(...typeIds);
 
-        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', skills);
+        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', types);
     }
 
     constructor() {
