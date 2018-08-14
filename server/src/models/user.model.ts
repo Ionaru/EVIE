@@ -31,7 +31,9 @@ export class User extends BaseModel {
     })
     public timesLogin!: number;
 
-    @OneToOne(() => Settings, (settings) => settings.user)
+    @OneToOne(() => Settings, (settings) => settings.user, {
+        eager: true,
+    })
     public settings: Settings;
 
     @Column({

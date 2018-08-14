@@ -23,11 +23,6 @@ export class Character extends BaseModel {
     @Column({
         nullable: true,
     })
-    public authToken?: string;
-
-    @Column({
-        nullable: true,
-    })
     public accessToken?: string;
 
     @Column({
@@ -57,7 +52,7 @@ export class Character extends BaseModel {
     public isActive!: boolean;
 
     @ManyToOne(() => User, (user) => user.characters, {
-        cascade: true,
+        onDelete: 'CASCADE',
     })
     public user!: User;
 
@@ -65,7 +60,6 @@ export class Character extends BaseModel {
         // Delete data that should not be sent to the client.
         const copy = Object.assign({}, this);
         delete copy.id;
-        delete copy.authToken;
         delete copy.refreshToken;
         delete copy.user;
         delete copy.createdOn;

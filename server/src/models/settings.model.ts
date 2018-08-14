@@ -15,7 +15,9 @@ export class Settings extends BaseModel {
         return this.createQueryBuilder('settings');
     }
 
-    @OneToOne(() => User, (user) => user.settings)
+    @OneToOne(() => User, (user) => user.settings, {
+        onDelete: 'CASCADE',
+    })
     @JoinColumn()
     public user!: User;
 
