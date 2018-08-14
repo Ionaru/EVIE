@@ -3,37 +3,29 @@ import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
 import { EVE } from '../../../client/src/shared/eve.helper';
-import { ISkillCategoryData, ISkillGroupData, IStatusData, ITypesData } from '../../../client/src/shared/interface.helper';
+import { ISkillCategoryData, ISkillGroupData, ITypesData } from '../../../client/src/shared/interface.helper';
 import { CacheController } from './cache.controller';
 
 export class DataController {
 
     public static deprecationsLogged: string[] = [];
 
-    public static async getSkillIds() {
-        let skillsCategory: ISkillCategoryData | undefined;
+    public static getUniverseCategory(categoryId: number) {
+        return DataController.fetchESIData<ISkillCategoryData>(EVE.getUniverseCategoriesUrl(categoryId));
+    }
 
-        if (CacheController.eveDataCache.categories && CacheController.eveDataCache.categories[EVE.skillCategoryId]) {
-            skillsCategory = CacheController.eveDataCache.categories[EVE.skillCategoryId];
-        } else {
-            skillsCategory = await DataController.fetchESIData<ISkillCategoryData>(EVE.getUniverseCategoriesUrl(EVE.skillCategoryId));
-            CacheController.eveDataCache.categories = CacheController.eveDataCache.categories || {};
-            CacheController.eveDataCache.categories[EVE.skillCategoryId] = skillsCategory;
-        }
+    public static getUniverseGroup(groupId: number) {
+        return DataController.fetchESIData<ISkillGroupData>(EVE.getUniverseGroupsUrl(groupId));
+    }
+
+    public static async getSkillIds() {
+        const skillsCategory = await DataController.getUniverseCategory(EVE.skillCategoryId);
 
         const skillIds: number[] = [];
 
         if (skillsCategory) {
             await Promise.all(skillsCategory.groups.map(async (groupId) => {
-                let skillGroup: ISkillGroupData | undefined;
-
-                if (CacheController.eveDataCache.groups && CacheController.eveDataCache.groups[groupId]) {
-                    skillGroup = CacheController.eveDataCache.groups[groupId];
-                } else {
-                    skillGroup = await DataController.fetchESIData<ISkillGroupData>(EVE.getUniverseGroupsUrl(groupId));
-                    CacheController.eveDataCache.groups = CacheController.eveDataCache.groups || {};
-                    CacheController.eveDataCache.groups[groupId] = skillGroup;
-                }
+                const skillGroup = await DataController.getUniverseGroup(groupId);
 
                 if (skillGroup && skillGroup.published) {
                     skillIds.push(...skillGroup.types);
@@ -44,10 +36,6 @@ export class DataController {
         return skillIds;
     }
 
-    public static async getSkillGroups() {
-
-    }
-
     public static async getSkillTypes() {
 
         const skillIds = await DataController.getSkillIds();
@@ -55,26 +43,14 @@ export class DataController {
         const skillTypes: ITypesData[] = [];
 
         await Promise.all(skillIds.map(async (typeId) => {
-            let skillType: ITypesData | undefined;
+            const skillType = await DataController.getUniverseTypes(typeId);
 
-            if (CacheController.eveDataCache.types && CacheController.eveDataCache.types[typeId]) {
-                skillType = CacheController.eveDataCache.types[typeId];
-            } else {
-                skillType = (await DataController.getUniverseTypes(typeId))[0];
-                CacheController.eveDataCache.types = CacheController.eveDataCache.types || {};
-                CacheController.eveDataCache.types[typeId] = skillType;
-            }
-
-            if (skillType && skillType.published) {
-                skillTypes.push(skillType);
+            if (skillType && skillType.length && skillType[0].published) {
+                skillTypes.push(skillType[0]);
             }
         }));
 
         return skillTypes;
-    }
-
-    public static async getEveStatus() {
-        return DataController.fetchESIData<IStatusData>(EVE.getStatusUrl());
     }
 
     public static async getUniverseTypes(...typeIds: number[]) {
