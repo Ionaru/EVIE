@@ -4,7 +4,7 @@
 export class EVE {
 
     public static readonly ESIURL = 'https://esi.evetech.net';
-    public static readonly SDEURL = 'http://sde.zzeve.com';
+    public static readonly SDEURL = 'https://sde.zzeve.com';
     public static useTestServer = false;
 
     public static readonly skillCategoryId = 16;

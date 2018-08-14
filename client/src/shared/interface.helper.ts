@@ -215,3 +215,63 @@ export interface IIndustryJobsData {
     // Number of successful runs for this job. Equal to runs unless this is an invention job
     successfulRuns: number;
 }
+
+export interface IIndustryActivityProducts {
+    typeID: number;
+    activityID: number;
+    productTypeID: number;
+    quantity: number;
+}
+
+export interface IIndustryActivityMaterials {
+    typeID: number;
+    activityID: number;
+    materialTypeID: number;
+    quantity: number;
+}
+
+export interface IIndustryActivity {
+    typeID: number;
+    activityID: number;
+    time: number;
+}
+
+// activityID	activityName
+// 0	None
+// 1	Manufacturing
+// 3	Researching Time Efficiency
+// 4	Researching Material Efficiency
+// 5	Copying
+// 7	Reverse Engineering
+// 8	Invention
+// 11	Reactions
+
+export interface IIndustryActivityProducts {
+    typeID: number;
+    activityID: number;
+    productTypeID: number;
+    quantity: number;
+}
+
+export interface IIndustryActivityMaterials {
+    typeID: number;
+    activityID: number;
+    materialTypeID: number;
+    quantity: number;
+}
+
+export interface IIndustryActivity {
+    typeID: number;
+    activityID: number;
+    time: number;
+}
+
+// activityID	activityName
+// 0	None
+// 1	Manufacturing
+// 3	Researching Time Efficiency
+// 4	Researching Material Efficiency
+// 5	Copying
+// 7	Reverse Engineering
+// 8	Invention
+// 11	Reactions

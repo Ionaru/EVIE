@@ -3,12 +3,24 @@ import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
 import { EVE } from '../../../client/src/shared/eve.helper';
-import { ISkillCategoryData, ISkillGroupData, ITypesData } from '../../../client/src/shared/interface.helper';
+import { ISkillCategoryData, ISkillGroupData, ITypesData, IIndustryActivityProducts } from '../../../client/src/shared/interface.helper';
 import { CacheController } from './cache.controller';
 
 export class DataController {
 
     public static deprecationsLogged: string[] = [];
+
+    public static async getManufacuringInfo(typeId: number) {
+        const x = await DataController.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl());
+
+        if (x) {
+            const bluePrintId = x.filter((activity) => activity.productTypeID === typeId && activity.activityID === 1);
+            console.log(bluePrintId[0].typeID);
+        }
+
+        const y = await DataController.fetchESIData(EVE.getIndustryActivityMaterialsUrl());
+        console.log(typeId);
+    }
 
     public static getUniverseCategory(categoryId: number) {
         return DataController.fetchESIData<ISkillCategoryData>(EVE.getUniverseCategoriesUrl(categoryId));
@@ -97,6 +109,7 @@ export class DataController {
                 }
 
                 if (response.headers.expires) {
+                    logger.debug(url, response.headers.expires);
                     CacheController.responseCache[url] = {
                         data: response.data,
                         expiry: new Date(response.headers.expires).getTime(),

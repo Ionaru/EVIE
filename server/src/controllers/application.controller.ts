@@ -20,6 +20,7 @@ import { config } from './configuration.controller';
 import { DatabaseConnection, db } from './database.controller';
 import { WebServer } from './server.controller';
 import { SocketServer } from './socket.controller';
+import { DataController } from './data.controller';
 
 export class Application {
 
@@ -113,6 +114,8 @@ export class Application {
         CacheController.readCache();
 
         logger.info('App startup done');
+
+        DataController.getManufacuringInfo(2006).then();
 
         this.webServer = new WebServer(expressApplication);
 
