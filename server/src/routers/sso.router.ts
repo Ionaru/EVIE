@@ -340,7 +340,7 @@ export class SSORouter extends BaseRouter {
 
         const route = request.body.route as string;
         const text = request.body.text as string;
-        DataController.logDeprecation(route, text);
+        DataController.logWarning(route, text);
 
         return SSORouter.sendResponse(response, httpStatus.OK, 'Logged');
     }

@@ -117,7 +117,7 @@ export class DataController {
         if (response) {
             if (response.status === httpStatus.OK) {
                 if (response.headers.warning) {
-                    DataController.logDeprecation(url, response.headers.warning);
+                    DataController.logWarning(url, response.headers.warning);
                 }
 
                 if (response.headers.expires) {
@@ -137,7 +137,7 @@ export class DataController {
         return;
     }
 
-    public static logDeprecation(route: string, text?: string) {
+    public static logWarning(route: string, text?: string) {
         if (!DataController.deprecationsLogged.includes(route)) {
             logger.warn('HTTP request warning:', route, text);
             DataController.deprecationsLogged.push(route);
