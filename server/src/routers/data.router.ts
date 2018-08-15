@@ -33,6 +33,13 @@ export class DataRouter extends BaseRouter {
         return DataRouter.sendResponse(response, httpStatus.OK, 'OK', skills);
     }
 
+    // noinspection JSUnusedLocalSymbols
+    private static async getSkillIds(_request: Request, response: Response): Promise<Response> {
+
+        const skills = await DataController.getSkillIds();
+        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', skills);
+    }
+
     private static async getTypes(request: Request, response: Response): Promise<Response> {
 
         const typeIds = request.body;
@@ -53,6 +60,7 @@ export class DataRouter extends BaseRouter {
         super();
         this.createPostRoute('/types', DataRouter.getTypes, true);
         this.createGetRoute('/skill-types', DataRouter.getSkillTypes, true);
+        this.createGetRoute('/skill-ids', DataRouter.getSkillIds, true);
         this.createGetRoute('/manufacturing/:typeId', DataRouter.getManufacturingInfo, true);
     }
 }
