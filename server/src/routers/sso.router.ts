@@ -14,11 +14,11 @@ import { BaseRouter } from './base.router';
 const scopes = [
     'esi-location.read_location.v1',
     'esi-location.read_ship_type.v1',
-    'esi-wallet.read_character_wallet.v1',
+    'esi-industry.read_character_jobs.v1',
     'esi-markets.read_character_orders.v1',
     'esi-skills.read_skills.v1',
     'esi-skills.read_skillqueue.v1',
-    'esi-industry.read_character_jobs.v1',
+    'esi-wallet.read_character_wallet.v1',
 ];
 const protocol = 'https://';
 const oauthHost = 'login.eveonline.com';
@@ -37,35 +37,30 @@ export class SSORouter extends BaseRouter {
      */
     private static async startSSOProcess(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and can't initiate SSO process
-            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
-
         if (request.query.uuid) {
             // With a characterUUID provided in the request, we initiate the re-authorization process
 
             const character: Character | undefined = await Character.doQuery()
                 .where('character.uuid = :uuid', {uuid: request.query.uuid})
-                .andWhere('character.userId = :userId', {userId: request.session.user.id})
+                .andWhere('character.userId = :userId', {userId: request.session!.user.id})
                 .getOne();
 
             if (character) {
-                request.session.uuid = character.uuid;
+                request.session!.uuid = character.uuid;
             }
         }
 
         // Generate a random string and set it as the state of the request, we will later verify the response of the
         // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery, see this link for details:
         // http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
-        request.session.state = generateRandomString(15);
+        request.session!.state = generateRandomString(15);
 
         const args = [
             'response_type=code',
             'redirect_uri=' + config.getProperty('redirect_uri'),
             'client_id=' + config.getProperty('client_ID'),
             'scope=' + scopes.join(' '),
-            'state=' + request.session.state,
+            'state=' + request.session!.state,
         ];
         const finalUrl = 'https://' + oauthHost + oauthPath + args.join('&');
 
@@ -81,39 +76,32 @@ export class SSORouter extends BaseRouter {
      */
     private static async processCallBack(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and can't initiate SSO callback.
-            // This route should only be called right after the SSO start, so this shouldn't be possible unless the client
-            // was linked directly to this page.
-            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
-
         if (!request.query.state) {
             // Somehow a request was done without giving a state, probably didn't come from the SSO, possibly directly linked.
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'BadCallback');
         }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
-        if (request.session.state !== request.query.state) {
+        if (request.session!.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
-            logger.warn(`Invalid state from /callback request! Expected '${request.session.state}' and got '${request.query.state}'.`);
+            logger.warn(`Invalid state from /callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`);
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
         }
 
         // The state has been verified and served its purpose, delete it.
-        delete request.session.state;
+        delete request.session!.state;
 
         let character: Character | undefined;
 
-        if (request.session.characterUUID) {
+        if (request.session!.characterUUID) {
             character = await Character.doQuery()
-                .where('character.uuid = :uuid', {uuid: request.session.characterUUID})
+                .where('character.uuid = :uuid', {uuid: request.session!.characterUUID})
                 .getOne();
         }
 
         if (!character) {
             const user: User | undefined = await User.doQuery()
-                .where('user.id = :id', {id: request.session.user.id})
+                .where('user.id = :id', {id: request.session!.user.id})
                 .getOne();
 
             if (!user) {
@@ -177,7 +165,7 @@ export class SSORouter extends BaseRouter {
         await character.save();
 
         // Remove the characterUUID from the session as it is no longer needed
-        delete request.session.characterUUID;
+        delete request.session!.characterUUID;
 
         const sockets = SocketServer.sockets.filter((_) => request.session && _.id === request.session.socket);
 
@@ -200,11 +188,6 @@ export class SSORouter extends BaseRouter {
      */
     private static async refreshToken(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and can't refresh any API token.
-            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
-
         // Get the characterUUID from the request
         const characterUUID = request.query.uuid;
 
@@ -215,7 +198,7 @@ export class SSORouter extends BaseRouter {
 
         // Fetch the Character who's accessToken we will refresh.
         const character = await Character.doQuery()
-            .where('character.userId = :id', {id: request.session.user.id})
+            .where('character.userId = :id', {id: request.session!.user.id})
             .andWhere('character.uuid = :uuid', {uuid: characterUUID})
             .getOne();
 
@@ -260,11 +243,6 @@ export class SSORouter extends BaseRouter {
      */
     private static async deleteCharacter(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and can't initiate SSO process
-            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
-
         const characterUUID = request.body.characterUUID;
 
         if (!characterUUID) {
@@ -275,7 +253,7 @@ export class SSORouter extends BaseRouter {
         const user: User | undefined = await User.doQuery()
             .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session.user.id})
+            .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
 
         if (!user) {
@@ -305,14 +283,10 @@ export class SSORouter extends BaseRouter {
      */
     private static async activateCharacter(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            return SSORouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
-
         await Character.doQuery()
             .update(Character)
             .set({isActive: false})
-            .where('character.userId = :id', {id: request.session.user.id})
+            .where('character.userId = :id', {id: request.session!.user.id})
             .execute();
 
         const characterUUID = request.body.characterUUID;
@@ -323,7 +297,7 @@ export class SSORouter extends BaseRouter {
 
         const character = await Character.doQuery()
             .select(['character.id', 'character.isActive', 'character.uuid', 'character.userId'])
-            .where('character.userId = :id', {id: request.session.user.id})
+            .where('character.userId = :id', {id: request.session!.user.id})
             .andWhere('character.uuid = :uuid', {uuid: characterUUID})
             .getOne();
 
@@ -354,11 +328,11 @@ export class SSORouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/start', SSORouter.startSSOProcess);
-        this.createGetRoute('/callback', SSORouter.processCallBack);
-        this.createGetRoute('/refresh', SSORouter.refreshToken);
-        this.createPostRoute('/delete', SSORouter.deleteCharacter);
-        this.createPostRoute('/activate', SSORouter.activateCharacter);
+        this.createGetRoute('/start', SSORouter.startSSOProcess, true);
+        this.createGetRoute('/callback', SSORouter.processCallBack, true);
+        this.createGetRoute('/refresh', SSORouter.refreshToken, true);
+        this.createPostRoute('/delete', SSORouter.deleteCharacter, true);
+        this.createPostRoute('/activate', SSORouter.activateCharacter, true);
         this.createPostRoute('/log-route-warning', SSORouter.logDeprecation);
     }
 }
