@@ -177,10 +177,6 @@ export class DataController {
                 return response.data as T;
 
             } else if (response.status === httpStatus.NOT_MODIFIED) {
-                if (response.headers.etag) {
-                    CacheController.responseCache[url].etag = response.headers.etag;
-                }
-
                 if (response.headers.expires) {
                     CacheController.responseCache[url].expiry = new Date(response.headers.expires).getTime();
                 }
