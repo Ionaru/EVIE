@@ -22,12 +22,20 @@ export class EVE {
         return url;
     }
 
+    public static getIndustryActivityUrl() {
+        return `${EVE.SDEURL}/industryActivity.json`;
+    }
+
     public static getIndustryActivityProductsUrl() {
         return `${EVE.SDEURL}/industryActivityProducts.json`;
     }
 
     public static getIndustryActivityMaterialsUrl() {
         return `${EVE.SDEURL}/industryActivityMaterials.json`;
+    }
+
+    public static getIndustryActivitySkillsUrl() {
+        return `${EVE.SDEURL}/industryActivitySkills.json`;
     }
 
     public static getIndustryJobsUrl(characterId: number) {

@@ -1,26 +1,21 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { logger } from 'winston-pnp-logger';
 
-interface IEVEDataCache {
-    [index: string]: any;
-}
-
 interface IResponseCache {
     [index: string]: ICacheObject;
 }
 
 interface ICacheObject {
-    expiry: number;
+    expiry?: number;
+    etag?: string;
     data: any;
 }
 
 export class CacheController {
 
-    public static eveDataCache: IEVEDataCache = {};
-
     public static responseCache: IResponseCache = {};
 
-    public static isExpired = (cache: ICacheObject) => cache.expiry < Date.now();
+    public static isExpired = (cache: ICacheObject) => cache.expiry ? cache.expiry < Date.now() : true;
 
     public static dumpCache() {
         const cacheString = JSON.stringify(CacheController.responseCache);
