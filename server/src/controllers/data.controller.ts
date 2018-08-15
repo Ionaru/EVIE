@@ -30,7 +30,7 @@ export class DataController {
 
     public static deprecationsLogged: string[] = [];
 
-    public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | void> {
+    public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | undefined> {
 
         const industryData = await Promise.all([
             DataController.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl()),
@@ -65,6 +65,8 @@ export class DataController {
 
             return bpInfo;
         }
+
+        return;
     }
 
     public static getUniverseCategory(categoryId: number) {
@@ -96,18 +98,9 @@ export class DataController {
     public static async getSkillTypes() {
 
         const skillIds = await DataController.getSkillIds();
+        const types = await DataController.getUniverseTypes(...skillIds);
 
-        const skillTypes: ITypesData[] = [];
-
-        await Promise.all(skillIds.map(async (typeId) => {
-            const skillType = await DataController.getUniverseTypes(typeId);
-
-            if (skillType && skillType.length && skillType[0].published) {
-                skillTypes.push(skillType[0]);
-            }
-        }));
-
-        return skillTypes;
+        return types.filter((type) => type.published);
     }
 
     public static async getUniverseTypes(...typeIds: number[]) {
@@ -188,6 +181,7 @@ export class DataController {
                 if (response.headers.expires) {
                     CacheController.responseCache[url].expiry = new Date(response.headers.expires).getTime();
                 }
+
                 return CacheController.responseCache[url].data as T;
 
             } else {
