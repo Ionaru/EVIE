@@ -6,6 +6,31 @@ import { BaseRouter } from './base.router';
 
 export class DataRouter extends BaseRouter {
 
+    private static async getManufacturingInfo(request: Request, response: Response): Promise<Response> {
+        if (!request.session || !request.session.user.id) {
+            // No user ID present in the session.
+            return DataRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
+        }
+
+        if (!request.params || !request.params.typeId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
+        const typeId = Number(request.params.typeId);
+
+        if (isNaN(typeId)) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+        }
+
+        const data = await DataController.getManufacturingInfo(typeId);
+
+        if (!data) {
+            return DataRouter.sendResponse(response, httpStatus.NOT_FOUND, 'NoDataFound');
+        }
+
+        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', data);
+    }
+
     private static async getSkillTypes(request: Request, response: Response): Promise<Response> {
         if (!request.session || !request.session.user.id) {
             // No user ID present in the session.
@@ -41,5 +66,6 @@ export class DataRouter extends BaseRouter {
         super();
         this.createPostRoute('/types', DataRouter.getTypes);
         this.createGetRoute('/skill-types', DataRouter.getSkillTypes);
+        this.createGetRoute('/manufacturing/:typeId', DataRouter.getManufacturingInfo);
     }
 }

@@ -1,14 +1,71 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
 import { EVE } from '../../../client/src/shared/eve.helper';
-import { ISkillCategoryData, ISkillGroupData, ITypesData } from '../../../client/src/shared/interface.helper';
+import {
+    IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
+    ISkillCategoryData, ISkillGroupData, ITypesData,
+} from '../../../client/src/shared/interface.helper';
 import { CacheController } from './cache.controller';
+
+interface IManufacturingData {
+    blueprintId: number;
+    materials: Array<{
+        id: number,
+        quantity: number,
+    }>;
+    skills: Array<{
+        id: number,
+        level: number,
+    }>;
+    time: number;
+    result: {
+        id: number,
+        quantity: number,
+    };
+}
 
 export class DataController {
 
     public static deprecationsLogged: string[] = [];
+
+    public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | void> {
+
+        const industryData = await Promise.all([
+            DataController.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl()),
+            DataController.fetchESIData<IIndustryActivityMaterials[]>(EVE.getIndustryActivityMaterialsUrl()),
+            DataController.fetchESIData<IIndustryActivitySkills[]>(EVE.getIndustryActivitySkillsUrl()),
+            DataController.fetchESIData<IIndustryActivity[]>(EVE.getIndustryActivityUrl()),
+        ]);
+
+        const [industryProducts, industryMaterials, industrySkills, industryActivities] = industryData;
+
+        if (industryProducts && industryMaterials && industrySkills && industryActivities) {
+
+            let bpInfo: IManufacturingData;
+
+            const bluePrint = industryProducts.filter((product) => product.productTypeID === typeId && product.activityID === 1)[0];
+
+            if (!bluePrint) {
+                return;
+            }
+
+            const materials = industryMaterials.filter((material) => material.typeID === bluePrint.typeID && material.activityID === 1);
+            const skills = industrySkills.filter((skill) => skill.typeID === bluePrint.typeID && skill.activityID === 1);
+            const time = industryActivities.filter((activity) => activity.typeID === bluePrint.typeID && activity.activityID === 1)[0];
+
+            bpInfo = {
+                blueprintId: bluePrint.typeID,
+                materials: materials.map((mat) => ({id: mat.materialTypeID, quantity: mat.quantity})),
+                result: {id: typeId, quantity: bluePrint.quantity},
+                skills: skills.map((skill) => ({id: skill.skillID, level: skill.level})),
+                time: time.time,
+            };
+
+            return bpInfo;
+        }
+    }
 
     public static getUniverseCategory(categoryId: number) {
         return DataController.fetchESIData<ISkillCategoryData>(EVE.getUniverseCategoriesUrl(categoryId));
@@ -84,8 +141,19 @@ export class DataController {
             return CacheController.responseCache[url].data as T;
         }
 
+        const requestConfig: AxiosRequestConfig = {
+            // Make sure 304 responses are not treated as errors.
+            validateStatus: (status) => status === httpStatus.OK || status === httpStatus.NOT_MODIFIED,
+        };
+
+        if (CacheController.responseCache[url] && CacheController.responseCache[url].etag) {
+            requestConfig.headers = {
+                'If-None-Match': `W/${CacheController.responseCache[url].etag}`,
+            };
+        }
+
         logger.debug(url);
-        response = await axios.get(url).catch((error: AxiosError) => {
+        response = await axios.get(url, requestConfig).catch((error: AxiosError) => {
             logger.error('Request failed:', url, error);
             return undefined;
         });
@@ -96,14 +164,31 @@ export class DataController {
                     DataController.logWarning(url, response.headers.warning);
                 }
 
-                if (response.headers.expires) {
+                if (response.headers.expires || response.headers.etag) {
                     CacheController.responseCache[url] = {
                         data: response.data,
-                        expiry: new Date(response.headers.expires).getTime(),
                     };
+
+                    if (response.headers.etag) {
+                        CacheController.responseCache[url].etag = response.headers.etag;
+                    }
+
+                    if (response.headers.expires) {
+                        CacheController.responseCache[url].expiry = new Date(response.headers.expires).getTime();
+                    }
                 }
 
                 return response.data as T;
+
+            } else if (response.status === httpStatus.NOT_MODIFIED) {
+                if (response.headers.etag) {
+                    CacheController.responseCache[url].etag = response.headers.etag;
+                }
+
+                if (response.headers.expires) {
+                    CacheController.responseCache[url].expiry = new Date(response.headers.expires).getTime();
+                }
+                return CacheController.responseCache[url].data as T;
 
             } else {
                 logger.error('Request not OK:', url, response.status, response.statusText, response.data);

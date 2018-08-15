@@ -4,7 +4,7 @@
 export class EVE {
 
     public static readonly ESIURL = 'https://esi.evetech.net';
-    public static readonly SDEURL = 'http://sde.zzeve.com';
+    public static readonly SDEURL = 'https://sde.zzeve.com';
     public static useTestServer = false;
 
     public static readonly skillCategoryId = 16;
@@ -22,12 +22,20 @@ export class EVE {
         return url;
     }
 
+    public static getIndustryActivityUrl() {
+        return `${EVE.SDEURL}/industryActivity.json`;
+    }
+
     public static getIndustryActivityProductsUrl() {
         return `${EVE.SDEURL}/industryActivityProducts.json`;
     }
 
     public static getIndustryActivityMaterialsUrl() {
         return `${EVE.SDEURL}/industryActivityMaterials.json`;
+    }
+
+    public static getIndustryActivitySkillsUrl() {
+        return `${EVE.SDEURL}/industryActivitySkills.json`;
     }
 
     public static getIndustryJobsUrl(characterId: number) {
