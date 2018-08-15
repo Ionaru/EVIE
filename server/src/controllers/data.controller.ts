@@ -5,7 +5,7 @@ import { logger } from 'winston-pnp-logger';
 import { EVE } from '../../../client/src/shared/eve.helper';
 import {
     IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
-    ISkillCategoryData, ISkillGroupData, ITypesData,
+    IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
 } from '../../../client/src/shared/interface.helper';
 import { CacheController } from './cache.controller';
 
@@ -45,15 +45,19 @@ export class DataController {
 
             let bpInfo: IManufacturingData;
 
-            const bluePrint = industryProducts.filter((product) => product.productTypeID === typeId && product.activityID === 1)[0];
+            const bluePrint = industryProducts.filter((product) =>
+                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing)[0];
 
             if (!bluePrint) {
                 return;
             }
 
-            const materials = industryMaterials.filter((material) => material.typeID === bluePrint.typeID && material.activityID === 1);
-            const skills = industrySkills.filter((skill) => skill.typeID === bluePrint.typeID && skill.activityID === 1);
-            const time = industryActivities.filter((activity) => activity.typeID === bluePrint.typeID && activity.activityID === 1)[0];
+            const materials = industryMaterials.filter((material) =>
+                material.typeID === bluePrint.typeID && material.activityID === IndustryActivity.manufacturing);
+            const skills = industrySkills.filter((skill) =>
+                skill.typeID === bluePrint.typeID && skill.activityID === IndustryActivity.manufacturing);
+            const time = industryActivities.filter((activity) =>
+                activity.typeID === bluePrint.typeID && activity.activityID === IndustryActivity.manufacturing)[0];
 
             bpInfo = {
                 blueprintId: bluePrint.typeID,

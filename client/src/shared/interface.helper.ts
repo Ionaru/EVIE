@@ -243,12 +243,13 @@ export interface IIndustryActivity {
     time: number;
 }
 
-// activityID	activityName
-// 0	None
-// 1	Manufacturing
-// 3	Researching Time Efficiency
-// 4	Researching Material Efficiency
-// 5	Copying
-// 7	Reverse Engineering
-// 8	Invention
-// 11	Reactions
+export enum IndustryActivity {
+    none = 0,
+    manufacturing = 1,
+    research_time_efficiency = 3,
+    research_material_efficiency = 4,
+    copying = 6,
+    reverse_engineering = 7,
+    invention = 8,
+    reactions = 11,
+}
