@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
@@ -132,7 +132,6 @@ export class DataController {
     }
 
     public static async fetchESIData<T>(url: string): Promise<T | undefined> {
-        let response: AxiosResponse<any> | undefined;
 
         if (CacheController.responseCache[url] && !CacheController.isExpired(CacheController.responseCache[url])) {
             return CacheController.responseCache[url].data as T;
@@ -145,17 +144,17 @@ export class DataController {
 
         if (CacheController.responseCache[url] && CacheController.responseCache[url].etag) {
             requestConfig.headers = {
-                'If-None-Match': `W/${CacheController.responseCache[url].etag}`,
+                'If-None-Match': `${CacheController.responseCache[url].etag}`,
             };
         }
 
-        logger.debug(url);
-        response = await axios.get(url, requestConfig).catch((error: AxiosError) => {
+        const response = await axios.get(url, requestConfig).catch((error: AxiosError) => {
             logger.error('Request failed:', url, error);
             return undefined;
         });
 
         if (response) {
+            logger.debug(`${url} -> ${response.status}`);
             if (response.status === httpStatus.OK) {
                 if (response.headers.warning) {
                     DataController.logWarning(url, response.headers.warning);
