@@ -20,20 +20,15 @@ export class APIRouter extends BaseRouter {
      */
     private static async doHandShake(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // No user ID present in the session.
-            return APIRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
-        }
-
         const user: User | undefined = await User.doQuery()
             .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session.user.id})
+            .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
 
         if (!user) {
             // No user found that matches the ID in the session.
-            delete request.session.user.id;
+            delete request.session!.user.id;
             return APIRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
         }
 
@@ -64,11 +59,6 @@ export class APIRouter extends BaseRouter {
      */
     private static async loginUser(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session) {
-            // Request has no session.
-            return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoSession');
-        }
-
         // Extract the username/email and password from the request
         const username = request.body.username;
         const password = request.body.password;
@@ -94,8 +84,8 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'IncorrectLogin');
         }
 
-        request.session.user.id = user.id;
-        request.session.user.uuid = user.uuid;
+        request.session!.user.id = user.id;
+        request.session!.user.uuid = user.uuid;
         user.timesLogin++;
         user.lastLogin = new Date();
         await user.save();
@@ -119,12 +109,7 @@ export class APIRouter extends BaseRouter {
      */
     private static async logoutUser(request: Request, response: Response): Promise<Response | void> {
 
-        if (!request.session) {
-            // Request has no session.
-            return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoSession');
-        }
-
-        request.session.destroy(() => {
+        request.session!.destroy(() => {
             response.end();
         });
     }
@@ -410,11 +395,6 @@ export class APIRouter extends BaseRouter {
      */
     private static async deleteUser(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // No user ID present in the session.
-            return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
-
         const uuid = request.body.uuid;
         const password = request.body.password;
 
@@ -423,7 +403,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to delete, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -450,13 +430,13 @@ export class APIRouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/handshake', APIRouter.doHandShake);
+        this.createGetRoute('/handshake', APIRouter.doHandShake, true);
         this.createPostRoute('/login', APIRouter.loginUser);
-        this.createPostRoute('/logout', APIRouter.logoutUser);
+        this.createPostRoute('/logout', APIRouter.logoutUser, true);
         this.createPostRoute('/register', APIRouter.registerUser);
-        this.createPostRoute('/change/username', APIRouter.changeUserUsername);
-        this.createPostRoute('/change/password', APIRouter.changeUserPassword);
-        this.createPostRoute('/change/email', APIRouter.changeUserEmail);
-        this.createPostRoute('/delete', APIRouter.deleteUser);
+        this.createPostRoute('/change/username', APIRouter.changeUserUsername, true);
+        this.createPostRoute('/change/password', APIRouter.changeUserPassword, true);
+        this.createPostRoute('/change/email', APIRouter.changeUserEmail, true);
+        this.createPostRoute('/delete', APIRouter.deleteUser, true);
     }
 }
