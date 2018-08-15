@@ -253,3 +253,11 @@ export enum IndustryActivity {
     invention = 8,
     reactions = 11,
 }
+
+export interface IMarketGroup {
+    description: string;
+    market_group_id: number;
+    name: string;
+    parent_group_id: number;
+    types: number[];
+}

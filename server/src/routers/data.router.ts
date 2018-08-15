@@ -40,6 +40,19 @@ export class DataRouter extends BaseRouter {
         return DataRouter.sendResponse(response, httpStatus.OK, 'OK', skills);
     }
 
+    private static async getMarketIds(_request: Request, response: Response): Promise<Response> {
+
+        const marketIds = await DataController.getMarketIds();
+        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', marketIds);
+    }
+
+    // noinspection JSUnusedLocalSymbols
+    private static async getMarketTypes(_request: Request, response: Response): Promise<Response> {
+
+        const marketTypes = await DataController.getMarketTypes();
+        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', marketTypes);
+    }
+
     private static async getTypes(request: Request, response: Response): Promise<Response> {
 
         const typeIds = request.body;
@@ -61,6 +74,8 @@ export class DataRouter extends BaseRouter {
         this.createPostRoute('/types', DataRouter.getTypes, true);
         this.createGetRoute('/skill-types', DataRouter.getSkillTypes, true);
         this.createGetRoute('/skill-ids', DataRouter.getSkillIds, true);
+        this.createGetRoute('/market-types', DataRouter.getMarketTypes, true);
+        this.createGetRoute('/market-ids', DataRouter.getMarketIds, true);
         this.createGetRoute('/manufacturing/:typeId', DataRouter.getManufacturingInfo, true);
     }
 }

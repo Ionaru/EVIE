@@ -5,7 +5,7 @@ import { logger } from 'winston-pnp-logger';
 import { EVE } from '../../../client/src/shared/eve.helper';
 import {
     IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
-    IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
+    IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
 } from '../../../client/src/shared/interface.helper';
 import { CacheController } from './cache.controller';
 
@@ -79,6 +79,32 @@ export class DataController {
 
     public static getUniverseGroup(groupId: number) {
         return DataController.fetchESIData<ISkillGroupData>(EVE.getUniverseGroupsUrl(groupId));
+    }
+
+    public static async getMarketIds() {
+        const marketGroups = await DataController.fetchESIData<number[]>(EVE.getMarketGroupsUrl());
+
+        const marketIds: number[] = [];
+
+        if (marketGroups) {
+            await Promise.all(marketGroups.map(async (groupId) => {
+                const marketGroup = await DataController.fetchESIData<IMarketGroup>(EVE.getMarketGroupUrl(groupId));
+
+                if (marketGroup) {
+                    marketIds.push(...marketGroup.types);
+                }
+            }));
+        }
+
+        return marketIds;
+    }
+
+    public static async getMarketTypes() {
+
+        const marketIds = await DataController.getMarketIds();
+        const types = await DataController.getUniverseTypes(...marketIds);
+
+        return types.filter((type) => type.published);
     }
 
     public static async getSkillIds() {

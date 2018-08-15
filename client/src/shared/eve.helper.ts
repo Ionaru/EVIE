@@ -58,6 +58,14 @@ export class EVE {
         return EVE.constructESIURL(1, 'universe', 'categories', categoryId);
     }
 
+    public static getMarketGroupsUrl() {
+        return EVE.constructESIURL(1, 'markets', 'groups');
+    }
+
+    public static getMarketGroupUrl(groupId: number) {
+        return EVE.constructESIURL(1, 'markets', 'groups', groupId);
+    }
+
     public static getUniverseGroupsUrl(groupId: number) {
         return EVE.constructESIURL(1, 'universe', 'groups', groupId);
     }
