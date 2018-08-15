@@ -20,6 +20,10 @@ export class APIRouter extends BaseRouter {
      */
     private static async doHandShake(request: Request, response: Response): Promise<Response> {
 
+        if (!request.session!.user.id) {
+            return BaseRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
+        }
+
         const user: User | undefined = await User.doQuery()
             .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
             .leftJoinAndSelect('user.characters', 'character')
@@ -430,7 +434,7 @@ export class APIRouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/handshake', APIRouter.doHandShake, true);
+        this.createGetRoute('/handshake', APIRouter.doHandShake, false);
         this.createPostRoute('/login', APIRouter.loginUser);
         this.createPostRoute('/logout', APIRouter.logoutUser, true);
         this.createPostRoute('/register', APIRouter.registerUser);
