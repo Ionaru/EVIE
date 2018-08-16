@@ -1,4 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
+import { faArrowAltRight, faChevronDown, faClock, faCog, faExclamationTriangle, faFolderOpen } from '@fortawesome/pro-solid-svg-icons';
 import * as countdown from 'countdown';
 
 import { Calc } from '../../../shared/calc.helper';
@@ -46,6 +48,15 @@ interface IGroupedSkillTypes {
     templateUrl: './skills.component.html',
 })
 export class SkillsComponent extends DataPageComponent implements OnInit, OnDestroy {
+
+    public faChevronDown = faChevronDown;
+    public faExclamationTriangle = faExclamationTriangle;
+    public faCog = faCog;
+    public faClock = faClock;
+    public faFolderOpen = faFolderOpen;
+    public faArrowAltRight = faArrowAltRight;
+    public faEye = faEye;
+    public faEyeSlash = faEyeSlash;
 
     public skillQueue: IExtendedSkillQueueData[] = [];
     public skillQueueCount = 0;

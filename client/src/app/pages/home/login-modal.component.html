@@ -1,7 +1,7 @@
 <div class="modal-header">
     <h4 class="modal-title">Login</h4>
     <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
-        <i class="fa fa-times"></i>
+        <fa-icon [icon]="faTimes"></fa-icon>
     </button>
 </div>
 <div class="modal-body">
@@ -31,8 +31,8 @@
         </form>
         <ng-container *ngIf="debugging">
             <hr>
-            <button class="btn btn-danger" (click)="loginDebug()" [ngClass]="{'disabled': inProgress}">
-                <i class="fa fa-exclamation-triangle"></i>
+            <button class="btn btn-danger" (click)="loginDebug().then()" [ngClass]="{'disabled': inProgress}">
+                <fa-icon [icon]="faBug"></fa-icon>
                 Login debug
             </button>
         </ng-container>
@@ -40,7 +40,7 @@
 </div>
 <div class="modal-footer" *ngIf="wrongLogin">
     <p>
-        <i class="text-danger fa fa-exclamation-triangle"></i>
+        <fa-icon [icon]="faExclamationTriangle" class="text-danger"></fa-icon>
         Incorrect login, please try again.
     </p>
 </div>

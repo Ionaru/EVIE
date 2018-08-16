@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faChevronDown, faColumns, faHome, faPlug, faSignOut, faUserCog } from '@fortawesome/pro-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 
@@ -20,6 +21,13 @@ export class NavigationComponent implements OnInit {
 
     private static _serverStatusEvent = new Subject<boolean>();
     public static get serverStatusEvent() { return this._serverStatusEvent; }
+
+    public faChevronDown = faChevronDown;
+    public faHome = faHome;
+    public faColumns = faColumns;
+    public faUserCog = faUserCog;
+    public faPlug = faPlug;
+    public faSignOut = faSignOut;
 
     public hours = '00';
     public minutes = '00';
