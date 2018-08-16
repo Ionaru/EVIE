@@ -22,15 +22,15 @@
     <div class="skill-queue-container">
         <div class="d-flex justify-content-between">
             <h2>Skill queue ( {{ skillQueueCount }} )</h2>
-            <h2 (click)="skillQueueVisible = !skillQueueVisible"><i class="fas fa-chevron-down"></i></h2>
+            <h2 (click)="skillQueueVisible = !skillQueueVisible"><fa-icon [icon]="faChevronDown"></fa-icon></h2>
         </div>
         <p class="skill-queue-time" *ngIf="!skillTrainingPaused" [ngClass]="{'text-warning': hasLowSkillQueue}">
-            <span *ngIf="hasLowSkillQueue"><i class="fas fa-exclamation-triangle"></i></span>
+            <span *ngIf="hasLowSkillQueue"><fa-icon [icon]="faExclamationTriangle"></fa-icon></span>
             Skill queue ends in {{ totalQueueCountdown }}
         </p>
         <div class="skill-queue" *ngIf="skillQueueVisible">
             <ng-container *ngIf="skillTrainingPaused">
-                <p class="stalled"><i class="fas fa-cog"></i> Skill queue inactive</p>
+                <p class="stalled"><fa-icon [icon]="faCog"></fa-icon> Skill queue inactive</p>
             </ng-container>
             <ng-container *ngIf="skillQueue.length && skills">
                 <ng-container *ngFor="let skill of skillQueue">
@@ -38,10 +38,10 @@
                         <div class="left-info">
                             <p>
                                 <ng-container *ngIf="skill.status === 'training'">
-                                    <i class="fas fa-cog fa-spin"></i>
+                                    <fa-icon [icon]="faCog" [spin]="true"></fa-icon>
                                 </ng-container>
                                 <ng-container *ngIf="skill.status === 'scheduled'">
-                                    <i class="fas fa-clock" title="Scheduled"></i>
+                                    <fa-icon [icon]="faClock" title="scheduled"></fa-icon>
                                 </ng-container>
                                 <strong>
                                     {{ skill.name }}
@@ -60,7 +60,7 @@
                         </div>
                         <div class="right-info">
                             <p class="skill-group" *ngIf="skill.name">
-                                <i class="fas fa-folder-open"></i> {{ getSkillGroup(skill.skill_id) }}</p>
+                                <fa-icon [icon]="faFolderOpen"></fa-icon> {{ getSkillGroup(skill.skill_id) }}</p>
                             <p>Total SP when finished {{ skill.spAtEnd | number:'1.0-0' }}</p>
                             <p *ngIf="skill.status === 'training'">{{ skill.percentageDone || 0 | number:'1.2-2' }}%</p>
                         </div>
@@ -88,10 +88,10 @@
             <div>
                 <button class="btn btn-outline-primary" (click)="showUntrainedSkills = !showUntrainedSkills">
                     <span *ngIf="!showUntrainedSkills">
-                        <i class="far fa-eye"></i> Show untrained skills
+                        <fa-icon [icon]="faEye"></fa-icon> Show untrained skills
                     </span>
                     <span *ngIf="showUntrainedSkills">
-                        <i class="far fa-eye-slash"></i> Hide untrained skills
+                        <fa-icon [icon]="faEyeSlash"></fa-icon> Hide untrained skills
                     </span>
                 </button>
             </div>
@@ -102,7 +102,7 @@
                     <ng-template ngbPanelTitle>
                         <div class="d-flex justify-content-between">
                             <span>
-                                <i class="fas fa-chevron-down"></i>
+                                <fa-icon [icon]="faChevronDown"></fa-icon>
                                 <strong> {{ group.name }}</strong>
                                 (
                                 {{ trainedSkillsGrouped[group.group_id]?.length }}
@@ -127,7 +127,7 @@
                                     {{ romanize(trainedSkills[skill.type_id].trained_skill_level) || 'Injected' }}
                                     <span *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">
                                         <span class="text-primary">
-                                        <i class="fas fa-arrow-alt-right"></i>
+                                        <fa-icon [icon]="faArrowAltRight"></fa-icon>
                                         </span>
                                         {{ romanize(trainedSkills[skill.type_id].trained_skill_level + 1)}}
                                     </span>

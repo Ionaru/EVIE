@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { faCheckCircle, faExclamationTriangle, faInfoCircle, faTimes, faTimesCircle } from '@fortawesome/pro-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { User } from '../../models/user/user.model';
@@ -10,6 +11,12 @@ import { UserService } from '../../models/user/user.service';
     templateUrl: './register-modal.component.html',
 })
 export class RegisterModalComponent {
+
+    public faTimes = faTimes;
+    public faTimesCircle = faTimesCircle;
+    public faInfoCircle = faInfoCircle;
+    public faCheckCircle = faCheckCircle;
+    public faExclamationTriangle = faExclamationTriangle;
 
     public usernameStatus!: string;
     public usernameHint!: string;

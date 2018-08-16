@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { faCheck, faSync, faTrash, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import * as countdown from 'countdown';
 
 import { Common } from '../../../shared/common.helper';
@@ -18,6 +19,11 @@ import { DataPageComponent } from '../data-page/data-page.component';
     templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent extends DataPageComponent implements OnInit, OnDestroy {
+
+    public faUserPlus = faUserPlus;
+    public faCheck = faCheck;
+    public faSync = faSync;
+    public faTrash = faTrash;
 
     public characters: Character[] = [];
     public deleteInProgress = false;

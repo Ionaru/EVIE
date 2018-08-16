@@ -2,7 +2,7 @@
     <a class="navbar-brand" routerLink="/">EVIE</a>
     <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"
             [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
-        <i class="fa fa-chevron-down"></i>
+        <fa-icon [icon]="faChevronDown"></fa-icon>
     </button>
 
     <div class="collapse navbar-collapse" id="collapseExample" [ngbCollapse]="!isCollapsed">
@@ -10,12 +10,12 @@
             <li class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="/" routerLinkActive="active"
                    [routerLinkActiveOptions]="{ exact: true }">
-                    <span class="nav-link-text"><i class="fas fa-home"></i></span>
+                    <span class="nav-link-text"><fa-icon [icon]="faHome"></fa-icon></span>
                 </a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="dashboard" routerLinkActive="active">
-                    <span class="nav-link-text"><i class="fas fa-columns"></i></span>
+                    <span class="nav-link-text"><fa-icon [icon]="faColumns"></fa-icon></span>
                 </a>
             </li>
         </ul>
@@ -26,19 +26,19 @@
                         <span id="eve-players"></span> players online
                     </span>
                     <span class="nav-link-text" [ngClass]="{'d-none': serverOnline}">
-                        <i class="fas fa-plug text-danger"></i>
+                        <fa-icon [icon]="faPlug" class="text-danger"></fa-icon>
                         API server is offline
                     </span>
                 </a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item">
                 <a class="nav-link" href="#">
-                    <span class="nav-link-text"><i class="fas fa-user-cog"></i></span>
+                    <span class="nav-link-text"><fa-icon [icon]="faUserCog"></fa-icon></span>
                 </a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item">
                 <a class="nav-link" (click)="logout()">
-                    <span class="nav-link-text"><i class="fas fa-sign-out"></i></span>
+                    <span class="nav-link-text"><fa-icon [icon]="faSignOut"></fa-icon></span>
                 </a>
             </li>
         </ul>

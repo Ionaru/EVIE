@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { faGem } from '@fortawesome/pro-regular-svg-icons';
+import { faHourglass } from '@fortawesome/pro-solid-svg-icons';
 
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
 import { TypesService } from '../../data-services/types.service';
@@ -11,6 +13,9 @@ import { DataPageComponent } from '../data-page/data-page.component';
     templateUrl: './industry.component.html',
 })
 export class IndustryComponent extends DataPageComponent implements OnInit {
+
+    public faHourglass = faHourglass;
+    public faGem = faGem;
 
     constructor(private industryJobsService: IndustryJobsService, private typesService: TypesService) {
         super();

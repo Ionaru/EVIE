@@ -6,6 +6,7 @@ import { WalletService } from '../../data-services/wallet.service';
 import { CharacterService } from '../../models/character/character.service';
 import { CountUp } from '../../shared/count-up';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { faInfoCircle } from '@fortawesome/pro-solid-svg-icons';
 
 @Component({
     selector: 'app-wallet',
@@ -13,6 +14,8 @@ import { DataPageComponent } from '../data-page/data-page.component';
     templateUrl: './wallet.component.html',
 })
 export class WalletComponent extends DataPageComponent implements OnInit {
+
+    public faInfoCircle = faInfoCircle;
 
     public journalData: IWalletJournalData[] = [];
     public balanceCountUp!: CountUp;
