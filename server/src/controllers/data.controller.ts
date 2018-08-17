@@ -190,17 +190,16 @@ export class DataController {
                         CacheController.responseCache[url].etag = response.headers.etag;
                     }
 
-                    if (response.headers.expires) {
-                        CacheController.responseCache[url].expiry = new Date(response.headers.expires).getTime();
-                    }
+                    CacheController.responseCache[url].expiry =
+                        response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
                 }
 
                 return response.data as T;
 
             } else if (response.status === httpStatus.NOT_MODIFIED) {
-                if (response.headers.expires) {
-                    CacheController.responseCache[url].expiry = new Date(response.headers.expires).getTime();
-                }
+
+                CacheController.responseCache[url].expiry =
+                    response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
 
                 return CacheController.responseCache[url].data as T;
 

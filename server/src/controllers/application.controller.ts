@@ -83,7 +83,7 @@ export class Application {
             rolling: true,
             saveUninitialized: true,
             secret: config.getProperty('session_secret') as string,
-            store: this.sessionStore,
+            store: process.env.NODE_ENV === 'production' ? this.sessionStore : undefined,
         });
 
         expressApplication.use(this.sessionParser);
