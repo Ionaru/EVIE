@@ -5,26 +5,9 @@ import { logger } from 'winston-pnp-logger';
 import { EVE } from '../../../client/src/shared/eve.helper';
 import {
     IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
-    IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
+    IManufacturingData, IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
 } from '../../../client/src/shared/interface.helper';
 import { CacheController } from './cache.controller';
-
-interface IManufacturingData {
-    blueprintId: number;
-    materials: Array<{
-        id: number,
-        quantity: number,
-    }>;
-    skills: Array<{
-        id: number,
-        level: number,
-    }>;
-    time: number;
-    result: {
-        id: number,
-        quantity: number,
-    };
-}
 
 export class DataController {
 
@@ -32,14 +15,26 @@ export class DataController {
 
     public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | undefined> {
 
+        const industryProducts = await DataController.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl());
+
+        let blueprint;
+
+        if (industryProducts) {
+            blueprint = industryProducts.filter((product) =>
+                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing)[0];
+        }
+
+        if (!blueprint) {
+            return;
+        }
+
         const industryData = await Promise.all([
-            DataController.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl()),
             DataController.fetchESIData<IIndustryActivityMaterials[]>(EVE.getIndustryActivityMaterialsUrl()),
             DataController.fetchESIData<IIndustryActivitySkills[]>(EVE.getIndustryActivitySkillsUrl()),
             DataController.fetchESIData<IIndustryActivity[]>(EVE.getIndustryActivityUrl()),
         ]);
 
-        const [industryProducts, industryMaterials, industrySkills, industryActivities] = industryData;
+        const [industryMaterials, industrySkills, industryActivities] = industryData;
 
         if (industryProducts && industryMaterials && industrySkills && industryActivities) {
 

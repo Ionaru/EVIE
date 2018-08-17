@@ -1,3 +1,9 @@
+export interface IServerResponse<T> {
+    state: string;
+    message: string;
+    data?: T;
+}
+
 export interface ITypesData {
     capacity: number;
     description: string;
@@ -260,4 +266,21 @@ export interface IMarketGroup {
     name: string;
     parent_group_id: number;
     types: number[];
+}
+
+export interface IManufacturingData {
+    blueprintId: number;
+    materials: Array<{
+        id: number,
+        quantity: number,
+    }>;
+    skills: Array<{
+        id: number,
+        level: number,
+    }>;
+    time: number;
+    result: {
+        id: number,
+        quantity: number,
+    };
 }
