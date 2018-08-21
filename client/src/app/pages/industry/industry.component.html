@@ -14,4 +14,11 @@
     <!--</div>-->
 <!--</div>-->
 
-<img *ngFor="let bp of bps" src="https://image.eveonline.com/Type/{{bp}}_64.png" />
+<!--<img *ngFor="let bp of bpMats" src="https://image.eveonline.com/Type/{{bp}}_64.png" />-->
+<!--<hr>-->
+<!--<img *ngFor="let bp of baseMats" src="https://image.eveonline.com/Type/{{bp}}_64.png" />-->
+
+<div *ngFor="let key of bupKeys()">
+    <img *ngFor="let bp of bups[key]" src="https://image.eveonline.com/Type/{{bp}}_64.png" />
+    <hr>
+</div>

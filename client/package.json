@@ -32,6 +32,7 @@
         "core-js": "^2.5.7",
         "countdown": "^2.6.0",
         "crypto-js": "^3.1.9-1",
+        "jsplumb": "^2.7.16",
         "rxjs": "^6.2.2",
         "socket.io-client": "^2.1.1",
         "zone.js": "^0.8.26"
