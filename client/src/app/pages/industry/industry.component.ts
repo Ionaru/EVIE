@@ -108,7 +108,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
 
     public bupKeys = () => Object.keys(this.bups);
 
-    public async recFun(m = 12003) {
+    public async recFun(m = 40340) {
         const i = await this.industryService.getManufacturingData(m);
         if (!i) {
             return;
@@ -166,7 +166,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
 
         const matob2: xxx = {};
         for (const id of Object.keys(matob)) {
-            matob2[NamesService.getNameFromData(id)] = matob[id];
+            matob2[NamesService.getNameFromData(Number(id))] = matob[id];
         }
 
         console.log(matob2);
