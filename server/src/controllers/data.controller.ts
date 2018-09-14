@@ -7,6 +7,7 @@ import {
     IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
     IManufacturingData, IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
 } from '../../../client/src/shared/interface.helper';
+import { RequestLogger } from '../loggers/request.logger';
 import { CacheController } from './cache.controller';
 
 export class DataController {
@@ -169,13 +170,13 @@ export class DataController {
             };
         }
 
-        const response = await axios.get(url, requestConfig).catch((error: AxiosError) => {
+        const response = await axios.get<T>(url, requestConfig).catch((error: AxiosError) => {
             logger.error('Request failed:', url, error);
             return undefined;
         });
 
         if (response) {
-            logger.debug(`${url} -> ${response.status}`);
+            logger.debug(`${url} => ${RequestLogger.getStatusColor(response.status)(`${response.status} ${response.statusText}`)}`);
             if (response.status === httpStatus.OK) {
                 if (response.headers.warning) {
                     DataController.logWarning(url, response.headers.warning);
@@ -194,7 +195,7 @@ export class DataController {
                         response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
                 }
 
-                return response.data as T;
+                return response.data;
 
             } else if (response.status === httpStatus.NOT_MODIFIED) {
 

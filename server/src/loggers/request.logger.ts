@@ -42,15 +42,7 @@ export class RequestLogger {
         };
     }
 
-    private static getIp(request: Request) {
-        return request.ip ||
-            request.headers['x-forwarded-for'] ||
-            request.connection.remoteAddress ||
-            request.socket.remoteAddress ||
-            'Unknown IP';
-    }
-
-    private static getStatusColor(statusCode: number): Chalk & { supportsColor: ColorSupport } {
+    public static getStatusColor(statusCode: number): Chalk & { supportsColor: ColorSupport } {
         if (statusCode >= 500) {
             return chalk.red;
         } else if (statusCode >= 400) {
@@ -62,5 +54,13 @@ export class RequestLogger {
         } else {
             return chalk.whiteBright;
         }
+    }
+
+    private static getIp(request: Request) {
+        return request.ip ||
+            request.headers['x-forwarded-for'] ||
+            request.connection.remoteAddress ||
+            request.socket.remoteAddress ||
+            'Unknown IP';
     }
 }
