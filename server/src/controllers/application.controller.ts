@@ -5,7 +5,6 @@ import * as express from 'express';
 import * as MySQLStore from 'express-mysql-session';
 import * as es from 'express-session';
 import * as helmet from 'helmet';
-import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
 import { RequestLogger } from '../loggers/request.logger';
@@ -83,7 +82,7 @@ export class Application {
             rolling: true,
             saveUninitialized: true,
             secret: config.getProperty('session_secret') as string,
-            store: this.sessionStore,
+            store: process.env.NODE_ENV === 'production' ? this.sessionStore : undefined,
         });
 
         expressApplication.use(this.sessionParser);

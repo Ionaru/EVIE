@@ -11,11 +11,11 @@ import { NavigationComponent } from '../../navigation/navigation.component';
 })
 export class DataPageComponent implements OnInit, OnDestroy {
 
-    private changeSubscription: Subscription;
+    private characterChangeSubscription: Subscription;
     private serverStatusSubscription: Subscription;
 
     constructor() {
-        this.changeSubscription = CharacterService.characterChangeEvent.subscribe(() => {
+        this.characterChangeSubscription = CharacterService.characterChangeEvent.subscribe(() => {
             this.ngOnInit();
         });
         this.serverStatusSubscription = NavigationComponent.serverStatusEvent.subscribe(() => {
@@ -31,7 +31,7 @@ export class DataPageComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy() {
-        this.changeSubscription.unsubscribe();
+        this.characterChangeSubscription.unsubscribe();
         this.serverStatusSubscription.unsubscribe();
     }
 

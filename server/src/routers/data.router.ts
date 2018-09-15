@@ -19,10 +19,6 @@ export class DataRouter extends BaseRouter {
 
         const data = await DataController.getManufacturingInfo(typeId);
 
-        if (!data) {
-            return DataRouter.sendResponse(response, httpStatus.NOT_FOUND, 'NoDataFound');
-        }
-
         return DataRouter.sendResponse(response, httpStatus.OK, 'OK', data);
     }
 

@@ -5,26 +5,10 @@ import { logger } from 'winston-pnp-logger';
 import { EVE } from '../../../client/src/shared/eve.helper';
 import {
     IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
-    IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
+    IManufacturingData, IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
 } from '../../../client/src/shared/interface.helper';
+import { RequestLogger } from '../loggers/request.logger';
 import { CacheController } from './cache.controller';
-
-interface IManufacturingData {
-    blueprintId: number;
-    materials: Array<{
-        id: number,
-        quantity: number,
-    }>;
-    skills: Array<{
-        id: number,
-        level: number,
-    }>;
-    time: number;
-    result: {
-        id: number,
-        quantity: number,
-    };
-}
 
 export class DataController {
 
@@ -32,14 +16,26 @@ export class DataController {
 
     public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | undefined> {
 
+        const industryProducts = await DataController.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl());
+
+        let blueprint;
+
+        if (industryProducts) {
+            blueprint = industryProducts.filter((product) =>
+                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing)[0];
+        }
+
+        if (!blueprint) {
+            return;
+        }
+
         const industryData = await Promise.all([
-            DataController.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl()),
             DataController.fetchESIData<IIndustryActivityMaterials[]>(EVE.getIndustryActivityMaterialsUrl()),
             DataController.fetchESIData<IIndustryActivitySkills[]>(EVE.getIndustryActivitySkillsUrl()),
             DataController.fetchESIData<IIndustryActivity[]>(EVE.getIndustryActivityUrl()),
         ]);
 
-        const [industryProducts, industryMaterials, industrySkills, industryActivities] = industryData;
+        const [industryMaterials, industrySkills, industryActivities] = industryData;
 
         if (industryProducts && industryMaterials && industrySkills && industryActivities) {
 
@@ -174,13 +170,13 @@ export class DataController {
             };
         }
 
-        const response = await axios.get(url, requestConfig).catch((error: AxiosError) => {
+        const response = await axios.get<T>(url, requestConfig).catch((error: AxiosError) => {
             logger.error('Request failed:', url, error);
             return undefined;
         });
 
         if (response) {
-            logger.debug(`${url} -> ${response.status}`);
+            logger.debug(`${url} => ${RequestLogger.getStatusColor(response.status)(`${response.status} ${response.statusText}`)}`);
             if (response.status === httpStatus.OK) {
                 if (response.headers.warning) {
                     DataController.logWarning(url, response.headers.warning);
@@ -195,17 +191,16 @@ export class DataController {
                         CacheController.responseCache[url].etag = response.headers.etag;
                     }
 
-                    if (response.headers.expires) {
-                        CacheController.responseCache[url].expiry = new Date(response.headers.expires).getTime();
-                    }
+                    CacheController.responseCache[url].expiry =
+                        response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
                 }
 
-                return response.data as T;
+                return response.data;
 
             } else if (response.status === httpStatus.NOT_MODIFIED) {
-                if (response.headers.expires) {
-                    CacheController.responseCache[url].expiry = new Date(response.headers.expires).getTime();
-                }
+
+                CacheController.responseCache[url].expiry =
+                    response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
 
                 return CacheController.responseCache[url].data as T;
 
