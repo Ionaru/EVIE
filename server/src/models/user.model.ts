@@ -27,6 +27,11 @@ export class User extends BaseModel {
     public email!: string;
 
     @Column({
+        default: false,
+    })
+    public isAdmin!: boolean;
+
+    @Column({
         default: 0,
     })
     public timesLogin!: number;
