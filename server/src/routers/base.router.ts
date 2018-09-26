@@ -5,11 +5,8 @@ import { logger } from 'winston-pnp-logger';
 
 export class BaseRouter {
 
-    public static sendResponse(response: Response, statusCode: number, message: string, data?: object): Response {
-        let state = 'success';
-        if (statusCode !== httpStatus.OK) {
-            state = 'error';
-        }
+    public static sendResponse(response: Response, statusCode: number, message: string, data?: any): Response {
+        const state = statusCode === httpStatus.OK ? 'success' : 'error';
 
         const responseData = {
             data,
@@ -22,6 +19,14 @@ export class BaseRouter {
         }
         response.status(statusCode);
         return response.json(responseData);
+    }
+
+    public static sendSuccessResponse(response: Response, data?: unknown): Response {
+        return BaseRouter.sendResponse(response, httpStatus.OK, 'OK', data);
+    }
+
+    public static send404(response: Response): Response {
+        return BaseRouter.sendResponse(response, httpStatus.NOT_FOUND, 'Not Found');
     }
 
     public router = Router();

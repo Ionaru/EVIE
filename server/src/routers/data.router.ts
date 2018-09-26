@@ -19,34 +19,38 @@ export class DataRouter extends BaseRouter {
 
         const data = await DataController.getManufacturingInfo(typeId);
 
-        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', data);
+        if (!data) {
+            return DataRouter.sendResponse(response, httpStatus.NO_CONTENT, 'OK');
+        }
+
+        return DataRouter.sendSuccessResponse(response, data);
     }
 
     // noinspection JSUnusedLocalSymbols
     private static async getSkillTypes(_request: Request, response: Response): Promise<Response> {
 
         const skills = await DataController.getSkillTypes();
-        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', skills);
+        return DataRouter.sendSuccessResponse(response, skills);
     }
 
     // noinspection JSUnusedLocalSymbols
     private static async getSkillIds(_request: Request, response: Response): Promise<Response> {
 
         const skills = await DataController.getSkillIds();
-        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', skills);
+        return DataRouter.sendSuccessResponse(response, skills);
     }
 
     private static async getMarketIds(_request: Request, response: Response): Promise<Response> {
 
         const marketIds = await DataController.getMarketIds();
-        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', marketIds);
+        return DataRouter.sendSuccessResponse(response, marketIds);
     }
 
     // noinspection JSUnusedLocalSymbols
     private static async getMarketTypes(_request: Request, response: Response): Promise<Response> {
 
         const marketTypes = await DataController.getMarketTypes();
-        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', marketTypes);
+        return DataRouter.sendSuccessResponse(response, marketTypes);
     }
 
     private static async getTypes(request: Request, response: Response): Promise<Response> {
@@ -62,7 +66,7 @@ export class DataRouter extends BaseRouter {
 
         const types = await DataController.getUniverseTypes(...typeIds);
 
-        return DataRouter.sendResponse(response, httpStatus.OK, 'OK', types);
+        return DataRouter.sendSuccessResponse(response, types);
     }
 
     constructor() {
