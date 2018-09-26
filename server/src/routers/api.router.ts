@@ -109,6 +109,7 @@ export class APIRouter extends BaseRouter {
      * path: /api/logout
      * method: POST
      */
+    @BaseRouter.loginRequired()
     private static async logoutUser(request: Request, response: Response): Promise<Response | void> {
 
         request.session!.destroy(() => {
@@ -433,7 +434,7 @@ export class APIRouter extends BaseRouter {
         super();
         this.createGetRoute('/handshake', APIRouter.doHandShake, false);
         this.createPostRoute('/login', APIRouter.loginUser);
-        this.createPostRoute('/logout', APIRouter.logoutUser, true);
+        this.createPostRoute('/logout', APIRouter.logoutUser);
         this.createPostRoute('/register', APIRouter.registerUser);
         this.createPostRoute('/change/username', APIRouter.changeUserUsername, true);
         this.createPostRoute('/change/password', APIRouter.changeUserPassword, true);

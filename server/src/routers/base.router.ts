@@ -29,6 +29,23 @@ export class BaseRouter {
         return BaseRouter.sendResponse(response, httpStatus.NOT_FOUND, 'Not Found');
     }
 
+    public static loginRequired() {
+        return (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) => {
+            const originalMethod = descriptor.value;
+
+            descriptor.value = function(...args: any[]) {
+                const request = args[0] as Request;
+                if (!request.session!.user.id) {
+                    const response = args[1] as Response;
+                    return BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
+                }
+                return originalMethod.apply(this, args);
+            };
+
+            return descriptor;
+        };
+    }
+
     public router = Router();
 
     constructor() {
