@@ -42,7 +42,6 @@ export class APIRouter extends BaseRouter {
         const userData = {
             characters: user.characters.map((character) => character.sanitizedCopy),
             email: user.email,
-            settings: user.settings.data,
             username: user.username,
             uuid: user.uuid,
         };
@@ -99,7 +98,6 @@ export class APIRouter extends BaseRouter {
         const userData = {
             characters: user.characters.map((character) => character.sanitizedCopy),
             email: user.email,
-            settings: user.settings.data,
             username: user.username,
             uuid: user.uuid,
         };
@@ -111,6 +109,7 @@ export class APIRouter extends BaseRouter {
      * path: /api/logout
      * method: POST
      */
+    @BaseRouter.loginRequired()
     private static async logoutUser(request: Request, response: Response): Promise<Response | void> {
 
         request.session!.destroy(() => {
@@ -169,7 +168,6 @@ export class APIRouter extends BaseRouter {
         }
 
         const newUser = new User();
-        await newUser.settings.save();
         newUser.email = email;
         newUser.passwordHash = bcrypt.hashSync(password);
         newUser.username = username;
@@ -436,7 +434,7 @@ export class APIRouter extends BaseRouter {
         super();
         this.createGetRoute('/handshake', APIRouter.doHandShake, false);
         this.createPostRoute('/login', APIRouter.loginUser);
-        this.createPostRoute('/logout', APIRouter.logoutUser, true);
+        this.createPostRoute('/logout', APIRouter.logoutUser);
         this.createPostRoute('/register', APIRouter.registerUser);
         this.createPostRoute('/change/username', APIRouter.changeUserUsername, true);
         this.createPostRoute('/change/password', APIRouter.changeUserPassword, true);
