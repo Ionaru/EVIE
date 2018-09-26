@@ -14,6 +14,7 @@ import { DataRouter } from '../routers/data.router';
 import { ErrorRouter } from '../routers/error.router';
 import { GlobalRouter } from '../routers/global.router';
 import { SSORouter } from '../routers/sso.router';
+import { UserRouter } from '../routers/user.router';
 import { CacheController } from './cache.controller';
 import { config } from './configuration.controller';
 import { DatabaseConnection, db } from './database.controller';
@@ -98,6 +99,7 @@ export class Application {
 
         // Application routers.
         expressApplication.use('/api', new APIRouter().router);
+        expressApplication.use('/user', new UserRouter().router);
         expressApplication.use('/sso', new SSORouter().router);
         expressApplication.use('/data', new DataRouter().router);
 
