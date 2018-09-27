@@ -21,7 +21,7 @@ export class BaseRouter {
         return response.json(responseData);
     }
 
-    public static sendSuccessResponse(response: Response, data?: unknown): Response {
+    public static sendSuccessResponse(response: Response, data?: any): Response {
         return BaseRouter.sendResponse(response, httpStatus.OK, 'OK', data);
     }
 
