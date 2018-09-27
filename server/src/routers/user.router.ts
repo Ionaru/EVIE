@@ -10,6 +10,12 @@ export class UserRouter extends BaseRouter {
         return BaseRouter.sendResponse(response, 200, 'Moo');
     }
 
+    // @BaseRouter.loginRequired()
+    private static async getUsers(_request: Request, response: Response): Promise<Response> {
+        const users: User[] = await User.doQuery().getMany();
+        return BaseRouter.sendSuccessResponse(response, users);
+    }
+
     private static async getUser(request: Request, response: Response): Promise<Response> {
         const user: User | undefined = await User.doQuery()
             // .select(['user.email', 'user.uuid', 'user.username'])
@@ -29,6 +35,7 @@ export class UserRouter extends BaseRouter {
 
     constructor() {
         super();
+        this.createGetRoute('/', UserRouter.getUsers);
         this.createGetRoute('/:uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', UserRouter.getUser);
         this.createPostRoute('/', UserRouter.createUser);
         this.createAllRoute('*', (_request: Request, response: Response) => BaseRouter.send404(response));
