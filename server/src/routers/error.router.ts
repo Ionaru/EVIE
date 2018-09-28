@@ -12,7 +12,7 @@ export class ErrorRouter extends BaseRouter {
     public static errorRoute(error: Error, request: Request, response: Response, _next: NextFunction): void {
         response.status(httpStatus.INTERNAL_SERVER_ERROR);
         logger.error(`Error on ${request.method} ${request.originalUrl} -> ${error.stack}`);
-        const errorDetails = process.env.NODE_ENV === 'production' ? {error: error.stack} : undefined;
+        const errorDetails = process.env.NODE_ENV === 'production' ? undefined : {error: error.stack};
         ErrorRouter.sendResponse(response, httpStatus.INTERNAL_SERVER_ERROR, 'InternalServerError', errorDetails);
     }
 }

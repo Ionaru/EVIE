@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { PathParams, RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
+import { User } from '../models/user.model';
 
 export class BaseRouter {
 
@@ -29,17 +30,47 @@ export class BaseRouter {
         return BaseRouter.sendResponse(response, httpStatus.NOT_FOUND, 'Not Found');
     }
 
-    public static loginRequired() {
-        return (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) => {
-            const originalMethod = descriptor.value;
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    public static async checkAdmin(request: Request, response: Response, nextFunction: any) {
+        const user: User | undefined = await User.doQuery()
+            .select(['user.isAdmin'])
+            .where('user.id = :id', {id: request.session!.user.id})
+            .getOne();
+        if (!user || !user.isAdmin) {
+            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NoPermissions');
+            return;
+        }
+        return nextFunction;
+    }
 
-            descriptor.value = function(...args: any[]) {
-                const request = args[0] as Request;
-                if (!request.session!.user.id) {
-                    const response = args[1] as Response;
-                    return BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
+    public static checkLogin(request: Request, response: Response, nextFunction: any) {
+        if (!request.session!.user.id) {
+            BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
+            return;
+        }
+        return nextFunction;
+    }
+
+    public static checkBodyParameters(request: Request, response: Response, _nextFunction: any, _params: string[]) {
+        // const missingParameters = Object.keys(request.body).filter((param) => !_params.includes(param));
+        const missingParameters = _params.filter((param) => !Object.keys(request.body).includes(param));
+        console.log(missingParameters);
+        if (missingParameters.length) {
+            BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters', missingParameters);
+            return;
+        }
+        return _nextFunction;
+    }
+
+    public static requestDecorator(func: (x: Request, y: Response, z: any, a?: any) => any, ...extraArgs: any[]) {
+        return (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) => {
+            const originalFunction = descriptor.value;
+
+            descriptor.value = async function(...args: any[]) {
+                const nextFunction = await func(args[0], args[1], originalFunction, extraArgs);
+                if (nextFunction) {
+                    return nextFunction.apply(this, args);
                 }
-                return originalMethod.apply(this, args);
             };
 
             return descriptor;

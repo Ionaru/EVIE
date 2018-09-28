@@ -110,7 +110,7 @@ export class APIRouter extends BaseRouter {
      * path: /api/logout
      * method: POST
      */
-    @BaseRouter.loginRequired()
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async logoutUser(request: Request, response: Response): Promise<Response | void> {
 
         request.session!.destroy(() => {
@@ -199,12 +199,8 @@ export class APIRouter extends BaseRouter {
      *  400 MissingParameters: One of the parameters was missing
      *  401 NotLoggedIn: The user session was not found, possibly not logged in
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async changeUserPassword(request: Request, response: Response): Promise<Response> {
-
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and isn't allowed to change an email
-            return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
 
         const uuid = request.body.uuid;
         const oldPassword = request.body.oldpassword;
@@ -215,7 +211,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -258,12 +254,8 @@ export class APIRouter extends BaseRouter {
      *  400 MissingParameters: One of the parameters was missing
      *  401 NotLoggedIn: The user session was not found, possibly not logged in
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async changeUserEmail(request: Request, response: Response): Promise<Response> {
-
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and isn't allowed to change an email
-            return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
 
         const uuid = request.body.uuid;
         const password = request.body.password;
@@ -274,7 +266,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -329,12 +321,9 @@ export class APIRouter extends BaseRouter {
      *  400 MissingParameters: One of the parameters was missing
      *  401 NotLoggedIn: The user session was not found, possibly not logged in
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async changeUserUsername(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and isn't allowed to change a username
-            return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
         const uuid = request.body.uuid;
         const password = request.body.password;
         const newUsername = request.body.newusername;
@@ -344,7 +333,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -396,6 +385,7 @@ export class APIRouter extends BaseRouter {
      *  400 MissingParameters: One of the parameters was missing
      *  401 NotLoggedIn: The user session was not found, possibly not logged in
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async deleteUser(request: Request, response: Response): Promise<Response> {
 
         const uuid = request.body.uuid;
