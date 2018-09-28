@@ -145,7 +145,9 @@ export class Application {
         CacheController.dumpCache();
 
         if (this.socketServer) {
-            this.socketServer.io.emit('STOP');
+            if (process.env.NODE_ENV === 'production') {
+                this.socketServer.io.emit('STOP');
+            }
             this.socketServer.io.close();
         }
 
