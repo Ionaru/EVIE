@@ -16,6 +16,7 @@ export class User extends BaseModel {
     public username!: string;
 
     @Column({
+        select: false,
         unique: true,
     })
     public passwordHash!: string;

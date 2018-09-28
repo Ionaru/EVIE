@@ -72,6 +72,7 @@ export class APIRouter extends BaseRouter {
         }
 
         const user: User | undefined = await User.doQuery()
+            .addSelect(['user.passwordHash'])
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.username = :username', {username})
             .orWhere('user.email = :username', {username})
