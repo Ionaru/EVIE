@@ -35,6 +35,7 @@ export class SSORouter extends BaseRouter {
      *                           that revoked access for this app.
      *                           If this is not provided, a new Character will be created
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async startSSOProcess(request: Request, response: Response): Promise<Response> {
 
         if (request.query.uuid) {
@@ -74,6 +75,7 @@ export class SSORouter extends BaseRouter {
      *  code <required>: The authorization token that will be used to get a Character's access code later in the process.
      *  state <required>: The random string that was generated and sent with the request.
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async processCallBack(request: Request, response: Response): Promise<Response> {
 
         if (!request.query.state) {
@@ -186,20 +188,14 @@ export class SSORouter extends BaseRouter {
      *  characterUUID <required>: The UUID of the Character who's token to refresh
      *  accessToken <required>: The Character's current access token
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'uuid')
     private static async refreshToken(request: Request, response: Response): Promise<Response> {
-
-        // Get the characterUUID from the request
-        const characterUUID = request.query.uuid;
-
-        if (!characterUUID) {
-            // Missing parameters
-            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
-        }
 
         // Fetch the Character who's accessToken we will refresh.
         const character = await Character.doQuery()
             .where('character.userId = :id', {id: request.session!.user.id})
-            .andWhere('character.uuid = :uuid', {uuid: characterUUID})
+            .andWhere('character.uuid = :uuid', {uuid: request.query.uuid})
             .getOne();
 
         if (!character) {
@@ -241,14 +237,9 @@ export class SSORouter extends BaseRouter {
      * Params:
      *  characterUUID <required>: The UUID of the Character to delete
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @BaseRouter.requestDecorator(BaseRouter.checkBodyParameters, 'characterUUID')
     private static async deleteCharacter(request: Request, response: Response): Promise<Response> {
-
-        const characterUUID = request.body.characterUUID;
-
-        if (!characterUUID) {
-            // Missing parameters
-            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
-        }
 
         const user: User | undefined = await User.doQuery()
             .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
@@ -263,7 +254,7 @@ export class SSORouter extends BaseRouter {
 
         const characters = user.characters;
 
-        const characterToDeleteList = characters.filter((_) => _.uuid === characterUUID);
+        const characterToDeleteList = characters.filter((_) => _.uuid === request.body.characterUUID);
 
         if (characterToDeleteList.length === 0) {
             // That character does not exist
@@ -281,6 +272,7 @@ export class SSORouter extends BaseRouter {
      * Params:
      *  characterUUID <required>: The UUID of the Character to set as active
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async activateCharacter(request: Request, response: Response): Promise<Response> {
 
         await Character.doQuery()
@@ -328,11 +320,11 @@ export class SSORouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/start', SSORouter.startSSOProcess, true);
-        this.createGetRoute('/callback', SSORouter.processCallBack, true);
-        this.createGetRoute('/refresh', SSORouter.refreshToken, true);
-        this.createPostRoute('/delete', SSORouter.deleteCharacter, true);
-        this.createPostRoute('/activate', SSORouter.activateCharacter, true);
+        this.createGetRoute('/start', SSORouter.startSSOProcess);
+        this.createGetRoute('/callback', SSORouter.processCallBack);
+        this.createGetRoute('/refresh', SSORouter.refreshToken);
+        this.createPostRoute('/delete', SSORouter.deleteCharacter);
+        this.createPostRoute('/activate', SSORouter.activateCharacter);
         this.createPostRoute('/log-route-warning', SSORouter.logDeprecation);
     }
 }

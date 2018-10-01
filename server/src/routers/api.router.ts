@@ -60,16 +60,12 @@ export class APIRouter extends BaseRouter {
      *  404 IncorrectLogin: When the username was not found
      *  401 IncorrectLogin: When the password did not match the found username
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkBodyParameters, 'username', 'password')
     private static async loginUser(request: Request, response: Response): Promise<Response> {
 
         // Extract the username/email and password from the request
         const username = request.body.username;
         const password = request.body.password;
-
-        if (!username || !password) {
-            // Missing parameters
-            return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
-        }
 
         const user: User | undefined = await User.doQuery()
             .addSelect(['user.passwordHash'])
@@ -80,7 +76,7 @@ export class APIRouter extends BaseRouter {
 
         if (!user) {
             // No user with that username was found
-            return APIRouter.sendResponse(response, httpStatus.NOT_FOUND, 'IncorrectLogin');
+            return APIRouter.send404(response, 'IncorrectLogin');
         }
 
         if (!bcrypt.compareSync(password, user.passwordHash)) {
@@ -131,6 +127,7 @@ export class APIRouter extends BaseRouter {
      *  409 Taken: When the username or email is already in use
      */
     private static async registerUser(request: Request, response: Response): Promise<Response> {
+
         // Extract the form data from the request and trim the whitespace from the username and email.
         const username: string = request.body.username.trim();
         const email: string = request.body.email.trim();
@@ -423,13 +420,13 @@ export class APIRouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/handshake', APIRouter.doHandShake, false);
+        this.createGetRoute('/handshake', APIRouter.doHandShake);
         this.createPostRoute('/login', APIRouter.loginUser);
         this.createPostRoute('/logout', APIRouter.logoutUser);
         this.createPostRoute('/register', APIRouter.registerUser);
-        this.createPostRoute('/change/username', APIRouter.changeUserUsername, true);
-        this.createPostRoute('/change/password', APIRouter.changeUserPassword, true);
-        this.createPostRoute('/change/email', APIRouter.changeUserEmail, true);
-        this.createPostRoute('/delete', APIRouter.deleteUser, true);
+        this.createPostRoute('/change/username', APIRouter.changeUserUsername);
+        this.createPostRoute('/change/password', APIRouter.changeUserPassword);
+        this.createPostRoute('/change/email', APIRouter.changeUserEmail);
+        this.createPostRoute('/delete', APIRouter.deleteUser);
     }
 }
