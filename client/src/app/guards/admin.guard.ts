@@ -4,9 +4,9 @@ import { UserService } from '../models/user/user.service';
 import { BaseGuard } from './base.guard';
 
 @Injectable()
-export class AuthGuard extends BaseGuard {
+export class AdminGuard extends BaseGuard {
 
     public condition() {
-        return !!UserService.user;
+        return UserService.user && UserService.user.isAdmin;
     }
 }

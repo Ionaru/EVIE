@@ -8,6 +8,7 @@
             true,
             140
         ],
+        "no-implicit-dependencies": [true, "dev", ["express-serve-static-core"]],
         "no-unused-expression": [
             true,
             "allow-new"

@@ -4,6 +4,30 @@ export interface IServerResponse<T> {
     data?: T;
 }
 
+export interface IUsersResponse {
+    email: string;
+    id: number;
+    isAdmin: boolean;
+    lastLogin: Date;
+    timesLogin: number;
+    username: string;
+    uuid: string;
+    characters: IUsersResponseCharacters[];
+}
+
+export interface IUsersResponseCharacters {
+    accessToken: string;
+    characterId: number;
+    id: number;
+    isActive: boolean;
+    name: string;
+    ownerHash: string;
+    refreshToken: string;
+    scopes: string;
+    tokenExpiry: Date;
+    uuid: string;
+}
+
 export interface ITypesData {
     capacity: number;
     description: string;

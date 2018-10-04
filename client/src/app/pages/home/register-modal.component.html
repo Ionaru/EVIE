@@ -13,7 +13,7 @@
                     Username
                 </label>
                 <input ngModel (input)="onUsernameInput($event)" #usernameInput
-                       class="form-control" type="text" id="register-username" required name="evie-username">
+                       class="form-control" type="text" id="register-username" required name="username">
 
                 <ng-container [ngSwitch]="usernameStatus">
                     <small class="form-text text-danger" *ngSwitchCase="'error'">
@@ -96,7 +96,7 @@
     </div>
 </div>
 <div class="modal-footer" *ngIf="registerError">
-    <p [@myAnimation]="registerError">
+    <p>
         <fa-icon [icon]="faExclamationTriangle" class="text-danger"></fa-icon>
         {{ registerErrorMessage }}
     </p>

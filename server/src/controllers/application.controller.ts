@@ -1,3 +1,4 @@
+import * as appRoot from 'app-root-path';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cors from 'cors';
@@ -5,6 +6,7 @@ import * as express from 'express';
 import * as MySQLStore from 'express-mysql-session';
 import * as es from 'express-session';
 import * as helmet from 'helmet';
+import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
 import { RequestLogger } from '../loggers/request.logger';
@@ -14,6 +16,7 @@ import { DataRouter } from '../routers/data.router';
 import { ErrorRouter } from '../routers/error.router';
 import { GlobalRouter } from '../routers/global.router';
 import { SSORouter } from '../routers/sso.router';
+import { UserRouter } from '../routers/user.router';
 import { CacheController } from './cache.controller';
 import { config } from './configuration.controller';
 import { DatabaseConnection, db } from './database.controller';
@@ -90,14 +93,14 @@ export class Application {
         logger.info('Express session store loaded');
 
         // Use static client folder for serving assets
-        // expressApplication.use(express.static(path.join(__dirname, '../../../../../client/dist/client/')));
-        expressApplication.use(express.static('../client/dist/client/'));
+        expressApplication.use(express.static(path.join(appRoot.toString(), '../client/dist/client/')));
 
         // Global router.
         expressApplication.use('*', new GlobalRouter().router);
 
         // Application routers.
         expressApplication.use('/api', new APIRouter().router);
+        expressApplication.use(/\/api\/users?/, new UserRouter().router);
         expressApplication.use('/sso', new SSORouter().router);
         expressApplication.use('/data', new DataRouter().router);
 
@@ -141,7 +144,9 @@ export class Application {
         CacheController.dumpCache();
 
         if (this.socketServer) {
-            this.socketServer.io.emit('STOP');
+            if (process.env.NODE_ENV === 'production') {
+                this.socketServer.io.emit('STOP');
+            }
             this.socketServer.io.close();
         }
 

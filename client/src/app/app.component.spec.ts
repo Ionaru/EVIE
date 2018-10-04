@@ -21,7 +21,7 @@ describe('AppComponent', () => {
             imports: [
                 RouterTestingModule,
                 HttpClientTestingModule,
-                NgbModule.forRoot(),
+                NgbModule,
             ],
             providers: [
                 { provide: UserService, useClass: MockUserService},
