@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from 'express';
-import { PathParams, RequestHandler, RequestHandlerParams } from 'express-serve-static-core';
+import { NextFunction, Request, RequestHandler, Response, Router } from 'express';
+import { PathParams, RequestHandlerParams } from 'express-serve-static-core';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 

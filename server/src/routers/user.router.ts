@@ -58,8 +58,7 @@ export class UserRouter extends BaseRouter {
         });
     }
 
-    // @BaseRouter.requestDecorator(BaseRouter.checkBodyParameters, 'thing')
-    // @BaseRouter.requestDecorator(BaseRouter.checkAdmin)
+    @BaseRouter.requestDecorator(BaseRouter.checkAdmin)
     private static async getUsers(_request: Request, response: Response): Promise<Response> {
         const users: User[] = await User.find();
         return BaseRouter.sendSuccessResponse(response, users);

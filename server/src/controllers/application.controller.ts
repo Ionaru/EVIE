@@ -99,9 +99,7 @@ export class Application {
 
         // Application routers.
         expressApplication.use('/api', new APIRouter().router);
-        expressApplication.use('/user', new UserRouter().router);
-        expressApplication.use(/\/users?/, new UserRouter().router);
-        // expressApplication.use(new RegExp('/users?'), new UserRouter().router);
+        expressApplication.use(/\/api\/users?/, new UserRouter().router);
         expressApplication.use('/sso', new SSORouter().router);
         expressApplication.use('/data', new DataRouter().router);
 
