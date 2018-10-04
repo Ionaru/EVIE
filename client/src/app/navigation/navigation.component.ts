@@ -35,6 +35,7 @@ export class NavigationComponent implements OnInit {
     public char = 1;
     public activatedCharacter = false;
     public isLoggedIn = false;
+    public isAdmin = false;
     public isCollapsed!: boolean;
     public playersCountUp!: CountUp;
 
@@ -54,6 +55,7 @@ export class NavigationComponent implements OnInit {
 
         UserService.userChangeEvent.subscribe((user) => {
             this.isLoggedIn = !!user;
+            this.isAdmin = user && user.isAdmin;
         });
 
         this.playersCountUp = new CountUp('eve-players', 0, 0);

@@ -31,7 +31,7 @@
                     </span>
                 </a>
             </li>
-            <li *ngIf="isLoggedIn" class="nav-item">
+            <li *ngIf="isLoggedIn && isAdmin" class="nav-item">
                 <a class="nav-link" routerLink="users" routerLinkActive="active">
                     <span class="nav-link-text">
                         <fa-icon [icon]="userAdminIcon"></fa-icon>
