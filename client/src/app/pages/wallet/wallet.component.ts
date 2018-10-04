@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faInfoCircle } from '@fortawesome/pro-solid-svg-icons';
 
 import { IWalletJournalData } from '../../../shared/interface.helper';
 import { WalletJournalService } from '../../data-services/wallet-journal.service';
@@ -6,7 +7,6 @@ import { WalletService } from '../../data-services/wallet.service';
 import { CharacterService } from '../../models/character/character.service';
 import { CountUp } from '../../shared/count-up';
 import { DataPageComponent } from '../data-page/data-page.component';
-import { faInfoCircle } from '@fortawesome/pro-solid-svg-icons';
 
 @Component({
     selector: 'app-wallet',

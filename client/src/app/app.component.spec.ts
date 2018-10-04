@@ -9,7 +9,9 @@ import { AppComponent } from './app.component';
 import { UserService } from './models/user/user.service';
 
 class MockUserService {
-    public storeUser() {}
+    public storeUser() {
+        // Empty
+    }
 }
 
 describe('AppComponent', () => {

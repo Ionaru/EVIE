@@ -1,3 +1,5 @@
+// TODO: Remove line below.
+// tslint:disable
 import { Component, OnInit } from '@angular/core';
 import { faGem } from '@fortawesome/pro-regular-svg-icons';
 import { faHourglass } from '@fortawesome/pro-solid-svg-icons';
