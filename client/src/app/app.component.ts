@@ -20,7 +20,7 @@ interface IHandshakeResponse {
 })
 export class AppComponent {
 
-    public version = '0.3.0-INDEV';
+    public version = '0.4.0-INDEV';
 
     constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Error during app startup', error));
