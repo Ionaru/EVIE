@@ -94,7 +94,6 @@ export class APIRouter extends BaseRouter {
      * path: /api/logout
      * method: POST
      */
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async logoutUser(request: Request, response: Response): Promise<Response | void> {
 
         request.session!.destroy(() => {
