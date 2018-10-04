@@ -24,11 +24,13 @@ export class RequestLogger {
                     const status = statusColor(`${endResponse.statusCode} ${endResponse.statusMessage}`);
 
                     const ip = RequestLogger.getIp(request);
+                    const identifier = `${ip} (${chalk.white(request.sessionID!)})`;
 
                     const requestText = `${request.method} ${request.originalUrl}`;
 
                     const requestDuration = Date.now() - requestStartTime;
-                    const logContent = `${ip} ${RequestLogger.arrow} ${requestText} ${RequestLogger.arrow} ${status}, ${requestDuration}ms`;
+                    const arrow = RequestLogger.arrow;
+                    const logContent = `${identifier} ${arrow} ${requestText} ${arrow} ${status}, ${requestDuration}ms`;
                     if (endResponse.statusCode >= 500) {
                         logger.error(logContent);
                     } else if (endResponse.statusCode >= 400) {
@@ -57,10 +59,14 @@ export class RequestLogger {
     }
 
     private static getIp(request: Request) {
-        return request.ip ||
+        let ip = request.ip ||
             request.headers['x-forwarded-for'] ||
             request.connection.remoteAddress ||
             request.socket.remoteAddress ||
             'Unknown IP';
+        if (typeof ip === 'string' && ip.substr(0, 7) === '::ffff:') {
+            ip = ip.substr(7);
+        }
+        return ip;
     }
 }
