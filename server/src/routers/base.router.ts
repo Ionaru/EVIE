@@ -5,6 +5,10 @@ import { logger } from 'winston-pnp-logger';
 
 import { User } from '../models/user.model';
 
+export interface IResponse extends Response {
+    route?: string[];
+}
+
 export class BaseRouter {
 
     public static sendResponse(response: Response, statusCode: number, message: string, data?: any): Response {
@@ -112,7 +116,11 @@ export class BaseRouter {
     }
 
     private asyncHandler(routeFunction: any): any {
-        return (request: Request, response: Response, next: NextFunction) => {
+        return (request: Request, response: IResponse, next: NextFunction) => {
+            if (!response.route) {
+                response.route = [];
+            }
+            response.route.push(this.constructor.name);
             Promise.resolve(routeFunction(request, response, next)).catch(next);
         };
     }

@@ -60,7 +60,10 @@ export class UserRouter extends BaseRouter {
 
     @BaseRouter.requestDecorator(BaseRouter.checkAdmin)
     private static async getUsers(_request: Request, response: Response): Promise<Response> {
-        const users: User[] = await User.find();
+        const users: User[] = await User.doQuery()
+            .leftJoinAndSelect('user.characters', 'character')
+            .orderBy('user.id')
+            .getMany();
         return BaseRouter.sendSuccessResponse(response, users);
     }
 

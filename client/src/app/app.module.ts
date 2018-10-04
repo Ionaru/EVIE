@@ -9,6 +9,7 @@ import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BaseService } from './data-services/base.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
 import { NamesService } from './data-services/names.service';
@@ -18,6 +19,7 @@ import { SkillQueueService } from './data-services/skillqueue.service';
 import { SkillsService } from './data-services/skills.service';
 import { StatusService } from './data-services/status.service';
 import { TypesService } from './data-services/types.service';
+import { UsersService } from './data-services/users.service';
 import { WalletJournalService } from './data-services/wallet-journal.service';
 import { WalletService } from './data-services/wallet.service';
 import { AdminGuard } from './guards/admin.guard';
@@ -77,7 +79,9 @@ import { SocketService } from './socket/socket.service';
         httpInterceptorProviders,
         ESIRequestCache,
         AppReadyEventService,
+        BaseService,
         UserService,
+        UsersService,
         CharacterService,
         NamesService,
         StatusService,

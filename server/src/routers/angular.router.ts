@@ -1,12 +1,14 @@
+import * as appRoot from 'app-root-path';
 import { Request, Response } from 'express';
-import path = require('path');
+import * as path from 'path';
 
 import { BaseRouter } from './base.router';
 
 export class AngularRedirectRouter extends BaseRouter {
 
     private static async redirectToAngular(_request: Request, response: Response): Promise<void> {
-        response.sendFile(path.join(__dirname, '../../../../../client/dist/client/index.html'));
+
+        response.sendFile(path.join(appRoot.toString(), '../client/dist/client/index.html'));
     }
 
     constructor() {

@@ -3,9 +3,11 @@ import { NextFunction, Request, Response } from 'express';
 import * as onFinished from 'on-finished';
 import { logger } from 'winston-pnp-logger';
 
+import { IResponse } from '../routers/base.router';
+
 export class RequestLogger {
     public static ignoredUrls = ['/modules', '/images', '/fonts', '/stylesheets', '/scripts', '/favicon.ico'];
-    public static ignoredExtension = ['.ico', '.js', '.css', '.png', '.jpg', '.svg'];
+    public static ignoredExtension = ['.ico', '.js', '.css', '.png', '.jpg', '.svg', '.html'];
     public static arrow = chalk.white('->');
 
     public static logRequest(): any {
@@ -14,7 +16,7 @@ export class RequestLogger {
             const requestStartTime = Date.now();
 
             // Runs when the request has finished.
-            onFinished(response, async (_err, endResponse: Response) => {
+            onFinished(response, async (_err, endResponse: IResponse) => {
 
                 const ignoredUrlMatch = RequestLogger.ignoredUrls.filter(
                     (ignoredUrl) => request.originalUrl.startsWith(ignoredUrl)).length;
@@ -28,6 +30,9 @@ export class RequestLogger {
                     const statusColor = RequestLogger.getStatusColor(endResponse.statusCode);
                     const status = statusColor(`${endResponse.statusCode} ${endResponse.statusMessage}`);
 
+                    const route = endResponse.route;
+                    const router = chalk.white(route && route.length ? route!.join(' > ') : 'ServeStatic');
+
                     const ip = RequestLogger.getIp(request);
                     const identifier = `${ip} (${chalk.white(request.sessionID!)})`;
 
@@ -35,7 +40,7 @@ export class RequestLogger {
 
                     const requestDuration = Date.now() - requestStartTime;
                     const arrow = RequestLogger.arrow;
-                    const logContent = `${identifier} ${arrow} ${requestText} ${arrow} ${status}, ${requestDuration}ms`;
+                    const logContent = `${identifier}: ${requestText} ${arrow} ${router} ${arrow} ${status}, ${requestDuration}ms`;
                     if (endResponse.statusCode >= 500) {
                         logger.error(logContent);
                     } else if (endResponse.statusCode >= 400) {

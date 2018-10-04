@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 
 import { IManufacturingData, IServerResponse } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
-import { hasOwnProperty } from '../../../node_modules/tslint/lib/utils';
 
 interface IManufacturingCache {
     [index: string]: IManufacturingData | undefined;
@@ -17,7 +16,7 @@ export class IndustryService extends BaseService {
     public async getManufacturingData(typeId: number): Promise<IManufacturingData | undefined> {
         const url = `data/manufacturing/${typeId}`;
 
-        if (hasOwnProperty(this.manufacturingCache, url)) {
+        if (this.manufacturingCache.hasOwnProperty(url)) {
             return this.manufacturingCache[url];
         }
 

@@ -1,3 +1,4 @@
+import * as appRoot from 'app-root-path';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cors from 'cors';
@@ -5,6 +6,7 @@ import * as express from 'express';
 import * as MySQLStore from 'express-mysql-session';
 import * as es from 'express-session';
 import * as helmet from 'helmet';
+import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
 import { RequestLogger } from '../loggers/request.logger';
@@ -91,8 +93,7 @@ export class Application {
         logger.info('Express session store loaded');
 
         // Use static client folder for serving assets
-        // expressApplication.use(express.static(path.join(__dirname, '../../../../../client/dist/client/')));
-        expressApplication.use(express.static('../client/dist/client/'));
+        expressApplication.use(express.static(path.join(appRoot.toString(), '../client/dist/client/')));
 
         // Global router.
         expressApplication.use('*', new GlobalRouter().router);

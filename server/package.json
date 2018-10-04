@@ -25,6 +25,7 @@
         ]
     },
     "dependencies": {
+        "app-root-path": "^2.1.0",
         "axios": "^0.18.0",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.18.2",
@@ -49,6 +50,7 @@
         "winston-pnp-logger": "^1.0.5"
     },
     "devDependencies": {
+        "@types/app-root-path": "^1.2.4",
         "@types/bcryptjs": "^2.4.2",
         "@types/body-parser": "^1.17.0",
         "@types/chai": "^4.1.6",
