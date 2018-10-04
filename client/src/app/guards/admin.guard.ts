@@ -7,6 +7,6 @@ import { BaseGuard } from './base.guard';
 export class AdminGuard extends BaseGuard {
 
     public condition() {
-        return UserService.user.isAdmin;
+        return UserService.user && UserService.user.isAdmin;
     }
 }

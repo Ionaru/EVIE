@@ -19,7 +19,7 @@ const routes: Routes = [
     {path: 'industry', component: IndustryComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'skills', component: SkillsComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'wallet', component: WalletComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
-    {path: 'users', component: UsersComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard, AdminGuard]},
+    {path: 'users', component: UsersComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
 
     {path: '**', component: HomeComponent, resolve: [AppReadyGuard]},
 ];
