@@ -25,7 +25,6 @@ export class APIRouter extends BaseRouter {
         }
 
         const user: User | undefined = await User.doQuery()
-            .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
@@ -39,13 +38,8 @@ export class APIRouter extends BaseRouter {
         user.timesLogin++;
         user.lastLogin = new Date();
         user.save().then();
-        const userData = {
-            characters: user.characters.map((character) => character.sanitizedCopy),
-            email: user.email,
-            username: user.username,
-            uuid: user.uuid,
-        };
-        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', userData);
+
+        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', user.sanitizedCopy);
     }
 
     /**
@@ -92,13 +86,7 @@ export class APIRouter extends BaseRouter {
 
         logger.info(`User login: ${user.username} (${user.email})`);
 
-        const userData = {
-            characters: user.characters.map((character) => character.sanitizedCopy),
-            email: user.email,
-            username: user.username,
-            uuid: user.uuid,
-        };
-        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', userData);
+        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', user.sanitizedCopy);
     }
 
     /**
@@ -173,11 +161,7 @@ export class APIRouter extends BaseRouter {
 
         logger.info(`New user: ${newUser.username} (${newUser.email})`);
 
-        return APIRouter.sendResponse(response, httpStatus.OK, 'Registered', {
-            email: newUser.email,
-            username: newUser.username,
-            uuid: newUser.uuid,
-        });
+        return APIRouter.sendResponse(response, httpStatus.OK, 'Registered', newUser.sanitizedCopy);
     }
 
     /**

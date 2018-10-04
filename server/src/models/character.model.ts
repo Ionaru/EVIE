@@ -1,3 +1,4 @@
+import * as clone from 'clone';
 import { Column, Entity, ManyToOne, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
@@ -58,7 +59,7 @@ export class Character extends BaseModel {
 
     public get sanitizedCopy() {
         // Delete data that should not be sent to the client.
-        const copy = Object.assign({}, this);
+        const copy = clone<this>(this);
         delete copy.id;
         delete copy.refreshToken;
         delete copy.user;

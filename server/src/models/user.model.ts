@@ -1,3 +1,4 @@
+import * as clone from 'clone';
 import { Column, Entity, OneToMany, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
@@ -46,5 +47,18 @@ export class User extends BaseModel {
 
     constructor() {
         super();
+    }
+
+    public get sanitizedCopy() {
+        // Delete data that should not be sent to the client.
+        const copy = clone<this>(this, false);
+        delete copy.id;
+        delete copy.passwordHash;
+        delete copy.timesLogin;
+        delete copy.lastLogin;
+        delete copy.createdOn;
+        delete copy.updatedOn;
+        copy.characters = this.characters.map((character) => character.sanitizedCopy);
+        return copy;
     }
 }
