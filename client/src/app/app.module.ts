@@ -69,7 +69,7 @@ import { SocketService } from './socket/socket.service';
         BrowserAnimationsModule,
         AppRoutingModule,
         HttpClientModule,
-        NgbModule.forRoot(),
+        NgbModule,
         NgbTooltipModule,
         FontAwesomeModule,
     ],
