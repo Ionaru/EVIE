@@ -20,6 +20,7 @@ import { StatusService } from './data-services/status.service';
 import { TypesService } from './data-services/types.service';
 import { WalletJournalService } from './data-services/wallet-journal.service';
 import { WalletService } from './data-services/wallet.service';
+import { AdminGuard } from './guards/admin.guard';
 import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { httpInterceptorProviders } from './http-interceptors';
@@ -34,6 +35,7 @@ import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { SkillsComponent } from './pages/skills/skills.component';
+import { UsersComponent } from './pages/users/users.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
@@ -54,6 +56,7 @@ import { SocketService } from './socket/socket.service';
         LogoutModalComponent,
         RegisterModalComponent,
         IndustryComponent,
+        UsersComponent,
     ],
     entryComponents: [
         LoginModalComponent,
@@ -90,6 +93,7 @@ import { SocketService } from './socket/socket.service';
         SocketService,
         AppReadyGuard,
         AuthGuard,
+        AdminGuard,
     ],
 })
 export class AppModule {

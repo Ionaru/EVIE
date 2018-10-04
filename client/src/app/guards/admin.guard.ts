@@ -6,17 +6,17 @@ import { AppReadyEventService } from '../app-ready-event.service';
 import { UserService } from '../models/user/user.service';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AdminGuard implements CanActivate {
 
     private static checkCondition() {
-        return UserService.user;
+        return UserService.user.isAdmin;
     }
 
     constructor(private router: Router) { }
 
     public canActivate(): Observable<boolean> | boolean {
         if (AppReadyEventService.appReady) {
-            if (AuthGuard.checkCondition()) {
+            if (AdminGuard.checkCondition()) {
                 return true;
             } else {
                 this.router.navigate(['/']).then();
@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
         } else {
             return new Observable((observer: Observer<boolean>) => {
                 AppReadyEventService.appReadyEvent.subscribe(() => {
-                    if (AuthGuard.checkCondition()) {
+                    if (AdminGuard.checkCondition()) {
                         observer.next(true);
                         observer.complete();
                     } else {
