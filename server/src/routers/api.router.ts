@@ -20,34 +20,26 @@ export class APIRouter extends BaseRouter {
      */
     private static async doHandShake(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // No user ID present in the session.
-            return APIRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
+        if (!request.session!.user.id) {
+            return BaseRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
         }
 
         const user: User | undefined = await User.doQuery()
-            .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session.user.id})
+            .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
 
         if (!user) {
             // No user found that matches the ID in the session.
-            delete request.session.user.id;
+            delete request.session!.user.id;
             return APIRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
         }
 
         user.timesLogin++;
         user.lastLogin = new Date();
         user.save().then();
-        const userData = {
-            characters: user.characters.map((character) => character.sanitizedCopy),
-            email: user.email,
-            settings: user.settings.data,
-            username: user.username,
-            uuid: user.uuid,
-        };
-        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', userData);
+
+        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', user.sanitizedCopy);
     }
 
     /**
@@ -62,23 +54,15 @@ export class APIRouter extends BaseRouter {
      *  404 IncorrectLogin: When the username was not found
      *  401 IncorrectLogin: When the password did not match the found username
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkBodyParameters, 'username', 'password')
     private static async loginUser(request: Request, response: Response): Promise<Response> {
-
-        if (!request.session) {
-            // Request has no session.
-            return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoSession');
-        }
 
         // Extract the username/email and password from the request
         const username = request.body.username;
         const password = request.body.password;
 
-        if (!username || !password) {
-            // Missing parameters
-            return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
-        }
-
         const user: User | undefined = await User.doQuery()
+            .addSelect(['user.passwordHash'])
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.username = :username', {username})
             .orWhere('user.email = :username', {username})
@@ -86,7 +70,7 @@ export class APIRouter extends BaseRouter {
 
         if (!user) {
             // No user with that username was found
-            return APIRouter.sendResponse(response, httpStatus.NOT_FOUND, 'IncorrectLogin');
+            return APIRouter.send404(response, 'IncorrectLogin');
         }
 
         if (!bcrypt.compareSync(password, user.passwordHash)) {
@@ -94,22 +78,15 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'IncorrectLogin');
         }
 
-        request.session.user.id = user.id;
-        request.session.user.uuid = user.uuid;
+        request.session!.user.id = user.id;
+        request.session!.user.uuid = user.uuid;
         user.timesLogin++;
         user.lastLogin = new Date();
         await user.save();
 
         logger.info(`User login: ${user.username} (${user.email})`);
 
-        const userData = {
-            characters: user.characters.map((character) => character.sanitizedCopy),
-            email: user.email,
-            settings: user.settings.data,
-            username: user.username,
-            uuid: user.uuid,
-        };
-        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', userData);
+        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', user.sanitizedCopy);
     }
 
     /**
@@ -119,12 +96,7 @@ export class APIRouter extends BaseRouter {
      */
     private static async logoutUser(request: Request, response: Response): Promise<Response | void> {
 
-        if (!request.session) {
-            // Request has no session.
-            return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoSession');
-        }
-
-        request.session.destroy(() => {
+        request.session!.destroy(() => {
             response.end();
         });
     }
@@ -142,6 +114,7 @@ export class APIRouter extends BaseRouter {
      *  409 Taken: When the username or email is already in use
      */
     private static async registerUser(request: Request, response: Response): Promise<Response> {
+
         // Extract the form data from the request and trim the whitespace from the username and email.
         const username: string = request.body.username.trim();
         const email: string = request.body.email.trim();
@@ -180,7 +153,6 @@ export class APIRouter extends BaseRouter {
         }
 
         const newUser = new User();
-        await newUser.settings.save();
         newUser.email = email;
         newUser.passwordHash = bcrypt.hashSync(password);
         newUser.username = username;
@@ -188,11 +160,7 @@ export class APIRouter extends BaseRouter {
 
         logger.info(`New user: ${newUser.username} (${newUser.email})`);
 
-        return APIRouter.sendResponse(response, httpStatus.OK, 'Registered', {
-            email: newUser.email,
-            username: newUser.username,
-            uuid: newUser.uuid,
-        });
+        return APIRouter.sendResponse(response, httpStatus.OK, 'Registered', newUser.sanitizedCopy);
     }
 
     /**
@@ -211,12 +179,8 @@ export class APIRouter extends BaseRouter {
      *  400 MissingParameters: One of the parameters was missing
      *  401 NotLoggedIn: The user session was not found, possibly not logged in
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async changeUserPassword(request: Request, response: Response): Promise<Response> {
-
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and isn't allowed to change an email
-            return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
 
         const uuid = request.body.uuid;
         const oldPassword = request.body.oldpassword;
@@ -227,7 +191,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -270,12 +234,8 @@ export class APIRouter extends BaseRouter {
      *  400 MissingParameters: One of the parameters was missing
      *  401 NotLoggedIn: The user session was not found, possibly not logged in
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async changeUserEmail(request: Request, response: Response): Promise<Response> {
-
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and isn't allowed to change an email
-            return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
 
         const uuid = request.body.uuid;
         const password = request.body.password;
@@ -286,7 +246,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -341,12 +301,9 @@ export class APIRouter extends BaseRouter {
      *  400 MissingParameters: One of the parameters was missing
      *  401 NotLoggedIn: The user session was not found, possibly not logged in
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async changeUserUsername(request: Request, response: Response): Promise<Response> {
 
-        if (!request.session || !request.session.user.id) {
-            // User is not logged in and isn't allowed to change a username
-            return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
         const uuid = request.body.uuid;
         const password = request.body.password;
         const newUsername = request.body.newusername;
@@ -356,7 +313,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to modify, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');
@@ -408,12 +365,8 @@ export class APIRouter extends BaseRouter {
      *  400 MissingParameters: One of the parameters was missing
      *  401 NotLoggedIn: The user session was not found, possibly not logged in
      */
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async deleteUser(request: Request, response: Response): Promise<Response> {
-
-        if (!request.session || !request.session.user.id) {
-            // No user ID present in the session.
-            return APIRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
-        }
 
         const uuid = request.body.uuid;
         const password = request.body.password;
@@ -423,7 +376,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters');
         }
 
-        if (uuid !== request.session.user.uuid) { // TODO: Administrator override
+        if (uuid !== request.session!.user.uuid) { // TODO: Administrator override
             // The user from the session does not match the user it is trying to delete, regular users cannot delete
             // a user that is not their own.
             return APIRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NotYourUser');

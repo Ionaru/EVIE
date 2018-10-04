@@ -9,7 +9,9 @@ import { AppComponent } from './app.component';
 import { UserService } from './models/user/user.service';
 
 class MockUserService {
-    public storeUser() {}
+    public storeUser() {
+        // Empty
+    }
 }
 
 describe('AppComponent', () => {
@@ -21,7 +23,7 @@ describe('AppComponent', () => {
             imports: [
                 RouterTestingModule,
                 HttpClientTestingModule,
-                NgbModule.forRoot(),
+                NgbModule,
             ],
             providers: [
                 { provide: UserService, useClass: MockUserService},

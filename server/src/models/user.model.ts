@@ -1,8 +1,8 @@
-import { Column, Entity, OneToMany, OneToOne, SelectQueryBuilder } from 'typeorm';
+import * as clone from 'clone';
+import { Column, Entity, OneToMany, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
 import { Character } from './character.model';
-import { Settings } from './settings.model';
 
 @Entity()
 export class User extends BaseModel {
@@ -17,6 +17,7 @@ export class User extends BaseModel {
     public username!: string;
 
     @Column({
+        select: false,
         unique: true,
     })
     public passwordHash!: string;
@@ -27,14 +28,14 @@ export class User extends BaseModel {
     public email!: string;
 
     @Column({
+        default: false,
+    })
+    public isAdmin!: boolean;
+
+    @Column({
         default: 0,
     })
     public timesLogin!: number;
-
-    @OneToOne(() => Settings, (settings) => settings.user, {
-        eager: true,
-    })
-    public settings: Settings;
 
     @Column({
         default: () => 'CURRENT_TIMESTAMP',
@@ -46,7 +47,18 @@ export class User extends BaseModel {
 
     constructor() {
         super();
+    }
 
-        this.settings = new Settings();
+    public get sanitizedCopy() {
+        // Delete data that should not be sent to the client.
+        const copy = clone<this>(this, false);
+        delete copy.id;
+        delete copy.passwordHash;
+        delete copy.timesLogin;
+        delete copy.lastLogin;
+        delete copy.createdOn;
+        delete copy.updatedOn;
+        copy.characters = this.characters.map((character) => character.sanitizedCopy);
+        return copy;
     }
 }

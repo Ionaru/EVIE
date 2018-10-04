@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faInfoCircle } from '@fortawesome/pro-solid-svg-icons';
 
 import { IWalletJournalData } from '../../../shared/interface.helper';
 import { WalletJournalService } from '../../data-services/wallet-journal.service';
@@ -13,6 +14,8 @@ import { DataPageComponent } from '../data-page/data-page.component';
     templateUrl: './wallet.component.html',
 })
 export class WalletComponent extends DataPageComponent implements OnInit {
+
+    public faInfoCircle = faInfoCircle;
 
     public journalData: IWalletJournalData[] = [];
     public balanceCountUp!: CountUp;

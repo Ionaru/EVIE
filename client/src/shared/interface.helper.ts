@@ -1,3 +1,33 @@
+export interface IServerResponse<T> {
+    state: string;
+    message: string;
+    data?: T;
+}
+
+export interface IUsersResponse {
+    email: string;
+    id: number;
+    isAdmin: boolean;
+    lastLogin: Date;
+    timesLogin: number;
+    username: string;
+    uuid: string;
+    characters: IUsersResponseCharacters[];
+}
+
+export interface IUsersResponseCharacters {
+    accessToken: string;
+    characterId: number;
+    id: number;
+    isActive: boolean;
+    name: string;
+    ownerHash: string;
+    refreshToken: string;
+    scopes: string;
+    tokenExpiry: Date;
+    uuid: string;
+}
+
 export interface ITypesData {
     capacity: number;
     description: string;
@@ -214,4 +244,67 @@ export interface IIndustryJobsData {
 
     // Number of successful runs for this job. Equal to runs unless this is an invention job
     successfulRuns: number;
+}
+
+export interface IIndustryActivityProducts {
+    typeID: number;
+    activityID: number;
+    productTypeID: number;
+    quantity: number;
+}
+
+export interface IIndustryActivitySkills {
+    typeID: number;
+    activityID: number;
+    skillID: number;
+    level: number;
+}
+
+export interface IIndustryActivityMaterials {
+    typeID: number;
+    activityID: number;
+    materialTypeID: number;
+    quantity: number;
+}
+
+export interface IIndustryActivity {
+    typeID: number;
+    activityID: number;
+    time: number;
+}
+
+export enum IndustryActivity {
+    none = 0,
+    manufacturing = 1,
+    research_time_efficiency = 3,
+    research_material_efficiency = 4,
+    copying = 6,
+    reverse_engineering = 7,
+    invention = 8,
+    reactions = 11,
+}
+
+export interface IMarketGroup {
+    description: string;
+    market_group_id: number;
+    name: string;
+    parent_group_id: number;
+    types: number[];
+}
+
+export interface IManufacturingData {
+    blueprintId: number;
+    materials: Array<{
+        id: number,
+        quantity: number,
+    }>;
+    skills: Array<{
+        id: number,
+        level: number,
+    }>;
+    time: number;
+    result: {
+        id: number,
+        quantity: number,
+    };
 }

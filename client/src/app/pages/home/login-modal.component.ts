@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { faBug, faExclamationTriangle, faTimes } from '@fortawesome/pro-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { environment } from '../../../environments/environment';
@@ -12,6 +13,10 @@ import { UserService } from '../../models/user/user.service';
 })
 export class LoginModalComponent {
 
+    public faTimes = faTimes;
+    public faBug = faBug;
+    public faExclamationTriangle = faExclamationTriangle;
+
     public wrongLogin = false;
     public debugging = false;
     public inProgress = false;
@@ -22,7 +27,7 @@ export class LoginModalComponent {
         }
     }
 
-    public loginDebug = () => this.login({username: 'testUser', password: '000999888'}).then();
+    public loginDebug = () => this.login({username: 'testUser', password: '000999888'});
 
     public resetStyle() {
         this.wrongLogin = false;

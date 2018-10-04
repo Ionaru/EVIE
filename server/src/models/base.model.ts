@@ -25,9 +25,13 @@ export class BaseModel extends BaseEntity {
     @Generated('uuid')
     public uuid!: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        select: false,
+    })
     public createdOn!: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        select: false,
+    })
     public updatedOn!: Date;
 }

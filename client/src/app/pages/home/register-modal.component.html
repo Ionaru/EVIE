@@ -1,12 +1,12 @@
 <div class="modal-header">
     <h4 class="modal-title">Register</h4>
     <button type="button" class="close" aria-label="Close" (click)="activeModal.close()">
-        <i class="fa fa-times"></i>
+        <fa-icon [icon]="faTimes"></fa-icon>
     </button>
 </div>
 <div class="modal-body">
     <div class="register-container">
-        <form #registerForm="ngForm" (ngSubmit)="register(registerForm.value).then()">
+        <form #registerForm="ngForm" (ngSubmit)="register(registerForm.value).then()" autocomplete="off">
 
             <div class="form-group">
                 <label for="register-username" class="col-form-label">
@@ -17,13 +17,13 @@
 
                 <ng-container [ngSwitch]="usernameStatus">
                     <small class="form-text text-danger" *ngSwitchCase="'error'">
-                            <i class="fa fa-times-circle"></i> {{ usernameHint }}
+                        <fa-icon [icon]="faTimesCircle"></fa-icon> {{ usernameHint }}
                     </small>
                     <small class="form-text" *ngSwitchCase="'info'">
-                        <i class="fa fa-info-circle"></i> {{ usernameHint }}
+                        <fa-icon [icon]="faInfoCircle"></fa-icon> {{ usernameHint }}
                     </small>
                     <small class="form-text text-success" *ngSwitchCase="'valid'">
-                        <i class="fa fa-check-circle"></i> {{ usernameHint }}
+                        <fa-icon [icon]="faCheckCircle"></fa-icon> {{ usernameHint }}
                     </small>
                 </ng-container>
             </div>
@@ -36,13 +36,13 @@
                        class="form-control" type="text" id="register-email" required name="email">
                 <ng-container [ngSwitch]="emailStatus">
                     <small class="form-text text-danger" *ngSwitchCase="'error'">
-                        <i class="fa fa-times-circle"></i> {{ emailHint }}
+                        <fa-icon [icon]="faTimesCircle"></fa-icon> {{ emailHint }}
                     </small>
                     <small class="form-text" *ngSwitchCase="'info'">
-                        <i class="fa fa-info-circle"></i> {{ emailHint }}
+                        <fa-icon [icon]="faInfoCircle"></fa-icon> {{ emailHint }}
                     </small>
                     <small class="form-text text-success" *ngSwitchCase="'valid'">
-                        <i class="fa fa-check-circle"></i> {{ emailHint }}
+                        <fa-icon [icon]="faCheckCircle"></fa-icon> {{ emailHint }}
                     </small>
                 </ng-container>
             </div>
@@ -55,13 +55,13 @@
                        class="form-control" type="password" id="register-password" required name="password">
                 <ng-container [ngSwitch]="passwordStatus">
                     <small class="form-text text-danger" *ngSwitchCase="'error'">
-                        <i class="fa fa-times-circle"></i> {{ passwordHint }}
+                        <fa-icon [icon]="faTimesCircle"></fa-icon> {{ passwordHint }}
                     </small>
                     <small class="form-text" *ngSwitchCase="'info'">
-                        <i class="fa fa-info-circle"></i> {{ passwordHint }}
+                        <fa-icon [icon]="faInfoCircle"></fa-icon> {{ passwordHint }}
                     </small>
                     <small class="form-text text-success" *ngSwitchCase="'valid'">
-                        <i class="fa fa-check-circle"></i> {{ passwordHint }}
+                        <fa-icon [icon]="faCheckCircle"></fa-icon> {{ passwordHint }}
                     </small>
                 </ng-container>
             </div>
@@ -74,13 +74,13 @@
                        class="form-control" type="password" id="register-password-confirm" required name="password2">
                 <ng-container [ngSwitch]="password2Status">
                     <small class="form-text text-danger" *ngSwitchCase="'error'">
-                        <i class="fa fa-times-circle"></i> {{ password2Hint }}
+                        <fa-icon [icon]="faTimesCircle"></fa-icon> {{ password2Hint }}
                     </small>
                     <small class="form-text" *ngSwitchCase="'info'">
-                        <i class="fa fa-info-circle"></i> {{ password2Hint }}
+                        <fa-icon [icon]="faInfoCircle"></fa-icon> {{ password2Hint }}
                     </small>
                     <small class="form-text text-success" *ngSwitchCase="'valid'">
-                        <i class="fa fa-check-circle"></i> {{ password2Hint }}
+                        <fa-icon [icon]="faCheckCircle"></fa-icon> {{ password2Hint }}
                     </small>
                 </ng-container>
             </div>
@@ -96,8 +96,8 @@
     </div>
 </div>
 <div class="modal-footer" *ngIf="registerError">
-    <p [@myAnimation]="registerError">
-        <i class="text-danger fa fa-exclamation-triangle"></i>
+    <p>
+        <fa-icon [icon]="faExclamationTriangle" class="text-danger"></fa-icon>
         {{ registerErrorMessage }}
     </p>
 </div>

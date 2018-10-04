@@ -61,7 +61,7 @@ export class UserService {
     }
 
     public async registerUser(username: string, email: string, password: string): Promise<string> {
-        const url = 'api/register';
+        const url = 'api/user/';
         const userToRegister = {
             email,
             password: UserService.hashPassword(password),
