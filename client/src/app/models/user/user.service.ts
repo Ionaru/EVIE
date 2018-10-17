@@ -12,6 +12,8 @@ import { ILoginResponse, IRegisterResponse, IUserApiData, User } from './user.mo
 @Injectable()
 export class UserService {
 
+    private static authWindow?: Window | null;
+
     private static _userChangeEvent = new Subject<User>();
     public static get userChangeEvent() { return this._userChangeEvent; }
 
@@ -116,18 +118,24 @@ export class UserService {
             url += '?characterUUID=' + character.uuid;
         }
 
-        const authWindow = window.open(url, '_blank', 'width=600,height=850');
+        if (UserService.authWindow && !UserService.authWindow.closed) {
+            UserService.authWindow.focus();
+        } else {
+            UserService.authWindow = window.open(url, '_blank', 'width=600,height=850');
+        }
 
-        if (authWindow) {
-            SocketService.socket.on('SSO_END', async (response: ISSOSocketResponse) => {
-                authWindow.close();
-                if (response.state === 'success') {
-                    if (character) {
-                        character.updateAuth(response.data);
-                    } else {
-                        character = await this.addCharacter(response.data);
+        if (UserService.authWindow) {
+            SocketService.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
+                if (UserService.authWindow && !UserService.authWindow.closed) {
+                    UserService.authWindow.close();
+                    if (response.state === 'success') {
+                        if (character) {
+                            character.updateAuth(response.data);
+                        } else {
+                            character = await this.addCharacter(response.data);
+                        }
+                        this.characterService.setActiveCharacter(character).then();
                     }
-                    this.characterService.setActiveCharacter(character).then();
                 }
             });
         }
