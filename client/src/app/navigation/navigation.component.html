@@ -39,13 +39,6 @@
                 </a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item">
-                <a class="nav-link" href="#">
-                    <span class="nav-link-text">
-                        <fa-icon [icon]="faUserCog"></fa-icon>
-                    </span>
-                </a>
-            </li>
-            <li *ngIf="isLoggedIn" class="nav-item">
                 <a class="nav-link" (click)="logout()">
                     <span class="nav-link-text"><fa-icon [icon]="faSignOut"></fa-icon></span>
                 </a>
