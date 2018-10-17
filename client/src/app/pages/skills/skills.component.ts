@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { faArrowAltRight, faChevronDown, faClock, faCog, faExclamationTriangle, faFolderOpen } from '@fortawesome/pro-solid-svg-icons';
 import * as countdown from 'countdown';
+import Timespan = countdown.Timespan;
 
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
@@ -48,6 +49,10 @@ interface IGroupedSkillTypes {
     templateUrl: './skills.component.html',
 })
 export class SkillsComponent extends DataPageComponent implements OnInit, OnDestroy {
+
+    public static adjustCountDownForDST(cd: Timespan, timeLeft: number) {
+        cd.hours = Calc.wholeHoursLeft(timeLeft) - (Calc.wholeDaysLeft(timeLeft) * 24);
+    }
 
     public faChevronDown = faChevronDown;
     public faExclamationTriangle = faExclamationTriangle;
@@ -159,6 +164,11 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         const now = Date.now();
         this.skillQueueTimeLeft = this.totalQueueTime - now;
         this.totalQueueCountdown = countdown(now, this.totalQueueTime, this.countdownUnits);
+
+        // Adjust for DST
+        if (typeof this.totalQueueCountdown !== 'number') {
+            SkillsComponent.adjustCountDownForDST(this.totalQueueCountdown, this.skillQueueTimeLeft);
+        }
 
         if (this.skillQueueLow()) {
             this.hasLowSkillQueue = true;
@@ -281,6 +291,11 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
                     this.currentTrainingSPGain = spGained;
                     this.currentTrainingSPEnd = skillInQueue.level_end_sp;
 
+                    // Adjust for DST
+                    if (typeof skillInQueue.countdown !== 'number') {
+                        SkillsComponent.adjustCountDownForDST(skillInQueue.countdown, timeLeftInSkill);
+                    }
+
                     // Update spPerSec and skill time countdown every second.
                     this.skillQueueTimer = window.setInterval(() => {
 
@@ -297,12 +312,19 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
                         this.currentTrainingSPGain = spGained;
 
                         skillInQueue.countdown = countdown(Date.now(), skillFinishDate, this.countdownUnits);
+
+                        // Adjust for DST
+                        if (typeof skillInQueue.countdown !== 'number') {
+                            SkillsComponent.adjustCountDownForDST(skillInQueue.countdown, skillFinishDate.getTime() - Date.now());
+                        }
                     }, 1000);
 
                     // Update the list when a skill finishes training.
-                    this.updateQueueTimer = window.setTimeout(() => {
-                        this.parseSkillQueue();
-                    }, timeLeftInSkill);
+                    if (timeLeftInSkill < Calc.maxIntegerValue) {
+                        this.updateQueueTimer = window.setTimeout(() => {
+                            this.parseSkillQueue();
+                        }, timeLeftInSkill);
+                    }
 
                 } else {
                     // The skill is neither started nor finished, it must be scheduled to start in the future.
@@ -329,9 +351,17 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
                     this.totalQueueTime += (skillFinishDate.getTime() - skillStartDate.getTime());
                     skillInQueue.countdown = countdown(skillStartDate, skillFinishDate, this.countdownUnits);
+
+                    // Adjust for DST
+                    if (typeof skillInQueue.countdown !== 'number') {
+                        const timeLeft = skillFinishDate.getTime() - skillStartDate.getTime();
+                        SkillsComponent.adjustCountDownForDST(skillInQueue.countdown, timeLeft);
+                    }
                 }
+
             } else {
                 skillInQueue.status = 'inactive';
+                this.spPerSec = 0;
             }
         }
 

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { faCheck, faSync, faTrash, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import * as countdown from 'countdown';
 
+import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
 import { NamesService } from '../../data-services/names.service';
 import { ShipService } from '../../data-services/ship.service';
@@ -12,6 +13,7 @@ import { Character } from '../../models/character/character.model';
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { SkillsComponent } from '../skills/skills.component';
 
 @Component({
     selector: 'app-dashboard',
@@ -57,6 +59,10 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
             for (const character of this.characters) {
                 if (character.currentTrainingSkill && character.currentTrainingFinish) {
                     character.currentTrainingCountdown = countdown(now, character.currentTrainingFinish, this.countdownUnits);
+                    if (typeof character.currentTrainingCountdown !== 'number') {
+                        const timeLeft = character.currentTrainingFinish.getTime() - now.getTime();
+                        SkillsComponent.adjustCountDownForDST(character.currentTrainingCountdown, timeLeft);
+                    }
                 }
             }
         }, 1000);
@@ -72,7 +78,10 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         }
 
         if (earliestSkillComplete < Infinity && earliestSkillComplete - Date.now() > 0) {
-            this.skillQueueTimer = window.setTimeout(() => this.softReload, earliestSkillComplete - Date.now());
+            const timeUntilEarliestSkillComplete = earliestSkillComplete - Date.now();
+            if (timeUntilEarliestSkillComplete < Calc.maxIntegerValue) {
+                this.skillQueueTimer = window.setTimeout(() => this.softReload, timeUntilEarliestSkillComplete);
+            }
         }
     }
 
@@ -148,6 +157,10 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
                     character.currentTrainingSkill.name = NamesService.getNameFromData(skillInQueue.skill_id);
                     character.currentTrainingFinish = finishDate;
                     character.currentTrainingCountdown = countdown(now, finishDate, this.countdownUnits);
+                    if (typeof character.currentTrainingCountdown !== 'number') {
+                        const timeLeft = finishDate.getTime() - now.getTime();
+                        SkillsComponent.adjustCountDownForDST(character.currentTrainingCountdown, timeLeft);
+                    }
                 }
             }
         }
