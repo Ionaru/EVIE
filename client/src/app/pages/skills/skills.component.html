@@ -12,7 +12,7 @@
         <div>
             <h2>Training speed</h2>
             <span class="training-speed" *ngIf="skills">
-                {{ spPerSec | number:'1.2-2' }} SP/s
+                {{ spPerSec * 60 | number:'1.0-2' }} SP/min
             </span>
         </div>
     </div>
@@ -86,14 +86,13 @@
         <div class="d-flex justify-content-between">
             <h4>{{ countLvl5Skills() }} skills at level 5</h4>
             <div>
-                <button class="btn btn-outline-primary" (click)="showUntrainedSkills = !showUntrainedSkills">
-                    <span *ngIf="!showUntrainedSkills">
-                        <fa-icon [icon]="faEye"></fa-icon> Show untrained skills
-                    </span>
-                    <span *ngIf="showUntrainedSkills">
-                        <fa-icon [icon]="faEyeSlash"></fa-icon> Hide untrained skills
-                    </span>
-                </button>
+                <div class="btn-group btn-group-toggle">
+                    <label class="btn-outline-primary" ngbButtonLabel>
+                        <input type="checkbox" ngbButton [(ngModel)]="showUntrainedSkills">
+                        <fa-icon [icon]="showUntrainedSkills ? faEye : faEyeSlash"></fa-icon>
+                        Untrained skills
+                    </label>
+                </div>
             </div>
         </div>
         <div class="skill-list" *ngIf="skills">
