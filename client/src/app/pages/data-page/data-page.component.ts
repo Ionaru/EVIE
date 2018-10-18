@@ -36,6 +36,7 @@ export class DataPageComponent implements OnInit, OnDestroy {
     }
 
     public softReload() {
+        console.log('Reload');
         this.ngOnInit();
         this.ngOnDestroy();
     }

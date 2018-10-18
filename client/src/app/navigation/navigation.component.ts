@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faChevronDown, faColumns, faHome, faPlug, faSignOut, faUsers } from '@fortawesome/pro-solid-svg-icons';
+import { faAbacus, faChevronDown, faColumns, faDollarSign, faHome, faPlug, faSignOut, faUsers } from '@fortawesome/pro-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 
@@ -22,12 +22,14 @@ export class NavigationComponent implements OnInit {
     private static _serverStatusEvent = new Subject<boolean>();
     public static get serverStatusEvent() { return this._serverStatusEvent; }
 
+    public industryToolsIcon = faAbacus;
     public faChevronDown = faChevronDown;
-    public faHome = faHome;
-    public faColumns = faColumns;
+    public homeIcon = faHome;
+    public dashboardIcon = faColumns;
     public userAdminIcon = faUsers;
-    public faPlug = faPlug;
-    public faSignOut = faSignOut;
+    public connectionIcon = faPlug;
+    public logoutIcon = faSignOut;
+    public orePricesIcon = faDollarSign;
 
     public hours = '00';
     public minutes = '00';
@@ -106,7 +108,7 @@ export class NavigationComponent implements OnInit {
         const tickTimeout = 60 - time.getUTCSeconds();
         window.setTimeout(() => {
             this.startClock();
-            }, tickTimeout * 1000);
+        }, tickTimeout * 1000);
     }
 
     private startClock(): void {

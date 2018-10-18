@@ -9,9 +9,11 @@ import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { SorTableComponent } from './components/sor-table/sor-table.component';
 import { BaseService } from './data-services/base.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
+import { MarketService } from './data-services/market.service';
 import { NamesService } from './data-services/names.service';
 import { ShipService } from './data-services/ship.service';
 import { SkillGroupsService } from './data-services/skill-groups.service';
@@ -36,6 +38,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginModalComponent } from './pages/home/login-modal.component';
 import { RegisterModalComponent } from './pages/home/register-modal.component';
 import { IndustryComponent } from './pages/industry/industry.component';
+import { OreComponent } from './pages/ore/ore.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
@@ -59,6 +62,8 @@ import { SocketService } from './socket/socket.service';
         RegisterModalComponent,
         IndustryComponent,
         UsersComponent,
+        OreComponent,
+        SorTableComponent,
     ],
     entryComponents: [
         LoginModalComponent,
@@ -94,6 +99,7 @@ import { SocketService } from './socket/socket.service';
         SkillsService,
         IndustryJobsService,
         IndustryService,
+        MarketService,
         SocketService,
         AppReadyGuard,
         AuthGuard,

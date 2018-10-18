@@ -60,6 +60,20 @@ nav {
                     font-size: 16px;
                 }
             }
+
+            &.dropdown {
+                .dropdown-menu {
+                    .dropdown-item {
+                        img {
+                            margin-left: -4px;
+                            margin-bottom: 2px;
+                            max-height: 18px;
+                            transform: scale(1.4);
+                            filter: grayscale(100%) brightness(200%);
+                        }
+                    }
+                }
+            }
         }
     }
 }
