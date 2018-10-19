@@ -45,9 +45,9 @@
                             [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character).then()">
                         <fa-icon [icon]="faCheck"></fa-icon>
                     </button>
-                    <button class="btn btn-outline-info disabled">
-                        <fa-icon [icon]="faSync"></fa-icon>
-                    </button>
+                    <!--<button class="btn btn-outline-info disabled">-->
+                        <!--<fa-icon [icon]="faSync"></fa-icon>-->
+                    <!--</button>-->
                     <button class="btn btn-outline-danger" (click)="deleteCharacter(character).then()">
                         <fa-icon [icon]="faTrash"></fa-icon>
                     </button>
