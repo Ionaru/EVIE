@@ -14,9 +14,10 @@ COPY ./client/angular.json .
 COPY ./client/tsconfig.json .
 
 # Copy source files
-COPY ./client/src .
+COPY ./client/src ./src
 
 # Install client dependencies
+ARG FA_TOKEN
 RUN npm install
 
 # Build client for production
@@ -25,21 +26,18 @@ RUN npm run build:prod
 
 ## INSTALL SERVER
 
-# Shortcut to create the server directory and data directory
-RUN mkdir /app/server/
-RUN mkdir /app/server/logs
-RUN mkdir /app/server/data
-RUN mkdir /app/server/config
+# Shortcut to create the server directory, data directory and logs directory
+RUN mkdir /app/server/ /app/server/logs /app/server/data
 WORKDIR /app/server
 
 # Copy needed build files
 COPY ./server/package.json .
 COPY ./server/package-lock.json .
 COPY ./server/tsconfig.json .
-COPY ./server/config .
+COPY ./server/config ./config
 
 # Copy source files
-COPY ./server/src .
+COPY ./server/src ./src
 
 # Install server dependencies
 RUN npm install

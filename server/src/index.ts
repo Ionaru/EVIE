@@ -10,8 +10,8 @@ import { Configurator } from './controllers/configuration.controller';
 
     const logger = new WinstonPnPLogger({
         announceSelf: false,
+        logDir: 'logs',
         showMilliSeconds: true,
-        // logDir: 'logs',
     });
 
     const config = new Configurator();
