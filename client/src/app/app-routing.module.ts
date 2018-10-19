@@ -16,7 +16,7 @@ const routes: Routes = [
     {path: '', component: HomeComponent, resolve: [AppReadyGuard]},
 
     // EVE data pages.
-    {path: 'ore', component: OreComponent, resolve: [AppReadyGuard]},
+    {path: 'ore', component: OreComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'dashboard', component: DashboardComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'industry', component: IndustryComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'skills', component: SkillsComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
