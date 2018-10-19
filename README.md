@@ -18,6 +18,12 @@ Cross-browser testing for guaranteed compatibility, provided by
 
 ---
 
+### Install
+```bash
+docker build --build-arg FA_TOKEN=${FA_TOKEN} --tag evie:latest .
+docker run --public 3001:3001 --volume C:\Data\Evie\logs:/app/server/logs --volume C:\Data\Evie\data:/app/server/data --volume C:\Data\Evie\config:/app/server/config evie:latest
+```
+
 ### TODO
 
 #### General
