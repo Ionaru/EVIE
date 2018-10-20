@@ -76,7 +76,7 @@ export class Application {
         // Configure Session Parser
         this.sessionParser = es({
             cookie: {
-                httpOnly: false,
+                httpOnly: true,
                 maxAge: 6 * 60 * 60 * 1000, // 6 hours
                 secure: config.getProperty('secure_only_cookies', true) as boolean,
             },
