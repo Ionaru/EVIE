@@ -17,7 +17,11 @@ export class OreComponent {
 
     public model = {
         beltVariants: false,
+        highSecOres: true,
+        lowSecOres: true,
         moonVariants: false,
+        nullSecOres: true,
+        regularOres: true,
     };
 
     public variantsVisibleIcon = faEye;
@@ -56,7 +60,6 @@ export class OreComponent {
         11396, 17869, 17870, // Mercoxit
     ];
 
-    public oreNames: any = {};
     public oreTypes: any = {};
     public orePrices: any = {
         buy: {},
@@ -76,7 +79,7 @@ export class OreComponent {
         attribute: 'buy',
         hint: 'Average for using buy orders to sell 8.000m³ of ore.',
         pipe: 'number',
-        pipeVar: '0.0-2',
+        pipeVar: '0.2-2',
         sort: true,
         suffix: ' ISK',
         title: 'Buy price / m³',
@@ -97,9 +100,6 @@ export class OreComponent {
     public async getData() {
 
         await this.namesService.getNames(...this.ores);
-        for (const ore of this.ores) {
-            this.oreNames[ore] = NamesService.getNameFromData(ore);
-        }
 
         const types = await this.typesService.getTypes(...this.ores);
         for (const ore of this.ores) {
@@ -107,14 +107,10 @@ export class OreComponent {
         }
 
         await Promise.all(this.ores.map(async (ore) => {
-            const orders: IMarketOrdersReponse[] = [];
-
-            orders.push(...await this.marketService.getMarketOrders(10000002, ore) || []);
-            // orders.push(...await this.marketService.getMarketOrders(10000043, ore) || []);
-
+            const orders = await this.marketService.getMarketOrders(10000002, ore);
             if (orders) {
-                this.getPriceForVolume(orders, 8000).then();
-                this.getPriceForVolume(orders, 8000, false).then();
+                this.getPriceForVolume(ore, orders, 8000).then();
+                this.getPriceForVolume(ore, orders, 8000, false).then();
             }
         }));
 
@@ -123,7 +119,7 @@ export class OreComponent {
                 buy: this.orePrices.buy[ore],
                 id: ore,
                 index,
-                name: this.oreNames[ore],
+                name: NamesService.getNameFromData(ore),
                 sell: this.orePrices.sell[ore],
             };
         });
@@ -131,15 +127,15 @@ export class OreComponent {
         this.changeVisibleOres();
     }
 
-    public async getPriceForVolume(orders: IMarketOrdersReponse[], volume: number, buy = true) {
+    public async getPriceForVolume(ore: number, orders: IMarketOrdersReponse[], volume: number, buy = true) {
         const buyOrders = orders.filter((order) => order.is_buy_order === buy);
         Common.sortArrayByObjectProperty(buyOrders, 'price', buy);
         const buySell = buy ? 'buy' : 'sell';
 
-        const type = this.oreTypes[orders[0].type_id];
+        const type = this.oreTypes[ore];
 
         if (!type) {
-            this.orePrices[buySell][orders[0].type_id] = -1;
+            this.orePrices[buySell][ore] = -1;
             return;
         }
 
@@ -160,47 +156,52 @@ export class OreComponent {
         }
 
         if (unitsLeft) {
-            this.orePrices[buySell][orders[0].type_id] = price / unitsLeft;
+            this.orePrices[buySell][ore] = price / unitsLeft;
             return;
         }
 
-        this.orePrices[buySell][orders[0].type_id] = price / cargoCap;
+        this.orePrices[buySell][ore] = price / cargoCap;
     }
 
     public changeVisibleOres() {
-        if (this.model.beltVariants && this.model.moonVariants) {
-            this.visibleData = [...this.data];
+        const vis: number[] = [];
+
+        if (this.model.highSecOres && this.model.regularOres) {
+            vis.push(...this.highSecOres);
         }
 
-        if (this.model.beltVariants && !this.model.moonVariants) {
-            const visibleOres2 = [
-                ...this.highSecOres,
-                ...this.highSecOreVariants,
-                ...this.lowSecOres,
-                ...this.lowSecOreVariants,
-                ...this.nullSecOres,
-                ...this.nullSecOreVariants,
-            ];
-
-            this.visibleData = [...this.data.filter((ore) => visibleOres2.includes(ore.id))];
+        if (this.model.highSecOres && this.model.beltVariants) {
+            vis.push(...this.highSecOreVariants);
         }
 
-        if (!this.model.beltVariants && this.model.moonVariants) {
-            const visibleOres2 = [
-                ...this.highSecOres,
-                ...this.highSecOreMoonVariants,
-                ...this.lowSecOres,
-                ...this.lowSecOreMoonVariants,
-                ...this.nullSecOres,
-                ...this.nullSecOreMoonVariants,
-            ];
-
-            this.visibleData = [...this.data.filter((ore) => visibleOres2.includes(ore.id))];
+        if (this.model.highSecOres && this.model.moonVariants) {
+            vis.push(...this.highSecOreMoonVariants);
         }
 
-        if (!this.model.beltVariants && !this.model.moonVariants) {
-            const visibleOres = [...this.highSecOres, ...this.lowSecOres, ...this.nullSecOres];
-            this.visibleData = [...this.data.filter((ore) => visibleOres.includes(ore.id))];
+        if (this.model.lowSecOres && this.model.regularOres) {
+            vis.push(...this.lowSecOres);
         }
+
+        if (this.model.lowSecOres && this.model.beltVariants) {
+            vis.push(...this.lowSecOreVariants);
+        }
+
+        if (this.model.lowSecOres && this.model.moonVariants) {
+            vis.push(...this.lowSecOreMoonVariants);
+        }
+
+        if (this.model.nullSecOres && this.model.regularOres) {
+            vis.push(...this.nullSecOres);
+        }
+
+        if (this.model.nullSecOres && this.model.beltVariants) {
+            vis.push(...this.nullSecOreVariants);
+        }
+
+        if (this.model.nullSecOres && this.model.moonVariants) {
+            vis.push(...this.nullSecOreMoonVariants);
+        }
+
+        this.visibleData = vis.length !== this.data.length ? [...this.data.filter((ore) => vis.includes(ore.id))] : this.data;
     }
 }
