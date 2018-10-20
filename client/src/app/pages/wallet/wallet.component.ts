@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { faInfoCircle } from '@fortawesome/pro-solid-svg-icons';
 
 import { IWalletJournalData } from '../../../shared/interface.helper';
+import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { WalletJournalService } from '../../data-services/wallet-journal.service';
 import { WalletService } from '../../data-services/wallet.service';
 import { CharacterService } from '../../models/character/character.service';
@@ -15,10 +15,29 @@ import { DataPageComponent } from '../data-page/data-page.component';
 })
 export class WalletComponent extends DataPageComponent implements OnInit {
 
-    public faInfoCircle = faInfoCircle;
-
     public journalData: IWalletJournalData[] = [];
     public balanceCountUp!: CountUp;
+
+    public tableSettings: ITableHeader[] = [{
+        attribute: 'date',
+        hint: 'In EVE-Time',
+        pipe: 'date',
+        sort: true,
+        title: 'Timestamp',
+    }, {
+        attribute: 'amount',
+        classFunction: (data) => data.amount < 0 ? 'negative' : 'positive',
+        pipe: 'number',
+        pipeVar: '0.0-2',
+        suffix: ' ISK',
+    }, {
+        attribute: 'balance',
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        suffix: ' ISK',
+    }, {
+        attribute: 'description',
+    }];
 
     private balance!: number;
 

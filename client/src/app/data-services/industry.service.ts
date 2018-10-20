@@ -25,7 +25,8 @@ export class IndustryService extends BaseService {
             return;
         }
 
-        this.manufacturingCache[url] = response.data;
-        return response.data;
+        const data = response ? response.data : undefined;
+        this.manufacturingCache[url] = data;
+        return data;
     }
 }

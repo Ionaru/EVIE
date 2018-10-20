@@ -10,13 +10,32 @@
             <li class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="/" routerLinkActive="active"
                    [routerLinkActiveOptions]="{ exact: true }">
-                    <span class="nav-link-text"><fa-icon [icon]="faHome"></fa-icon></span>
+                    <span class="nav-link-text"><fa-icon [icon]="homeIcon"></fa-icon></span>
                 </a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="dashboard" routerLinkActive="active">
-                    <span class="nav-link-text"><fa-icon [icon]="faColumns"></fa-icon></span>
+                    <span class="nav-link-text"><fa-icon [icon]="dashboardIcon"></fa-icon></span>
                 </a>
+            </li>
+            <li *ngIf="isLoggedIn" class="nav-item dropdown" ngbDropdown>
+                <a class="nav-link dropdown-toggle" ngbDropdownToggle>
+                    <span class="nav-link-text">
+                        <fa-icon [icon]="industryToolsIcon"></fa-icon>
+                    </span>
+                </a>
+                <div class="dropdown-menu" ngbDropdownMenu>
+                    <a class="dropdown-item" routerLink="ore" routerLinkActive="active">
+                        <fa-icon [icon]="orePricesIcon"></fa-icon>
+                        Ore prices
+                    </a>
+                    <!--<a class="dropdown-item" routerLink="ore" routerLinkActive="active">-->
+                        <!--<fa-icon [icon]="connectionIcon"></fa-icon>-->
+                        <!--Another action-->
+                    <!--</a>-->
+                    <!--<div class="dropdown-divider"></div>-->
+                    <!--<a class="dropdown-item" href="#">Something else here</a>-->
+                </div>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -26,7 +45,7 @@
                         <span id="eve-players"></span> players online
                     </span>
                     <span class="nav-link-text" [ngClass]="{'d-none': serverOnline}">
-                        <fa-icon [icon]="faPlug" class="text-danger"></fa-icon>
+                        <fa-icon [icon]="connectionIcon" class="text-danger"></fa-icon>
                         API server is offline
                     </span>
                 </a>
@@ -40,7 +59,7 @@
             </li>
             <li *ngIf="isLoggedIn" class="nav-item">
                 <a class="nav-link" (click)="logout()">
-                    <span class="nav-link-text"><fa-icon [icon]="faSignOut"></fa-icon></span>
+                    <span class="nav-link-text"><fa-icon [icon]="logoutIcon"></fa-icon></span>
                 </a>
             </li>
         </ul>

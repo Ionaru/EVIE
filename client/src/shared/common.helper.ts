@@ -9,6 +9,8 @@ export class Common {
      */
     public static return = <T> (parameter: T): T => parameter;
 
+    public static generateNumbersArray = (length: number) => Array(length).fill(undefined).map((_, i) => i + 1);
+
     public static objectsArrayToObject<T>(array: any[], key: string): T {
 
         const object: any = {};
@@ -125,16 +127,16 @@ export class Common {
     }
 
     /**
-     * Sort an array of objects by one of the object's properties
+     * Sort an array of objects by one of the object's properties (in-place).
      * @param array - The array to sort.
-     * @param property - The property name to sort by.
+     * @param property - The property name to sort by. (can be property.property)
      * @param inverse - Inverse the output (descending).
      */
     public static sortArrayByObjectProperty<T>(array: T[], property: string, inverse = false): T[] {
 
         const compare = (a: any, b: any) => {
-            let left = a[property];
-            let right = b[property];
+            let left = property.split('.').reduce((o, i) =>  o ? o[i] : o, a);
+            let right = property.split('.').reduce((o, i) =>  o ? o[i] : o, b);
 
             if (left === undefined || right === undefined) {
                 throw new Error(`Unable to compare values '${left}' and '${right}'`);

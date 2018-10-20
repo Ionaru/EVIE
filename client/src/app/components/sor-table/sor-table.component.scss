@@ -1,0 +1,7 @@
+table thead th {
+    user-select: none;
+
+    &.sortable, .hint-button {
+        cursor: pointer;
+    }
+}

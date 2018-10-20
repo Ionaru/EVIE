@@ -62,6 +62,16 @@ export class EVE {
         return EVE.constructESIURL(1, 'markets', 'groups');
     }
 
+    public static getMarketOrdersURL(regionId: number, typeId: number, page: number) {
+        let url = EVE.constructESIURL(1, 'markets', regionId, 'orders');
+        url += `?type_id=${typeId}&page=${page}&order_type=all`;
+        return url;
+    }
+
+    public static getRegionsURL() {
+        return EVE.constructESIURL(1, 'universe', 'regions');
+    }
+
     public static getMarketGroupUrl(groupId: number) {
         return EVE.constructESIURL(1, 'markets', 'groups', groupId);
     }

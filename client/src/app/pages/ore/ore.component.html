@@ -1,0 +1,16 @@
+<div class="btn-group btn-group-toggle">
+    <label class="btn-outline-primary" ngbButtonLabel>
+        <input type="checkbox" ngbButton [(ngModel)]="model.beltVariants" (ngModelChange)="changeVisibleOres()">
+        <fa-icon [icon]="model.beltVariants ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
+        Belt variants
+    </label>
+    <label class="btn-outline-primary" ngbButtonLabel>
+        <input type="checkbox" ngbButton [(ngModel)]="model.moonVariants" (ngModelChange)="changeVisibleOres()">
+        <fa-icon [icon]="model.moonVariants ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
+        Moon variants
+    </label>
+</div>
+<hr>
+
+<p>Prices are based on buying/selling 8.000m³ of ore in The Forge and Domain.</p>
+<app-sor-table *ngIf="visibleData.length" [data]="visibleData" [columns]="tableSettings"></app-sor-table>
