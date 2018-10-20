@@ -1,12 +1,13 @@
-<table class="table">
+<table class="table table-sm">
     <thead>
     <tr>
-        <th [ngClass]="{sortable: c.sort}" *ngFor="let c of columns" (click)="c.sort ? sort(c.attribute) : null">
-            <ng-container *ngIf="currentSort && currentSort === c.attribute">
+        <th [ngClass]="{sortable: c.sort}" *ngFor="let c of columns"
+            (click)="c.sort ? sort(c) : null">
+            <ng-container *ngIf="currentSort && currentSort === c">
                 <span *ngIf="!invert"><fa-icon [icon]="sortAscendingIcon"></fa-icon></span>
                 <span *ngIf="invert"><fa-icon [icon]="sortDescendingIcon"></fa-icon></span>
             </ng-container>
-            <ng-container *ngIf="!(currentSort && currentSort === c.attribute) && c.sort">
+            <ng-container *ngIf="!(currentSort && currentSort === c) && c.sort">
                 <span><fa-icon [icon]="noSortIcon"></fa-icon></span>
             </ng-container>
             {{ c.title ? c.title : (c.attribute.charAt(0).toUpperCase() + c.attribute.slice(1)) }}
@@ -18,18 +19,20 @@
     </thead>
     <tbody>
     <tr *ngFor="let d of data">
-        <td *ngFor="let col of columns" [ngClass]="[col.attribute, getClass(col, d)]">
+        <td *ngFor="let col of columns" [ngClass]="[col.attribute, getClass(col, d)]" class="align-middle">
+            <span [innerHTML]="prefixFunction(col, d) || col.prefix"></span>
             <ng-container [ngSwitch]="col.pipe">
                 <ng-container *ngSwitchCase="'number'">
-                    {{col.prefix}}{{ getData(col.attribute, d) | number:col.pipeVar ? col.pipeVar : '1.0-0' }}{{col.suffix}}
+                    {{ getData(col.attribute, d) | number:col.pipeVar ? col.pipeVar : '1.0-0' }}
                 </ng-container>
                 <ng-container *ngSwitchCase="'date'">
-                    {{col.prefix}}{{ getData(col.attribute, d) | date:col.pipeVar ? col.pipeVar : 'yyyy-MM-dd HH:mm:ss' }}{{col.suffix}}
+                    {{ getData(col.attribute, d) | date:col.pipeVar ? col.pipeVar : 'yyyy-MM-dd HH:mm:ss' }}
                 </ng-container>
                 <ng-container *ngSwitchDefault>
-                    {{col.prefix}}{{ getData(col.attribute, d) }}{{col.suffix}}
+                    {{ getData(col.attribute, d) }}
                 </ng-container>
             </ng-container>
+            <span [innerHTML]="suffixFunction(col, d) || col.suffix"></span>
         </td>
     </tr>
     </tbody>

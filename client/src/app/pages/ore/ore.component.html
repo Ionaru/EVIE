@@ -1,39 +1,16 @@
 <div class="btn-group btn-group-toggle">
     <label class="btn-outline-primary" ngbButtonLabel>
-        <input type="checkbox" ngbButton [(ngModel)]="model.beltVariants">
+        <input type="checkbox" ngbButton [(ngModel)]="model.beltVariants" (ngModelChange)="changeVisibleOres()">
         <fa-icon [icon]="model.beltVariants ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
         Belt variants
     </label>
     <label class="btn-outline-primary" ngbButtonLabel>
-        <input type="checkbox" ngbButton [(ngModel)]="model.moonVariants">
+        <input type="checkbox" ngbButton [(ngModel)]="model.moonVariants" (ngModelChange)="changeVisibleOres()">
         <fa-icon [icon]="model.moonVariants ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
         Moon variants
     </label>
 </div>
 <hr>
 
-<table class="table table-sm">
-    <thead>
-    <tr>
-        <th>
-            Type
-        </th>
-        <th>
-            Buy price / m3
-        </th>
-        <th>
-            Average price / m3
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let ore of ores">
-        <td *ngIf="visibility(ore)">
-            <img src="//image.eveonline.com/Type/{{ ore }}_32.png">
-            {{ oreNames[ore] }}
-        </td>
-        <td class="align-middle" *ngIf="visibility(ore)">{{ orePrices.buy[ore] || 0 | number:'1.2-2' }} ISK</td>
-        <td class="align-middle" *ngIf="visibility(ore)">{{ orePrices.sell[ore] || 0 | number:'1.2-2' }} ISK</td>
-    </tr>
-    </tbody>
-</table>
+<p>Prices are based on buying/selling 8.000m³ of ore in The Forge and Domain.</p>
+<app-sor-table *ngIf="visibleData.length" [data]="visibleData" [columns]="tableSettings"></app-sor-table>

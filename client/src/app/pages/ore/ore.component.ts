@@ -3,6 +3,7 @@ import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 
 import { Common } from '../../../shared/common.helper';
 import { IMarketOrdersReponse } from '../../../shared/interface.helper';
+import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
@@ -62,6 +63,33 @@ export class OreComponent {
         sell: {},
     };
 
+    public data: any[] = [];
+    public visibleData: any[] = [];
+
+    public tableSettings: ITableHeader[] = [{
+        attribute: 'name',
+        prefixFunction: (data) => `<img src="//image.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
+        sort: true,
+        sortAttribute: 'index',
+        title: 'Type',
+    }, {
+        attribute: 'buy',
+        hint: 'Average for using buy orders to sell 8.000m³ of ore.',
+        pipe: 'number',
+        pipeVar: '0.0-2',
+        sort: true,
+        suffix: ' ISK',
+        title: 'Buy price / m³',
+    }, {
+        attribute: 'sell',
+        hint: 'Average for using sell orders to buy 8.000m³ of ore.',
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        sort: true,
+        suffix: ' ISK',
+        title: 'Sell price / m³',
+    }];
+
     constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService) {
         this.getData().then();
     }
@@ -79,12 +107,28 @@ export class OreComponent {
         }
 
         await Promise.all(this.ores.map(async (ore) => {
-            const orders = await this.marketService.getMarketOrders(10000002, ore);
+            const orders: IMarketOrdersReponse[] = [];
+
+            orders.push(...await this.marketService.getMarketOrders(10000002, ore) || []);
+            // orders.push(...await this.marketService.getMarketOrders(10000043, ore) || []);
+
             if (orders) {
                 this.getPriceForVolume(orders, 8000).then();
                 this.getPriceForVolume(orders, 8000, false).then();
             }
         }));
+
+        this.data = this.ores.map((ore, index) => {
+            return {
+                buy: this.orePrices.buy[ore],
+                id: ore,
+                index,
+                name: this.oreNames[ore],
+                sell: this.orePrices.sell[ore],
+            };
+        });
+
+        this.changeVisibleOres();
     }
 
     public async getPriceForVolume(orders: IMarketOrdersReponse[], volume: number, buy = true) {
@@ -123,23 +167,40 @@ export class OreComponent {
         this.orePrices[buySell][orders[0].type_id] = price / cargoCap;
     }
 
-    public visibility(ore: number) {
-        if (!this.model.beltVariants) {
-            if (this.highSecOreVariants.includes(ore) ||
-                this.lowSecOreVariants.includes(ore) ||
-                this.nullSecOreVariants.includes(ore)) {
-                return false;
-            }
+    public changeVisibleOres() {
+        if (this.model.beltVariants && this.model.moonVariants) {
+            this.visibleData = [...this.data];
         }
 
-        if (!this.model.moonVariants) {
-            if (this.highSecOreMoonVariants.includes(ore) ||
-                this.lowSecOreMoonVariants.includes(ore) ||
-                this.nullSecOreMoonVariants.includes(ore)) {
-                return false;
-            }
+        if (this.model.beltVariants && !this.model.moonVariants) {
+            const visibleOres2 = [
+                ...this.highSecOres,
+                ...this.highSecOreVariants,
+                ...this.lowSecOres,
+                ...this.lowSecOreVariants,
+                ...this.nullSecOres,
+                ...this.nullSecOreVariants,
+            ];
+
+            this.visibleData = [...this.data.filter((ore) => visibleOres2.includes(ore.id))];
         }
 
-        return true;
+        if (!this.model.beltVariants && this.model.moonVariants) {
+            const visibleOres2 = [
+                ...this.highSecOres,
+                ...this.highSecOreMoonVariants,
+                ...this.lowSecOres,
+                ...this.lowSecOreMoonVariants,
+                ...this.nullSecOres,
+                ...this.nullSecOreMoonVariants,
+            ];
+
+            this.visibleData = [...this.data.filter((ore) => visibleOres2.includes(ore.id))];
+        }
+
+        if (!this.model.beltVariants && !this.model.moonVariants) {
+            const visibleOres = [...this.highSecOres, ...this.lowSecOres, ...this.nullSecOres];
+            this.visibleData = [...this.data.filter((ore) => visibleOres.includes(ore.id))];
+        }
     }
 }

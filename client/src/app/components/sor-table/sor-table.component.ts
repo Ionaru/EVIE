@@ -1,18 +1,21 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { faInfoCircle, faSort, faSortDown, faSortUp } from '@fortawesome/pro-solid-svg-icons';
 
 import { Common } from '../../../shared/common.helper';
 
 export interface ITableHeader {
     attribute: string;
+    sortAttribute?: string;
     classFunction?: (value: any) => string;
     hint?: string;
     pipe?: 'number' | 'date';
     pipeVar?: string;
     prefix?: string;
+    prefixFunction?: (value: any) => string;
     title?: string;
     sort?: boolean;
     suffix?: string;
+    suffixFunction?: (value: any) => string;
 }
 
 export interface ITableData {
@@ -24,12 +27,12 @@ export interface ITableData {
     styleUrls: ['./sor-table.component.scss'],
     templateUrl: './sor-table.component.html',
 })
-export class SorTableComponent {
+export class SorTableComponent implements OnChanges {
 
     @Input() public columns: ITableHeader[] = [];
     @Input() public data: ITableData[] = [];
 
-    public currentSort?: string;
+    public currentSort?: ITableHeader;
     public invert = false;
 
     public sortAscendingIcon = faSortUp;
@@ -39,14 +42,28 @@ export class SorTableComponent {
 
     public getData = (attribute: string, data: ITableData) => attribute.split('.').reduce((o, i) =>  o ? o[i] : o, data);
 
-    public sort(attribute: string) {
-        this.invert = this.currentSort && this.currentSort === attribute ? !this.invert : false;
+    public sort(col = this.currentSort) {
+        if (!col) {
+            return;
+        }
 
-        Common.sortArrayByObjectProperty(this.data, attribute, this.invert);
-        this.currentSort = attribute;
+        const sortAttribute = col.sortAttribute || col.attribute;
+
+        this.invert = (this.currentSort && this.currentSort === col) ? !this.invert : false;
+
+        Common.sortArrayByObjectProperty(this.data, sortAttribute, this.invert);
+        this.currentSort = col;
     }
 
-    public getClass(col: ITableHeader, data: any) {
-        return col.classFunction ? col.classFunction(this.getData(col.attribute, data)) : '';
+    public getClass = (col: ITableHeader, data: any) => col.classFunction ? col.classFunction(data) : '';
+
+    public prefixFunction = (col: ITableHeader, data: any) => col.prefixFunction ? col.prefixFunction(data) : undefined;
+    public suffixFunction = (col: ITableHeader, data: any) => col.suffixFunction ? col.suffixFunction(data) : undefined;
+
+    public ngOnChanges(change: SimpleChanges) {
+        if (change.data) {
+            this.invert = !this.invert;
+            this.sort();
+        }
     }
 }

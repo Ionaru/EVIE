@@ -26,7 +26,7 @@ export class WalletComponent extends DataPageComponent implements OnInit {
         title: 'Timestamp',
     }, {
         attribute: 'amount',
-        classFunction: (value) => value < 0 ? 'negative' : 'positive',
+        classFunction: (data) => data.amount < 0 ? 'negative' : 'positive',
         pipe: 'number',
         pipeVar: '0.0-2',
         suffix: ' ISK',
