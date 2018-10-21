@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import * as crypto from 'crypto-js';
 import { Subject } from 'rxjs';
 
@@ -7,7 +8,7 @@ import { Common } from '../../../shared/common.helper';
 import { SocketService } from '../../socket/socket.service';
 import { Character, IApiCharacterData, ISSOSocketResponse } from '../character/character.model';
 import { CharacterService } from '../character/character.service';
-import { ILoginResponse, IRegisterResponse, IUserApiData, User } from './user.model';
+import { ILoginResponse, IRegisterResponse, ISSOLoginResponse, IUserApiData, User } from './user.model';
 
 @Injectable()
 export class UserService {
@@ -24,7 +25,7 @@ export class UserService {
         return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
     }
 
-    constructor(private http: HttpClient, private characterService: CharacterService) { }
+    constructor(private http: HttpClient, private characterService: CharacterService, private router: Router) { }
 
     public async loginUser(username: string, password: string): Promise<[string, User | undefined]> {
 
@@ -110,6 +111,32 @@ export class UserService {
         UserService.user.characters.push(character);
         Common.sortArrayByObjectProperty(UserService.user.characters, 'name');
         return character;
+    }
+
+    public ssoLogin() {
+        const url = '/sso/login-sso';
+
+        if (UserService.authWindow && !UserService.authWindow.closed) {
+            UserService.authWindow.focus();
+        } else {
+            UserService.authWindow = window.open(url, '_blank', 'width=600,height=850');
+        }
+
+        if (UserService.authWindow) {
+            SocketService.socket.once('SSO_LOGON_END', async (response: ISSOLoginResponse) => {
+                if (UserService.authWindow && !UserService.authWindow.closed) {
+                    UserService.authWindow.close();
+                    if (response.state === 'success') {
+                        UserService._user = new User();
+                        for (const char of response.data.characters) {
+                            await this.addCharacter(char);
+                        }
+                        UserService.userChangeEvent.next(UserService._user);
+                        this.router.navigate(['/dashboard']).then();
+                    }
+                }
+            });
+        }
     }
 
     public authCharacter(character?: Character): void {

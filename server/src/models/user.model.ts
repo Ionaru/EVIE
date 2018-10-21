@@ -12,22 +12,6 @@ export class User extends BaseModel {
     }
 
     @Column({
-        unique: true,
-    })
-    public username!: string;
-
-    @Column({
-        select: false,
-        unique: true,
-    })
-    public passwordHash!: string;
-
-    @Column({
-        unique: true,
-    })
-    public email!: string;
-
-    @Column({
         default: false,
     })
     public isAdmin!: boolean;
@@ -53,7 +37,6 @@ export class User extends BaseModel {
         // Delete data that should not be sent to the client.
         const copy = clone<this>(this, false);
         delete copy.id;
-        delete copy.passwordHash;
         delete copy.timesLogin;
         delete copy.lastLogin;
         delete copy.createdOn;
