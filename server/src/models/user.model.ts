@@ -41,7 +41,7 @@ export class User extends BaseModel {
         delete copy.lastLogin;
         delete copy.createdOn;
         delete copy.updatedOn;
-        copy.characters = this.characters.map((character) => character.sanitizedCopy);
+        copy.characters = this.characters ? this.characters.map((character) => character.sanitizedCopy) : [];
         return copy;
     }
 }

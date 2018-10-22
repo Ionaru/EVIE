@@ -114,7 +114,7 @@ export class UserService {
     }
 
     public ssoLogin() {
-        const url = '/sso/login-sso';
+        const url = '/sso/login';
 
         if (UserService.authWindow && !UserService.authWindow.closed) {
             UserService.authWindow.focus();
@@ -140,7 +140,7 @@ export class UserService {
     }
 
     public authCharacter(character?: Character): void {
-        let url = '/sso/start';
+        let url = '/sso/auth';
         if (character) {
             url += '?characterUUID=' + character.uuid;
         }
