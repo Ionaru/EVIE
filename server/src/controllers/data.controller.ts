@@ -171,7 +171,7 @@ export class DataController {
         }
 
         const response = await axios.get<T>(url, requestConfig).catch((error: AxiosError) => {
-            logger.error('Request failed:', url, error);
+            logger.error('Request failed:', url, error.message);
             return undefined;
         });
 

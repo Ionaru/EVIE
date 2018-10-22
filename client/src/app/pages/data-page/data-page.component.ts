@@ -3,6 +3,7 @@ import * as countdown from 'countdown';
 import { Subscription } from 'rxjs';
 
 import { CharacterService } from '../../models/character/character.service';
+import { UserService } from '../../models/user/user.service';
 import { NavigationComponent } from '../../navigation/navigation.component';
 
 @Component({
@@ -12,9 +13,13 @@ import { NavigationComponent } from '../../navigation/navigation.component';
 export class DataPageComponent implements OnInit, OnDestroy {
 
     private characterChangeSubscription: Subscription;
+    private userChangeSubscription: Subscription;
     private serverStatusSubscription: Subscription;
 
     constructor() {
+        this.userChangeSubscription = UserService.userChangeEvent.subscribe(() => {
+            this.ngOnInit();
+        });
         this.characterChangeSubscription = CharacterService.characterChangeEvent.subscribe(() => {
             this.ngOnInit();
         });
@@ -31,6 +36,7 @@ export class DataPageComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy() {
+        this.userChangeSubscription.unsubscribe();
         this.characterChangeSubscription.unsubscribe();
         this.serverStatusSubscription.unsubscribe();
     }
