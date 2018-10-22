@@ -12,12 +12,17 @@ export class User extends BaseModel {
     }
 
     @Column({
+        nullable: true,
+    })
+    public email?: string;
+
+    @Column({
         default: false,
     })
     public isAdmin!: boolean;
 
     @Column({
-        default: 0,
+        default: 1,
     })
     public timesLogin!: number;
 

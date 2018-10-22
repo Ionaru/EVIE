@@ -1,14 +1,13 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import * as crypto from 'crypto-js';
 import { Subject } from 'rxjs';
 
 import { Common } from '../../../shared/common.helper';
 import { SocketService } from '../../socket/socket.service';
-import { Character, IApiCharacterData, ISSOSocketResponse } from '../character/character.model';
+import { Character, IApiCharacterData } from '../character/character.model';
 import { CharacterService } from '../character/character.service';
-import { ILoginResponse, IRegisterResponse, ISSOLoginResponse, IUserApiData, User } from './user.model';
+import { ISSOLoginResponse, IUserApiData, User } from './user.model';
 
 @Injectable()
 export class UserService {
@@ -21,39 +20,7 @@ export class UserService {
     private static _user: User;
     public static get user() { return this._user; }
 
-    private static hashPassword(passwordPlain: string): string {
-        return crypto.enc.Base64.stringify(crypto.SHA256(passwordPlain));
-    }
-
     constructor(private http: HttpClient, private characterService: CharacterService, private router: Router) { }
-
-    public async loginUser(username: string, password: string): Promise<[string, User | undefined]> {
-
-        const url = 'api/login';
-        const body = {
-            // Hash the password so it is never sent over the wire as plain text.
-            password: UserService.hashPassword(password),
-            username,
-        };
-
-        const response = await this.http.post<any>(url, body).toPromise<ILoginResponse>()
-            .catch((errorResponse: HttpErrorResponse) => {
-                if (errorResponse.error) {
-                    const errorBody = errorResponse.error;
-                    if (errorBody.hasOwnProperty('state') && errorBody.hasOwnProperty('message')) {
-                        return errorResponse.error as ILoginResponse;
-                    }
-                }
-                throw errorResponse.error;
-            });
-
-        if (response.message === 'LoggedIn' && response.data) {
-            const user = await this.storeUser(response.data);
-            return [response.message, user];
-        } else {
-            return [response.message, undefined];
-        }
-    }
 
     public logoutUser(): void {
         const url = 'api/logout';
@@ -61,31 +28,6 @@ export class UserService {
             sessionStorage.clear();
             window.location.reload();
         });
-    }
-
-    public async registerUser(username: string, email: string, password: string): Promise<string> {
-        const url = 'api/user/';
-        const userToRegister = {
-            email,
-            password: UserService.hashPassword(password),
-            username,
-        };
-        const response = await this.http.post<any>(url, userToRegister).toPromise<IRegisterResponse>()
-            .catch((errorResponse: HttpErrorResponse) => {
-                if (errorResponse.status === 409) {
-                    return errorResponse.error as IRegisterResponse;
-                }
-                throw errorResponse.error;
-            });
-        if (response.data.username_in_use) {
-            return 'username_in_use';
-        } else if (response.data.email_in_use) {
-            return 'email_in_use';
-        } else if (response.state === 'error') {
-            return 'error';
-        } else {
-            return 'success';
-        }
     }
 
     public async storeUser(data: IUserApiData): Promise<User> {
@@ -127,11 +69,7 @@ export class UserService {
                 if (UserService.authWindow && !UserService.authWindow.closed) {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
-                        UserService._user = new User();
-                        for (const char of response.data.characters) {
-                            await this.addCharacter(char);
-                        }
-                        UserService.userChangeEvent.next(UserService._user);
+                        await this.storeUser(response.data);
                         this.router.navigate(['/dashboard']).then();
                     }
                 }
@@ -152,16 +90,11 @@ export class UserService {
         }
 
         if (UserService.authWindow) {
-            SocketService.socket.once('SSO_END', async (response: ISSOSocketResponse) => {
+            SocketService.socket.once('SSO_AUTH_END', async (response: ISSOLoginResponse) => {
                 if (UserService.authWindow && !UserService.authWindow.closed) {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
-                        if (character) {
-                            character.updateAuth(response.data);
-                        } else {
-                            character = await this.addCharacter(response.data);
-                        }
-                        this.characterService.setActiveCharacter(character).then();
+                        this.storeUser(response.data).then();
                     }
                 }
             });

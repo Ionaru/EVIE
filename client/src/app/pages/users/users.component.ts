@@ -18,7 +18,7 @@ export class UsersComponent implements OnInit {
         sort: true,
         title: 'ID',
     }, {
-        attribute: 'username',
+        attribute: 'uuid',
         sort: true,
     }, {
         attribute: 'email',

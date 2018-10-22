@@ -26,26 +26,6 @@ const oauthPath = '/oauth/authorize?';
 const tokenPath = '/oauth/token?';
 const verifyPath = '/oauth/verify?';
 
-// SSO login Character:
-// * Check database for character
-// if found:
-//  * Login User linked to Character
-// if not found:
-//  * Create new User
-// * Log in User
-
-// SSO add Character:
-// * Check database for character
-// if found:
-//  * Merge?
-// if not found:
-//  * Add Character to currently logged in Account
-
-// Issue:
-// Create new account with a character
-// Create new account with different character, add character from ^
-// Solution? SkillQ does merge.
-
 export class SSORouter extends BaseRouter {
 
     private static async loginThroughSSO(request: Request, response: Response): Promise<Response> {
@@ -261,11 +241,11 @@ export class SSORouter extends BaseRouter {
             .getOne();
 
         if (!user) {
-            throw new Error('BAH');
+            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
         }
 
         let character = await Character.doQuery()
-            // .select('character.user')
+            .innerJoinAndSelect('character.user', 'user')
             .where('character.characterId = :characterId', {characterId: verifyResponse.data.CharacterID})
             .getOne();
 
@@ -275,52 +255,36 @@ export class SSORouter extends BaseRouter {
             character = undefined;
         }
 
-        // if (character && character.user.id !== request.session!.user.id) {
-        //     // Merge accounts
-        //     const otherUserCharacters = await Character.doQuery()
-        //         .where('character.userId = :userId', {userId: character.user.id})
-        //         .getMany();
-        //
-        //     if (otherUserCharacters.length) {
-        //         await Promise.all(otherUserCharacters.map(async (otherUserCharacter) => {
-        //             if (character) {
-        //                 otherUserCharacter.user = user;
-        //                 await character.save();
-        //             }
-        //         }));
-        //     }
-        // }
-        //
+        if (character && character.user.id !== request.session!.user.id) {
+            // Merge Users
+
+            // Move Characters to new User
+            await Character.doQuery()
+                .update()
+                .set({user})
+                .where('character.userId = :userId', {userId: character.user.id})
+                .execute();
+            await character.reload();
+
+            // Copy relevant information from the old User to the new User.
+            await User.doQuery()
+                .update()
+                .set({
+                    email: character.user.email || user.email,
+                    isAdmin: character.user.isAdmin || user.isAdmin,
+                })
+                .where('user.id = :id', {id: request.session!.user.id})
+                .execute();
+
+            // Delete the old User
+            User.delete(character.user.id).then();
+        }
+
         if (!character) {
             // New character
             character = new Character();
-            character.user = user;
-            user.characters.push(character);
-            console.log(user.characters);
         }
 
-        // let character: Character | undefined;
-        //
-        // if (request.session!.characterUUID) {
-        //     character = await Character.doQuery()
-        //         .where('character.uuid = :uuid', {uuid: request.session!.characterUUID})
-        //         .getOne();
-        // }
-        //
-        // if (!character) {
-        //     const user: User | undefined = await User.doQuery()
-        //         .where('user.id = :id', {id: request.session!.user.id})
-        //         .getOne();
-        //
-        //     if (!user) {
-        //         return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
-        //     }
-        //
-        //     // Create a new character
-        //     character = new Character();
-        //     character.user = user;
-        // }
-        //
         character.accessToken = authResponse.data.access_token;
         character.refreshToken = authResponse.data.refresh_token;
         character.tokenExpiry = new Date(Date.now() + (authResponse.data.expires_in * 1000));
@@ -328,6 +292,7 @@ export class SSORouter extends BaseRouter {
         character.characterId = verifyResponse.data.CharacterID;
         character.scopes = verifyResponse.data.Scopes;
         character.ownerHash = verifyResponse.data.CharacterOwnerHash;
+        character.user = user;
 
         await character.save();
 
@@ -341,7 +306,7 @@ export class SSORouter extends BaseRouter {
 
         const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
         if (sockets.length) {
-            sockets[0].emit('SSO_END', {
+            sockets[0].emit('SSO_AUTH_END', {
                 data: u!.sanitizedCopy,
                 message: 'SSOSuccessful',
                 state: 'success',
@@ -493,14 +458,17 @@ export class SSORouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/auth', SSORouter.startSSOProcess);
-        this.createGetRoute('/auth-callback', SSORouter.processCallBack);
         this.createGetRoute('/refresh', SSORouter.refreshToken);
         this.createPostRoute('/delete', SSORouter.deleteCharacter);
         this.createPostRoute('/activate', SSORouter.activateCharacter);
         this.createPostRoute('/log-route-warning', SSORouter.logDeprecation);
 
+        // SSO login
         this.createGetRoute('/login', SSORouter.loginThroughSSO);
         this.createGetRoute('/login-callback', SSORouter.loginThroughSSOCallback);
+
+        // SSO character auth
+        this.createGetRoute('/auth', SSORouter.startSSOProcess);
+        this.createGetRoute('/auth-callback', SSORouter.processCallBack);
     }
 }

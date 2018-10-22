@@ -35,8 +35,6 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
-import { LoginModalComponent } from './pages/home/login-modal.component';
-import { RegisterModalComponent } from './pages/home/register-modal.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { SkillsComponent } from './pages/skills/skills.component';
@@ -57,18 +55,14 @@ import { SocketService } from './socket/socket.service';
         DashboardComponent,
         WalletComponent,
         SkillsComponent,
-        LoginModalComponent,
         LogoutModalComponent,
-        RegisterModalComponent,
         IndustryComponent,
         UsersComponent,
         OreComponent,
         SorTableComponent,
     ],
     entryComponents: [
-        LoginModalComponent,
         LogoutModalComponent,
-        RegisterModalComponent,
     ],
     imports: [
         FormsModule,

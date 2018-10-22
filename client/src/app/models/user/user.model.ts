@@ -2,16 +2,12 @@ import { Character, IApiCharacterData } from '../character/character.model';
 
 export class User {
     public uuid?: string;
-    public username?: string;
-    public email?: string;
     public isAdmin: boolean;
     public characters: Character[] = [];
 
-    constructor(data?: IUserApiData) {
-        // this.uuid = data.uuid;
-        // this.username = data.username;
-        // this.email = data.email;
-        this.isAdmin = false;
+    constructor(data: IUserApiData) {
+        this.uuid = data.uuid;
+        this.isAdmin = data.isAdmin;
     }
 }
 
@@ -28,9 +24,9 @@ export interface ILoginResponse {
 }
 
 export interface IUserApiData {
-    username: string;
+    username?: string;
     uuid: string;
-    email: string;
+    email?: string;
     isAdmin: boolean;
     characters: IApiCharacterData[];
 }
