@@ -12,20 +12,9 @@ export class User extends BaseModel {
     }
 
     @Column({
-        unique: true,
+        nullable: true,
     })
-    public username!: string;
-
-    @Column({
-        select: false,
-        unique: true,
-    })
-    public passwordHash!: string;
-
-    @Column({
-        unique: true,
-    })
-    public email!: string;
+    public email?: string;
 
     @Column({
         default: false,
@@ -33,7 +22,7 @@ export class User extends BaseModel {
     public isAdmin!: boolean;
 
     @Column({
-        default: 0,
+        default: 1,
     })
     public timesLogin!: number;
 
@@ -53,12 +42,11 @@ export class User extends BaseModel {
         // Delete data that should not be sent to the client.
         const copy = clone<this>(this, false);
         delete copy.id;
-        delete copy.passwordHash;
         delete copy.timesLogin;
         delete copy.lastLogin;
         delete copy.createdOn;
         delete copy.updatedOn;
-        copy.characters = this.characters.map((character) => character.sanitizedCopy);
+        copy.characters = this.characters ? this.characters.map((character) => character.sanitizedCopy) : [];
         return copy;
     }
 }

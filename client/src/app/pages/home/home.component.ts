@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { UserService } from '../../models/user/user.service';
-import { LoginModalComponent } from './login-modal.component';
-import { RegisterModalComponent } from './register-modal.component';
 
 @Component({
     selector: 'app-home',
@@ -14,7 +12,7 @@ export class HomeComponent implements OnInit {
 
     public isLoggedIn = false;
 
-    constructor(private modalService: NgbModal) { }
+    constructor(private modalService: NgbModal, private userService: UserService) { }
 
     public ngOnInit() {
         this.isLoggedIn = !!UserService.user;
@@ -23,7 +21,7 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    public openLoginModal = () => this.modalService.open(LoginModalComponent);
-
-    public openRegisterModal = () => this.modalService.open(RegisterModalComponent);
+    public authCharacter() {
+        this.userService.ssoLogin();
+    }
 }

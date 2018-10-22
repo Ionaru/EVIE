@@ -3,18 +3,18 @@ import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
+import { Calc } from '../../../client/src/shared/calc.helper';
 import { config } from '../controllers/configuration.controller';
 import { DataController } from '../controllers/data.controller';
-import { generateRandomString } from '../controllers/random.controller';
 import { SocketServer } from '../controllers/socket.controller';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
 
 const scopes = [
-    'esi-location.read_location.v1',
+    // 'esi-location.read_location.v1',
     'esi-location.read_ship_type.v1',
-    'esi-industry.read_character_jobs.v1',
+    // 'esi-industry.read_character_jobs.v1',
     'esi-markets.read_character_orders.v1',
     'esi-skills.read_skills.v1',
     'esi-skills.read_skillqueue.v1',
@@ -27,6 +27,108 @@ const tokenPath = '/oauth/token?';
 const verifyPath = '/oauth/verify?';
 
 export class SSORouter extends BaseRouter {
+
+    private static async loginThroughSSO(request: Request, response: Response): Promise<Response> {
+        // Generate a random string and set it as the state of the request, we will later verify the response of the
+        // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery (XSRF), see this link for details:
+        // http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
+        request.session!.state = Calc.generateRandomString(15);
+        const args = [
+            'response_type=code',
+            'redirect_uri=' + config.getProperty('SSO_login_redirect_uri'),
+            'client_id=' + config.getProperty('SSO_login_client_ID'),
+            'state=' + request.session!.state,
+        ];
+        const finalUrl = 'https://' + oauthHost + oauthPath + args.join('&');
+
+        response.redirect(finalUrl);
+        return response.send();
+    }
+
+    private static async loginThroughSSOCallback(request: Request, response: Response): Promise<Response> {
+        if (!request.query.state) {
+            // Somehow a request was done without giving a state, probably didn't come from the SSO, possibly directly linked.
+            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'BadCallback');
+        }
+
+        // We're verifying the state returned by the EVE SSO service with the state saved earlier.
+        if (request.session!.state !== request.query.state) {
+            // State did not match the one we saved, possible XSRF.
+            logger.warn(`Invalid state from /callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`);
+            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
+        }
+
+        // The state has been verified and served its purpose, delete it.
+        delete request.session!.state;
+
+        const requestOptions: AxiosRequestConfig = {
+            headers: {
+                'Authorization': `Basic ${SSORouter.getSSOLoginString()}`,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        };
+
+        const requestArgs = [
+            'grant_type=authorization_code',
+            `code=${request.query.code}`,
+        ];
+
+        const authUrl = `${protocol}${oauthHost}${tokenPath}${requestArgs.join('&')}`;
+        logger.debug(authUrl);
+        const authResponse = await axios.post<IAuthResponseData>(authUrl, null, requestOptions).catch((error: AxiosError) => {
+            logger.error('Request failed:', authUrl, error.message);
+            return;
+        });
+
+        if (!authResponse || authResponse.status !== httpStatus.OK) {
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
+        }
+
+        const verifyRequestConfig: AxiosRequestConfig = {
+            headers: {
+                authorization: 'Bearer ' + authResponse.data.access_token,
+            },
+        };
+
+        const verifyUrl = protocol + oauthHost + verifyPath;
+        logger.debug(verifyUrl);
+        const verifyResult = await axios.get<IVerifyResponseData>(verifyUrl, verifyRequestConfig).catch((error: AxiosError) => {
+            logger.error('Request failed:', verifyUrl, error.message);
+            return;
+        });
+
+        if (!verifyResult || verifyResult.status !== httpStatus.OK) {
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
+        }
+
+        const characterSubQuery = Character.doQuery()
+            .select('character.user')
+            .where('character.ownerHash = :ownerHash', {ownerHash: verifyResult.data.CharacterOwnerHash});
+
+        let user: User | undefined = await User.doQuery()
+            .leftJoinAndSelect('user.characters', 'character')
+            .where(`user.id IN (${characterSubQuery.getQuery()})`)
+            .setParameters(characterSubQuery.getParameters())
+            .getOne();
+
+        if (!user) {
+            user = new User();
+            await user.save();
+        }
+
+        request.session!.user.id = user.id;
+
+        const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
+        if (sockets.length) {
+            sockets[0].emit('SSO_LOGON_END', {
+                data: user.sanitizedCopy,
+                message: 'SSOSuccessful',
+                state: 'success',
+            });
+        }
+
+        return response.status(httpStatus.OK).send('<h2>You may now close this window.</h2>');
+    }
 
     /**
      * Start the SSO process. Here we redirect the user to the SSO service and prepare for the callback
@@ -54,7 +156,7 @@ export class SSORouter extends BaseRouter {
         // Generate a random string and set it as the state of the request, we will later verify the response of the
         // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery, see this link for details:
         // http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
-        request.session!.state = generateRandomString(15);
+        request.session!.state = Calc.generateRandomString(15);
 
         const args = [
             'response_type=code',
@@ -93,31 +195,9 @@ export class SSORouter extends BaseRouter {
         // The state has been verified and served its purpose, delete it.
         delete request.session!.state;
 
-        let character: Character | undefined;
-
-        if (request.session!.characterUUID) {
-            character = await Character.doQuery()
-                .where('character.uuid = :uuid', {uuid: request.session!.characterUUID})
-                .getOne();
-        }
-
-        if (!character) {
-            const user: User | undefined = await User.doQuery()
-                .where('user.id = :id', {id: request.session!.user.id})
-                .getOne();
-
-            if (!user) {
-                return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
-            }
-
-            // Create a new character
-            character = new Character();
-            character.user = user;
-        }
-
         const requestOptions: AxiosRequestConfig = {
             headers: {
-                'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
+                'Authorization': `Basic ${SSORouter.getSSOAuthString()}`,
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
         };
@@ -130,17 +210,13 @@ export class SSORouter extends BaseRouter {
         const authUrl = `${protocol}${oauthHost}${tokenPath}${requestArgs.join('&')}`;
         logger.debug(authUrl);
         const authResponse = await axios.post<IAuthResponseData>(authUrl, null, requestOptions).catch((error: AxiosError) => {
-            logger.error('Request failed:', authUrl, error);
+            logger.error('Request failed:', authUrl, error.message);
             return;
         });
 
         if (!authResponse || authResponse.status !== httpStatus.OK) {
             return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
         }
-
-        character.accessToken = authResponse.data.access_token;
-        character.refreshToken = authResponse.data.refresh_token;
-        character.tokenExpiry = new Date(Date.now() + (authResponse.data.expires_in * 1000));
 
         const verifyRequestConfig: AxiosRequestConfig = {
             headers: {
@@ -150,30 +226,88 @@ export class SSORouter extends BaseRouter {
 
         const verifyUrl = protocol + oauthHost + verifyPath;
         logger.debug(verifyUrl);
-        const verifyResult = await axios.get<IVerifyResponseData>(verifyUrl, verifyRequestConfig).catch((error: AxiosError) => {
-            logger.error('Request failed:', verifyUrl, error);
+        const verifyResponse = await axios.get<IVerifyResponseData>(verifyUrl, verifyRequestConfig).catch((error: AxiosError) => {
+            logger.error('Request failed:', verifyUrl, error.message);
             return;
         });
 
-        if (!verifyResult || verifyResult.status !== httpStatus.OK) {
+        if (!verifyResponse || verifyResponse.status !== httpStatus.OK) {
             return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
         }
 
-        character.name = verifyResult.data.CharacterName;
-        character.characterId = verifyResult.data.CharacterID;
-        character.scopes = verifyResult.data.Scopes;
-        character.ownerHash = verifyResult.data.CharacterOwnerHash;
+        const user: User | undefined = await User.doQuery()
+            .leftJoinAndSelect('user.characters', 'character')
+            .where('user.id = :id', {id: request.session!.user.id})
+            .getOne();
+
+        if (!user) {
+            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
+        }
+
+        let character = await Character.doQuery()
+            .innerJoinAndSelect('character.user', 'user')
+            .where('character.characterId = :characterId', {characterId: verifyResponse.data.CharacterID})
+            .getOne();
+
+        if (character && character.ownerHash !== verifyResponse.data.CharacterOwnerHash) {
+            // Character exists but has been transferred, delete the old one and create anew.
+            await character.remove();
+            character = undefined;
+        }
+
+        if (character && character.user.id !== request.session!.user.id) {
+            // Merge Users
+
+            // Move Characters to new User
+            await Character.doQuery()
+                .update()
+                .set({user})
+                .where('character.userId = :userId', {userId: character.user.id})
+                .execute();
+            await character.reload();
+
+            // Copy relevant information from the old User to the new User.
+            await User.doQuery()
+                .update()
+                .set({
+                    email: character.user.email || user.email,
+                    isAdmin: character.user.isAdmin || user.isAdmin,
+                })
+                .where('user.id = :id', {id: request.session!.user.id})
+                .execute();
+
+            // Delete the old User
+            User.delete(character.user.id).then();
+        }
+
+        if (!character) {
+            // New character
+            character = new Character();
+        }
+
+        character.accessToken = authResponse.data.access_token;
+        character.refreshToken = authResponse.data.refresh_token;
+        character.tokenExpiry = new Date(Date.now() + (authResponse.data.expires_in * 1000));
+        character.name = verifyResponse.data.CharacterName;
+        character.characterId = verifyResponse.data.CharacterID;
+        character.scopes = verifyResponse.data.Scopes;
+        character.ownerHash = verifyResponse.data.CharacterOwnerHash;
+        character.user = user;
 
         await character.save();
 
         // Remove the characterUUID from the session as it is no longer needed
         delete request.session!.characterUUID;
 
-        const sockets = SocketServer.sockets.filter((_) => request.session && _.id === request.session.socket);
+        const u: User | undefined = await User.doQuery()
+            .leftJoinAndSelect('user.characters', 'character')
+            .where('user.id = :id', {id: request.session!.user.id})
+            .getOne();
 
+        const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
         if (sockets.length) {
-            sockets[0].emit('SSO_END', {
-                data: character.sanitizedCopy,
+            sockets[0].emit('SSO_AUTH_END', {
+                data: u!.sanitizedCopy,
                 message: 'SSOSuccessful',
                 state: 'success',
             });
@@ -194,8 +328,7 @@ export class SSORouter extends BaseRouter {
 
         // Fetch the Character who's accessToken we will refresh.
         const character = await Character.doQuery()
-            .where('character.userId = :id', {id: request.session!.user.id})
-            .andWhere('character.uuid = :uuid', {uuid: request.query.uuid})
+            .where('character.uuid = :uuid', {uuid: request.query.uuid})
             .getOne();
 
         if (!character) {
@@ -214,7 +347,7 @@ export class SSORouter extends BaseRouter {
         const data = `grant_type=refresh_token&refresh_token=${character.refreshToken}`;
         logger.debug(refreshUrl);
         const refreshResponse = await axios.post(refreshUrl, data, requestOptions).catch((error: AxiosError) => {
-            logger.error('Request failed:', refreshUrl, error);
+            logger.error('Request failed:', refreshUrl, error.message);
             return;
         });
 
@@ -242,7 +375,7 @@ export class SSORouter extends BaseRouter {
     private static async deleteCharacter(request: Request, response: Response): Promise<Response> {
 
         const user: User | undefined = await User.doQuery()
-            .select(['user.id', 'user.email', 'user.uuid', 'user.username', 'user.timesLogin', 'user.lastLogin'])
+            .select(['user.id'])
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
@@ -252,9 +385,7 @@ export class SSORouter extends BaseRouter {
             return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
         }
 
-        const characters = user.characters;
-
-        const characterToDeleteList = characters.filter((_) => _.uuid === request.body.characterUUID);
+        const characterToDeleteList = user.characters.filter((_) => _.uuid === request.body.characterUUID);
 
         if (characterToDeleteList.length === 0) {
             // That character does not exist
@@ -312,19 +443,32 @@ export class SSORouter extends BaseRouter {
     }
 
     /**
-     * Get a base64 string containing the client ID and secret key
+     * Get a base64 string containing the client ID and secret key for SSO login.
      */
-    private static getSSOAuthString(): string {
-        return new Buffer(config.getProperty('client_ID') + ':' + config.getProperty('secret_key')).toString('base64');
+    private static getSSOLoginString() {
+        return new Buffer(`${config.getProperty('SSO_login_client_ID')}:${config.getProperty('SSO_login_secret')}`).toString('base64');
+    }
+
+    /**
+     * Get a base64 string containing the client ID and secret key for SSO auth.
+     */
+    private static getSSOAuthString() {
+        return new Buffer(`${config.getProperty('client_ID')}:${config.getProperty('secret_key')}`).toString('base64');
     }
 
     constructor() {
         super();
-        this.createGetRoute('/start', SSORouter.startSSOProcess);
-        this.createGetRoute('/callback', SSORouter.processCallBack);
         this.createGetRoute('/refresh', SSORouter.refreshToken);
         this.createPostRoute('/delete', SSORouter.deleteCharacter);
         this.createPostRoute('/activate', SSORouter.activateCharacter);
         this.createPostRoute('/log-route-warning', SSORouter.logDeprecation);
+
+        // SSO login
+        this.createGetRoute('/login', SSORouter.loginThroughSSO);
+        this.createGetRoute('/login-callback', SSORouter.loginThroughSSOCallback);
+
+        // SSO character auth
+        this.createGetRoute('/auth', SSORouter.startSSOProcess);
+        this.createGetRoute('/auth-callback', SSORouter.processCallBack);
     }
 }
