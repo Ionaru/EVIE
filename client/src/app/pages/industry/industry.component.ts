@@ -3,7 +3,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faGem } from '@fortawesome/pro-regular-svg-icons';
 import { faHourglass } from '@fortawesome/pro-solid-svg-icons';
-import {jsPlumb} from 'jsplumb';
 
 import { IManufacturingData } from '../../../shared/interface.helper';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';

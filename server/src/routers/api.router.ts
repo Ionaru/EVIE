@@ -5,8 +5,6 @@ import { BaseRouter } from './base.router';
 
 export class APIRouter extends BaseRouter {
 
-    // TODO: Route for resetting a password
-
     /**
      * Request that will return the user session, this is used when the client first loads.
      * path: /api/handshake
