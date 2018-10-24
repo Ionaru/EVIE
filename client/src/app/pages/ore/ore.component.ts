@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 
 import { Common } from '../../../shared/common.helper';
@@ -13,7 +13,7 @@ import { TypesService } from '../../data-services/types.service';
     styleUrls: ['./ore.component.scss'],
     templateUrl: './ore.component.html',
 })
-export class OreComponent {
+export class OreComponent implements OnInit {
 
     public model = {
         beltVariants: false,
@@ -93,11 +93,9 @@ export class OreComponent {
         title: 'Sell price / m³',
     }];
 
-    constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService) {
-        this.getData().then();
-    }
+    constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService) { }
 
-    public async getData() {
+    public async ngOnInit() {
 
         await this.namesService.getNames(...this.ores);
 
