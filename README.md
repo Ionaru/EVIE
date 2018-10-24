@@ -1,43 +1,60 @@
 # EVIE
 
-[![Build Status](https://travis-ci.org/Ionaru/EVIE.svg?branch=master)](https://travis-ci.org/Ionaru/EVIE)
-[![Test Coverage](https://lima.codeclimate.com/github/Ionaru/EVIE/badges/coverage.svg)](https://lima.codeclimate.com/github/Ionaru/EVIE/coverage)
-[![](https://img.shields.io/badge/fly-safe-2F849E.svg)](https://www.eveonline.com/)
+[![](https://img.shields.io/badge/fly_safe-o7-2F849E.svg?style=for-the-badge)](https://www.eveonline.com/)
 
-This project started as a practise exercise for me to get myself more familiar with Angular and Typescript.
-...it's grown a bit beyond that, oops! 😉
+EVIE is a web-based API interface for EVE Online. It’s built using modern web technologies to provide a fast and responsive interface while still displaying a large amount of information.
 
-Currently I am still working on the basic functionality, but will launch it when I feel enough features have been added to make this website useful.
+My goal of this project is to build a robust API interface that is usable on any platform: including both desktop and mobile. *cough* cross-platform app *cough*. I don’t just want to display data from the API, but also do calculations, predictions and more to make EVIE more useful, even when you also have the game open.
+
+Right now the features are limited, but new pages are being built and I have a lot of exciting features planned!
+
+---
+
+### Screenshots
+**Dashboard**
+
+![](https://discourse-cdn-sjc1.com/eveonline/uploads/default/original/3X/3/c/3c85ba76bd9a07094fcdf1f6514f7b9ad011eac5.png)
+
+**Skills Page**
+
+![](https://discourse-cdn-sjc1.com/eveonline/uploads/default/original/3X/7/b/7b1bebf9af1891e7ab20672364694a6a6cc1107a.png)
+
+**Wallet Page**
+
+![](https://discourse-cdn-sjc1.com/eveonline/uploads/default/original/3X/8/5/85918fa3469a553295603760681ae6cbac743f05.png)
+
+**Ore prices table**
+
+![](https://discourse-cdn-sjc1.com/eveonline/uploads/default/original/3X/b/4/b434f9da4e3628d1fc7ff523ea6bbaed58e18f56.png)
+
+---
+
+### TODO & Ideas
+
+#### General
+* Option to switch between TQ and SiSi.
+* Use shared functions between client and server
+* Selecting a subset of scopes for SSO
+* Something special on character birthday / April fools / christmas
+* Responsiveness
+* More pages!
+* More tests!
+* Set up automated testing.
+
+#### Skills page
+* Attribute levels
+
+#### Wallet page
+* Pagination
+* Cash-flow breakdown
+
+#### Industry page
+* Fetch industry information from SDE(-like API) to server
+* Create routes so client can fetch industry info in small portions
+* Do cost calculations on resources, recursively
 
 ---
 
 Cross-browser testing for guaranteed compatibility, provided by
 
 [![](https://camo.githubusercontent.com/f33f902e2e990851bff52b6e284c4f384f89378b/68747470733a2f2f7777772e62726f77736572737461636b2e636f6d2f696d616765732f6d61696c2f62726f77736572737461636b2d6c6f676f2d666f6f7465722e706e67)](https://browserstack.com)
-
-
----
-
-### Install
-```bash
-docker build --build-arg FA_TOKEN=${FA_TOKEN} --tag evie:latest .
-docker run --public 3001:3001 --volume C:\Data\Evie\logs:/app/server/logs --volume C:\Data\Evie\data:/app/server/data --volume C:\Data\Evie\config:/app/server/config evie:latest
-```
-
-### TODO
-
-#### General
-* Option to switch between TQ and SiSi.
-* Caching of types in the server.
-* Use shared functions between client and server
-* Selecting a subset of scopes for SSO
-* Something special on character birthday / april fools / christmas
-* Responsiveness
-
-#### Skills page
-* Attribute levels
-
-#### Industry page
-* Fetch industry information from SDE(-like API) to server
-* Create routes so client can fetch industry info in small portions
-* Do cost calculations on resources, recursively
