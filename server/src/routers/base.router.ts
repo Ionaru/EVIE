@@ -3,10 +3,12 @@ import { PathParams, RequestHandlerParams } from 'express-serve-static-core';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
+import { IServerResponse } from '../../../client/src/shared/interface.helper';
 import { User } from '../models/user.model';
 
 export interface IResponse extends Response {
     route?: string[];
+    data?: IServerResponse<any>;
 }
 
 export class BaseRouter {
@@ -14,7 +16,7 @@ export class BaseRouter {
     public static sendResponse(response: Response, statusCode: number, message: string, data?: any): Response {
         const state = statusCode < 400 ? 'success' : 'error';
 
-        const responseData = {
+        const responseData: IServerResponse<any> = {
             data,
             message,
             state,
@@ -24,6 +26,7 @@ export class BaseRouter {
             delete responseData.data;
         }
         response.status(statusCode);
+        (response as IResponse).data = responseData;
         return response.json(responseData);
     }
 
