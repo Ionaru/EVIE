@@ -110,9 +110,8 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         super();
     }
 
-    public async ngOnInit() {
+    public ngOnInit() {
         super.ngOnInit();
-        await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
 
         if (CharacterService.selectedCharacter) {
             this.attributesService.getAttributes(CharacterService.selectedCharacter).then((attributes) => {
@@ -120,7 +119,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
             });
         }
 
-        this.parseSkillQueue();
+        Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]).then(() => this.parseSkillQueue());
     }
 
     public async ngOnDestroy() {
