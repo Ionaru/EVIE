@@ -20,6 +20,30 @@ export class UserService {
     private static _user: User;
     public static get user() { return this._user; }
 
+    private static openCenteredPopup(url: string, w: number, h: number) {
+        const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+        const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+        if (document.documentElement) {
+            const docWidth = document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+            const docHeight = document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+            const width = window.innerWidth ? window.innerWidth : docWidth;
+            const height = window.innerHeight ? window.innerHeight : docHeight;
+
+            const left = ((width / 2) - (w / 2)) + dualScreenLeft;
+            const top = ((height / 2) - (h / 2)) + dualScreenTop;
+            const newWindow = window.open(url, '_blank', 'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+            // Puts focus on the newWindow
+            if (window.focus && newWindow) {
+                newWindow.focus();
+            }
+
+            return newWindow;
+        }
+    }
+
     constructor(private http: HttpClient, private characterService: CharacterService, private router: Router) { }
 
     public logoutUser(): void {
@@ -61,7 +85,7 @@ export class UserService {
         if (UserService.authWindow && !UserService.authWindow.closed) {
             UserService.authWindow.focus();
         } else {
-            UserService.authWindow = window.open(url, '_blank', 'width=600,height=850');
+            UserService.authWindow = UserService.openCenteredPopup(url, 600, 850);
         }
 
         if (UserService.authWindow) {
@@ -86,7 +110,7 @@ export class UserService {
         if (UserService.authWindow && !UserService.authWindow.closed) {
             UserService.authWindow.focus();
         } else {
-            UserService.authWindow = window.open(url, '_blank', 'width=600,height=850');
+            UserService.authWindow = UserService.openCenteredPopup(url, 600, 850);
         }
 
         if (UserService.authWindow) {
