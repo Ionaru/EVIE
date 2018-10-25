@@ -10,6 +10,7 @@ import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SorTableComponent } from './components/sor-table/sor-table.component';
+import { AttributesService } from './data-services/attributes.service';
 import { BaseService } from './data-services/base.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
@@ -88,6 +89,7 @@ import { SocketService } from './socket/socket.service';
         ShipService,
         WalletService,
         WalletJournalService,
+        AttributesService,
         SkillQueueService,
         SkillGroupsService,
         SkillsService,

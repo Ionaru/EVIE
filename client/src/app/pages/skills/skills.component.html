@@ -9,11 +9,34 @@
                 </span>
             </p>
         </div>
-        <div>
+        <div class="training-speed">
             <h2>Training speed</h2>
-            <span class="training-speed" *ngIf="skills">
+            <span *ngIf="skills">
                 {{ spPerSec * 60 | number:'1.0-2' }} SP/min
             </span>
+        </div>
+    </div>
+
+    <div class="attributes-container justify-content-evenly">
+        <div class="attribute" [ngbTooltip]="'Perception'">
+            <img src="/assets/images/22_32_1.png" alt="Perception">
+            <p>{{ attributes?.perception }}</p>
+        </div>
+        <div class="attribute" [ngbTooltip]="'Memory'">
+            <img src="/assets/images/22_32_2.png" alt="Memory">
+            <p>{{ attributes?.memory }}</p>
+        </div>
+        <div class="attribute" [ngbTooltip]="'Willpower'">
+            <img src="/assets/images/22_32_3.png" alt="Willpower">
+            <p>{{ attributes?.willpower }}</p>
+        </div>
+        <div class="attribute" [ngbTooltip]="'Intelligence'">
+            <img src="/assets/images/22_32_4.png" alt="Intelligence">
+            <p>{{ attributes?.intelligence }}</p>
+        </div>
+        <div class="attribute" [ngbTooltip]="'Charisma'">
+            <img src="/assets/images/22_32_5.png" alt="Charisma">
+            <p>{{ attributes?.charisma }}</p>
         </div>
     </div>
 

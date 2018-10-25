@@ -6,7 +6,8 @@ import Timespan = countdown.Timespan;
 
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
-import { ISkillData, ISkillGroupData, ISkillQueueData, ISkillsData, ITypesData } from '../../../shared/interface.helper';
+import { IAttributesData, ISkillData, ISkillGroupData, ISkillQueueData, ISkillsData, ITypesData } from '../../../shared/interface.helper';
+import { AttributesService } from '../../data-services/attributes.service';
 import { NamesService } from '../../data-services/names.service';
 import { SkillGroupsService } from '../../data-services/skill-groups.service';
 import { SkillQueueService } from '../../data-services/skillqueue.service';
@@ -91,6 +92,8 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
     public trainedSkills?: ITrainedSkills;
 
+    public attributes?: IAttributesData;
+
     public currentTrainingSkill?: number;
     public currentTrainingSPGain?: number;
     public currentTrainingSPEnd?: number;
@@ -103,13 +106,19 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
 
     constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService,
-                private skillGroupsService: SkillGroupsService) {
+                private skillGroupsService: SkillGroupsService, private attributesService: AttributesService) {
         super();
     }
 
     public async ngOnInit() {
         super.ngOnInit();
         await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
+
+        if (CharacterService.selectedCharacter) {
+            this.attributesService.getAttributes(CharacterService.selectedCharacter).then((attributes) => {
+                this.attributes = attributes;
+            });
+        }
 
         this.parseSkillQueue();
     }

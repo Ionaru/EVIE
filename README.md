@@ -41,9 +41,6 @@ Right now the features are limited, but new pages are being built and I have a l
 * More tests!
 * Set up automated testing.
 
-#### Skills page
-* Attribute levels
-
 #### Wallet page
 * Pagination
 * Cash-flow breakdown
