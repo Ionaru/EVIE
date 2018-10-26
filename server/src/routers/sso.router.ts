@@ -1,6 +1,8 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
+import * as jwt from 'jsonwebtoken';
+import { URLSearchParams } from 'url';
 import { logger } from 'winston-pnp-logger';
 
 import { Calc } from '../../../client/src/shared/calc.helper';
@@ -22,9 +24,8 @@ const scopes = [
 ];
 const protocol = 'https://';
 const oauthHost = 'login.eveonline.com';
-const oauthPath = '/oauth/authorize?';
-const tokenPath = '/oauth/token?';
-const verifyPath = '/oauth/verify?';
+const authorizePath = '/v2/oauth/authorize?';
+const tokenPath = '/v2/oauth/token?';
 
 export class SSORouter extends BaseRouter {
 
@@ -35,13 +36,14 @@ export class SSORouter extends BaseRouter {
         request.session!.state = Calc.generateRandomString(15);
         const args = [
             'response_type=code',
-            'redirect_uri=' + config.getProperty('SSO_login_redirect_uri'),
-            'client_id=' + config.getProperty('SSO_login_client_ID'),
+            'redirect_uri=' + config.getProperty('SSO_login_client_ID'),
+            'client_id=' + config.getProperty('SSO_login_secret'),
+            'scope=' + 'esi-wallet.read_character_wallet.v1',
             'state=' + request.session!.state,
         ];
-        const finalUrl = 'https://' + oauthHost + oauthPath + args.join('&');
+        const authorizeURL = 'https://' + oauthHost + authorizePath + args.join('&');
 
-        response.redirect(finalUrl);
+        response.redirect(authorizeURL);
         return response.send();
     }
 
@@ -54,7 +56,9 @@ export class SSORouter extends BaseRouter {
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
-            logger.warn(`Invalid state from /callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`);
+            logger.warn(
+                `Invalid state from /login-callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`,
+            );
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
         }
 
@@ -68,42 +72,32 @@ export class SSORouter extends BaseRouter {
             },
         };
 
-        const requestArgs = [
-            'grant_type=authorization_code',
-            `code=${request.query.code}`,
-        ];
+        const qs = new URLSearchParams({
+            code: request.query.code,
+            grant_type: 'authorization_code',
+        });
 
-        const authUrl = `${protocol}${oauthHost}${tokenPath}${requestArgs.join('&')}`;
-        logger.debug(authUrl);
-        const authResponse = await axios.post<IAuthResponseData>(authUrl, null, requestOptions).catch((error: AxiosError) => {
-            logger.error('Request failed:', authUrl, error.message);
+        const tokenURL = `${protocol}${oauthHost}${tokenPath}`;
+        logger.debug(tokenURL);
+        const authResponse = await axios.post<IAuthResponseData>(tokenURL, qs, requestOptions).catch((error: AxiosError) => {
+            logger.error('Request failed:', tokenURL, error.message, error.response ? error.response.data : '');
             return;
         });
 
         if (!authResponse || authResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
         }
 
-        const verifyRequestConfig: AxiosRequestConfig = {
-            headers: {
-                authorization: 'Bearer ' + authResponse.data.access_token,
-            },
-        };
-
-        const verifyUrl = protocol + oauthHost + verifyPath;
-        logger.debug(verifyUrl);
-        const verifyResult = await axios.get<IVerifyResponseData>(verifyUrl, verifyRequestConfig).catch((error: AxiosError) => {
-            logger.error('Request failed:', verifyUrl, error.message);
-            return;
-        });
-
-        if (!verifyResult || verifyResult.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
+        const token = jwt.decode(authResponse.data.access_token) as IJWTToken;
+        if (!SSORouter.isJWTValid(token)) {
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'InvalidJWTToken');
         }
+
+        const ownerHash = SSORouter.extractJWTValues(token).characterOwnerHash;
 
         const characterSubQuery = Character.doQuery()
             .select('character.user')
-            .where('character.ownerHash = :ownerHash', {ownerHash: verifyResult.data.CharacterOwnerHash});
+            .where('character.ownerHash = :ownerHash', {ownerHash});
 
         let user: User | undefined = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
@@ -165,7 +159,7 @@ export class SSORouter extends BaseRouter {
             'scope=' + scopes.join(' '),
             'state=' + request.session!.state,
         ];
-        const finalUrl = 'https://' + oauthHost + oauthPath + args.join('&');
+        const finalUrl = 'https://' + oauthHost + authorizePath + args.join('&');
 
         response.redirect(finalUrl);
         return response.send();
@@ -188,7 +182,9 @@ export class SSORouter extends BaseRouter {
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
-            logger.warn(`Invalid state from /callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`);
+            logger.warn(
+                `Invalid state from /auth-callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`,
+            );
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
         }
 
@@ -218,22 +214,12 @@ export class SSORouter extends BaseRouter {
             return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
         }
 
-        const verifyRequestConfig: AxiosRequestConfig = {
-            headers: {
-                authorization: 'Bearer ' + authResponse.data.access_token,
-            },
-        };
-
-        const verifyUrl = protocol + oauthHost + verifyPath;
-        logger.debug(verifyUrl);
-        const verifyResponse = await axios.get<IVerifyResponseData>(verifyUrl, verifyRequestConfig).catch((error: AxiosError) => {
-            logger.error('Request failed:', verifyUrl, error.message);
-            return;
-        });
-
-        if (!verifyResponse || verifyResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
+        const token = jwt.decode(authResponse.data.access_token) as IJWTToken;
+        if (!SSORouter.isJWTValid(token)) {
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'InvalidJWTToken');
         }
+
+        const {characterID, characterName, characterOwnerHash, characterScopes} = SSORouter.extractJWTValues(token);
 
         const user: User | undefined = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
@@ -246,10 +232,10 @@ export class SSORouter extends BaseRouter {
 
         let character = await Character.doQuery()
             .innerJoinAndSelect('character.user', 'user')
-            .where('character.characterId = :characterId', {characterId: verifyResponse.data.CharacterID})
+            .where('character.characterId = :characterID', {characterID})
             .getOne();
 
-        if (character && character.ownerHash !== verifyResponse.data.CharacterOwnerHash) {
+        if (character && character.ownerHash !== characterOwnerHash) {
             // Character exists but has been transferred, delete the old one and create anew.
             await character.remove();
             character = undefined;
@@ -288,10 +274,10 @@ export class SSORouter extends BaseRouter {
         character.accessToken = authResponse.data.access_token;
         character.refreshToken = authResponse.data.refresh_token;
         character.tokenExpiry = new Date(Date.now() + (authResponse.data.expires_in * 1000));
-        character.name = verifyResponse.data.CharacterName;
-        character.characterId = verifyResponse.data.CharacterID;
-        character.scopes = verifyResponse.data.Scopes;
-        character.ownerHash = verifyResponse.data.CharacterOwnerHash;
+        character.name = characterName;
+        character.characterId = characterID;
+        character.scopes = characterScopes.join(' ');
+        character.ownerHash = characterOwnerHash;
         character.user = user;
 
         await character.save();
@@ -446,14 +432,39 @@ export class SSORouter extends BaseRouter {
      * Get a base64 string containing the client ID and secret key for SSO login.
      */
     private static getSSOLoginString() {
-        return new Buffer(`${config.getProperty('SSO_login_client_ID')}:${config.getProperty('SSO_login_secret')}`).toString('base64');
+        return Buffer.from(`${config.getProperty('SSO_login_client_ID')}:${config.getProperty('SSO_login_secret')}`).toString('base64');
     }
 
     /**
      * Get a base64 string containing the client ID and secret key for SSO auth.
      */
     private static getSSOAuthString() {
-        return new Buffer(`${config.getProperty('client_ID')}:${config.getProperty('secret_key')}`).toString('base64');
+        return Buffer.from(`${config.getProperty('client_ID')}:${config.getProperty('secret_key')}`).toString('base64');
+    }
+
+    private static extractJWTValues(token: IJWTToken):
+        {characterID: number, characterName: string, characterOwnerHash: string, characterScopes: string[]} {
+        const characterID = Number(token.sub.split(':')[2]);
+        const characterName = token.name;
+        const characterOwnerHash = token.owner;
+        const characterScopes = typeof token.scp === 'string' ? [token.scp] : token.scp;
+
+        return {characterID, characterName, characterOwnerHash, characterScopes};
+    }
+
+    private static isJWTValid(token: IJWTToken): boolean {
+        if (![config.getProperty('client_ID'), config.getProperty('client_ID')].includes(token.azp)) {
+            // Authorized party is not correct.
+            return false;
+        }
+
+        if (![oauthHost, protocol + oauthHost].includes(token.iss)) {
+            // Token issuer is incorrect.
+            return false;
+        }
+
+        // Check token expiry
+        return Date.now() <= (token.exp * 1000);
     }
 
     constructor() {
