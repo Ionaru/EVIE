@@ -42,7 +42,13 @@ export class RequestLogger {
 
                     const requestDuration = Date.now() - requestStartTime;
                     const arrow = RequestLogger.arrow;
-                    const logContent = `${identifier}: ${text} ${arrow} ${router} ${arrow} ${message} ${status}, ${requestDuration}ms`;
+
+                    let logContent = `${identifier}: ${text} ${arrow} ${router} ${arrow} `;
+                    if (message) {
+                        logContent += `${message} `;
+                    }
+                    logContent += `${status}, ${requestDuration}ms`;
+
                     if (endResponse.statusCode >= 500) {
                         logger.error(logContent);
                     } else if (endResponse.statusCode >= 400) {
