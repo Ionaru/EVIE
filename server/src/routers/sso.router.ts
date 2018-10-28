@@ -36,9 +36,9 @@ export class SSORouter extends BaseRouter {
         request.session!.state = Calc.generateRandomString(15);
         const args = [
             'response_type=code',
-            'redirect_uri=' + config.getProperty('SSO_login_client_ID'),
-            'client_id=' + config.getProperty('SSO_login_secret'),
-            'scope=' + 'esi-wallet.read_character_wallet.v1',
+            'redirect_uri=' + config.getProperty('SSO_login_redirect_uri'),
+            'client_id=' + config.getProperty('SSO_login_client_ID'),
+            'scope=' + 'publicData',
             'state=' + request.session!.state,
         ];
         const authorizeURL = 'https://' + oauthHost + authorizePath + args.join('&');
@@ -65,24 +65,7 @@ export class SSORouter extends BaseRouter {
         // The state has been verified and served its purpose, delete it.
         delete request.session!.state;
 
-        const requestOptions: AxiosRequestConfig = {
-            headers: {
-                'Authorization': `Basic ${SSORouter.getSSOLoginString()}`,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        };
-
-        const qs = new URLSearchParams({
-            code: request.query.code,
-            grant_type: 'authorization_code',
-        });
-
-        const tokenURL = `${protocol}${oauthHost}${tokenPath}`;
-        logger.debug(tokenURL);
-        const authResponse = await axios.post<IAuthResponseData>(tokenURL, qs, requestOptions).catch((error: AxiosError) => {
-            logger.error('Request failed:', tokenURL, error.message, error.response ? error.response.data : '');
-            return;
-        });
+        const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOLoginString(), request.query.code);
 
         if (!authResponse || authResponse.status !== httpStatus.OK) {
             return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
@@ -191,27 +174,10 @@ export class SSORouter extends BaseRouter {
         // The state has been verified and served its purpose, delete it.
         delete request.session!.state;
 
-        const requestOptions: AxiosRequestConfig = {
-            headers: {
-                'Authorization': `Basic ${SSORouter.getSSOAuthString()}`,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        };
-
-        const requestArgs = [
-            'grant_type=authorization_code',
-            `code=${request.query.code}`,
-        ];
-
-        const authUrl = `${protocol}${oauthHost}${tokenPath}${requestArgs.join('&')}`;
-        logger.debug(authUrl);
-        const authResponse = await axios.post<IAuthResponseData>(authUrl, null, requestOptions).catch((error: AxiosError) => {
-            logger.error('Request failed:', authUrl, error.message);
-            return;
-        });
+        const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOAuthString(), request.query.code);
 
         if (!authResponse || authResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
         }
 
         const token = jwt.decode(authResponse.data.access_token) as IJWTToken;
@@ -309,7 +275,6 @@ export class SSORouter extends BaseRouter {
      *  accessToken <required>: The Character's current access token
      */
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
-    @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'uuid')
     private static async refreshToken(request: Request, response: Response): Promise<Response> {
 
         // Fetch the Character who's accessToken we will refresh.
@@ -317,28 +282,15 @@ export class SSORouter extends BaseRouter {
             .where('character.uuid = :uuid', {uuid: request.query.uuid})
             .getOne();
 
-        if (!character) {
+        if (!character || !character.refreshToken) {
             // There was no Character found with a matching UUID and userId.
             return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'CharacterNotFound');
         }
 
-        const requestOptions: AxiosRequestConfig = {
-            headers: {
-                'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        };
-
-        const refreshUrl = protocol + oauthHost + tokenPath;
-        const data = `grant_type=refresh_token&refresh_token=${character.refreshToken}`;
-        logger.debug(refreshUrl);
-        const refreshResponse = await axios.post(refreshUrl, data, requestOptions).catch((error: AxiosError) => {
-            logger.error('Request failed:', refreshUrl, error.message);
-            return;
-        });
+        const refreshResponse = await SSORouter.doAuthRequest(SSORouter.getSSOAuthString(), character.refreshToken, true);
 
         if (!refreshResponse || refreshResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOResponseError');
+            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
         }
 
         character.refreshToken = refreshResponse.data.refresh_token;
@@ -443,7 +395,7 @@ export class SSORouter extends BaseRouter {
     }
 
     private static extractJWTValues(token: IJWTToken):
-        {characterID: number, characterName: string, characterOwnerHash: string, characterScopes: string[]} {
+        { characterID: number, characterName: string, characterOwnerHash: string, characterScopes: string[] } {
         const characterID = Number(token.sub.split(':')[2]);
         const characterName = token.name;
         const characterOwnerHash = token.owner;
@@ -453,8 +405,10 @@ export class SSORouter extends BaseRouter {
     }
 
     private static isJWTValid(token: IJWTToken): boolean {
-        if (![config.getProperty('client_ID'), config.getProperty('client_ID')].includes(token.azp)) {
+        const clientIds = [config.getProperty('SSO_login_client_ID'), config.getProperty('client_ID')];
+        if (!clientIds.includes(token.azp)) {
             // Authorized party is not correct.
+            logger.warn('Authorized party is not correct.', `Expected: ${clientIds}, got: ${token.azp}`);
             return false;
         }
 
@@ -463,8 +417,28 @@ export class SSORouter extends BaseRouter {
             return false;
         }
 
-        // Check token expiry
+        // Check if token is still valid.
         return Date.now() <= (token.exp * 1000);
+    }
+
+    private static doAuthRequest(auth: string, code: string, refresh = false) {
+        const requestOptions: AxiosRequestConfig = {
+            headers: {
+                'Authorization': 'Basic ' + auth,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        };
+
+        const qs = refresh ?
+            new URLSearchParams({grant_type: 'refresh_token', refresh_token: code}) :
+            new URLSearchParams({grant_type: 'authorization_code', code});
+
+        const authUrl = `${protocol}${oauthHost}${tokenPath}`;
+        logger.debug(authUrl);
+        return axios.post<IAuthResponseData>(authUrl, qs, requestOptions).catch((error: AxiosError) => {
+            logger.error('Request failed:', authUrl, error.message);
+            return;
+        });
     }
 
     constructor() {
