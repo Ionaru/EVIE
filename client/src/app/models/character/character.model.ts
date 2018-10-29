@@ -40,6 +40,7 @@ export class Character {
         type?: string | null;
     } = {};
     public refreshTimer?: number;
+    public refreshRetryTimeout?: number;
 
     public constructor(data: IApiCharacterData) {
         this.characterId = data.characterId;

@@ -44,7 +44,7 @@ export class CharacterService {
             await this.refreshToken(character);
         }
 
-        character.refreshTimer = window.setInterval(() => {
+        character.refreshTimer = window.setTimeout(() => {
             this.refreshToken(character).then();
         }, tokenRefreshInterval);
 
@@ -59,7 +59,7 @@ export class CharacterService {
         const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
-            window.setTimeout(() => {
+            character.refreshRetryTimeout = window.setTimeout(() => {
                 this.refreshToken(character).then();
             }, 5 * 1000);
             return;
@@ -93,6 +93,10 @@ export class CharacterService {
         if (response.state === 'success') {
             if (character.refreshTimer) {
                 window.clearInterval(character.refreshTimer);
+            }
+
+            if (character.refreshRetryTimeout) {
+                window.clearTimeout(character.refreshRetryTimeout);
             }
 
             if (CharacterService.selectedCharacter && CharacterService.selectedCharacter.uuid === character.uuid) {
