@@ -1,5 +1,6 @@
 table thead th {
     user-select: none;
+    vertical-align: middle;
 
     &.sortable, .hint-button {
         cursor: pointer;

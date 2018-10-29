@@ -37,6 +37,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
+import { MineralsComponent } from './pages/minerals/minerals.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
@@ -60,6 +61,7 @@ import { SocketService } from './socket/socket.service';
         IndustryComponent,
         UsersComponent,
         OreComponent,
+        MineralsComponent,
         SorTableComponent,
     ],
     entryComponents: [

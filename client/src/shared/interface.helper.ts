@@ -284,6 +284,12 @@ export interface IIndustryActivityProducts {
     quantity: number;
 }
 
+export interface IReprocessingProducts {
+    typeID: number;
+    materialTypeID: number;
+    quantity: number;
+}
+
 export interface IIndustryActivitySkills {
     typeID: number;
     activityID: number;
@@ -338,4 +344,9 @@ export interface IManufacturingData {
         id: number,
         quantity: number,
     };
+}
+
+export interface IReprocessingProductsData {
+    id: number;
+    quantity: number;
 }

@@ -4,8 +4,18 @@ import { logger } from 'winston-pnp-logger';
 
 import { EVE } from '../../../client/src/shared/eve.helper';
 import {
-    IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
-    IManufacturingData, IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
+    IIndustryActivity,
+    IIndustryActivityMaterials,
+    IIndustryActivityProducts,
+    IIndustryActivitySkills,
+    IManufacturingData,
+    IMarketGroup,
+    IndustryActivity,
+    IReprocessingProducts,
+    IReprocessingProductsData,
+    ISkillCategoryData,
+    ISkillGroupData,
+    ITypesData,
 } from '../../../client/src/shared/interface.helper';
 import { RequestLogger } from '../loggers/request.logger';
 import { CacheController } from './cache.controller';
@@ -13,6 +23,19 @@ import { CacheController } from './cache.controller';
 export class DataController {
 
     public static deprecationsLogged: string[] = [];
+
+    public static async getReprocessingProducts(typeId: number): Promise<IReprocessingProductsData[] | undefined> {
+        const reprocessingProducts = await DataController.fetchESIData<IReprocessingProducts[]>(EVE.getInvTypeMaterialsUrl());
+
+        const products: IReprocessingProductsData[] = [];
+
+        if (reprocessingProducts) {
+            const productsForType = reprocessingProducts.filter((product) => product.typeID === typeId);
+            products.push(...productsForType.map((product) => ({id: product.materialTypeID, quantity: product.quantity})));
+        }
+
+        return products;
+    }
 
     public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | undefined> {
 

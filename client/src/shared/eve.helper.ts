@@ -22,6 +22,10 @@ export class EVE {
         return url;
     }
 
+    public static getInvTypeMaterialsUrl() {
+        return `${EVE.SDEURL}/invTypeMaterials.json`;
+    }
+
     public static getIndustryActivityUrl() {
         return `${EVE.SDEURL}/industryActivity.json`;
     }

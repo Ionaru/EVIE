@@ -27,6 +27,27 @@ export class DataRouter extends BaseRouter {
         return DataRouter.sendSuccessResponse(response, data);
     }
 
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    private static async getReprocessingInfo(request: Request, response: Response): Promise<Response> {
+        if (!request.params || !request.params.typeId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
+        const typeId = Number(request.params.typeId);
+
+        if (isNaN(typeId)) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+        }
+
+        const data = await DataController.getReprocessingProducts(typeId);
+
+        if (!data) {
+            return DataRouter.sendResponse(response, httpStatus.NO_CONTENT, 'OK');
+        }
+
+        return DataRouter.sendSuccessResponse(response, data);
+    }
+
     // noinspection JSUnusedLocalSymbols
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async getSkillTypes(_request: Request, response: Response): Promise<Response> {
@@ -84,5 +105,6 @@ export class DataRouter extends BaseRouter {
         this.createGetRoute('/market-types', DataRouter.getMarketTypes);
         this.createGetRoute('/market-ids', DataRouter.getMarketIds);
         this.createGetRoute('/manufacturing/:typeId', DataRouter.getManufacturingInfo);
+        this.createGetRoute('/reprocessing/:typeId', DataRouter.getReprocessingInfo);
     }
 }
