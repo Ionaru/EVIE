@@ -414,11 +414,17 @@ export class SSORouter extends BaseRouter {
 
         if (![oauthHost, protocol + oauthHost].includes(token.iss)) {
             // Token issuer is incorrect.
+            logger.warn('Unknown token issuer.', `Expected: '${oauthHost}' or '${protocol + oauthHost}', got: '${token.iss}'`);
             return false;
         }
 
-        // Check if token is still valid.
-        return Date.now() <= (token.exp * 1000);
+        if (Date.now() > (token.exp * 1000)) {
+            // Check if token is still valid.
+            logger.warn('Token is expired.', `Expiry was ${((token.exp * 1000) - Date.now()) / 1000}s ago.`);
+            return false;
+        }
+
+        return true;
     }
 
     private static doAuthRequest(auth: string, code: string, refresh = false) {
