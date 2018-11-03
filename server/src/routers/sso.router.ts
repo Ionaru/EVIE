@@ -29,7 +29,7 @@ const tokenPath = '/v2/oauth/token?';
 
 export class SSORouter extends BaseRouter {
 
-    private static async loginThroughSSO(request: Request, response: Response): Promise<Response> {
+    private static async SSOLogin(request: Request, response: Response): Promise<Response> {
         // Generate a random string and set it as the state of the request, we will later verify the response of the
         // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery (XSRF), see this link for details:
         // http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
@@ -47,7 +47,7 @@ export class SSORouter extends BaseRouter {
         return response.send();
     }
 
-    private static async loginThroughSSOCallback(request: Request, response: Response): Promise<Response> {
+    private static async SSOLoginCallback(request: Request, response: Response): Promise<Response> {
         if (!request.query.state) {
             // Somehow a request was done without giving a state, probably didn't come from the SSO, possibly directly linked.
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'BadCallback');
@@ -115,7 +115,7 @@ export class SSORouter extends BaseRouter {
      *                           If this is not provided, a new Character will be created
      */
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
-    private static async startSSOProcess(request: Request, response: Response): Promise<Response> {
+    private static async SSOAuth(request: Request, response: Response): Promise<Response> {
 
         if (request.query.uuid) {
             // With a characterUUID provided in the request, we initiate the re-authorization process
@@ -155,7 +155,7 @@ export class SSORouter extends BaseRouter {
      *  state <required>: The random string that was generated and sent with the request.
      */
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
-    private static async processCallBack(request: Request, response: Response): Promise<Response> {
+    private static async SSOAuthCallback(request: Request, response: Response): Promise<Response> {
 
         if (!request.query.state) {
             // Somehow a request was done without giving a state, probably didn't come from the SSO, possibly directly linked.
@@ -455,11 +455,11 @@ export class SSORouter extends BaseRouter {
         this.createPostRoute('/log-route-warning', SSORouter.logDeprecation);
 
         // SSO login
-        this.createGetRoute('/login', SSORouter.loginThroughSSO);
-        this.createGetRoute('/login-callback', SSORouter.loginThroughSSOCallback);
+        this.createGetRoute('/login', SSORouter.SSOLogin);
+        this.createGetRoute('/login-callback', SSORouter.SSOLoginCallback);
 
         // SSO character auth
-        this.createGetRoute('/auth', SSORouter.startSSOProcess);
-        this.createGetRoute('/auth-callback', SSORouter.processCallBack);
+        this.createGetRoute('/auth', SSORouter.SSOAuth);
+        this.createGetRoute('/auth-callback', SSORouter.SSOAuthCallback);
     }
 }
