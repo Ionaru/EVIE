@@ -86,8 +86,10 @@ export class SSORouter extends BaseRouter {
 
         if (!user) {
             user = new User();
-            await user.save();
         }
+
+        user.timesLogin++;
+        await user.save();
 
         request.session!.user.id = user.id;
 
