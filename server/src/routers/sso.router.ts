@@ -47,11 +47,9 @@ export class SSORouter extends BaseRouter {
         return response.send();
     }
 
+    // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
+    @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'state')
     private static async SSOLoginCallback(request: Request, response: Response): Promise<Response> {
-        if (!request.query.state) {
-            // Somehow a request was done without giving a state, probably didn't come from the SSO, possibly directly linked.
-            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'BadCallback');
-        }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
@@ -61,8 +59,6 @@ export class SSORouter extends BaseRouter {
             );
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
         }
-
-        // The state has been verified and served its purpose, delete it.
         delete request.session!.state;
 
         const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOLoginString(), request.query.code);
@@ -155,12 +151,9 @@ export class SSORouter extends BaseRouter {
      *  state <required>: The random string that was generated and sent with the request.
      */
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
+    @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'state')
     private static async SSOAuthCallback(request: Request, response: Response): Promise<Response> {
-
-        if (!request.query.state) {
-            // Somehow a request was done without giving a state, probably didn't come from the SSO, possibly directly linked.
-            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'BadCallback');
-        }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
@@ -170,8 +163,6 @@ export class SSORouter extends BaseRouter {
             );
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
         }
-
-        // The state has been verified and served its purpose, delete it.
         delete request.session!.state;
 
         const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOAuthString(), request.query.code);
