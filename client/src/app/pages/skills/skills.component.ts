@@ -205,7 +205,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     private async getSkillQueue() {
         if (CharacterService.selectedCharacter) {
             this.skillQueue = await this.skillQueueService.getSkillQueue(CharacterService.selectedCharacter);
-            const skillIds = this.skillQueue.map((e) => e.skill_id);
+            const skillIds = this.skillQueue.map((skill) => skill.skill_id);
             await this.namesService.getNames(...skillIds);
         }
     }
@@ -214,7 +214,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         if (CharacterService.selectedCharacter) {
             const skills = await this.skillsService.getSkillsData(CharacterService.selectedCharacter);
             if (skills) {
-                await this.namesService.getNames(...skills.skills.map((e) => e.skill_id));
+                await this.namesService.getNames(...skills.skills.map((skill) => skill.skill_id));
                 for (const skill of skills.skills) {
                     (skill as IExtendedSkillData).name = NamesService.getNameFromData(skill.skill_id, 'Unknown skill');
                 }
