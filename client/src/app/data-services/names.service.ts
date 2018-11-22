@@ -1,12 +1,12 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
 import { IESINamesData, INames } from '../../shared/interface.helper';
+import { BaseService } from './base.service';
 
 @Injectable()
-export class NamesService {
+export class NamesService extends BaseService {
 
     public static getNameFromData(id: number, unknownMessage = 'Unknown'): string {
         if (!NamesService.names || !Object.keys(NamesService.names).length) {
@@ -20,17 +20,7 @@ export class NamesService {
         }
     }
 
-    private static names: INames;
-    private static namesExpiry: number;
-    private static namesMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
-    private static namesStoreTag = 'names';
-
-    private static resetNames(): void {
-        NamesService.namesExpiry = 0;
-        NamesService.names = {};
-    }
-
-    private static getNamesFromStore(): void {
+    public static getNamesFromStore(): void {
 
         const storeData = localStorage.getItem(NamesService.namesStoreTag);
         if (!storeData) {
@@ -50,6 +40,16 @@ export class NamesService {
         }
     }
 
+    private static names: INames;
+    private static namesExpiry: number;
+    private static namesMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+    private static namesStoreTag = 'names';
+
+    private static resetNames(): void {
+        NamesService.namesExpiry = 0;
+        NamesService.names = {};
+    }
+
     private static setNames() {
         if (!NamesService.namesExpiry) {
             NamesService.namesExpiry = Date.now() + NamesService.namesMaxAge;
@@ -61,10 +61,6 @@ export class NamesService {
         return array.filter((elem, index, self) => {
             return index === self.indexOf(elem);
         });
-    }
-
-    constructor(private http: HttpClient) {
-        NamesService.getNamesFromStore();
     }
 
     public async getNames(...ids: Array<string | number>): Promise<void> {
@@ -104,7 +100,7 @@ export class NamesService {
 
     private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
         const url = EVE.getUniverseNamesUrl();
-        const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch(Common.return);
+        const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }

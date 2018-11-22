@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 
 import { AppReadyEventService } from './app-ready-event.service';
+import { NamesService } from './data-services/names.service';
 import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -29,6 +30,7 @@ export class AppComponent {
     private async boot(): Promise<void> {
         await this.shakeHands();
         new SocketService();
+        NamesService.getNamesFromStore();
         SocketService.socket.on('STOP', (): void => {
             // The server will send STOP upon shutting down.
             // Reloading the window ensures nobody keeps using the site while the server is down.

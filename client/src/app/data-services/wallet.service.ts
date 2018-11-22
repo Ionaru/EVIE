@@ -1,19 +1,17 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
 import { Character } from '../models/character/character.model';
+import { BaseService } from './base.service';
 
 @Injectable()
-export class WalletService {
-
-    constructor(private http: HttpClient) { }
+export class WalletService extends BaseService {
 
     public async getWalletBalance(character: Character): Promise<number> {
         const url = EVE.getCharacterWalletUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
-        const response = await this.http.get<any>(url, {headers}).toPromise<number>().catch(Common.return);
+        const response = await this.http.get<any>(url, {headers}).toPromise<number>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return -1;
         }
