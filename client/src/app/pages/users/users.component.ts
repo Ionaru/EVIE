@@ -14,25 +14,24 @@ export class UsersComponent implements OnInit {
     public users: IUsersResponse[] = [];
 
     public tableSettings: ITableHeader[] = [{
-        attribute: 'id',
+        attribute: 'user.id',
         sort: true,
         title: 'ID',
     }, {
-        attribute: 'uuid',
+        attribute: 'name',
+        prefixFunction: (data) => `<img src="//imageserver.eveonline.com/Character/${data.characterId}_32.jpg" alt="${data.name}"> `,
         sort: true,
+        title: 'Name',
     }, {
-        attribute: 'email',
+        attribute: 'characterId',
         sort: true,
+        title: 'Character ID',
     }, {
-        attribute: 'characters.length',
-        sort: true,
-        title: 'Characters',
-    }, {
-        attribute: 'timesLogin',
+        attribute: 'user.timesLogin',
         sort: true,
         title: 'Times logged in',
     }, {
-        attribute: 'lastLogin',
+        attribute: 'user.lastLogin',
         pipe: 'date',
         pipeVar: 'yyyy-MM-dd HH:mm:ss',
         sort: true,

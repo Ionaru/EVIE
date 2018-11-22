@@ -33,7 +33,7 @@
 <nav class="navbar fixed-left navbar-inverse bg-inverse">
   <a routerLink="account" routerLinkActive="active" class="character-item"
      [ngClass]="{'disabled': true || checkAccess()}">
-    <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
+    <img src="//imageserver.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
   </a>
   <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item" tooltip="Character Overview" placement="right"
      [ngClass]="{'disabled': true || checkAccess()}">

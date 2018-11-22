@@ -71,7 +71,7 @@ export class OreComponent implements OnInit {
 
     public tableSettings: ITableHeader[] = [{
         attribute: 'name',
-        prefixFunction: (data) => `<img src="//image.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
+        prefixFunction: (data) => `<img src="//imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
         sort: true,
         sortAttribute: 'index',
         title: 'Type',

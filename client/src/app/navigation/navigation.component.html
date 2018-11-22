@@ -69,7 +69,7 @@
 <nav class="navbar fixed-left navbar-inverse">
     <div class="scrollContainer">
         <a class="character-item" [ngClass]="{'disabled': !activatedCharacter}" (click)="nextCharacter()">
-            <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
+            <img src="//imageserver.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
         </a>
         <a routerLink="dashboard" routerLinkActive="active" class="navbar-item d-lg-none"
            [ngClass]="{'disabled': !activatedCharacter}">

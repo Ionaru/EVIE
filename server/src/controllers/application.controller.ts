@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import * as appRoot from 'app-root-path';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
@@ -37,12 +38,21 @@ export class Application {
     private socketServer?: SocketServer;
 
     public async start() {
+
+        Sentry.init({
+            dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
+            enabled: process.env.NODE_ENV === 'production',
+            release: 'evie-server@0.6.0',
+        });
+
         await new DatabaseConnection().connect();
 
         logger.info('Beginning Express startup');
 
         const expressApplication = express();
         logger.info('Express application constructed');
+
+        expressApplication.use(Sentry.Handlers.requestHandler());
 
         // Request logger
         expressApplication.use(RequestLogger.logRequest());
@@ -106,6 +116,8 @@ export class Application {
 
         // Re-route all other requests to the Angular app.
         expressApplication.use('*', new AngularRedirectRouter().router);
+
+        expressApplication.use(Sentry.Handlers.errorHandler());
 
         // Error router.
         expressApplication.use(ErrorRouter.errorRoute);

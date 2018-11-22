@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -41,6 +41,7 @@ import { OreComponent } from './pages/ore/ore.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
+import { SentryErrorHandler } from './sentry.error-handler';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
 
@@ -76,6 +77,7 @@ import { SocketService } from './socket/socket.service';
         FontAwesomeModule,
     ],
     providers: [
+        { provide: ErrorHandler, useClass: SentryErrorHandler },
         httpInterceptorProviders,
         ESIRequestCache,
         AppReadyEventService,
