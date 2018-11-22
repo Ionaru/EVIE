@@ -50,7 +50,7 @@ export class Character extends BaseModel {
     @Column({
         default: false,
     })
-    public isActive!: boolean;
+    public isActive: boolean = false;
 
     @ManyToOne(() => User, (user) => user.characters, {
         onDelete: 'CASCADE',
