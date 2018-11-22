@@ -45,16 +45,17 @@ html {
             border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
-        // Set some standard rendering as the defaults might vary between browsers and operating systems
-        //font-family: "open-sans", sans-serif;
-        //font-family: "eve-font", sans-serif;
-        //font-size: $standard-font-size;
-        //line-height: $standard-line-height;
-        //color: $eve_text_color;
-        //margin: 0;
+        font-size: $mobile-font-size;
 
-        //padding: ($navbar_top_height + $body_padding) $body_padding $body_padding ($navbar_side_width + $body_padding) !important;
-        padding: ($navbar-top-height + $body-padding) $body-padding $body-padding ($navbar-side-width + $body-padding) !important;
+        @include media-breakpoint-up(md) {
+            font-size: $standard-font-size;
+        }
+
+        padding: ($navbar-top-height + $body-padding) $body-padding $body-padding $body-padding !important;
+
+        @include media-breakpoint-up(md) {
+            padding: ($navbar-top-height + $body-padding) $body-padding $body-padding ($navbar-side-width + $body-padding) !important;
+        }
 
         .error-div,
         footer {

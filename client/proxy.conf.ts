@@ -1,3 +1,4 @@
+// HTTP proxy for development purposes.
 const PROXY_CONFIG = [
     {
         context: [
