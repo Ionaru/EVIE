@@ -30,7 +30,7 @@ export interface ITableData {
 export class SorTableComponent implements OnChanges {
 
     @Input() public columns: ITableHeader[] = [];
-    @Input() public data: ITableData[] = [];
+    @Input() public data?: ITableData[];
 
     public currentSort?: ITableHeader;
     public invert = false;
@@ -43,7 +43,7 @@ export class SorTableComponent implements OnChanges {
     public getData = (attribute: string, data: ITableData) => attribute.split('.').reduce((o, i) =>  o ? o[i] : o, data);
 
     public sort(column = this.currentSort) {
-        if (!column) {
+        if (!column || !this.data) {
             return;
         }
 
