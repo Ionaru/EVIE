@@ -11,7 +11,7 @@ export class WalletJournalService extends BaseService {
 
     public async getWalletJournal(character: Character): Promise<IWalletJournalData[]> {
         const url = EVE.getCharacterWalletJournalUrl(character.characterId);
-        const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
+        const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<IWalletJournalData[]>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return [];

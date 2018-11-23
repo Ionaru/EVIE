@@ -11,7 +11,7 @@ export class IndustryJobsService extends BaseService {
 
     public async getIndustryJobs(character: Character): Promise<IIndustryJobsData[]> {
         const url = EVE.getIndustryJobsUrl(character.characterId);
-        const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
+        const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<IIndustryJobsData[]>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return [];
