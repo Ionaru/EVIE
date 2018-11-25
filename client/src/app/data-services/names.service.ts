@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
 import { IESINamesData, INames } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
@@ -42,7 +43,7 @@ export class NamesService extends BaseService {
 
     private static names: INames;
     private static namesExpiry: number;
-    private static namesMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+    private static namesMaxAge = 604_800_000; // 7 days
     private static namesStoreTag = 'names';
 
     private static resetNames(): void {
@@ -57,15 +58,9 @@ export class NamesService extends BaseService {
         localStorage.setItem(NamesService.namesStoreTag, JSON.stringify({expiry: NamesService.namesExpiry, names: NamesService.names}));
     }
 
-    private static uniquifyArray(array: any[]): any[] {
-        return array.filter((elem, index, self) => {
-            return index === self.indexOf(elem);
-        });
-    }
-
     public async getNames(...ids: Array<string | number>): Promise<void> {
 
-        ids = NamesService.uniquifyArray(ids);
+        ids = Common.uniquifyArray(ids);
 
         // Check if all values in 'ids' are -1, if so then there's no point in calling the Names Endpoint
         if (ids.every((element) => element === -1)) {

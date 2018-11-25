@@ -11,6 +11,12 @@ export class Common {
 
     public static generateNumbersArray = (length: number) => Array(length).fill(undefined).map((_, i) => i + 1);
 
+    public static uniquifyArray<T>(array: T[]): T[] {
+        return array.filter((elem, index, self) => {
+            return index === self.indexOf(elem);
+        });
+    }
+
     public static objectsArrayToObject<T>(array: any[], key: string): T {
 
         const object: any = {};
