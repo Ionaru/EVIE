@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class BaseService {
 
-    constructor(public http: HttpClient) { }
+    constructor(protected http: HttpClient) { }
 
-    public catchHandler = (parameter: HttpErrorResponse): HttpErrorResponse => parameter;
+    protected catchHandler = (parameter: HttpErrorResponse): HttpErrorResponse => parameter;
 }
