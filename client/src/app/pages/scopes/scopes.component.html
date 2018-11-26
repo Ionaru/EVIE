@@ -1,10 +1,10 @@
 <h1>
   Choose scopes
 </h1>
-<p>To display your data from EVE Online, EVIE requires your permission to use your 'scopes'.</p>
+<p>To display your data from EVE Online, EVIE requires permission to use your 'scopes'.</p>
 <br>
-<h3>What is a scope?</h3>
-<p>A scope is a certain set of data that a third-party application, like EVIE, can access from your character.</p>
+<h3>What are scopes?</h3>
+<p>Scopes are certain sets of data that a third-party application, like EVIE, can access from your character.</p>
 <p>For example you can grant access to view your skill queue, but not your wallet balance.</p>
 
 <form>
@@ -24,3 +24,11 @@
   <label for="switch-id">Small switch</label>
 </span>
 </form>
+
+<div class="btn-group btn-group-toggle container">
+    <label class="btn-outline-primary btn-block" ngbButtonLabel>
+        <input type="checkbox" ngbButton [(ngModel)]="showUntrainedSkills">
+        <fa-icon [icon]="showUntrainedSkills ? faEye : faEyeSlash"></fa-icon>
+        Untrained skills
+    </label>
+</div>
