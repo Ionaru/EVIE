@@ -41,7 +41,7 @@ export class SSORouter extends BaseRouter {
             'scope=' + 'publicData',
             'state=' + request.session!.state,
         ];
-        const authorizeURL = 'https://' + oauthHost + authorizePath + args.join('&');
+        const authorizeURL = protocol + oauthHost + authorizePath + args.join('&');
 
         response.redirect(authorizeURL);
         return response.send();
@@ -140,7 +140,7 @@ export class SSORouter extends BaseRouter {
             'scope=' + scopes.join(' '),
             'state=' + request.session!.state,
         ];
-        const finalUrl = 'https://' + oauthHost + authorizePath + args.join('&');
+        const finalUrl = protocol + oauthHost + authorizePath + args.join('&');
 
         response.redirect(finalUrl);
         return response.send();
