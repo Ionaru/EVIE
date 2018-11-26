@@ -38,6 +38,7 @@ import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { OreComponent } from './pages/ore/ore.component';
+import { ScopesComponent } from './pages/scopes/scopes.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
@@ -62,6 +63,7 @@ import { SocketService } from './socket/socket.service';
         UsersComponent,
         OreComponent,
         SorTableComponent,
+        ScopesComponent,
     ],
     entryComponents: [
         LogoutModalComponent,
