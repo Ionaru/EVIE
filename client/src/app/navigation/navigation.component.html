@@ -1,11 +1,6 @@
-<nav class="navbar fixed-top navbar-expand-lg">
+<nav class="navbar fixed-top navbar-expand">
     <a class="navbar-brand" routerLink="/">EVIE</a>
-    <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"
-            [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
-        <fa-icon [icon]="faChevronDown"></fa-icon>
-    </button>
-
-    <div class="collapse navbar-collapse" id="collapseExample" [ngbCollapse]="!isCollapsed">
+    <div class="navbar-collapse" id="collapseExample" [ngbCollapse]="!isCollapsed">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="/" routerLinkActive="active"
@@ -66,7 +61,7 @@
     </div>
 </nav>
 
-<nav class="navbar fixed-left navbar-inverse">
+<nav class="navbar fixed-left navbar-inverse d-none d-md-block">
     <div class="scrollContainer">
         <a class="character-item" [ngClass]="{'disabled': !activatedCharacter}" (click)="nextCharacter()">
             <img src="//imageserver.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">

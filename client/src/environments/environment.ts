@@ -4,7 +4,7 @@
 
 export const environment = {
     production: false,
-    socketHost: 'http://localhost:3000/',
+    socketHost: 'http://192.168.2.11:3000/',
 };
 
 /*
