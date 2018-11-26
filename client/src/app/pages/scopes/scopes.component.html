@@ -1,0 +1,26 @@
+<h1>
+  Choose scopes
+</h1>
+<p>To display your data from EVE Online, EVIE requires your permission to use your 'scopes'.</p>
+<br>
+<h3>What is a scope?</h3>
+<p>A scope is a certain set of data that a third-party application, like EVIE, can access from your character.</p>
+<p>For example you can grant access to view your skill queue, but not your wallet balance.</p>
+
+<form>
+    <label>
+        <input type="checkbox">
+        Boo
+    </label>
+
+    <p>You will be able to review your chosen scopes after logging in.</p>
+    <button class="btn btn-outline-primary add-character-button" (click)="authCharacter()">
+        <fa-icon [icon]="addCharacterIcon"></fa-icon>
+        Add a new character
+    </button>
+
+    <span class="switch">
+  <input type="checkbox" class="switch" id="switch-id">
+  <label for="switch-id">Small switch</label>
+</span>
+</form>
