@@ -67,7 +67,7 @@ export class OreComponent implements OnInit {
     };
 
     public data: any[] = [];
-    public visibleData: any[] = [];
+    public visibleData?: any[];
 
     public tableSettings: ITableHeader[] = [{
         attribute: 'name',
@@ -101,7 +101,7 @@ export class OreComponent implements OnInit {
 
         const types = await this.typesService.getTypes(...this.ores);
         for (const ore of this.ores) {
-            this.oreTypes[ore] = types ? types[this.ores.indexOf(ore)] : undefined;
+            this.oreTypes[ore] = types ? types.filter((type) => type.type_id === ore)[0] : undefined;
         }
 
         await Promise.all(this.ores.map(async (ore) => {
@@ -162,44 +162,48 @@ export class OreComponent implements OnInit {
     }
 
     public changeVisibleOres() {
-        const vis: number[] = [];
+        const visibleOres: number[] = [];
 
         if (this.model.highSecOres && this.model.regularOres) {
-            vis.push(...this.highSecOres);
+            visibleOres.push(...this.highSecOres);
         }
 
         if (this.model.highSecOres && this.model.beltVariants) {
-            vis.push(...this.highSecOreVariants);
+            visibleOres.push(...this.highSecOreVariants);
         }
 
         if (this.model.highSecOres && this.model.moonVariants) {
-            vis.push(...this.highSecOreMoonVariants);
+            visibleOres.push(...this.highSecOreMoonVariants);
         }
 
         if (this.model.lowSecOres && this.model.regularOres) {
-            vis.push(...this.lowSecOres);
+            visibleOres.push(...this.lowSecOres);
         }
 
         if (this.model.lowSecOres && this.model.beltVariants) {
-            vis.push(...this.lowSecOreVariants);
+            visibleOres.push(...this.lowSecOreVariants);
         }
 
         if (this.model.lowSecOres && this.model.moonVariants) {
-            vis.push(...this.lowSecOreMoonVariants);
+            visibleOres.push(...this.lowSecOreMoonVariants);
         }
 
         if (this.model.nullSecOres && this.model.regularOres) {
-            vis.push(...this.nullSecOres);
+            visibleOres.push(...this.nullSecOres);
         }
 
         if (this.model.nullSecOres && this.model.beltVariants) {
-            vis.push(...this.nullSecOreVariants);
+            visibleOres.push(...this.nullSecOreVariants);
         }
 
         if (this.model.nullSecOres && this.model.moonVariants) {
-            vis.push(...this.nullSecOreMoonVariants);
+            visibleOres.push(...this.nullSecOreMoonVariants);
         }
 
-        this.visibleData = vis.length !== this.data.length ? [...this.data.filter((ore) => vis.includes(ore.id))] : this.data;
+        if (visibleOres.length === this.data.length) {
+            this.visibleData = this.data;
+        }
+
+        this.visibleData = [...this.data.filter((ore) => visibleOres.includes(ore.id))];
     }
 }

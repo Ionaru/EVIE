@@ -37,5 +37,14 @@
 </div>
 <hr>
 
-<p>Prices are based on buying/selling 8.000m³ of ore in The Forge.</p>
-<app-sor-table *ngIf="visibleData.length" [data]="visibleData" [columns]="tableSettings"></app-sor-table>
+<ng-container *ngIf="visibleData; else ore_loading_message">
+    <p>Prices are based on buying/selling 8.000m³ of ore in The Forge.</p>
+    <app-sor-table [data]="visibleData" [columns]="tableSettings"></app-sor-table>
+</ng-container>
+
+<ng-template #ore_loading_message>
+    <span>
+        Loading ores...
+        <span class="m-progress m-progress-small"></span>
+    </span>
+</ng-template>
