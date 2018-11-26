@@ -38,7 +38,8 @@ export class SSORouter extends BaseRouter {
             'response_type=code',
             'redirect_uri=' + config.getProperty('SSO_login_redirect_uri'),
             'client_id=' + config.getProperty('SSO_login_client_ID'),
-            'scope=' + 'publicData',
+            // TODO: Remove when https://github.com/ccpgames/sso-issues/issues/40 is solved.
+            'scope=',
             'state=' + request.session!.state,
         ];
         const authorizeURL = protocol + oauthHost + authorizePath + args.join('&');
