@@ -7,28 +7,25 @@
 <p>Scopes are certain sets of data that a third-party application, like EVIE, can access from your character.</p>
 <p>For example you can grant access to view your skill queue, but not your wallet balance.</p>
 
-<form>
-    <label>
-        <input type="checkbox">
-        Boo
-    </label>
+<hr>
 
-    <p>You will be able to review your chosen scopes after logging in.</p>
-    <button class="btn btn-outline-primary add-character-button" (click)="authCharacter()">
-        <fa-icon [icon]="addCharacterIcon"></fa-icon>
-        Add a new character
-    </button>
+<div class="container">
+    <div class="button-grid-container">
+        <!--<button class="btn btn-outline-primary">Moo</button>-->
+        <div class="btn-group btn-group-toggle">
+            <label class="btn-outline-primary w-100" ngbButtonLabel>
+                <input type="checkbox" ngbButton [(ngModel)]="thing">
+                <fa-icon [icon]="thing ? viewEnabledIcon : viewDisabledIcon"></fa-icon>
+                Untrained skills
+            </label>
+        </div>
+        <button class="btn btn-info"><fa-icon [icon]="caretDown"></fa-icon></button>
+    </div>
 
-    <span class="switch">
-  <input type="checkbox" class="switch" id="switch-id">
-  <label for="switch-id">Small switch</label>
-</span>
-</form>
+    <br>
 
-<div class="btn-group btn-group-toggle container">
-    <label class="btn-outline-primary btn-block" ngbButtonLabel>
-        <input type="checkbox" ngbButton [(ngModel)]="showUntrainedSkills">
-        <fa-icon [icon]="showUntrainedSkills ? faEye : faEyeSlash"></fa-icon>
-        Untrained skills
-    </label>
+    <div class="button-grid-container">
+        <button class="btn btn-outline-primary">Moo</button>
+        <button class="btn btn-info"><fa-icon [icon]="caretDown"></fa-icon></button>
+    </div>
 </div>

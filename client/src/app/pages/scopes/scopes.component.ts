@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { faUserPlus } from '@fortawesome/pro-solid-svg-icons';
-import { UserService } from '../../models/user/user.service';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
+import { faChevronDown, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
+
+import { UserService } from '../../models/user/user.service';
 
 @Component({
     selector: 'app-scopes',
@@ -14,6 +15,10 @@ export class ScopesComponent {
 
     public viewEnabledIcon = faEye;
     public viewDisabledIcon = faEyeSlash;
+
+    public caretDown = faChevronDown;
+
+    public thing = false;
 
     constructor(private userService: UserService) { }
 
