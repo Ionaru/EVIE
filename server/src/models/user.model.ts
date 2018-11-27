@@ -34,10 +34,6 @@ export class User extends BaseModel {
     @OneToMany(() => Character, (character) => character.user)
     public characters!: Character[];
 
-    constructor() {
-        super();
-    }
-
     public get sanitizedCopy() {
         // Delete data that should not be sent to the client.
         const copy = clone<this>(this, false);
