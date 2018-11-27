@@ -1,6 +1,11 @@
 .button-grid-container {
     display: grid;
-    grid-template-columns: auto 38px;
+    grid-template-columns: auto 40px;
     //grid-template-columns: repeat(2, auto);
     //justify-content: space-between;
+
+    .button-label-grid {
+        display: grid;
+        grid-template-columns: 40px auto;
+    }
 }
