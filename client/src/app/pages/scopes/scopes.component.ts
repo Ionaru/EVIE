@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
-import { faChevronDown, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
+import { faChevronDown, faChevronUp, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
 
 import { UserService } from '../../models/user/user.service';
 
@@ -11,12 +11,16 @@ import { UserService } from '../../models/user/user.service';
 })
 export class ScopesComponent {
 
+    // Icons
     public addCharacterIcon = faUserPlus;
-
     public viewEnabledIcon = faEye;
     public viewDisabledIcon = faEyeSlash;
-
     public caretDown = faChevronDown;
+    public caretUp = faChevronUp;
+
+    // Angular variables
+    public readSkillsInfo = false;
+    public readSkillsScope = 'esi-skills.read_skills.v1';
 
     public thing = false;
 

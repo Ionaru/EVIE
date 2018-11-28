@@ -15,20 +15,43 @@
             <label class="button-label-grid btn-outline-primary w-100" ngbButtonLabel>
                 <input type="checkbox" ngbButton [(ngModel)]="thing">
                 <fa-icon [icon]="thing ? viewEnabledIcon : viewDisabledIcon"></fa-icon>
-                Untrained skills
+                <span class="button-label-text">Read skills</span>
             </label>
         </div>
-        <button class="btn btn-info">
-            <fa-icon [icon]="caretDown"></fa-icon>
+        <button class="btn btn-secondary" (click)="readSkillsInfo = !readSkillsInfo">
+            <fa-icon [icon]="readSkillsInfo ? caretUp: caretDown"></fa-icon>
         </button>
+        <div class="info-container" *ngIf="readSkillsInfo">
+            <pre>esi-skills.read_skills.v1</pre>
+            "Allows reading of a character's currently known skills."
+            <hr>
+            This scope will give EVIE read access to your character's list of skills, but also the amount of skillpoints
+            and attribute levels.
+            <br>
+            EVIE uses this scope heavily on the Skills page.
+        </div>
     </div>
 
     <br>
 
     <div class="button-grid-container">
-        <button class="btn btn-outline-primary">Moo</button>
-        <button class="btn btn-info">
+        <div class="btn-group btn-group-toggle">
+            <label class="button-label-grid btn-outline-primary w-100" ngbButtonLabel>
+                <input type="checkbox" ngbButton [(ngModel)]="a">
+                <fa-icon [icon]="a ? viewEnabledIcon : viewDisabledIcon"></fa-icon>
+                <span class="button-label-text">[SCOPE PLACEHOLDER]</span>
+            </label>
+        </div>
+        <button class="btn btn-secondary">
             <fa-icon [icon]="caretDown"></fa-icon>
         </button>
     </div>
 </div>
+
+<!--// 'esi-location.read_location.v1',-->
+<!--'esi-location.read_ship_type.v1',-->
+<!--// 'esi-industry.read_character_jobs.v1',-->
+<!--'esi-markets.read_character_orders.v1',-->
+<!--'esi-skills.read_skills.v1',-->
+<!--'esi-skills.read_skillqueue.v1',-->
+<!--'esi-wallet.read_character_wallet.v1',-->
