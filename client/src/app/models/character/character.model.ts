@@ -62,6 +62,10 @@ export class Character {
         this.tokenExpiry = new Date(data.tokenExpiry);
     }
 
+    public hasScope(scope: string) {
+        return this.scopes.includes(scope);
+    }
+
     public getAuthorizationHeader() {
         return 'Bearer ' + this.accessToken;
     }

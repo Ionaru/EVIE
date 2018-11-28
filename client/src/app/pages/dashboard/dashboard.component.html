@@ -20,17 +20,17 @@
                 <p>
                     <strong>{{ character.name }}</strong>
                 </p>
-                <p>
+                <p *ngIf="hasShipTypeScope(character)">
                     <ng-container *ngIf="character.currentShip.name && character.currentShip.type;else loading_message">
                         {{ character.currentShip.name }} ({{ character.currentShip.type }})
                     </ng-container>
                 </p>
-                <a class="character-link" (click)="goToCharacterWalletPage(character).then()">
+                <a class="character-link" (click)="goToCharacterWalletPage(character).then()" *ngIf="hasWalletScope(character)">
                     <p>
                         {{ character.balance || 0 | number:'0.2-2' }} ISK
                     </p>
                 </a>
-                <a class="character-link" (click)="goToCharacterSkillPage(character).then()">
+                <a class="character-link" (click)="goToCharacterSkillPage(character).then()" *ngIf="hasSkillQueueScope(character)">
                     <p>
                         {{ character.currentTrainingSkill?.name || 'No skill in training' }}
                         <span *ngIf="character.currentTrainingSkill" class="text-info">
