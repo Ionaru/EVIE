@@ -6,9 +6,13 @@
     //    width: 75%;
     //}
 
+    &.all-scopes-button {
+        grid-template-columns: auto;
+    }
+
     .button-label-grid {
         display: grid;
-        grid-template-columns: 24px auto;
+        grid-template-columns: 24px auto auto;
         text-align: left;
 
         fa-icon {
@@ -29,5 +33,14 @@
         hr {
             margin: 6px;
         }
+    }
+}
+
+.button-page-icons {
+    text-align: right;
+
+    .page-image {
+        filter: grayscale(100%) brightness(200%);
+        height: 24px;
     }
 }

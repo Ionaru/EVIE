@@ -103,7 +103,14 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
 
     public switchToCharacter = (character: Character) => this.characterService.setActiveCharacter(character).then();
 
-    public authCharacter = (character?: Character) => this.userService.authCharacter(character);
+    public authCharacter(character?: Character) {
+        if (character) {
+            this.characterService.setActiveCharacter(character).then();
+        } else {
+            this.characterService.setActiveCharacter().then();
+        }
+        this.router.navigate(['/scopes']).then();
+    }
 
     public async getCharacterInfo(character: Character) {
         await Promise.all([

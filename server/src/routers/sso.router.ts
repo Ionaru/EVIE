@@ -13,15 +13,6 @@ import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
 
-const scopes = [
-    // 'esi-location.read_location.v1',
-    'esi-location.read_ship_type.v1',
-    // 'esi-industry.read_character_jobs.v1',
-    'esi-markets.read_character_orders.v1',
-    'esi-skills.read_skills.v1',
-    'esi-skills.read_skillqueue.v1',
-    'esi-wallet.read_character_wallet.v1',
-];
 const protocol = 'https://';
 const oauthHost = 'login.eveonline.com';
 const authorizePath = '/v2/oauth/authorize?';
@@ -109,9 +100,7 @@ export class SSORouter extends BaseRouter {
     /**
      * Start the SSO process. Here we redirect the user to the SSO service and prepare for the callback
      * Params:
-     *  characterUUID <optional>: The UUID of the Character to re-authorize, this is useful for scope updates and characters
-     *                           that revoked access for this app.
-     *                           If this is not provided, a new Character will be created
+     *  scopes <optional>: A space-separated list of scope codes.
      */
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async SSOAuth(request: Request, response: Response): Promise<Response> {
@@ -138,7 +127,7 @@ export class SSORouter extends BaseRouter {
             'response_type=code',
             'redirect_uri=' + config.getProperty('redirect_uri'),
             'client_id=' + config.getProperty('client_ID'),
-            'scope=' + scopes.join(' '),
+            'scope=' + request.query.scopes,
             'state=' + request.session!.state,
         ];
         const finalUrl = protocol + oauthHost + authorizePath + args.join('&');
@@ -181,7 +170,7 @@ export class SSORouter extends BaseRouter {
 
         const {characterID, characterName, characterOwnerHash, characterScopes} = SSORouter.extractJWTValues(token);
 
-        const user: User | undefined = await User.doQuery()
+        let user: User | undefined = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
@@ -245,7 +234,8 @@ export class SSORouter extends BaseRouter {
         // Remove the characterUUID from the session as it is no longer needed
         delete request.session!.characterUUID;
 
-        const u: User | undefined = await User.doQuery()
+        // Refresh user data.
+        user = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
@@ -253,7 +243,7 @@ export class SSORouter extends BaseRouter {
         const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
         if (sockets.length) {
             sockets[0].emit('SSO_AUTH_END', {
-                data: u!.sanitizedCopy,
+                data: {user: user!.sanitizedCopy, newCharacter: character.uuid},
                 message: 'SSOSuccessful',
                 state: 'success',
             });
