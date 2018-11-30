@@ -33,19 +33,7 @@ interface IVerifyResponseData {
 }
 
 interface IJWTToken {
-    scp: string[] | string,
-    jti: string;
-    kid: string;
-    sub: string;
-    azp: string;
-    name: string;
-    owner: string;
-    exp: number;
-    iss: string;
-}
-
-interface IJWTToken {
-    scp: string[] | string,
+    scp: string[] | string;
     jti: string;
     kid: string;
     sub: string;
