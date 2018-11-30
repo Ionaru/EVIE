@@ -44,7 +44,7 @@ export class CharacterService {
             await this.refreshToken(character);
         }
 
-        character.refreshTimer = window.setTimeout(() => {
+        character.refreshTimer = window.setInterval(() => {
             this.refreshToken(character).then();
         }, tokenRefreshInterval);
 
