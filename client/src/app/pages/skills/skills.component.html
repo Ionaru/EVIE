@@ -1,4 +1,6 @@
-<div class="container skills-page-container">
+<app-no-scopes-message *ngIf="missingAllRequiredScopes"></app-no-scopes-message>
+
+<div class="container skills-page-container" *ngIf="missingAllRequiredScopes === false">
     <div class="skill-points-container">
         <div>
             <h2>Skillpoints</h2>
@@ -17,7 +19,7 @@
         </div>
     </div>
 
-    <div class="attributes-container justify-content-evenly">
+    <div class="attributes-container justify-content-evenly" *ngIf="">
         <div class="attribute" [ngbTooltip]="'Perception'">
             <img src="/assets/images/22_32_1.png" alt="Perception">
             <p>{{ attributes?.perception }}</p>

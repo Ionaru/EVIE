@@ -9,9 +9,10 @@ import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ApiOfflineMessageComponent } from './components/api-offline-message/api-offline-message.component';
+import { NoScopesMessageComponent } from './components/no-scopes-message/no-scopes-message.component';
 import { SorTableComponent } from './components/sor-table/sor-table.component';
 import { AttributesService } from './data-services/attributes.service';
-import { BaseService } from './data-services/base.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
 import { MarketService } from './data-services/market.service';
@@ -64,6 +65,8 @@ import { SocketService } from './socket/socket.service';
         OreComponent,
         SorTableComponent,
         ScopesComponent,
+        NoScopesMessageComponent,
+        ApiOfflineMessageComponent,
     ],
     entryComponents: [
         LogoutModalComponent,
@@ -83,7 +86,6 @@ import { SocketService } from './socket/socket.service';
         httpInterceptorProviders,
         ESIRequestCache,
         AppReadyEventService,
-        BaseService,
         UserService,
         UsersService,
         CharacterService,

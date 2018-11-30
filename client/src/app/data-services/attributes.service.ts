@@ -10,7 +10,7 @@ import { BaseService } from './base.service';
 @Injectable()
 export class AttributesService extends BaseService {
 
-    public async getAttributes(character: Character): Promise<any> {
+    public async getAttributes(character: Character): Promise<IAttributesData | undefined> {
         BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.SKILLS, 'getAttributes');
 
         const url = EVE.getCharacterAttributesUrl(character.characterId);

@@ -46,7 +46,7 @@ export class ScopesComponent {
             infoVisible: false,
             name: 'Read skillqueue',
             usageDescription: 'EVIE uses this scope on the Dashboard and Skills pages.',
-            usagePages: ['charactersheet', 'skills'],
+            usagePages: ['skills'],
         },
         {
             code: ScopesComponent.scopeCodes.WALLET,
@@ -55,7 +55,7 @@ export class ScopesComponent {
             infoVisible: false,
             name: 'Read wallet balance',
             usageDescription: 'EVIE uses this scope on the Dashboard and Wallet pages.',
-            usagePages: ['charactersheet', 'wallet'],
+            usagePages: ['wallet'],
         },
         {
             code: ScopesComponent.scopeCodes.ORDERS,
@@ -82,7 +82,7 @@ export class ScopesComponent {
             infoVisible: false,
             name: 'Read current ship type',
             usageDescription: 'EVIE uses this scope on the Dashboard page.',
-            usagePages: ['charactersheet'],
+            usagePages: [],
         },
         // {
         //     code: ScopesComponent.scopeCodes.LOCATION,

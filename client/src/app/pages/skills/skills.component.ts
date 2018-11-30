@@ -1,6 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
-import { faArrowAltRight, faChevronDown, faClock, faCog, faExclamationTriangle, faFolderOpen } from '@fortawesome/pro-solid-svg-icons';
+import {
+    faArrowAltRight,
+    faChevronDown,
+    faClock,
+    faCog,
+    faExclamationTriangle,
+    faFolderOpen,
+} from '@fortawesome/pro-solid-svg-icons';
 import * as countdown from 'countdown';
 import Timespan = countdown.Timespan;
 
@@ -14,6 +21,7 @@ import { SkillQueueService } from '../../data-services/skillqueue.service';
 import { SkillsService } from '../../data-services/skills.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { ScopesComponent } from '../scopes/scopes.component';
 
 interface IExtendedSkillQueueData extends ISkillQueueData {
     status?: 'training' | 'finished' | 'scheduled' | 'inactive';
@@ -102,6 +110,11 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public skillsGrouped: IGroupedSkillTypes = {};
     public trainedSkillIds: number[] = [];
 
+    public hasSkillsScope?: boolean;
+    public hasSkillQueueScope?: boolean;
+
+    protected requiredScopes = [ScopesComponent.scopeCodes.SKILLQUEUE, ScopesComponent.scopeCodes.SKILLS];
+
     // tslint:disable-next-line:no-bitwise
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
 
@@ -113,13 +126,13 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public ngOnInit() {
         super.ngOnInit();
 
-        if (CharacterService.selectedCharacter) {
-            this.attributesService.getAttributes(CharacterService.selectedCharacter).then((attributes) => {
-                this.attributes = attributes;
-            });
-        }
+        this.getAttributes().then();
 
-        Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]).then(() => this.parseSkillQueue());
+        Promise.all([
+            this.getSkillQueue(),
+            this.getSkills(),
+            this.setSkillGroups(),
+        ]).then(() => this.parseSkillQueue());
     }
 
     public async ngOnDestroy() {
@@ -134,6 +147,12 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public getSkillGroup = (skillId: number) => this.skillGroups.filter((group) => group.types.includes(skillId))[0].name;
 
     public skillQueueLow = () => !this.skillTrainingPaused && this.skillQueueTimeLeft < (24 * 60 * 60 * 1000);
+
+    public async getAttributes() {
+        if (CharacterService.selectedCharacter) {
+            this.attributes = await this.attributesService.getAttributes(CharacterService.selectedCharacter);
+        }
+    }
 
     public getSkillsForGroup(group: ISkillGroupData) {
         if (this.skills) {
