@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { faChevronDown, faChevronUp, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
 
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
+import { DataPageComponent } from '../data-page/data-page.component';
 
 @Component({
     selector: 'app-scopes',
     styleUrls: ['./scopes.component.scss'],
     templateUrl: './scopes.component.html',
 })
-export class ScopesComponent {
+export class ScopesComponent extends DataPageComponent implements OnInit {
 
     public static readonly scopeCodes = {
         JOBS: 'esi-industry.read_character_jobs.v1',
@@ -36,7 +37,7 @@ export class ScopesComponent {
             eveDescription: 'Allows reading of a character\'s currently known skills.',
             infoVisible: false,
             name: 'Read skills',
-            usageDescription: 'EVIE uses this scope heavily on the Skills page.',
+            usageDescription: 'EVIE uses this scope heavily on the Skills page, the skills page does not work without this scope.',
             usagePages: ['skills'],
         },
         {
@@ -96,11 +97,14 @@ export class ScopesComponent {
     ];
 
     constructor(private userService: UserService) {
+        super();
+    }
+
+    public ngOnInit() {
+        super.ngOnInit();
         if (CharacterService.selectedCharacter) {
             for (const scope of this.scopes) {
-                if (CharacterService.selectedCharacter.scopes.includes(scope.code)) {
-                    scope.enabled = true;
-                }
+                scope.enabled = CharacterService.selectedCharacter.scopes.includes(scope.code);
             }
         }
     }
