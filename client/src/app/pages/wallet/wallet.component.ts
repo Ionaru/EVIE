@@ -17,7 +17,7 @@ import { ScopesComponent } from '../scopes/scopes.component';
 export class WalletComponent extends DataPageComponent implements OnInit {
 
     public journalData: IWalletJournalData[] = [];
-    public balanceCountUp!: CountUp;
+    public balanceCountUp?: CountUp;
 
     public tableSettings: ITableHeader[] = [{
         attribute: 'date',
@@ -40,26 +40,32 @@ export class WalletComponent extends DataPageComponent implements OnInit {
         attribute: 'description',
     }];
 
-    protected requiredScopes = [ScopesComponent.scopeCodes.WALLET, ScopesComponent.scopeCodes.ORDERS];
-
     private balance!: number;
 
     constructor(private walletService: WalletService, private journalService: WalletJournalService) {
         super();
+        this.requiredScopes = [ScopesComponent.scopeCodes.WALLET];
     }
 
     public ngOnInit() {
         super.ngOnInit();
-        if (CharacterService.selectedCharacter) {
-            this.balanceCountUp = new CountUp('wallet-balance', 0, 0, 2);
+        this.balanceCountUp = undefined;
+        if (WalletComponent.hasWalletScope) {
             this.getBalanceData().then();
             this.getJournalData().then();
         }
     }
 
+    public static get hasWalletScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.WALLET);
+    }
+
     public async getBalanceData() {
         if (CharacterService.selectedCharacter) {
             this.balance = await this.walletService.getWalletBalance(CharacterService.selectedCharacter);
+            if (!this.balanceCountUp) {
+                this.balanceCountUp = new CountUp('wallet-balance', 0, 0, 2);
+            }
             this.balanceCountUp.update(this.balance);
         }
     }

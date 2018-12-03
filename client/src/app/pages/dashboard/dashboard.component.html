@@ -27,7 +27,9 @@
                 </p>
                 <a class="character-link" (click)="goToCharacterWalletPage(character).then()" *ngIf="hasWalletScope(character)">
                     <p>
-                        {{ character.balance || 0 | number:'0.2-2' }} ISK
+                        <ng-container *ngIf="character.balance;else loading_message">
+                            {{ character.balance || 0 | number:'0.2-2' }} ISK
+                        </ng-container>
                     </p>
                 </a>
                 <a class="character-link" (click)="goToCharacterSkillPage(character).then()" *ngIf="hasSkillQueueScope(character)">

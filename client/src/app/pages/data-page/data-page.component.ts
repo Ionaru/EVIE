@@ -12,7 +12,8 @@ import { NavigationComponent } from '../../navigation/navigation.component';
 })
 export class DataPageComponent implements OnInit, OnDestroy {
 
-    protected missingAllRequiredScopes?: boolean;
+    public missingAllRequiredScopes?: boolean;
+
     protected requiredScopes: string[] = [];
 
     private characterChangeSubscription: Subscription;

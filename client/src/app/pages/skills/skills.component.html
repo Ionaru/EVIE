@@ -1,4 +1,6 @@
-<app-no-scopes-message *ngIf="missingAllRequiredScopes"></app-no-scopes-message>
+<app-no-scopes-message *ngIf="missingAllRequiredScopes">
+    To display the skills page, you need to grant the "Read skills" scope.
+</app-no-scopes-message>
 
 <div class="container skills-page-container" *ngIf="missingAllRequiredScopes === false">
     <div class="skill-points-container">
@@ -11,7 +13,7 @@
                 </span>
             </p>
         </div>
-        <div class="training-speed">
+        <div class="training-speed" *ngIf="hasSkillQueueScope">
             <h2>Training speed</h2>
             <span *ngIf="skills">
                 {{ spPerSec * 60 | number:'1.0-2' }} SP/min
@@ -19,7 +21,7 @@
         </div>
     </div>
 
-    <div class="attributes-container justify-content-evenly" *ngIf="">
+    <div class="attributes-container justify-content-evenly" *ngIf="hasSkillsScope">
         <div class="attribute" [ngbTooltip]="'Perception'">
             <img src="/assets/images/22_32_1.png" alt="Perception">
             <p>{{ attributes?.perception }}</p>
@@ -44,7 +46,7 @@
 
     <hr>
 
-    <div class="skill-queue-container">
+    <div class="skill-queue-container" *ngIf="hasSkillQueueScope">
         <div class="d-flex justify-content-between">
             <h2>Skill queue ( {{ skillQueueCount }} )</h2>
             <h2 (click)="skillQueueVisible = !skillQueueVisible"><fa-icon [icon]="faChevronDown"></fa-icon></h2>
@@ -96,11 +98,12 @@
                 </ng-container>
             </ng-container>
         </div>
+
+        <hr>
+
     </div>
 
-    <hr>
-
-    <div class="skill-list-container">
+    <div class="skill-list-container" *ngIf="hasSkillsScope">
         <h2>
             Skill overview ( {{ skills?.skills.length || 0 }}
             <ng-container *ngIf="showUntrainedSkills">
