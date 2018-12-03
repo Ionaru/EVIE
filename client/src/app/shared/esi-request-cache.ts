@@ -8,7 +8,7 @@ interface ICacheData {
 export class ESIRequestCache {
 
     public static get(identifier: string): HttpResponse<any> | undefined {
-        const cachedDataString = sessionStorage.getItem(identifier);
+        const cachedDataString = sessionStorage.getItem(identifier) || localStorage.getItem(identifier);
         if (cachedDataString) {
 
             const cachedData = JSON.parse(cachedDataString) as ICacheData;
@@ -24,13 +24,13 @@ export class ESIRequestCache {
         }
     }
 
-    public static put(identifier: string, data: any, expiry: string): void {
+    public static put(identifier: string, data: any, expiry: string, secureData: boolean): void {
         const cacheData: ICacheData = {
             data,
             expiry,
         };
 
         const cachedDataString = JSON.stringify(cacheData);
-        sessionStorage.setItem(identifier, cachedDataString);
+        secureData ? sessionStorage.setItem(identifier, cachedDataString) : localStorage.setItem(identifier, cachedDataString);
     }
 }

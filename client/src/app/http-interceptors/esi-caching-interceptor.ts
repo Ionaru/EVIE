@@ -37,7 +37,12 @@ export class ESICachingInterceptor implements HttpInterceptor {
 
                     // Only cache when the response is successful and has an expiry header.
                     if (event.status === 200 && event.headers.has('expires')) {
-                        ESIRequestCache.put(request.urlWithParams, event.body, event.headers.get('expires') as string);
+                        ESIRequestCache.put(
+                            request.urlWithParams,
+                            event.body,
+                            event.headers.get('expires') as string,
+                            request.headers.has('Authorization'),
+                        );
                     }
                 }
             }),
