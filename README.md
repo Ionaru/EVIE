@@ -34,7 +34,7 @@ Right now the features are limited, but new pages are being built and I have a l
 #### General
 * Option to switch between TQ and SiSi.
 * Use shared functions between client and server
-* Selecting a subset of scopes for SSO
+* ~~Selecting a subset of scopes for SSO~~
 * Something special on character birthday / April fools / christmas
 * Responsiveness
 * More pages!
