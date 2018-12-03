@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { environment } from '../environments/environment';
 import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -47,6 +48,11 @@ import { SentryErrorHandler } from './sentry.error-handler';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
 
+const errorHandlers = [];
+if (environment.production) {
+    errorHandlers.push({ provide: ErrorHandler, useClass: SentryErrorHandler });
+}
+
 @NgModule({
     bootstrap: [
         AppComponent,
@@ -82,7 +88,7 @@ import { SocketService } from './socket/socket.service';
         FontAwesomeModule,
     ],
     providers: [
-        { provide: ErrorHandler, useClass: SentryErrorHandler },
+        ...errorHandlers,
         httpInterceptorProviders,
         ESIRequestCache,
         AppReadyEventService,
