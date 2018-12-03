@@ -31,3 +31,15 @@ interface IVerifyResponseData {
     CharacterOwnerHash: string;
     IntellectualProperty: string;
 }
+
+interface IJWTToken {
+    scp: string[] | string;
+    jti: string;
+    kid: string;
+    sub: string;
+    azp: string;
+    name: string;
+    owner: string;
+    exp: number;
+    iss: string;
+}

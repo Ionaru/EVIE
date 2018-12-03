@@ -4,12 +4,15 @@ import { Injectable } from '@angular/core';
 import { EVE } from '../../shared/eve.helper';
 import { IIndustryJobsData } from '../../shared/interface.helper';
 import { Character } from '../models/character/character.model';
+import { ScopesComponent } from '../pages/scopes/scopes.component';
 import { BaseService } from './base.service';
 
 @Injectable()
 export class IndustryJobsService extends BaseService {
 
     public async getIndustryJobs(character: Character): Promise<IIndustryJobsData[]> {
+        BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.JOBS, 'getIndustryJobs');
+
         const url = EVE.getIndustryJobsUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<IIndustryJobsData[]>().catch(this.catchHandler);

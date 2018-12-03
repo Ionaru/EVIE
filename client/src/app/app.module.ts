@@ -9,9 +9,10 @@ import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ApiOfflineMessageComponent } from './components/api-offline-message/api-offline-message.component';
+import { NoScopesMessageComponent } from './components/no-scopes-message/no-scopes-message.component';
 import { SorTableComponent } from './components/sor-table/sor-table.component';
 import { AttributesService } from './data-services/attributes.service';
-import { BaseService } from './data-services/base.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
 import { MarketService } from './data-services/market.service';
@@ -38,6 +39,7 @@ import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { OreComponent } from './pages/ore/ore.component';
+import { ScopesComponent } from './pages/scopes/scopes.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
@@ -62,6 +64,9 @@ import { SocketService } from './socket/socket.service';
         UsersComponent,
         OreComponent,
         SorTableComponent,
+        ScopesComponent,
+        NoScopesMessageComponent,
+        ApiOfflineMessageComponent,
     ],
     entryComponents: [
         LogoutModalComponent,
@@ -81,7 +86,6 @@ import { SocketService } from './socket/socket.service';
         httpInterceptorProviders,
         ESIRequestCache,
         AppReadyEventService,
-        BaseService,
         UserService,
         UsersService,
         CharacterService,

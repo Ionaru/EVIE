@@ -1,6 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
-import { faArrowAltRight, faChevronDown, faClock, faCog, faExclamationTriangle, faFolderOpen } from '@fortawesome/pro-solid-svg-icons';
+import {
+    faArrowAltRight,
+    faChevronDown,
+    faClock,
+    faCog,
+    faExclamationTriangle,
+    faFolderOpen,
+} from '@fortawesome/pro-solid-svg-icons';
 import * as countdown from 'countdown';
 import Timespan = countdown.Timespan;
 
@@ -14,6 +21,7 @@ import { SkillQueueService } from '../../data-services/skillqueue.service';
 import { SkillsService } from '../../data-services/skills.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { ScopesComponent } from '../scopes/scopes.component';
 
 interface IExtendedSkillQueueData extends ISkillQueueData {
     status?: 'training' | 'finished' | 'scheduled' | 'inactive';
@@ -108,18 +116,21 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService,
                 private skillGroupsService: SkillGroupsService, private attributesService: AttributesService) {
         super();
+        this.requiredScopes = [ScopesComponent.scopeCodes.SKILLS];
     }
 
     public ngOnInit() {
         super.ngOnInit();
 
-        if (CharacterService.selectedCharacter) {
-            this.attributesService.getAttributes(CharacterService.selectedCharacter).then((attributes) => {
-                this.attributes = attributes;
-            });
+        if (this.hasSkillsScope) {
+            this.getAttributes().then();
         }
 
-        Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]).then(() => this.parseSkillQueue());
+        Promise.all([
+            this.hasSkillQueueScope ? this.getSkillQueue() : undefined,
+            this.hasSkillsScope ? this.getSkills() : undefined,
+            this.setSkillGroups(),
+        ]).then(() => this.parseSkillQueue());
     }
 
     public async ngOnDestroy() {
@@ -134,6 +145,20 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public getSkillGroup = (skillId: number) => this.skillGroups.filter((group) => group.types.includes(skillId))[0].name;
 
     public skillQueueLow = () => !this.skillTrainingPaused && this.skillQueueTimeLeft < (24 * 60 * 60 * 1000);
+
+    public get hasSkillsScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.SKILLS);
+    }
+
+    public get hasSkillQueueScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.SKILLQUEUE);
+    }
+
+    public async getAttributes() {
+        if (CharacterService.selectedCharacter) {
+            this.attributes = await this.attributesService.getAttributes(CharacterService.selectedCharacter);
+        }
+    }
 
     public getSkillsForGroup(group: ISkillGroupData) {
         if (this.skills) {
@@ -247,6 +272,14 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
             this.trainedSkillsGrouped[group.group_id] = this.skillsGrouped[group.group_id].filter(
                 (skill) => this.trainedSkillIds.includes(skill.type_id),
             );
+        }
+
+        if (this.skills) {
+            this.trainedSkills = Common.objectsArrayToObject(this.skills.skills, 'skill_id');
+        }
+
+        if (!this.hasSkillQueueScope) {
+            return;
         }
 
         for (const skillInQueue of this.skillQueue) {
@@ -371,10 +404,6 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
                 skillInQueue.status = 'inactive';
                 this.spPerSec = 0;
             }
-        }
-
-        if (this.skills) {
-            this.trainedSkills = Common.objectsArrayToObject(this.skills.skills, 'skill_id');
         }
 
         this.skillQueue = this.skillQueue.filter((skill) => skill.status !== 'inactive');

@@ -7,7 +7,7 @@ import { Common } from '../../../shared/common.helper';
 import { SocketService } from '../../socket/socket.service';
 import { Character, IApiCharacterData } from '../character/character.model';
 import { CharacterService } from '../character/character.service';
-import { ISSOLoginResponse, IUserApiData, User } from './user.model';
+import { ISSOAuthResponse, ISSOLoginResponse, IUserApiData, User } from './user.model';
 
 @Injectable()
 export class UserService {
@@ -54,7 +54,7 @@ export class UserService {
         });
     }
 
-    public async storeUser(data: IUserApiData): Promise<User> {
+    public async storeUser(data: IUserApiData, newCharacterUUID?: string): Promise<User> {
         const user = new User(data);
         UserService._user = user;
 
@@ -65,7 +65,9 @@ export class UserService {
             }
         }));
 
-        if (user.characters && user.characters.length && !CharacterService.selectedCharacter) {
+        if (newCharacterUUID) {
+            this.characterService.setActiveCharacter(user.characters.filter((character) => character.uuid === newCharacterUUID)[0]).then();
+        } else if (user.characters && user.characters.length && !CharacterService.selectedCharacter) {
             this.characterService.setActiveCharacter(user.characters[0]).then();
         }
         UserService.userChangeEvent.next(user);
@@ -101,10 +103,11 @@ export class UserService {
         }
     }
 
-    public authCharacter(character?: Character): void {
+    public authCharacter(scopes?: string[]): void {
         let url = '/sso/auth';
-        if (character) {
-            url += '?characterUUID=' + character.uuid;
+
+        if (scopes) {
+            url += '?scopes=' + scopes.join(' ');
         }
 
         if (UserService.authWindow && !UserService.authWindow.closed) {
@@ -114,11 +117,12 @@ export class UserService {
         }
 
         if (UserService.authWindow) {
-            SocketService.socket.once('SSO_AUTH_END', async (response: ISSOLoginResponse) => {
+            SocketService.socket.once('SSO_AUTH_END', async (response: ISSOAuthResponse) => {
                 if (UserService.authWindow && !UserService.authWindow.closed) {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
-                        this.storeUser(response.data).then();
+                        await this.storeUser(response.data.user, response.data.newCharacter);
+                        this.router.navigate(['/dashboard']).then();
                     }
                 }
             });
