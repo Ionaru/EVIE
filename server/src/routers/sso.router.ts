@@ -16,7 +16,8 @@ import { BaseRouter } from './base.router';
 const protocol = 'https://';
 const oauthHost = 'login.eveonline.com';
 const authorizePath = '/v2/oauth/authorize?';
-const tokenPath = '/v2/oauth/token?';
+const tokenPath = '/v2/oauth/token';
+const revokePath = '/v2/oauth/revoke';
 
 export class SSORouter extends BaseRouter {
 
@@ -29,8 +30,7 @@ export class SSORouter extends BaseRouter {
             'response_type=code',
             'redirect_uri=' + config.getProperty('SSO_login_redirect_uri'),
             'client_id=' + config.getProperty('SSO_login_client_ID'),
-            // TODO: Remove when https://github.com/ccpgames/sso-issues/issues/40 is solved.
-            'scope=',
+            'scope=', // TODO: Remove when https://github.com/ccpgames/sso-issues/issues/40 is solved.
             'state=' + request.session!.state,
         ];
         const authorizeURL = protocol + oauthHost + authorizePath + args.join('&');
@@ -184,6 +184,16 @@ export class SSORouter extends BaseRouter {
             .where('character.characterId = :characterID', {characterID})
             .getOne();
 
+        if (character) {
+            // Revoke old tokens
+            if (character.accessToken) {
+                SSORouter.revokeKey(character.accessToken, 'access_token').then();
+            }
+            if (character.refreshToken) {
+                SSORouter.revokeKey(character.refreshToken, 'refresh_token').then();
+            }
+        }
+
         if (character && character.ownerHash !== characterOwnerHash) {
             // Character exists but has been transferred, delete the old one and create anew.
             await character.remove();
@@ -316,6 +326,14 @@ export class SSORouter extends BaseRouter {
 
         const characterToDelete = characterToDeleteList[0];
 
+        // Revoke tokens
+        if (characterToDelete.accessToken) {
+            SSORouter.revokeKey(characterToDelete.accessToken, 'access_token').then();
+        }
+        if (characterToDelete.refreshToken) {
+            SSORouter.revokeKey(characterToDelete.refreshToken, 'refresh_token').then();
+        }
+
         await characterToDelete.remove();
         return SSORouter.sendResponse(response, httpStatus.OK, 'CharacterDeleted');
     }
@@ -419,14 +437,32 @@ export class SSORouter extends BaseRouter {
             },
         };
 
-        const qs = refresh ?
+        const requestBody = refresh ?
             new URLSearchParams({grant_type: 'refresh_token', refresh_token: code}) :
             new URLSearchParams({grant_type: 'authorization_code', code});
 
         const authUrl = `${protocol}${oauthHost}${tokenPath}`;
         logger.debug(authUrl);
-        return axios.post<IAuthResponseData>(authUrl, qs, requestOptions).catch((error: AxiosError) => {
+        return axios.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             logger.error('Request failed:', authUrl, error.message);
+            return;
+        });
+    }
+
+    private static revokeKey(key: string, keyType: 'access_token' | 'refresh_token') {
+        const requestOptions: AxiosRequestConfig = {
+            headers: {
+                'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        };
+
+        const requestBody = new URLSearchParams({token: key, token_type_hint: keyType});
+
+        const revokeUrl = `${protocol}${oauthHost}${revokePath}`;
+        logger.debug(revokeUrl);
+        return axios.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+            logger.error('Request failed:', revokeUrl, error.message);
             return;
         });
     }
