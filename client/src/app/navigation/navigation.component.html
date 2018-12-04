@@ -50,7 +50,7 @@
                     </span>
                 </a>
             </li>
-            <li *ngIf="isLoggedIn && isAdmin" class="nav-item">
+            <li *ngIf="isLoggedIn && (isAdmin || devEnvironment)" class="nav-item">
                 <a class="nav-link" routerLink="users" routerLinkActive="active">
                     <span class="nav-link-text">
                         <fa-icon [icon]="userAdminIcon"></fa-icon>

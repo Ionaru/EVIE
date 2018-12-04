@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+import { environment } from '../../environments/environment';
 import { UserService } from '../models/user/user.service';
 import { BaseGuard } from './base.guard';
 
@@ -7,6 +8,6 @@ import { BaseGuard } from './base.guard';
 export class AdminGuard extends BaseGuard {
 
     public condition() {
-        return UserService.user && UserService.user.isAdmin;
+        return !environment.production || (UserService.user && UserService.user.isAdmin);
     }
 }

@@ -40,6 +40,10 @@ export class BaseRouter {
 
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     public static async checkAdmin(request: Request, response: Response, nextFunction: any) {
+        if (process.env.NODE_ENV !== 'production') {
+            return nextFunction;
+        }
+
         const user: User | undefined = await User.doQuery()
             .select(['user.isAdmin'])
             .where('user.id = :id', {id: request.session!.user.id})
