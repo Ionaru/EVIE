@@ -209,7 +209,7 @@ export interface IWalletJournalData {
 
 export interface IIndustryJobsData {
     // Job activity ID
-    activityId: number;
+    activityId: IndustryActivity;
 
     // blueprint_id integer
     blueprintId: number;

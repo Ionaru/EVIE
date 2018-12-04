@@ -1,1 +1,7 @@
-<p>INDUSTRY!</p>
+<app-no-scopes-message *ngIf="missingAllRequiredScopes">
+    To display the industry page, you need to grant the "Read industry jobs" scope.
+</app-no-scopes-message>
+
+<div class="container industry-page-container" *ngIf="missingAllRequiredScopes === false">
+    {{ industryJobs | json }}
+</div>
