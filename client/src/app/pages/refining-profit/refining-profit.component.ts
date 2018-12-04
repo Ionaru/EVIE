@@ -114,27 +114,20 @@ export class RefiningProfitComponent implements OnInit {
 
     public async getPrices(ore: number, volume: number) {
 
-        // if (ore !== 17470) {
-        //     return;
-        // }
-
         const oreSellOrders = await this.marketService.getMarketOrders(10000002, ore, 'sell');
 
         if (!oreSellOrders || !oreSellOrders.length) {
             this.prices[ore].buy = Infinity;
             this.prices[ore].sell = 0;
-            this.prices[ore].profit = -Infinity;
             this.prices[ore].accurateData = false;
             return;
         }
 
         Common.sortArrayByObjectProperty(oreSellOrders, 'price');
-        // console.log(oreSellOrders[0]);
 
         const type = this.oreTypes[ore];
 
         if (!type) {
-            // this.orePrices[buySell][ore] = -1;
             return;
         }
 
@@ -191,16 +184,6 @@ export class RefiningProfitComponent implements OnInit {
         }));
 
         this.prices[ore].sell = totalPrice / 100;
-
-        // let totalPrice = unitsLeft ? price / unitsLeft : price / cargoCap;
-        // console.log(NamesService.getNameFromData(ore), totalPrice);
-        //
-        // if (unitsLeft) {
-        //     this.orePrices[buySell][ore] = price / unitsLeft;
-        //     return;
-        // }
-        //
-        // this.orePrices[buySell][ore] = price / cargoCap;
     }
 
     public changeVisibleOres() {
