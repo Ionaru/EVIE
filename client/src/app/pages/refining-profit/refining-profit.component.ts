@@ -103,7 +103,7 @@ export class RefiningProfitComponent implements OnInit {
                 id: ore,
                 index,
                 name: NamesService.getNameFromData(ore),
-                profit: Calc.profitPercentage(this.prices[ore].buy, this.prices[ore].sell),
+                profit: Calc.profitPercentage(this.prices[ore].buy, this.prices[ore].sell) || -Infinity,
                 profitMoney: this.prices[ore].sell - this.prices[ore].buy,
                 sell: this.prices[ore].sell,
             };
@@ -138,11 +138,11 @@ export class RefiningProfitComponent implements OnInit {
             return;
         }
 
-        const veldVolume = type.volume;
+        const oreVolume = type.volume;
         const cargoCap = volume;
 
         let price = 0;
-        let unitsLeft = cargoCap / veldVolume;
+        let unitsLeft = cargoCap / oreVolume;
         for (const order of oreSellOrders) {
             const amountFromThisOrder = Math.min(order.volume_remain, unitsLeft);
 
@@ -158,7 +158,7 @@ export class RefiningProfitComponent implements OnInit {
             this.prices[ore].accurateData = false;
         }
 
-        this.prices[ore].buy = (unitsLeft ? price / (volume - unitsLeft) : price / (cargoCap / veldVolume)) * (volume / veldVolume);
+        this.prices[ore].buy = price;
 
         const oreMaterials = await this.industryService.getRefiningProducts(ore);
 
@@ -171,7 +171,7 @@ export class RefiningProfitComponent implements OnInit {
             }
             Common.sortArrayByObjectProperty(materialBuyOrders, 'price', true);
             let materialPrice = 0;
-            let materialUnitsLeft = (material.quantity * (volume / veldVolume)) * (this.refiningYield / 100);
+            let materialUnitsLeft = (material.quantity * ((volume / oreVolume) - unitsLeft)) * (this.refiningYield / 100);
             for (const order of materialBuyOrders) {
                 const amountFromThisOrder = Math.min(order.volume_remain, materialUnitsLeft);
 
