@@ -9,9 +9,10 @@ import { BaseService } from './base.service';
 @Injectable()
 export class MarketService extends BaseService {
 
-    public async getMarketOrders(regionId: number, typeId: number): Promise<IMarketOrdersReponse[] | undefined> {
+    public async getMarketOrders(regionId: number, typeId: number, type: 'buy' | 'sell' | 'all' = 'all'):
+        Promise<IMarketOrdersReponse[] | undefined> {
 
-        const response = await this.getMarketOrdersPage(regionId, typeId);
+        const response = await this.getMarketOrdersPage(regionId, typeId, 1, type);
 
         if (!response) {
             return;
@@ -26,7 +27,7 @@ export class MarketService extends BaseService {
                 pIter.shift();
 
                 await Promise.all(pIter.map(async (page) => {
-                    const pageResponse = await this.getMarketOrdersPage(regionId, typeId, page);
+                    const pageResponse = await this.getMarketOrdersPage(regionId, typeId, page, type);
                     if (pageResponse && pageResponse.body) {
                         orders.push(...pageResponse.body);
                     }
@@ -37,9 +38,9 @@ export class MarketService extends BaseService {
         return orders;
     }
 
-    private async getMarketOrdersPage(regionId: number, typeId: number, page = 1):
+    private async getMarketOrdersPage(regionId: number, typeId: number, page: number, type: 'buy' | 'sell' | 'all' = 'all'):
         Promise<HttpResponse<IMarketOrdersReponse[]> | undefined> {
-        const url = EVE.getMarketOrdersURL(regionId, typeId, page);
+        const url = EVE.getMarketOrdersURL(regionId, typeId, page, type);
 
         const response = await this.http.get<any>(url, {observe: 'response'})
             .toPromise<HttpResponse<IMarketOrdersReponse[]>>()

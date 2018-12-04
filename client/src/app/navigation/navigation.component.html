@@ -29,6 +29,16 @@
                         <fa-icon [icon]="orePricesIcon"></fa-icon>
                         Ore prices
                     </a>
+                    <a class="dropdown-item" routerLink="blueprint-calculator" routerLinkActive="active"
+                       *ngIf="devEnvironment">
+                        <fa-icon [icon]="orePricesIcon"></fa-icon>
+                        BP
+                    </a>
+                    <a class="dropdown-item" routerLink="refining-profit" routerLinkActive="active"
+                       *ngIf="devEnvironment">
+                        <fa-icon [icon]="orePricesIcon"></fa-icon>
+                        Minerals
+                    </a>
                     <!--<a class="dropdown-item" routerLink="ore" routerLinkActive="active">-->
                         <!--<fa-icon [icon]="connectionIcon"></fa-icon>-->
                         <!--Another action-->

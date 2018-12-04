@@ -35,11 +35,13 @@ import { CharacterService } from './models/character/character.service';
 import { UserService } from './models/user/user.service';
 import { LogoutModalComponent } from './navigation/logout-modal.component';
 import { NavigationComponent } from './navigation/navigation.component';
+import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { OreComponent } from './pages/ore/ore.component';
+import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
@@ -73,6 +75,8 @@ if (environment.production) {
         ScopesComponent,
         NoScopesMessageComponent,
         ApiOfflineMessageComponent,
+        BlueprintCalculatorComponent,
+        RefiningProfitComponent,
     ],
     entryComponents: [
         LogoutModalComponent,

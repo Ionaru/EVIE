@@ -298,6 +298,12 @@ export interface IIndustryActivityMaterials {
     quantity: number;
 }
 
+export interface IInvTypeMaterials {
+    typeID: number;
+    materialTypeID: number;
+    quantity: number;
+}
+
 export interface IIndustryActivity {
     typeID: number;
     activityID: number;
@@ -321,6 +327,11 @@ export interface IMarketGroup {
     name: string;
     parent_group_id: number;
     types: number[];
+}
+
+export interface IRefiningProducts {
+    id: number;
+    quantity: number;
 }
 
 export interface IManufacturingData {

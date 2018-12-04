@@ -4,8 +4,18 @@ import { logger } from 'winston-pnp-logger';
 
 import { EVE } from '../../../client/src/shared/eve.helper';
 import {
-    IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
-    IManufacturingData, IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
+    IIndustryActivity,
+    IIndustryActivityMaterials,
+    IIndustryActivityProducts,
+    IIndustryActivitySkills,
+    IInvTypeMaterials,
+    IManufacturingData,
+    IMarketGroup,
+    IndustryActivity,
+    IRefiningProducts,
+    ISkillCategoryData,
+    ISkillGroupData,
+    ITypesData,
 } from '../../../client/src/shared/interface.helper';
 import { RequestLogger } from '../loggers/request.logger';
 import { CacheController } from './cache.controller';
@@ -13,6 +23,16 @@ import { CacheController } from './cache.controller';
 export class DataController {
 
     public static deprecationsLogged: string[] = [];
+
+    public static async getRefiningProducts(typeId: number): Promise<IRefiningProducts[]> {
+        const materials = await DataController.fetchESIData<IInvTypeMaterials[]>(EVE.getInvTypeMaterialsUrl());
+        if (!materials) {
+            return [];
+        }
+
+        const mt = materials.filter((material) => material.typeID === typeId);
+        return mt.map((material) => ({id: material.materialTypeID, quantity: material.quantity}));
+    }
 
     public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | undefined> {
 
