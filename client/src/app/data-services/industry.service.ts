@@ -38,7 +38,7 @@ export class IndustryService extends BaseService {
     public async getRefiningProducts(typeId: number): Promise<IRefiningProducts[]> {
         const url = `data/refining/${typeId}`;
 
-        if (this.manufacturingCache.hasOwnProperty(url)) {
+        if (this.refiningCache.hasOwnProperty(url)) {
             return this.refiningCache[url];
         }
 
