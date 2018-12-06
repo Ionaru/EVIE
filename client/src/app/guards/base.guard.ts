@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { Observable, Observer } from 'rxjs';
 
@@ -7,7 +7,7 @@ import { AppReadyEventService } from '../app-ready-event.service';
 @Injectable()
 export class BaseGuard implements CanActivate {
 
-    constructor(private router: Router) { }
+    constructor(private router: Router, private ngZone: NgZone) { }
 
     public condition(): boolean {
         return false;
@@ -19,7 +19,7 @@ export class BaseGuard implements CanActivate {
             if (this.condition()) {
                 return true;
             } else {
-                this.router.navigate(['/']).then();
+                this.ngZone.run(() => this.router.navigate(['/'])).then();
                 return false;
             }
         } else {
@@ -29,7 +29,7 @@ export class BaseGuard implements CanActivate {
                         observer.next(true);
                         observer.complete();
                     } else {
-                        this.router.navigate(['/']).then();
+                        this.ngZone.run(() => this.router.navigate(['/'])).then();
                         observer.next(false);
                         observer.complete();
                     }

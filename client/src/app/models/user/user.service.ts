@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
@@ -44,7 +44,7 @@ export class UserService {
         }
     }
 
-    constructor(private http: HttpClient, private characterService: CharacterService, private router: Router) { }
+    constructor(private http: HttpClient, private characterService: CharacterService, private router: Router, private ngZone: NgZone) { }
 
     public logoutUser(): void {
         const url = 'api/logout';
@@ -96,7 +96,7 @@ export class UserService {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
                         await this.storeUser(response.data);
-                        this.router.navigate(['/dashboard']).then();
+                        this.ngZone.run(() => this.router.navigate(['/dashboard'])).then();
                     }
                 }
             });

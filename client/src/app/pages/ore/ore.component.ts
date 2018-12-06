@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 
 import { Common } from '../../../shared/common.helper';
@@ -61,7 +61,8 @@ export class OreComponent implements OnInit {
         title: 'Sell price / m³',
     }];
 
-    constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService) { }
+    constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService,
+                private ngZone: NgZone) { }
 
     public async ngOnInit() {
 
@@ -172,6 +173,8 @@ export class OreComponent implements OnInit {
             this.visibleData = this.data;
         }
 
-        this.visibleData = [...this.data.filter((ore) => visibleOres.includes(ore.id))];
+        this.ngZone.run(() => {
+            this.visibleData = [...this.data.filter((ore) => visibleOres.includes(ore.id))];
+        });
     }
 }

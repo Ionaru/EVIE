@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 
+import { IIndustryJobsData, IndustryActivity } from '../../../shared/interface.helper';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
 import { IndustryService } from '../../data-services/industry.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
+import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
-import { CharacterService } from '../../models/character/character.service';
 
 @Component({
     selector: 'app-industry',
@@ -15,7 +16,8 @@ import { CharacterService } from '../../models/character/character.service';
 })
 export class IndustryComponent extends DataPageComponent implements OnInit {
 
-    public industryJobs: any;
+    public industryJobs?: IIndustryJobsData[];
+    public IndustryActivity = IndustryActivity;
 
     constructor(private industryJobsService: IndustryJobsService, private typesService: TypesService,
                 private industryService: IndustryService, private namesService: NamesService) {
@@ -35,7 +37,6 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
     public async getIndustryJobs() {
         if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScopes) {
             const jobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
-            console.log(jobs);
             this.industryJobs = jobs;
         }
     }

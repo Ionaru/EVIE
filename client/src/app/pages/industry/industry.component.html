@@ -4,4 +4,44 @@
 
 <div class="container industry-page-container" *ngIf="missingAllRequiredScopes === false">
     {{ industryJobs | json }}
+    
+    <div *ngFor="let job of industryJobs">
+
+        <ng-container [ngSwitch]="job.activity_id">
+            <ng-container *ngSwitchCase="IndustryActivity.copying">...</ng-container>
+            <ng-container *ngSwitchCase="IndustryActivity.manufacturing">.,.</ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="job.activity_id === IndustryActivity.manufacturing">
+            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
+            MANUFACTORING
+        </ng-container>
+
+        <ng-container *ngIf="job.activity_id === IndustryActivity.research_material_efficiency">
+            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
+            research_material_efficiency
+        </ng-container>
+
+        <ng-container *ngIf="job.activity_id === IndustryActivity.research_time_efficiency">
+            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
+            research_time_efficiency
+        </ng-container>
+
+        <ng-container *ngIf="job.activity_id === IndustryActivity.copying">
+            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
+            copying
+        </ng-container>
+
+        <ng-container *ngIf="job.activity_id === IndustryActivity.invention">
+            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
+            invention
+        </ng-container>
+
+
+        <!--<span>{{ job.activity_id }}</span>-->
+        <!--<span>{{ job.runs }}</span>-->
+        <!--<span>{{ job.successful_runs }}</span>-->
+        <span>{{ job.cost }}</span>
+        <!--<span>{{ job.activity_id }}</span>-->
+    </div>
 </div>
