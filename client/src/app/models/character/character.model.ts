@@ -1,4 +1,3 @@
-import * as countdown from 'countdown';
 import { ISkillQueueData } from '../../../shared/interface.helper';
 
 export class Character {

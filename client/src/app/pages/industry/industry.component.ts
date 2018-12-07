@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { faCopy, faHourglass, faMicroscope } from '@fortawesome/pro-regular-svg-icons';
 import { faGem, faIndustry } from '@fortawesome/pro-solid-svg-icons';
+
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
-
 import { IIndustryJobsData, IndustryActivity } from '../../../shared/interface.helper';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
-import { IndustryService } from '../../data-services/industry.service';
 import { NamesService } from '../../data-services/names.service';
-import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
@@ -35,8 +33,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
     public industryJobs?: IExtendedIndustryJobsData[];
     public IndustryActivity = IndustryActivity;
 
-    constructor(private industryJobsService: IndustryJobsService, private typesService: TypesService,
-                private industryService: IndustryService, private namesService: NamesService) {
+    constructor(private industryJobsService: IndustryJobsService, private namesService: NamesService) {
         super();
         this.requiredScopes = [ScopesComponent.scopeCodes.JOBS];
     }

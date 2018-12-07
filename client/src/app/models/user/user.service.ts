@@ -42,6 +42,7 @@ export class UserService {
 
             return newWindow;
         }
+        return;
     }
 
     constructor(private http: HttpClient, private characterService: CharacterService, private router: Router, private ngZone: NgZone) { }

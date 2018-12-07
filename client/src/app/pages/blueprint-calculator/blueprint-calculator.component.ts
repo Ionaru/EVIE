@@ -1,19 +1,19 @@
 // TODO: Remove line below.
 // tslint:disable
 import { Component, OnInit } from '@angular/core';
-import { faGem } from '@fortawesome/pro-regular-svg-icons';
-import { faHourglass } from '@fortawesome/pro-solid-svg-icons';
+// import { faGem } from '@fortawesome/pro-regular-svg-icons';
+// import { faHourglass } from '@fortawesome/pro-solid-svg-icons';
 
-import { IManufacturingData } from '../../../shared/interface.helper';
-import { IndustryJobsService } from '../../data-services/industry-jobs.service';
+// import { IManufacturingData } from '../../../shared/interface.helper';
+// import { IndustryJobsService } from '../../data-services/industry-jobs.service';
 import { IndustryService } from '../../data-services/industry.service';
 import { NamesService } from '../../data-services/names.service';
-import { TypesService } from '../../data-services/types.service';
-import { DataPageComponent } from '../data-page/data-page.component';
+// import { TypesService } from '../../data-services/types.service';
+// import { DataPageComponent } from '../data-page/data-page.component';
 
-interface IManufacturingCache {
-    [index: string]: IManufacturingData;
-}
+// interface IManufacturingCache {
+//     [index: string]: IManufacturingData;
+// }
 
 @Component({
     selector: 'app-blueprint-calculator',
@@ -32,7 +32,7 @@ export class BlueprintCalculatorComponent implements OnInit {
 
     // public manufactuingCache: IManufacturingCache = {};
 
-    constructor(private typesService: TypesService, private industryService: IndustryService, private namesService: NamesService) {
+    constructor(private industryService: IndustryService, private namesService: NamesService) {
     }
 
     public ngOnInit() {

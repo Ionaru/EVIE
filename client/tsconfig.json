@@ -1,23 +1,14 @@
 {
-    "compileOnSave": false,
+    "extends": "../tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
-        "outDir": "./dist/out-tsc",
-        "sourceMap": true,
-        "declaration": false,
-        "moduleResolution": "node",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "strict": true,
-        "target": "es2016",
-        "typeRoots": [
-            "node_modules/@types"
-        ],
         "lib": [
+            "dom",
             "es2017",
             "es2018",
-            "esnext",
-            "dom"
-        ]
+            "esnext"
+        ],
+        "outDir": "./dist/out-tsc",
+        "target": "es2016"
     }
 }
