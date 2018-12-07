@@ -3,45 +3,51 @@
 </app-no-scopes-message>
 
 <div class="container industry-page-container" *ngIf="missingAllRequiredScopes === false">
-    {{ industryJobs | json }}
+    <!--{{ industryJobs | json }}-->
+
+    <div *ngIf="industryJobs && !industryJobs.length">
+        <h3>You have no active industry jobs.</h3>
+    </div>
     
-    <div *ngFor="let job of industryJobs">
+    <div *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">
 
-        <ng-container [ngSwitch]="job.activity_id">
-            <ng-container *ngSwitchCase="IndustryActivity.copying">...</ng-container>
-            <ng-container *ngSwitchCase="IndustryActivity.manufacturing">.,.</ng-container>
+        <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
+
+        <ng-container *ngSwitchCase="IndustryActivity.manufacturing">
+            <fa-icon [icon]="manufacturingIcon"></fa-icon>
+            BUILD
+
+            <p>
+                {{job.runs}} x
+                <img src="//imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
+                <span>{{ job.productName }}</span>
+            </p>
+
         </ng-container>
 
-        <ng-container *ngIf="job.activity_id === IndustryActivity.manufacturing">
-            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
-            MANUFACTORING
+        <ng-container *ngSwitchCase="IndustryActivity.copying">
+            <fa-icon [icon]="copyIcon"></fa-icon>
+            COPY
         </ng-container>
 
-        <ng-container *ngIf="job.activity_id === IndustryActivity.research_material_efficiency">
-            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
-            research_material_efficiency
+        <ng-container *ngSwitchCase="IndustryActivity.research_material_efficiency">
+            <fa-icon [icon]="materialResearchIcon"></fa-icon>
+            MAT EFF
         </ng-container>
 
-        <ng-container *ngIf="job.activity_id === IndustryActivity.research_time_efficiency">
-            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
-            research_time_efficiency
+        <ng-container *ngSwitchCase="IndustryActivity.research_time_efficiency">
+            <fa-icon [icon]="timeResearchIcon"></fa-icon>
+            TIME EFF
         </ng-container>
 
-        <ng-container *ngIf="job.activity_id === IndustryActivity.copying">
-            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
-            copying
+        <ng-container *ngSwitchCase="IndustryActivity.invention">
+            <fa-icon [icon]="inventionIcon"></fa-icon>
+            INVENTION
         </ng-container>
 
-        <ng-container *ngIf="job.activity_id === IndustryActivity.invention">
-            <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png">
-            invention
-        </ng-container>
+        <ngb-progressbar [value]="job.percentageDone" height="2px"></ngb-progressbar>
 
-
-        <!--<span>{{ job.activity_id }}</span>-->
-        <!--<span>{{ job.runs }}</span>-->
-        <!--<span>{{ job.successful_runs }}</span>-->
         <span>{{ job.cost }}</span>
-        <!--<span>{{ job.activity_id }}</span>-->
+
     </div>
 </div>
