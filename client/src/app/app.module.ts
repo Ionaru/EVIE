@@ -14,6 +14,7 @@ import { ApiOfflineMessageComponent } from './components/api-offline-message/api
 import { NoScopesMessageComponent } from './components/no-scopes-message/no-scopes-message.component';
 import { SorTableComponent } from './components/sor-table/sor-table.component';
 import { AttributesService } from './data-services/attributes.service';
+import { BlueprintsService } from './data-services/blueprints.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
 import { MarketService } from './data-services/market.service';
@@ -110,6 +111,7 @@ if (environment.production) {
         SkillGroupsService,
         SkillsService,
         IndustryJobsService,
+        BlueprintsService,
         IndustryService,
         MarketService,
         SocketService,

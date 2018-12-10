@@ -79,12 +79,16 @@ export class EVE {
         return EVE.constructESIURL(1, 'characters', characterId, 'industry', 'jobs');
     }
 
+    public static getCharacterBlueprintsUrl(characterId: number) {
+        return EVE.constructESIURL(1, 'characters', characterId, 'blueprints');
+    }
+
     public static getStatusUrl() {
         return EVE.constructESIURL(1, 'status');
     }
 
     public static getUniverseNamesUrl() {
-        return EVE.constructESIURL(2, 'universe/names');
+        return EVE.constructESIURL(2, 'universe', 'names');
     }
 
     public static getCharacterShipUrl(characterId: number) {
