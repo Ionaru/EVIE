@@ -4,7 +4,8 @@ import { faGem, faIndustry } from '@fortawesome/pro-solid-svg-icons';
 
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
-import { IIndustryJobsData, IndustryActivity } from '../../../shared/interface.helper';
+import { ICharacterBlueprintsData, IIndustryJobsData, IndustryActivity } from '../../../shared/interface.helper';
+import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
 import { NamesService } from '../../data-services/names.service';
 import { CharacterService } from '../../models/character/character.service';
@@ -14,6 +15,10 @@ import { ScopesComponent } from '../scopes/scopes.component';
 interface IExtendedIndustryJobsData extends IIndustryJobsData {
     percentageDone?: number;
     productName?: string;
+}
+
+interface IBlueprints {
+    [index: number]: ICharacterBlueprintsData;
 }
 
 @Component({
@@ -31,9 +36,13 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
     public inventionIcon = faMicroscope;
 
     public industryJobs?: IExtendedIndustryJobsData[];
+
+    public blueprints: IBlueprints = {};
+
     public IndustryActivity = IndustryActivity;
 
-    constructor(private industryJobsService: IndustryJobsService, private namesService: NamesService) {
+    constructor(private industryJobsService: IndustryJobsService, private blueprintsService: BlueprintsService,
+                private namesService: NamesService) {
         super();
         this.requiredScopes = [ScopesComponent.scopeCodes.JOBS];
     }
@@ -41,14 +50,26 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
     public ngOnInit() {
         super.ngOnInit();
         this.getIndustryJobs().then();
+        this.getBlueprints().then();
     }
 
-    public static get hasIndustryJobsScopes() {
+    public static get hasIndustryJobsScope() {
         return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.JOBS);
     }
 
+    public static get hasBlueprintScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.BLUEPRINTS);
+    }
+
+    public async getBlueprints() {
+        if (CharacterService.selectedCharacter && IndustryComponent.hasBlueprintScope) {
+            const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
+            this.blueprints = Common.objectsArrayToObject(blueprintData, 'item_id');
+        }
+    }
+
     public async getIndustryJobs() {
-        if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScopes) {
+        if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScope) {
             this.industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
         }
 
@@ -73,7 +94,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
 
     public setProductNames(industryJobs: IExtendedIndustryJobsData[]) {
         const namesToGet = industryJobs.map((job) => {
-            if (job.activity_id === IndustryActivity.manufacturing) {
+            if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
                 return job.product_type_id;
             }
             return 0;
@@ -82,7 +103,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
         this.namesService.getNames(...namesToGet).then(() => {
             if (industryJobs) {
                 for (const job of industryJobs) {
-                    if (job.activity_id === IndustryActivity.manufacturing) {
+                    if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
                         job.productName = NamesService.getNameFromData(job.product_type_id);
                     }
                 }

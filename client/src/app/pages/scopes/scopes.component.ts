@@ -14,6 +14,7 @@ import { DataPageComponent } from '../data-page/data-page.component';
 export class ScopesComponent extends DataPageComponent implements OnInit {
 
     public static readonly scopeCodes = {
+        BLUEPRINTS: 'esi-characters.read_blueprints.v1',
         JOBS: 'esi-industry.read_character_jobs.v1',
         LOCATION: 'esi-location.read_location.v1',
         ORDERS: 'esi-markets.read_character_orders.v1',
@@ -66,6 +67,15 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             name: 'Read market orders',
             usageDescription: 'EVIE uses this scope on the Wallet page.',
             usagePages: ['wallet'],
+        },
+        {
+            code: ScopesComponent.scopeCodes.BLUEPRINTS,
+            enabled: false,
+            eveDescription: 'Allows reading a character\'s blueprints.',
+            infoVisible: false,
+            name: 'Read blueprints',
+            usageDescription: 'EVIE uses this scope on the Industry page.',
+            usagePages: ['industry'],
         },
         {
             code: ScopesComponent.scopeCodes.JOBS,
