@@ -9,7 +9,7 @@
     
     <div class="industry-job-container" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">
 
-        <img src="//imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
+        <img src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
 
         <ng-container *ngSwitchCase="IndustryActivity.manufacturing">
             <fa-icon [icon]="manufacturingIcon"></fa-icon>
@@ -17,7 +17,7 @@
 
             <p>
                 {{job.runs}} x
-                <img src="//imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
+                <img src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
                 <span>{{ job.productName }}</span>
             </p>
 

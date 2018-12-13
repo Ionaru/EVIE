@@ -9,38 +9,45 @@ export class EVE {
 
     public static readonly skillCategoryId = 16;
 
-    public static readonly highSecOres = [1230, 1228, 1224, 18, 1227, 20];
-    public static readonly highSecOreVariants = [17470, 17471, 17463, 17464, 17459, 17460, 17455, 17456, 17867, 17868, 17452, 17453];
-    public static readonly highSecOreMoonVariants = [46689, 46687, 46686, 46685, 46684, 46683];
-    public static readonly lowSecOres = [1226, 1231, 21];
-    public static readonly lowSecOreVariants = [17448, 17449, 17444, 17445, 17440, 17441];
-    public static readonly lowSecOreMoonVariants = [46682, 46681, 46680];
-    public static readonly nullSecOres = [1229, 1232, 19, 1225, 22, 1223, 11396];
-    public static readonly nullSecOreVariants = [17865, 17866, 17436, 17437, 17466, 17467, 17432, 17433, 17428, 17429, 17425, 17426, 17869, 17870];
-    public static readonly nullSecOreMoonVariants = [46679, 46675, 46688, 46677, 46676, 46678, 17870];
-
-    public static readonly ores = [
-        // Base, 5%, 10%, 15% (Moon)
-        // HighSec Ores
-        1230, 17470, 17471, 46689, // Veldspar
-        1228, 17463, 17464, 46687, // Scordite
-        1224, 17459, 17460, 46686, // Pyroxeres
-        18, 17455, 17456, 46685, // Plagioclase
-        1227, 17867, 17868, 46684, // Omber
-        20, 17452, 17453, 46683, // Kernite
-        // LowSec Ores
-        1226, 17448, 17449, 46682, // Jaspet
-        1231, 17444, 17445, 46681, // Hemorphite
-        21, 17440, 17441, 46680, // Hedbergite
-        // NullSec Ores
-        1229, 17865, 17866, 46679, // Gneiss
-        1232, 17436, 17437, 46675, // Dark Ochre
-        19, 17466, 17467, 46688, // Spodumain
-        1225, 17432, 17433, 46677, // Crokite
-        1223, 17428, 17429, 46676, // Bistot
-        22, 17425, 17426, 46678, // Arkonor
-        11396, 17869, 17870, // Mercoxit
-    ];
+    public static readonly ores = {
+        all: [
+            // Base, 5%, 10%, 15% (Moon)
+            // HighSec Ores
+            1230, 17470, 17471, 46689, // Veldspar
+            1228, 17463, 17464, 46687, // Scordite
+            1224, 17459, 17460, 46686, // Pyroxeres
+            18, 17455, 17456, 46685, // Plagioclase
+            1227, 17867, 17868, 46684, // Omber
+            20, 17452, 17453, 46683, // Kernite
+            // LowSec Ores
+            1226, 17448, 17449, 46682, // Jaspet
+            1231, 17444, 17445, 46681, // Hemorphite
+            21, 17440, 17441, 46680, // Hedbergite
+            // NullSec Ores
+            1229, 17865, 17866, 46679, // Gneiss
+            1232, 17436, 17437, 46675, // Dark Ochre
+            19, 17466, 17467, 46688, // Spodumain
+            1225, 17432, 17433, 46677, // Crokite
+            1223, 17428, 17429, 46676, // Bistot
+            22, 17425, 17426, 46678, // Arkonor
+            11396, 17869, 17870, // Mercoxit
+        ],
+        highSec: {
+            base: [1230, 1228, 1224, 18, 1227, 20],
+            beltVariants: [17470, 17471, 17463, 17464, 17459, 17460, 17455, 17456, 17867, 17868, 17452, 17453],
+            moonVariants: [46689, 46687, 46686, 46685, 46684, 46683],
+        },
+        lowSec: {
+            base: [1226, 1231, 21],
+            beltVariants: [17448, 17449, 17444, 17445, 17440, 17441],
+            moonVariants: [46682, 46681, 46680],
+        },
+        nullSec: {
+            base: [1229, 1232, 19, 1225, 22, 1223, 11396],
+            beltVariants: [17865, 17866, 17436, 17437, 17466, 17467, 17432, 17433, 17428, 17429, 17425, 17426, 17869, 17870],
+            moonVariants: [46679, 46675, 46688, 46677, 46676, 46678, 17870],
+        },
+    };
 
     public static constructESIURL(version: number | string, ...path: Array<string | number>): string {
         let url = `${EVE.ESIURL}/v${version}/`;
@@ -80,7 +87,7 @@ export class EVE {
     }
 
     public static getCharacterBlueprintsUrl(characterId: number) {
-        return EVE.constructESIURL(1, 'characters', characterId, 'blueprints');
+        return EVE.constructESIURL(2, 'characters', characterId, 'blueprints');
     }
 
     public static getStatusUrl() {

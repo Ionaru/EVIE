@@ -1,3 +1,5 @@
+import * as Agent from 'agentkeepalive';
+import axios, { AxiosInstance } from 'axios';
 import * as fs from 'fs';
 import * as ini from 'ini';
 import * as path from 'path';
@@ -13,10 +15,28 @@ interface IConfig {
 
 export class Configurator {
 
+    public static axios: AxiosInstance;
+
     private readonly config: IConfig = {};
 
     constructor() {
         config = this;
+
+        // Configuration from https://gist.github.com/ccnokes/94576dc38225936a3ca892b989c9d0c6
+        Configurator.axios = axios.create({
+            // 60 sec timeout
+            timeout: 60000,
+
+            // keepAlive pools and reuses TCP connections, so it's faster
+            httpAgent: new Agent(),
+            httpsAgent: new Agent.HttpsAgent(),
+
+            // follow up to 10 HTTP 3xx redirects
+            maxRedirects: 10,
+
+            // cap the maximum content length we'll accept to 50MBs, just in case
+            maxContentLength: 50 * 1000 * 1000,
+        });
     }
 
     /**

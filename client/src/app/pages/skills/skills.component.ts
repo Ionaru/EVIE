@@ -129,7 +129,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         Promise.all([
             this.hasSkillQueueScope ? this.getSkillQueue() : undefined,
             this.hasSkillsScope ? this.getSkills() : undefined,
-            this.setSkillGroups(),
+            this.hasSkillsScope ? this.setSkillGroups() : undefined,
         ]).then(() => this.parseSkillQueue());
     }
 

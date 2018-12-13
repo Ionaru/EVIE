@@ -39,7 +39,7 @@ export class RefiningProfitComponent implements OnInit {
 
     public tableSettings: ITableHeader[] = [{
         attribute: 'name',
-        prefixFunction: (data) => `<img src="//imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
+        prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
         sort: true,
         sortAttribute: 'index',
         title: 'Type',
@@ -84,19 +84,19 @@ export class RefiningProfitComponent implements OnInit {
 
         this.visibleData = undefined;
 
-        await this.namesService.getNames(...EVE.ores);
+        await this.namesService.getNames(...EVE.ores.all);
 
-        const types = await this.typesService.getTypes(...EVE.ores);
-        for (const ore of EVE.ores) {
+        const types = await this.typesService.getTypes(...EVE.ores.all);
+        for (const ore of EVE.ores.all) {
             this.oreTypes[ore] = types ? types.filter((type) => type.type_id === ore)[0] : undefined;
         }
 
-        await Promise.all(EVE.ores.map(async (ore) => {
+        await Promise.all(EVE.ores.all.map(async (ore) => {
             this.prices[ore] = {};
             await this.getPrices(ore, 8000);
         }));
 
-        this.data = EVE.ores.map((ore, index) => {
+        this.data = EVE.ores.all.map((ore, index) => {
             return {
                 accurateData: this.prices[ore].accurateData,
                 buy: this.prices[ore].buy,
@@ -190,39 +190,39 @@ export class RefiningProfitComponent implements OnInit {
         const visibleOres: number[] = [];
 
         if (this.model.highSecOres && this.model.regularOres) {
-            visibleOres.push(...EVE.highSecOres);
+            visibleOres.push(...EVE.ores.highSec.base);
         }
 
         if (this.model.highSecOres && this.model.beltVariants) {
-            visibleOres.push(...EVE.highSecOreVariants);
+            visibleOres.push(...EVE.ores.highSec.beltVariants);
         }
 
         if (this.model.highSecOres && this.model.moonVariants) {
-            visibleOres.push(...EVE.highSecOreMoonVariants);
+            visibleOres.push(...EVE.ores.highSec.moonVariants);
         }
 
         if (this.model.lowSecOres && this.model.regularOres) {
-            visibleOres.push(...EVE.lowSecOres);
+            visibleOres.push(...EVE.ores.lowSec.base);
         }
 
         if (this.model.lowSecOres && this.model.beltVariants) {
-            visibleOres.push(...EVE.lowSecOreVariants);
+            visibleOres.push(...EVE.ores.lowSec.beltVariants);
         }
 
         if (this.model.lowSecOres && this.model.moonVariants) {
-            visibleOres.push(...EVE.lowSecOreMoonVariants);
+            visibleOres.push(...EVE.ores.lowSec.moonVariants);
         }
 
         if (this.model.nullSecOres && this.model.regularOres) {
-            visibleOres.push(...EVE.nullSecOres);
+            visibleOres.push(...EVE.ores.nullSec.base);
         }
 
         if (this.model.nullSecOres && this.model.beltVariants) {
-            visibleOres.push(...EVE.nullSecOreVariants);
+            visibleOres.push(...EVE.ores.nullSec.beltVariants);
         }
 
         if (this.model.nullSecOres && this.model.moonVariants) {
-            visibleOres.push(...EVE.nullSecOreMoonVariants);
+            visibleOres.push(...EVE.ores.nullSec.moonVariants);
         }
 
         if (visibleOres.length === this.data.length) {

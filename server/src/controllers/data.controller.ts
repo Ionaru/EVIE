@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
@@ -19,6 +19,7 @@ import {
 } from '../../../client/src/shared/interface.helper';
 import { RequestLogger } from '../loggers/request.logger';
 import { CacheController } from './cache.controller';
+import { Configurator } from './configuration.controller';
 
 export class DataController {
 
@@ -190,7 +191,7 @@ export class DataController {
             };
         }
 
-        const response = await axios.get<T>(url, requestConfig).catch((error: AxiosError) => {
+        const response = await Configurator.axios.get<T>(url, requestConfig).catch((error: AxiosError) => {
             logger.error('Request failed:', url, error.message);
             return undefined;
         });
