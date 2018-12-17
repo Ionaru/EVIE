@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { Common } from '../../../shared/common.helper';
+import { BaseGuard } from '../../guards/base.guard';
 import { SocketService } from '../../socket/socket.service';
 import { Character, IApiCharacterData } from '../character/character.model';
 import { CharacterService } from '../character/character.service';
@@ -50,6 +51,7 @@ export class UserService {
     public logoutUser(): void {
         const url = 'api/logout';
         this.http.post(url, {}).toPromise().then(() => {
+            localStorage.removeItem(BaseGuard.redirectKey);
             sessionStorage.clear();
             window.location.reload();
         });
@@ -97,7 +99,9 @@ export class UserService {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
                         await this.storeUser(response.data);
-                        this.ngZone.run(() => this.router.navigate(['/dashboard'])).then();
+                        const afterLoginUrl = localStorage.getItem(BaseGuard.redirectKey) || '/dashboard';
+                        this.ngZone.run(() => this.router.navigate([afterLoginUrl])).then();
+                        localStorage.removeItem(BaseGuard.redirectKey);
                     }
                 }
             });

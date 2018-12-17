@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 
 import { AppReadyEventService } from './app-ready-event.service';
 import { NamesService } from './data-services/names.service';
+import { BaseGuard } from './guards/base.guard';
 import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -21,13 +22,14 @@ interface IHandshakeResponse {
 })
 export class AppComponent {
 
-    public version = '0.6.0';
+    public readonly version = '0.6.0';
 
     constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Error during app startup', error));
     }
 
     private async boot(): Promise<void> {
+        localStorage.removeItem(BaseGuard.redirectKey);
         await this.shakeHands();
         new SocketService();
         NamesService.getNamesFromStore();
