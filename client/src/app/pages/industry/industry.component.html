@@ -6,8 +6,21 @@
     <div *ngIf="industryJobs && !industryJobs.length">
         <h3>You have no active industry jobs.</h3>
     </div>
-    
+
     <div class="industry-job-container" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">
+        <h4 class="icon-container"><fa-icon [icon]="getIconForIndustryActivity(job.activity_id)"></fa-icon></h4>
+        <img src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png" alt="bp">
+        <img [ngClass]="{copy: job.activity_id === IndustryActivity.copying}" src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_64.png" alt="bp">
+    </div>
+
+    <!--<div class="industry-job-container" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">-->
+        <!--&lt;!&ndash; Icon &ndash;&gt;-->
+        <!--&lt;!&ndash; Blueprint &ndash;&gt;-->
+    <!--</div>-->
+
+    <hr>
+    
+    <div class="industry-job-container-2" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">
 
         <img src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
 

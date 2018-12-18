@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faCopy, faHourglass, faMicroscope } from '@fortawesome/pro-regular-svg-icons';
-import { faGem, faIndustry } from '@fortawesome/pro-solid-svg-icons';
+import { faCog, faCopy, faGem, faHourglass, faMicroscope } from '@fortawesome/pro-regular-svg-icons';
 
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
@@ -29,7 +28,7 @@ interface IBlueprints {
 export class IndustryComponent extends DataPageComponent implements OnInit {
 
     // Icons
-    public manufacturingIcon = faIndustry;
+    public manufacturingIcon = faCog;
     public copyIcon = faCopy;
     public materialResearchIcon = faGem;
     public timeResearchIcon = faHourglass;
@@ -109,5 +108,21 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
                 }
             }
         });
+    }
+
+    public getIconForIndustryActivity(activity: number) {
+        switch (activity) {
+            case IndustryActivity.research_material_efficiency:
+                return this.materialResearchIcon;
+            case IndustryActivity.research_time_efficiency:
+                return this.timeResearchIcon;
+            case IndustryActivity.copying:
+                return this.copyIcon;
+            case IndustryActivity.invention:
+                return this.inventionIcon;
+            case IndustryActivity.manufacturing:
+            default:
+                return this.manufacturingIcon;
+        }
     }
 }

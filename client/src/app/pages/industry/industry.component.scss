@@ -1,6 +1,20 @@
 .industry-job-container {
+    display: grid;
+    grid-template-columns: 40px auto auto;
+
+    .icon-container {
+        align-self: center;
+        justify-self: center;
+    }
+}
+
+.industry-job-container-2 {
     padding: 10px;
     //border-radius: 90px;
-    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 0 0 5px 0 rgba(0,0,0,0.75);
     //border: 1px solid red;
+}
+
+.copy {
+    filter: grayscale(0.1) sepia(0.4) hue-rotate(340deg) brightness(110%);
 }
