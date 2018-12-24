@@ -1,10 +1,20 @@
 .industry-job-container {
     display: grid;
-    grid-template-columns: 40px auto auto;
+    grid-template-columns: 40px repeat(5, auto);
 
     .icon-container {
         align-self: center;
         justify-self: center;
+    }
+
+    .percentage-container {
+        align-self: center;
+        justify-self: right;
+        display: grid;
+
+        span {
+            justify-self: right;
+        }
     }
 }
 

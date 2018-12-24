@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faCog, faCopy, faGem, faHourglass, faMicroscope } from '@fortawesome/pro-regular-svg-icons';
+import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
 
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
@@ -33,6 +33,8 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
     public materialResearchIcon = faGem;
     public timeResearchIcon = faHourglass;
     public inventionIcon = faMicroscope;
+    public arrowRight = faArrowRight;
+    public jobRunsIcon = faRepeat;
 
     public industryJobs?: IExtendedIndustryJobsData[];
 
@@ -109,6 +111,22 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
             }
         });
     }
+
+    public getIndustryActivityName(activity: number) {
+        switch (activity) {
+            case IndustryActivity.research_material_efficiency:
+                return 'Material efficiency research';
+            case IndustryActivity.research_time_efficiency:
+                return 'Time efficiency research';
+            case IndustryActivity.copying:
+                return 'Copying';
+            case IndustryActivity.invention:
+                return 'Invention';
+            case IndustryActivity.manufacturing:
+            default:
+                return 'Manufacturing';
+        }
+    };
 
     public getIconForIndustryActivity(activity: number) {
         switch (activity) {
