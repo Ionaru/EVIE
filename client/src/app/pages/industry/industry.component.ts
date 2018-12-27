@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
+import { faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
 
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
@@ -29,6 +30,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
 
     // Icons
     public manufacturingIcon = faCog;
+    public jobInProgressIcon = faCogSolid;
     public copyIcon = faCopy;
     public materialResearchIcon = faGem;
     public timeResearchIcon = faHourglass;

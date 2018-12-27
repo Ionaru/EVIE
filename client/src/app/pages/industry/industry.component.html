@@ -20,7 +20,7 @@
         </h4>
         <img [ngClass]="{copy: job.activity_id === IndustryActivity.copying}" src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_64.png" alt="bp">
         <p class="percentage-container">
-            <span>86%</span>
+            <span>86% <fa-icon [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon></span>
             <span> 9d, 11h, 14m, 39s</span>
         </p>
     </div>
