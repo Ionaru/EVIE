@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
 import { faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
+import * as countdown from 'countdown';
 
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
@@ -14,6 +15,7 @@ import { ScopesComponent } from '../scopes/scopes.component';
 
 interface IExtendedIndustryJobsData extends IIndustryJobsData {
     percentageDone?: number;
+    timeLeft?: number | countdown.Timespan;
     productName?: string;
 }
 
@@ -26,7 +28,7 @@ interface IBlueprints {
     styleUrls: ['./industry.component.scss'],
     templateUrl: './industry.component.html',
 })
-export class IndustryComponent extends DataPageComponent implements OnInit {
+export class IndustryComponent extends DataPageComponent implements OnInit, OnDestroy {
 
     // Icons
     public manufacturingIcon = faCog;
@@ -38,15 +40,24 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
     public arrowRight = faArrowRight;
     public jobRunsIcon = faRepeat;
 
+    public runningJobsTimer?: number;
+
     public industryJobs?: IExtendedIndustryJobsData[];
 
     public blueprints: IBlueprints = {};
 
     public IndustryActivity = IndustryActivity;
 
+    // tslint:disable-next-line:no-bitwise
+    private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
+
     constructor(private industryJobsService: IndustryJobsService, private blueprintsService: BlueprintsService,
                 private namesService: NamesService) {
         super();
+        countdown.setLabels(
+            '|s|m|h|d',
+            '|s|m|h|d',
+            ', ');
         this.requiredScopes = [ScopesComponent.scopeCodes.JOBS];
     }
 
@@ -56,12 +67,23 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
         this.getBlueprints().then();
     }
 
+    public ngOnDestroy() {
+        super.ngOnDestroy();
+        this.resetTimers();
+    }
+
     public static get hasIndustryJobsScope() {
         return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.JOBS);
     }
 
     public static get hasBlueprintScope() {
         return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.BLUEPRINTS);
+    }
+
+    public resetTimers() {
+        if (this.runningJobsTimer) {
+            clearInterval(this.runningJobsTimer);
+        }
     }
 
     public async getBlueprints() {
@@ -82,10 +104,14 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
 
             for (const job of this.industryJobs) {
                 const start = new Date(job.start_date).getTime();
+                const duration = job.duration * 1000;
+                const end = start + duration;
                 const now = Date.now();
 
                 const timeElapsed = now - start;
-                job.percentageDone = Math.min(Calc.partPercentage((timeElapsed / 1000), job.duration), 100);
+                job.percentageDone = Math.min(Calc.partPercentage((timeElapsed), duration), 100);
+
+                job.timeLeft = countdown(now, end, this.countdownUnits);
             }
 
             this.setProductNames(this.industryJobs);
@@ -128,7 +154,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit {
             default:
                 return 'Manufacturing';
         }
-    };
+    }
 
     public getIconForIndustryActivity(activity: number) {
         switch (activity) {

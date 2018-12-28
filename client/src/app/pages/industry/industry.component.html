@@ -13,25 +13,28 @@
                      [icon]="getIconForIndustryActivity(job.activity_id)"></fa-icon>
         </h4>
         <img src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png" alt="bp">
-        <h4 class="icon-container"><fa-icon [icon]="arrowRight"></fa-icon></h4>
+        <h4 class="icon-container">
+            <fa-icon [icon]="arrowRight"></fa-icon>
+        </h4>
         <h4 class="icon-container">
             <fa-icon [icon]="jobRunsIcon"></fa-icon>
             {{ job.runs }}
         </h4>
-        <img [ngClass]="{copy: job.activity_id === IndustryActivity.copying}" src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_64.png" alt="bp">
+        <img [ngClass]="{copy: job.activity_id === IndustryActivity.copying}"
+             src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_64.png" alt="bp">
         <p class="percentage-container">
-            <span>86% <fa-icon [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon></span>
-            <span> 9d, 11h, 14m, 39s</span>
+            <span>{{ job.percentageDone }}% <fa-icon [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon></span>
+            <span> {{ job.timeLeft }}</span>
         </p>
     </div>
 
     <!--<div class="industry-job-container" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">-->
-        <!--&lt;!&ndash; Icon &ndash;&gt;-->
-        <!--&lt;!&ndash; Blueprint &ndash;&gt;-->
+    <!--&lt;!&ndash; Icon &ndash;&gt;-->
+    <!--&lt;!&ndash; Blueprint &ndash;&gt;-->
     <!--</div>-->
 
     <hr>
-    
+
     <div class="industry-job-container-2" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">
 
         <img src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
@@ -41,7 +44,7 @@
             BUILD
 
             <p>
-                {{job.runs}} x
+                {{ job.runs }} x
                 <img src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
                 <span>{{ job.productName }}</span>
             </p>
@@ -72,7 +75,8 @@
 
         <span>{{ job.cost }}</span>
 
-        <p>BP stats -> M: {{ blueprints[job.blueprint_id]?.material_efficiency }} / T:{{ blueprints[job.blueprint_id]?.time_efficiency }}</p>
+        <p>BP stats -> M: {{ blueprints[job.blueprint_id]?.material_efficiency }} /
+            T:{{ blueprints[job.blueprint_id]?.time_efficiency }}</p>
 
     </div>
 
