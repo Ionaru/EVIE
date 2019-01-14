@@ -63,9 +63,7 @@ export class UserService {
 
         // Register all the characters in parallel, but wait until they are all finished before continuing
         await Promise.all(data.characters.map(async (characterData) => {
-            if (characterData.scopes) {
-                await this.addCharacter(characterData);
-            }
+            await this.addCharacter(characterData);
         }));
 
         if (newCharacterUUID) {

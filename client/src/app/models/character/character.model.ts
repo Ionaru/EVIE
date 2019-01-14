@@ -47,7 +47,7 @@ export class Character {
         this.accessToken = data.accessToken;
         this.ownerHash = data.ownerHash;
         this.uuid = data.uuid;
-        this.scopes = data.scopes.split(' ');
+        this.scopes = data.scopes ? data.scopes.split(' ') : [];
         this.tokenExpiry = new Date(data.tokenExpiry);
     }
 
