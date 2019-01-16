@@ -7,10 +7,10 @@ import { logger } from 'winston-pnp-logger';
 
 import { Calc } from '../../../client/src/shared/calc.helper';
 import { config, Configurator } from '../controllers/configuration.controller';
-import { DataController } from '../controllers/data.controller';
 import { SocketServer } from '../controllers/socket.controller';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
+import { BaseESIService } from '../services/base-esi.service';
 import { BaseRouter } from './base.router';
 
 const protocol = 'https://';
@@ -378,7 +378,7 @@ export class SSORouter extends BaseRouter {
 
         const route = request.body.route as string;
         const text = request.body.text as string;
-        DataController.logWarning(route, text);
+        BaseESIService.logWarning(route, text);
 
         return SSORouter.sendResponse(response, httpStatus.OK, 'Logged');
     }
