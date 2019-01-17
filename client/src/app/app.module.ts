@@ -24,6 +24,7 @@ import { SkillGroupsService } from './data-services/skill-groups.service';
 import { SkillQueueService } from './data-services/skillqueue.service';
 import { SkillsService } from './data-services/skills.service';
 import { StatusService } from './data-services/status.service';
+import { StructuresService } from './data-services/structures.service';
 import { TypesService } from './data-services/types.service';
 import { UsersService } from './data-services/users.service';
 import { WalletJournalService } from './data-services/wallet-journal.service';
@@ -113,6 +114,7 @@ if (environment.production) {
         IndustryJobsService,
         BlueprintsService,
         IndustryService,
+        StructuresService,
         MarketService,
         SocketService,
         AppReadyGuard,

@@ -128,6 +128,10 @@ export class EVE {
         return EVE.constructESIURL(1, 'universe', 'groups', groupId);
     }
 
+    public static getUniverseStructuresUrl(structureId: number) {
+        return EVE.constructESIURL(2, 'universe', 'structures', structureId);
+    }
+
     public static getCharacterAttributesUrl(characterId: number) {
         return EVE.constructESIURL(1, 'characters', characterId, 'attributes');
     }
