@@ -14,7 +14,10 @@ export class SocketServer {
     constructor(webServer: WebServer, sessionParser: express.RequestHandler) {
 
         // Pass the HTTP server to SocketIO for configuration.
-        this.io = SocketIO.listen(webServer.server);
+        this.io = SocketIO.listen(webServer.server, {
+            // SocketIO cookie is unused: https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662
+            cookie: false,
+        });
 
         // The websocket server listens on '/'
         const socketServer = this.io.of('/');
