@@ -16,68 +16,19 @@
         <h4 class="icon-container">
             <fa-icon [icon]="arrowRight"></fa-icon>
         </h4>
+        <img [ngClass]="{copy: job.activity_id === IndustryActivity.copying}"
+             src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_64.png" alt="bp">
         <h4 class="icon-container">
             <fa-icon [icon]="jobRunsIcon"></fa-icon>
             {{ job.runs }}
         </h4>
-        <img [ngClass]="{copy: job.activity_id === IndustryActivity.copying}"
-             src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_64.png" alt="bp">
         <p class="percentage-container">
-            <span>{{ job.percentageDone }}% <fa-icon [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon></span>
-            <span> {{ job.timeLeft }}</span>
+            <span>{{ job.percentageDone }}%
+                <fa-icon *ngIf="job.timeLeft.value > 0" [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon>
+                <fa-icon *ngIf="job.timeLeft.value <= 0" [icon]="jobFinishedIcon"></fa-icon>
+            </span>
+            <span> {{ job.timeLeft.value > 0 ? job.timeLeft : 'Finished' }}</span>
         </p>
-    </div>
-
-    <!--<div class="industry-job-container" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">-->
-    <!--&lt;!&ndash; Icon &ndash;&gt;-->
-    <!--&lt;!&ndash; Blueprint &ndash;&gt;-->
-    <!--</div>-->
-
-    <hr>
-
-    <div class="industry-job-container-2" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">
-
-        <img src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
-
-        <ng-container *ngSwitchCase="IndustryActivity.manufacturing">
-            <fa-icon [icon]="manufacturingIcon"></fa-icon>
-            BUILD
-
-            <p>
-                {{ job.runs }} x
-                <img src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
-                <span>{{ job.productName }}</span>
-            </p>
-
-        </ng-container>
-
-        <ng-container *ngSwitchCase="IndustryActivity.copying">
-            <fa-icon [icon]="copyIcon"></fa-icon>
-            COPY +{{ job.runs }}, runs: {{ job.licensed_runs }}
-        </ng-container>
-
-        <ng-container *ngSwitchCase="IndustryActivity.research_material_efficiency">
-            <fa-icon [icon]="materialResearchIcon"></fa-icon>
-            MAT EFF +{{ job.runs }}
-        </ng-container>
-
-        <ng-container *ngSwitchCase="IndustryActivity.research_time_efficiency">
-            <fa-icon [icon]="timeResearchIcon"></fa-icon>
-            TIME EFF +{{ job.runs }}
-        </ng-container>
-
-        <ng-container *ngSwitchCase="IndustryActivity.invention">
-            <fa-icon [icon]="inventionIcon"></fa-icon>
-            INVENTION
-        </ng-container>
-
-        <ngb-progressbar [value]="job.percentageDone" height="2px"></ngb-progressbar>
-
-        <span>{{ job.cost }}</span>
-
-        <p>BP stats -> M: {{ blueprints[job.blueprint_id]?.material_efficiency }} /
-            T:{{ blueprints[job.blueprint_id]?.time_efficiency }}</p>
-
     </div>
 
     <hr>

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
-import { faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
+import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
 import * as countdown from 'countdown';
 
 import { Calc } from '../../../shared/calc.helper';
@@ -33,6 +33,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     // Icons
     public manufacturingIcon = faCog;
     public jobInProgressIcon = faCogSolid;
+    public jobFinishedIcon = faCheck;
     public copyIcon = faCopy;
     public materialResearchIcon = faGem;
     public timeResearchIcon = faHourglass;
@@ -111,7 +112,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                 const timeElapsed = now - start;
                 job.percentageDone = Math.min(Calc.partPercentage((timeElapsed), duration), 100);
 
-                job.timeLeft = countdown(now, end, this.countdownUnits);
+                job.timeLeft = countdown(undefined, end, this.countdownUnits);
             }
 
             this.setProductNames(this.industryJobs);
