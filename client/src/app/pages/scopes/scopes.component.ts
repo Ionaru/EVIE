@@ -21,6 +21,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
         SHIP_TYPE: 'esi-location.read_ship_type.v1',
         SKILLQUEUE: 'esi-skills.read_skillqueue.v1',
         SKILLS: 'esi-skills.read_skills.v1',
+        STRUCTURES: 'esi-universe.read_structures.v1',
         WALLET: 'esi-wallet.read_character_wallet.v1',
     };
 
@@ -83,6 +84,15 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             eveDescription: 'Allows reading a character\'s industry jobs.',
             infoVisible: false,
             name: 'Read industry jobs',
+            usageDescription: 'EVIE uses this scope on the Industry page.',
+            usagePages: ['industry'],
+        },
+        {
+            code: ScopesComponent.scopeCodes.STRUCTURES,
+            enabled: false,
+            eveDescription: 'Allows querying the location and type of structures that the character has docking access at.',
+            infoVisible: false,
+            name: 'Read structures',
             usageDescription: 'EVIE uses this scope on the Industry page.',
             usagePages: ['industry'],
         },
