@@ -3,6 +3,28 @@
 </app-no-scopes-message>
 
 <div class="container industry-page-container" *ngIf="missingAllRequiredScopes === false">
+
+    <!-- Add multiple character to merge industry list? -->
+
+    <!-- Toggle to show/hide different activities -->
+    <div class="btn-group btn-group-toggle">
+        <!--<label class="btn-outline-success" ngbButtonLabel>-->
+            <!--<input type="checkbox" ngbButton [(ngModel)]="model.highSecOres" (ngModelChange)="changeVisibleOres()">-->
+            <!--<fa-icon [icon]="model.highSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>-->
+            <!--Highsec-->
+        <!--</label>-->
+        <!--<label class="btn-outline-primary" ngbButtonLabel>-->
+            <!--<input type="checkbox" ngbButton [(ngModel)]="model.lowSecOres" (ngModelChange)="changeVisibleOres()">-->
+            <!--<fa-icon [icon]="model.lowSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>-->
+            <!--Lowsec-->
+        <!--</label>-->
+        <!--<label class="btn-outline-danger" ngbButtonLabel>-->
+            <!--<input type="checkbox" ngbButton [(ngModel)]="model.nullSecOres" (ngModelChange)="changeVisibleOres()">-->
+            <!--<fa-icon [icon]="model.nullSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>-->
+            <!--Nullsec-->
+        <!--</label>-->
+    </div>
+
     <div *ngIf="industryJobs && !industryJobs.length">
         <h3>You have no active industry jobs.</h3>
     </div>
@@ -12,22 +34,33 @@
             <fa-icon [ngbTooltip]="getIndustryActivityName(job.activity_id)" placement="right"
                      [icon]="getIconForIndustryActivity(job.activity_id)"></fa-icon>
         </h4>
-        <img src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png" alt="bp">
+        <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id].runs !== -1}"
+            src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png" alt="bp">
         <h4 class="icon-container">
             <fa-icon [icon]="arrowRight"></fa-icon>
         </h4>
-        <img [ngClass]="{copy: job.activity_id === IndustryActivity.copying}"
+        <img [ngClass]="{copy: [IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)}"
              src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_64.png" alt="bp">
-        <h4 class="icon-container">
-            <fa-icon [icon]="jobRunsIcon"></fa-icon>
-            {{ job.runs }}
-        </h4>
+
+        <div class="icon-container">
+            <h4 *ngIf="![IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)">
+                <fa-icon [icon]="jobRunsIcon"></fa-icon>
+                {{ job.runs }}
+            </h4>
+
+            <h4 *ngIf="[IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)">
+                {{ blueprints[job.blueprint_id].material_efficiency }}%
+                <fa-icon [icon]="arrowRight"></fa-icon>
+                {{ blueprints[job.blueprint_id].material_efficiency + (job.activity_id === IndustryActivity.research_time_efficiency ? job.runs * 2 : job.runs) }}%
+            </h4>
+        </div>
+
         <p class="percentage-container">
             <span>{{ job.percentageDone }}%
                 <fa-icon *ngIf="job.timeLeft.value > 0" [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon>
                 <fa-icon *ngIf="job.timeLeft.value <= 0" [icon]="jobFinishedIcon"></fa-icon>
             </span>
-            <span> {{ job.timeLeft.value > 0 ? job.timeLeft : 'Finished' }}</span>
+            <span> {{ job.timeLeft.value > 0 ? job.timeLeft : 'Ready for delivery.' }}</span>
         </p>
     </div>
 
