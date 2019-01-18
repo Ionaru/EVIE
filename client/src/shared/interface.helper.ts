@@ -368,6 +368,7 @@ export enum IndustryActivity {
     research_time_efficiency = 3,
     research_material_efficiency = 4,
     copying = 5,
+    duplicating = 6,
     reverse_engineering = 7,
     invention = 8,
     reactions = 11,
