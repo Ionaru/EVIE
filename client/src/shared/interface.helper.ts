@@ -306,6 +306,29 @@ export interface ICharacterBlueprintsData {
     type_id: number;
 }
 
+export interface IStructurePosition {
+    x: number;
+    y: number;
+    z: number;
+}
+
+export interface IUniverseStructureData {
+    // The full name of the structure
+    name: string;
+
+    // The ID of the corporation who owns this particular structure
+    owner_id: number;
+
+    // Position of the structure with x/y/z coordinates.
+    position: IStructurePosition;
+
+    // Id of the solar system where the structure is located.
+    solar_system_id: number;
+
+    // Type id of the structure
+    type_id?: number;
+}
+
 export interface IIndustryActivityProducts {
     typeID: number;
     activityID: number;
