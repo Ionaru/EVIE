@@ -9,6 +9,7 @@ import { ICharacterBlueprintsData, IIndustryJobsData, IndustryActivity } from '.
 import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
 import { NamesService } from '../../data-services/names.service';
+import { StructuresService } from '../../data-services/structures.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
@@ -17,6 +18,7 @@ interface IExtendedIndustryJobsData extends IIndustryJobsData {
     percentageDone?: number;
     timeLeft?: number | countdown.Timespan;
     productName?: string;
+    locationName?: string;
 }
 
 interface IBlueprints {
@@ -52,7 +54,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
 
     constructor(private industryJobsService: IndustryJobsService, private blueprintsService: BlueprintsService,
-                private namesService: NamesService) {
+                private namesService: NamesService, private structuresService: StructuresService) {
         super();
         countdown.setLabels(
             '|s|m|h|d',
@@ -114,14 +116,15 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                 job.timeLeft = countdown(now, end, this.countdownUnits);
             }
 
-            this.setProductNames(this.industryJobs);
-
             Common.sortArrayByObjectProperty(this.industryJobs, 'job_id', false);
             Common.sortArrayByObjectProperty(this.industryJobs, 'percentageDone', true);
+
+            this.setProductNames(this.industryJobs).then();
+            this.getLocationNames(this.industryJobs).then();
         }
     }
 
-    public setProductNames(industryJobs: IExtendedIndustryJobsData[]) {
+    public async setProductNames(industryJobs: IExtendedIndustryJobsData[]) {
         const namesToGet = industryJobs.map((job) => {
             if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
                 return job.product_type_id;
@@ -129,15 +132,28 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
             return 0;
         }).filter(Boolean);
 
-        this.namesService.getNames(...namesToGet).then(() => {
-            if (industryJobs) {
-                for (const job of industryJobs) {
-                    if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
-                        job.productName = NamesService.getNameFromData(job.product_type_id);
-                    }
-                }
+        await this.namesService.getNames(...namesToGet);
+        for (const job of industryJobs) {
+            if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
+                job.productName = NamesService.getNameFromData(job.product_type_id);
             }
-        });
+        }
+    }
+
+    public async getLocationNames(industryJobs: IExtendedIndustryJobsData[]) {
+
+        for (const job of industryJobs) {
+            if (job.output_location_id > Calc.maxIntegerValue) {
+                if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScope) {
+                    const structure = await this.structuresService.getStructureInfo(
+                        CharacterService.selectedCharacter, job.output_location_id);
+                    job.locationName = structure ? structure.name : 'Unknown citadel';
+                }
+            } else {
+                await this.namesService.getNames(job.output_location_id);
+                job.locationName = NamesService.getNameFromData(job.output_location_id);
+            }
+        }
     }
 
     public getIndustryActivityName(activity: number) {
