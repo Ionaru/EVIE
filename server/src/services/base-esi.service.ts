@@ -25,40 +25,22 @@ export class BaseESIService {
             };
         }
 
-        const response = await Configurator.axios.get<T>(url, requestConfig).catch((error: AxiosError) => {
+        const response = await Configurator.axios.get<T | undefined>(url, requestConfig).catch((error: AxiosError) => {
             logger.error('Request failed:', url, error.message);
             return undefined;
         });
 
         if (response) {
             logger.debug(`${url} => ${RequestLogger.getStatusColor(response.status)(`${response.status} ${response.statusText}`)}`);
-            if (response.status === httpStatus.OK) {
+            if (response.status === httpStatus.OK || response.status === httpStatus.NOT_MODIFIED) {
+
+                CacheController.saveToCache(response);
+
                 if (response.headers.warning) {
                     BaseESIService.logWarning(url, response.headers.warning);
                 }
 
-                if (response.headers.expires || response.headers.etag) {
-                    CacheController.responseCache[url] = {
-                        data: response.data,
-                    };
-
-                    if (response.headers.etag) {
-                        CacheController.responseCache[url].etag = response.headers.etag;
-                    }
-
-                    CacheController.responseCache[url].expiry =
-                        response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
-                }
-
-                return response.data;
-
-            } else if (response.status === httpStatus.NOT_MODIFIED) {
-
-                CacheController.responseCache[url].expiry =
-                    response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
-
-                return CacheController.responseCache[url].data as T;
-
+                return response.data || CacheController.responseCache[url].data as T;
             } else {
                 logger.error('Request not OK:', url, response.status, response.statusText, response.data);
             }
