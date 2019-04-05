@@ -140,7 +140,7 @@ export class Application {
         process.on('uncaughtException', () => {
             Application.exit(exitCode);
         });
-        process.on('unhandledRejection', (reason: string, p: Promise<any>): void => {
+        process.on('unhandledRejection', (reason, p): void => {
             logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
             Application.exit(exitCode);
         });
