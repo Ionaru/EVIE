@@ -9,6 +9,8 @@ export class EVE {
 
     public static readonly skillCategoryId = 16;
 
+    public static readonly minerals = [34, 35, 36, 37, 38, 39, 40, 11399];
+
     public static readonly ores = {
         all: [
             // Base, 5%, 10%, 15% (Moon)
