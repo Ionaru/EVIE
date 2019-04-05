@@ -148,7 +148,9 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                 if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScope) {
                     const structure = await this.structuresService.getStructureInfo(
                         CharacterService.selectedCharacter, job.output_location_id);
-                    job.locationName = structure ? structure.name : 'Unknown citadel';
+                    if (structure) {
+                        job.locationName = structure.name;
+                    }
                 }
             } else {
                 await this.namesService.getNames(job.output_location_id);
