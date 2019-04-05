@@ -64,11 +64,13 @@
         </p>
     </div>
 
-    <hr>
-    <h3>Debug data</h3>
-    <p>Industry data</p>
-    <pre>{{ industryJobs | json }}</pre>
-    <hr>
-    <p>Blueprint data</p>
-    <pre>{{ blueprints | json }}</pre>
+    <ng-container *ngIf="debugMode">
+        <hr>
+        <h3>Debug data</h3>
+        <p>Industry data</p>
+        <pre>{{ industryJobs | json }}</pre>
+        <hr>
+        <p>Blueprint data</p>
+        <pre>{{ blueprints | json }}</pre>
+    </ng-container>
 </div>

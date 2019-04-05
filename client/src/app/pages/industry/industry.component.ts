@@ -3,6 +3,7 @@ import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat
 import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
 import * as countdown from 'countdown';
 
+import { environment } from '../../../environments/environment';
 import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
 import { ICharacterBlueprintsData, IIndustryJobsData, IndustryActivity } from '../../../shared/interface.helper';
@@ -50,6 +51,8 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public blueprints: IBlueprints = {};
 
     public IndustryActivity = IndustryActivity;
+
+    public debugMode = !environment.production;
 
     // tslint:disable-next-line:no-bitwise
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
