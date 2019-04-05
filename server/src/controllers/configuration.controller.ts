@@ -1,4 +1,4 @@
-import * as Agent from 'agentkeepalive';
+import { HttpsAgent } from 'agentkeepalive';
 import axios, { AxiosInstance } from 'axios';
 import * as fs from 'fs';
 import * as ini from 'ini';
@@ -28,8 +28,7 @@ export class Configurator {
             timeout: 60000,
 
             // keepAlive pools and reuses TCP connections, so it's faster
-            httpAgent: new Agent(),
-            httpsAgent: new Agent.HttpsAgent(),
+            httpsAgent: new HttpsAgent(),
 
             // follow up to 10 HTTP 3xx redirects
             maxRedirects: 10,
