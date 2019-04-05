@@ -1,0 +1,9 @@
+version: '3'
+services:
+    client:
+        container_name: evie-client
+        build: ./client
+        ports:
+            - "80:80"
+        volumes:
+            - ./client/conf.d:/etc/nginx/conf.d
