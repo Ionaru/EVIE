@@ -2,8 +2,10 @@ version: '3'
 services:
     client:
         container_name: evie-client
-        build: ./client
+        build:
+            context: ./
+            dockerfile: ./client/Dockerfile
+            args:
+                FA_TOKEN: ${FA_TOKEN}
         ports:
             - "80:80"
-        volumes:
-            - ./client/conf.d:/etc/nginx/conf.d
