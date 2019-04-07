@@ -1,6 +1,6 @@
 version: '3'
 services:
-    client:
+    evie-client:
         container_name: evie-client
         build:
             context: ./
@@ -9,3 +9,12 @@ services:
                 FA_TOKEN: ${FA_TOKEN}
         ports:
             - "80:80"
+        depends_on:
+            - evie-server
+    evie-server:
+        container_name: evie-server
+        build:
+            context: ./
+            dockerfile: ./server/Dockerfile
+        ports:
+            - "3000:3000"
