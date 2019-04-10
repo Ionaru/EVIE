@@ -27,10 +27,10 @@
         "@fortawesome/pro-regular-svg-icons": "^5.8.1",
         "@fortawesome/pro-solid-svg-icons": "^5.8.1",
         "@ng-bootstrap/ng-bootstrap": "^4.1.1",
-        "@sentry/browser": "^5.0.5",
+        "@sentry/browser": "^5.0.7",
         "bootstrap": "^4.3.1",
         "bootswatch": "^4.3.1",
-        "core-js": "^3.0.0",
+        "core-js": "^3.0.1",
         "countdown": "^2.6.0",
         "rxjs": "^6.4.0",
         "socket.io-client": "^2.2.0",
@@ -58,6 +58,6 @@
         "ts-node": "^8.0.3",
         "tslint": "^5.15.0",
         "tslint-angular": "^1.1.2",
-        "typescript": "^3.4.1"
+        "typescript": "^3.4.3"
     }
 }
