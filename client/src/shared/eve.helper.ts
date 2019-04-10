@@ -80,6 +80,10 @@ export class EVE {
         return EVE.constructESIURL(1, 'universe', 'groups', groupId);
     }
 
+    public static getCharacterAttributesUrl(characterId: number) {
+        return EVE.constructESIURL(1, 'characters', characterId, 'attributes');
+    }
+
     public static getCharacterSkillQueueUrl(characterId: number) {
         return EVE.constructESIURL(2, 'characters', characterId, 'skillqueue');
     }

@@ -30,7 +30,7 @@ export interface ITableData {
 export class SorTableComponent implements OnChanges {
 
     @Input() public columns: ITableHeader[] = [];
-    @Input() public data: ITableData[] = [];
+    @Input() public data?: ITableData[];
 
     public currentSort?: ITableHeader;
     public invert = false;
@@ -42,23 +42,23 @@ export class SorTableComponent implements OnChanges {
 
     public getData = (attribute: string, data: ITableData) => attribute.split('.').reduce((o, i) =>  o ? o[i] : o, data);
 
-    public sort(col = this.currentSort) {
-        if (!col) {
+    public sort(column = this.currentSort) {
+        if (!column || !this.data) {
             return;
         }
 
-        const sortAttribute = col.sortAttribute || col.attribute;
+        const sortAttribute = column.sortAttribute || column.attribute;
 
-        this.invert = (this.currentSort && this.currentSort === col) ? !this.invert : false;
+        this.invert = (this.currentSort && this.currentSort === column) ? !this.invert : false;
 
         Common.sortArrayByObjectProperty(this.data, sortAttribute, this.invert);
-        this.currentSort = col;
+        this.currentSort = column;
     }
 
-    public getClass = (col: ITableHeader, data: any) => col.classFunction ? col.classFunction(data) : '';
+    public getClass = (column: ITableHeader, data: any) => column.classFunction ? column.classFunction(data) : '';
 
-    public prefixFunction = (col: ITableHeader, data: any) => col.prefixFunction ? col.prefixFunction(data) : undefined;
-    public suffixFunction = (col: ITableHeader, data: any) => col.suffixFunction ? col.suffixFunction(data) : undefined;
+    public prefixFunction = (column: ITableHeader, data: any) => column.prefixFunction ? column.prefixFunction(data) : undefined;
+    public suffixFunction = (column: ITableHeader, data: any) => column.suffixFunction ? column.suffixFunction(data) : undefined;
 
     public ngOnChanges(change: SimpleChanges) {
         if (change.data) {

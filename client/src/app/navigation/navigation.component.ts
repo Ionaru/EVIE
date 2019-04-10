@@ -35,6 +35,7 @@ export class NavigationComponent implements OnInit {
     public minutes = '00';
     public char = 1;
     public activatedCharacter = false;
+    public hasCharacters = false;
     public isLoggedIn = false;
     public isAdmin = false;
     public isCollapsed!: boolean;
@@ -52,11 +53,13 @@ export class NavigationComponent implements OnInit {
                 this.char = 1;
                 this.activatedCharacter = false;
             }
+            this.hasCharacters = UserService.user.characters.length > 0;
         });
 
         UserService.userChangeEvent.subscribe((user) => {
             this.isLoggedIn = !!user;
             this.isAdmin = user && user.isAdmin;
+            this.hasCharacters = UserService.user.characters.length > 0;
         });
 
         this.playersCountUp = new CountUp('eve-players', 0, 0);

@@ -27,6 +27,8 @@ export class RequestLogger {
                 // Do not log requests to static URLs and files unless their status code is not OK.
                 if ((!ignoredExtensionMatch && !ignoredUrlMatch) || (endResponse.statusCode !== 200 && endResponse.statusCode !== 304)) {
 
+                    const message = endResponse.data ? endResponse.data.message : undefined;
+
                     const statusColor = RequestLogger.getStatusColor(endResponse.statusCode);
                     const status = statusColor(`${endResponse.statusCode} ${endResponse.statusMessage}`);
 
@@ -36,11 +38,17 @@ export class RequestLogger {
                     const ip = RequestLogger.getIp(request);
                     const identifier = `${ip} (${chalk.white(request.sessionID!)})`;
 
-                    const requestText = `${request.method} ${request.originalUrl}`;
+                    const text = `${request.method} ${request.originalUrl}`;
 
                     const requestDuration = Date.now() - requestStartTime;
                     const arrow = RequestLogger.arrow;
-                    const logContent = `${identifier}: ${requestText} ${arrow} ${router} ${arrow} ${status}, ${requestDuration}ms`;
+
+                    let logContent = `${identifier}: ${text} ${arrow} ${router} ${arrow} `;
+                    if (message) {
+                        logContent += `${message} `;
+                    }
+                    logContent += `${status}, ${requestDuration}ms`;
+
                     if (endResponse.statusCode >= 500) {
                         logger.error(logContent);
                     } else if (endResponse.statusCode >= 400) {

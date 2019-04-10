@@ -11,6 +11,17 @@ export class User {
     }
 }
 
+export interface ISSOAuthResponseData {
+    user: IUserApiData;
+    newCharacter: string;
+}
+
+export interface ISSOAuthResponse {
+    state: string;
+    message: string;
+    data: ISSOAuthResponseData;
+}
+
 export interface ISSOLoginResponse {
     state: string;
     message: string;

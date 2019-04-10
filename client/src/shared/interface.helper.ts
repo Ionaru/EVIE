@@ -140,6 +140,23 @@ export interface IStatusData {
     server_version: string;
 }
 
+export interface IAttributesData {
+    // Neural remapping cooldown after a character uses remap accrued over time
+    accrued_remap_cooldown_date?: Date;
+
+    // Number of available bonus character neural remaps
+    bonus_remaps?: number;
+
+    // Datetime of last neural remap, including usage of bonus remaps
+    last_remap_date?: Date;
+
+    charisma: number;
+    intelligence: number;
+    memory: number;
+    perception: number;
+    willpower: number;
+}
+
 export interface IWalletJournalData {
     // The amount of ISK given or taken from the wallet as a result of the given transaction. Positive when ISK is deposited into the wallet
     // and negative when ISK is withdrawn

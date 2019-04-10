@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
 
+import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
 
@@ -8,11 +9,11 @@ export class UserRouter extends BaseRouter {
 
     @BaseRouter.requestDecorator(BaseRouter.checkAdmin)
     private static async getUsers(_request: Request, response: Response): Promise<Response> {
-        const users: User[] = await User.doQuery()
-            .leftJoinAndSelect('user.characters', 'character')
+        const characters = await Character.doQuery()
+            .innerJoinAndSelect('character.user', 'user')
             .orderBy('user.id')
             .getMany();
-        return BaseRouter.sendSuccessResponse(response, users);
+        return BaseRouter.sendSuccessResponse(response, characters);
     }
 
     @BaseRouter.requestDecorator(BaseRouter.checkAdmin)

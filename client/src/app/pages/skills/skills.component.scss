@@ -1,12 +1,27 @@
 @import '../../../variables';
 
 .skill-points-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
     justify-content: space-between;
 
     .training-speed {
-        display: block;
         text-align: right;
+    }
+}
+
+.attributes-container {
+
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+
+    .attribute {
+        display: grid;
+        grid-template-columns: repeat(2, auto);
+
+        p {
+            margin: auto;
+        }
     }
 }
 
@@ -53,6 +68,7 @@
 
     .accordion ::ng-deep .card {
         background-color: $body-secondary;
+
         .card-header {
             background-color: transparent;
             padding: 0;

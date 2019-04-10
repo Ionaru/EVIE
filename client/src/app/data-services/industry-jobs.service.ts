@@ -1,20 +1,21 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
 import { IIndustryJobsData } from '../../shared/interface.helper';
 import { Character } from '../models/character/character.model';
+import { ScopesComponent } from '../pages/scopes/scopes.component';
+import { BaseService } from './base.service';
 
 @Injectable()
-export class IndustryJobsService {
-
-    constructor(private http: HttpClient) { }
+export class IndustryJobsService extends BaseService {
 
     public async getIndustryJobs(character: Character): Promise<IIndustryJobsData[]> {
+        BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.JOBS, 'getIndustryJobs');
+
         const url = EVE.getIndustryJobsUrl(character.characterId);
-        const headers = new HttpHeaders({Authorization: 'Bearer ' + character.accessToken});
-        const response = await this.http.get<any>(url, {headers}).toPromise<IIndustryJobsData[]>().catch(Common.return);
+        const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
+        const response = await this.http.get<any>(url, {headers}).toPromise<IIndustryJobsData[]>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return [];
         }

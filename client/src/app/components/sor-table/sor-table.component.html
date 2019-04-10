@@ -1,38 +1,38 @@
 <table class="table table-sm">
     <thead>
     <tr>
-        <th [ngClass]="{sortable: c.sort}" *ngFor="let c of columns"
-            (click)="c.sort ? sort(c) : null">
-            <ng-container *ngIf="currentSort && currentSort === c">
+        <th [ngClass]="{sortable: header.sort}" *ngFor="let header of columns"
+            (click)="header.sort ? sort(header) : null">
+            <ng-container *ngIf="currentSort && currentSort === header">
                 <span *ngIf="!invert"><fa-icon [icon]="sortAscendingIcon"></fa-icon></span>
                 <span *ngIf="invert"><fa-icon [icon]="sortDescendingIcon"></fa-icon></span>
             </ng-container>
-            <ng-container *ngIf="!(currentSort && currentSort === c) && c.sort">
+            <ng-container *ngIf="!(currentSort && currentSort === header) && header.sort">
                 <span><fa-icon [icon]="noSortIcon"></fa-icon></span>
             </ng-container>
-            {{ c.title ? c.title : (c.attribute.charAt(0).toUpperCase() + c.attribute.slice(1)) }}
-            <span class="hint-button" *ngIf="c.hint" placement="right" [ngbTooltip]="c.hint">
+            {{ header.title ? header.title : (header.attribute.charAt(0).toUpperCase() + header.attribute.slice(1)) }}
+            <span class="hint-button" *ngIf="header.hint" placement="right" [ngbTooltip]="header.hint">
                 <fa-icon [icon]="hintIcon"></fa-icon>
             </span>
         </th>
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let d of data">
-        <td *ngFor="let col of columns" [ngClass]="[col.attribute, getClass(col, d)]" class="align-middle">
-            <span [innerHTML]="prefixFunction(col, d) || col.prefix"></span>
-            <ng-container [ngSwitch]="col.pipe">
+    <tr *ngFor="let row of data">
+        <td *ngFor="let column of columns" [ngClass]="[column.attribute, getClass(column, row)]" class="align-middle">
+            <span [innerHTML]="prefixFunction(column, row) || column.prefix"></span>
+            <ng-container [ngSwitch]="column.pipe">
                 <ng-container *ngSwitchCase="'number'">
-                    {{ getData(col.attribute, d) | number:col.pipeVar ? col.pipeVar : '1.0-0' }}
+                    {{ getData(column.attribute, row) | number:column.pipeVar ? column.pipeVar : '1.0-0' }}
                 </ng-container>
                 <ng-container *ngSwitchCase="'date'">
-                    {{ getData(col.attribute, d) | date:col.pipeVar ? col.pipeVar : 'yyyy-MM-dd HH:mm:ss' }}
+                    {{ getData(column.attribute, row) | date:column.pipeVar ? column.pipeVar : 'yyyy-MM-dd HH:mm:ss' }}
                 </ng-container>
                 <ng-container *ngSwitchDefault>
-                    {{ getData(col.attribute, d) }}
+                    {{ getData(column.attribute, row) }}
                 </ng-container>
             </ng-container>
-            <span [innerHTML]="suffixFunction(col, d) || col.suffix"></span>
+            <span [innerHTML]="suffixFunction(column, row) || column.suffix"></span>
         </td>
     </tr>
     </tbody>

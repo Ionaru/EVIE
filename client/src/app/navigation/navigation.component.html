@@ -50,7 +50,7 @@
                     </span>
                 </a>
             </li>
-            <li *ngIf="isLoggedIn && isAdmin" class="nav-item">
+            <li *ngIf="isLoggedIn && (isAdmin || devEnvironment)" class="nav-item">
                 <a class="nav-link" routerLink="users" routerLinkActive="active">
                     <span class="nav-link-text">
                         <fa-icon [icon]="userAdminIcon"></fa-icon>
@@ -68,8 +68,8 @@
 
 <nav class="navbar fixed-left navbar-inverse">
     <div class="scrollContainer">
-        <a class="character-item" [ngClass]="{'disabled': !activatedCharacter}" (click)="nextCharacter()">
-            <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
+        <a class="character-item" [ngClass]="{'disabled': !hasCharacters}" (click)="nextCharacter()">
+            <img src="//imageserver.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
         </a>
         <a routerLink="dashboard" routerLinkActive="active" class="navbar-item d-lg-none"
            [ngClass]="{'disabled': !activatedCharacter}">

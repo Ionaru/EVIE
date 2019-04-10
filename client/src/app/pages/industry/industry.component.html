@@ -1,6 +1,6 @@
 <!--<div class="item-container d-flex" >-->
     <!--<div class="image-container">-->
-        <!--<img src="https://image.eveonline.com/Type/{{bp.blueprintId}}_64.png" />-->
+        <!--<img src="https://imageserver.eveonline.com/Type/{{bp.blueprintId}}_64.png" />-->
     <!--</div>-->
     <!--<div class="options-container d-flex">-->
         <!--<div class="d-flex flex-column justify-content-evenly align-items-center h-100">-->
@@ -14,11 +14,11 @@
     <!--</div>-->
 <!--</div>-->
 
-<!--<img *ngFor="let bp of bpMats" src="https://image.eveonline.com/Type/{{bp}}_64.png" />-->
+<!--<img *ngFor="let bp of bpMats" src="https://imageserver.eveonline.com/Type/{{bp}}_64.png" />-->
 <!--<hr>-->
-<!--<img *ngFor="let bp of baseMats" src="https://image.eveonline.com/Type/{{bp}}_64.png" />-->
+<!--<img *ngFor="let bp of baseMats" src="https://imageserver.eveonline.com/Type/{{bp}}_64.png" />-->
 
 <div *ngFor="let key of bupKeys()">
-    <img *ngFor="let bp of bups[key]" src="https://image.eveonline.com/Type/{{bp}}_64.png" />
+    <img *ngFor="let bp of bups[key]" src="https://imageserver.eveonline.com/Type/{{bp}}_64.png" />
     <hr>
 </div>

@@ -19,24 +19,20 @@ export class User extends BaseModel {
     @Column({
         default: false,
     })
-    public isAdmin!: boolean;
+    public isAdmin: boolean = false;
 
     @Column({
         default: 1,
     })
-    public timesLogin!: number;
+    public timesLogin: number = 1;
 
     @Column({
         default: () => 'CURRENT_TIMESTAMP',
     })
-    public lastLogin!: Date;
+    public lastLogin: Date = new Date();
 
     @OneToMany(() => Character, (character) => character.user)
     public characters!: Character[];
-
-    constructor() {
-        super();
-    }
 
     public get sanitizedCopy() {
         // Delete data that should not be sent to the client.
