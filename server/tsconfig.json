@@ -1,7 +1,20 @@
 {
-    "extends": "../tsconfig.json",
     "compilerOptions": {
         "baseUrl": "./",
+        "declaration": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "resolveJsonModule": true,
+        "sourceMap": true,
+        "strict": true,
+        "typeRoots": [
+            "node_modules/@types"
+        ],
         "lib": [
             "esnext"
         ],
