@@ -3,7 +3,7 @@
  */
 export class Calc {
 
-    public static maxIntegerValue = Math.pow(2, 31);
+    public static maxIntegerValue = 0x7FFFFFFF;
 
     public static partPercentage = (part: number, total: number) => (part / total) * 100;
     public static profitPercentage = (old: number, newAmount: number) => ((newAmount - old) / old) * 100;
