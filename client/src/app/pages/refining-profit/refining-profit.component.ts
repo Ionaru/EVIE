@@ -1,20 +1,21 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 
+import { Calc } from '../../../shared/calc.helper';
 import { Common } from '../../../shared/common.helper';
 import { EVE } from '../../../shared/eve.helper';
-import { IMarketOrdersReponse } from '../../../shared/interface.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
+import { IndustryService } from '../../data-services/industry.service';
 import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 
 @Component({
-    selector: 'app-ore',
-    styleUrls: ['./ore.component.scss'],
-    templateUrl: './ore.component.html',
+    selector: 'app-refining-profit',
+    styleUrls: ['./refining-profit.component.scss'],
+    templateUrl: './refining-profit.component.html',
 })
-export class OreComponent implements OnInit {
+export class RefiningProfitComponent implements OnInit {
 
     public model = {
         beltVariants: false,
@@ -29,13 +30,12 @@ export class OreComponent implements OnInit {
     public variantsHiddenIcon = faEyeSlash;
 
     public oreTypes: any = {};
-    public orePrices: any = {
-        buy: {},
-        sell: {},
-    };
+    public prices: any = {};
 
     public data: any[] = [];
     public visibleData?: any[];
+
+    public refiningYield = 71;
 
     public tableSettings: ITableHeader[] = [{
         attribute: 'name',
@@ -45,26 +45,49 @@ export class OreComponent implements OnInit {
         title: 'Type',
     }, {
         attribute: 'buy',
-        hint: 'Average for using buy orders to sell 8.000m³ of ore.',
-        pipe: 'number',
-        pipeVar: '0.2-2',
-        sort: true,
-        suffix: ' ISK',
-        title: 'Buy price / m³',
-    }, {
-        attribute: 'sell',
         hint: 'Average for using sell orders to buy 8.000m³ of ore.',
         pipe: 'number',
         pipeVar: '0.2-2',
         sort: true,
         suffix: ' ISK',
-        title: 'Sell price / m³',
+        title: 'Buy ore price',
+    }, {
+        attribute: 'sell',
+        hint: 'Average for using buy orders to sell all minerals.',
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        sort: true,
+        suffix: ' ISK',
+        title: 'Sell minerals price',
+    }, {
+        attribute: 'profitMoney',
+        classFunction: (data) => data.accurateData === false ? 'text-warning' : (data.profit < 0 ? 'text-danger' : 'text-success'),
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        sort: true,
+        suffix: ' ISK',
+        title: 'Profit',
+    }, {
+        attribute: 'profit',
+        classFunction: (data) => data.accurateData === false ? 'text-warning' : (data.profit < 0 ? 'text-danger' : 'text-success'),
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        sort: true,
+        suffix: ' %',
+        title: 'Profit',
     }];
 
     constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService,
-                private ngZone: NgZone) { }
+                private industryService: IndustryService) { }
 
     public async ngOnInit() {
+
+        this.visibleData = undefined;
+
+        // Cache mineral prices ahead of calculations for better performance.
+        await Promise.all(EVE.minerals.map(async (mineral) => {
+            return this.marketService.getMarketOrders(10000002, mineral, 'buy');
+        }));
 
         await this.namesService.getNames(...EVE.ores.all);
 
@@ -74,44 +97,51 @@ export class OreComponent implements OnInit {
         }
 
         await Promise.all(EVE.ores.all.map(async (ore) => {
-            const orders = await this.marketService.getMarketOrders(10000002, ore);
-            if (orders) {
-                this.getPriceForVolume(ore, orders, 8000).then();
-                this.getPriceForVolume(ore, orders, 8000, false).then();
-            }
+            this.prices[ore] = {};
+            await this.getPrices(ore, 8000);
         }));
 
         this.data = EVE.ores.all.map((ore, index) => {
             return {
-                buy: this.orePrices.buy[ore],
+                accurateData: this.prices[ore].accurateData,
+                buy: this.prices[ore].buy,
                 id: ore,
                 index,
                 name: NamesService.getNameFromData(ore),
-                sell: this.orePrices.sell[ore],
+                profit: Calc.profitPercentage(this.prices[ore].buy, this.prices[ore].sell) || -Infinity,
+                profitMoney: this.prices[ore].sell - this.prices[ore].buy,
+                sell: this.prices[ore].sell,
             };
         });
 
         this.changeVisibleOres();
     }
 
-    public async getPriceForVolume(ore: number, orders: IMarketOrdersReponse[], volume: number, buy = true) {
-        const buyOrders = orders.filter((order) => order.is_buy_order === buy);
-        Common.sortArrayByObjectProperty(buyOrders, 'price', buy);
-        const buySell = buy ? 'buy' : 'sell';
+    public async getPrices(ore: number, volume: number) {
+
+        const oreSellOrders = await this.marketService.getMarketOrders(10000002, ore, 'sell');
+
+        if (!oreSellOrders || !oreSellOrders.length) {
+            this.prices[ore].buy = Infinity;
+            this.prices[ore].sell = 0;
+            this.prices[ore].accurateData = false;
+            return;
+        }
+
+        Common.sortArrayByObjectProperty(oreSellOrders, 'price');
 
         const type = this.oreTypes[ore];
 
         if (!type) {
-            this.orePrices[buySell][ore] = -1;
             return;
         }
 
-        const veldVolume = type.volume;
+        const oreVolume = type.volume;
         const cargoCap = volume;
 
         let price = 0;
-        let unitsLeft = cargoCap / veldVolume;
-        for (const order of buyOrders) {
+        let unitsLeft = cargoCap / oreVolume;
+        for (const order of oreSellOrders) {
             const amountFromThisOrder = Math.min(order.volume_remain, unitsLeft);
 
             price += amountFromThisOrder * order.price;
@@ -123,11 +153,42 @@ export class OreComponent implements OnInit {
         }
 
         if (unitsLeft) {
-            this.orePrices[buySell][ore] = price / unitsLeft;
-            return;
+            this.prices[ore].accurateData = false;
         }
 
-        this.orePrices[buySell][ore] = price / cargoCap;
+        this.prices[ore].buy = price;
+
+        const oreMaterials = await this.industryService.getRefiningProducts(ore);
+
+        let totalPrice = 0;
+
+        await Promise.all(oreMaterials.map(async (material) => {
+            const materialBuyOrders = await this.marketService.getMarketOrders(10000002, material.id, 'buy');
+            if (!materialBuyOrders || !materialBuyOrders.length) {
+                return;
+            }
+            Common.sortArrayByObjectProperty(materialBuyOrders, 'price', true);
+            let materialPrice = 0;
+            let materialUnitsLeft = (material.quantity * ((volume / oreVolume) - unitsLeft)) * (this.refiningYield / 100);
+            for (const order of materialBuyOrders) {
+                const amountFromThisOrder = Math.min(order.volume_remain, materialUnitsLeft);
+
+                materialPrice += amountFromThisOrder * order.price;
+                materialUnitsLeft -= amountFromThisOrder;
+
+                if (!materialUnitsLeft) {
+                    break;
+                }
+            }
+
+            if (unitsLeft) {
+                this.prices[ore].accurateData = false;
+            }
+
+            totalPrice += materialPrice;
+        }));
+
+        this.prices[ore].sell = totalPrice / 100;
     }
 
     public changeVisibleOres() {
@@ -173,8 +234,6 @@ export class OreComponent implements OnInit {
             this.visibleData = this.data;
         }
 
-        this.ngZone.run(() => {
-            this.visibleData = [...this.data.filter((ore) => visibleOres.includes(ore.id))];
-        });
+        this.visibleData = [...this.data.filter((ore) => visibleOres.includes(ore.id))];
     }
 }

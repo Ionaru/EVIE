@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 
 import { Common } from '../../../shared/common.helper';
+import { BaseGuard } from '../../guards/base.guard';
 import { SocketService } from '../../socket/socket.service';
 import { Character, IApiCharacterData } from '../character/character.model';
 import { CharacterService } from '../character/character.service';
@@ -42,13 +43,15 @@ export class UserService {
 
             return newWindow;
         }
+        return;
     }
 
-    constructor(private http: HttpClient, private characterService: CharacterService, private router: Router) { }
+    constructor(private http: HttpClient, private characterService: CharacterService, private router: Router, private ngZone: NgZone) { }
 
     public logoutUser(): void {
         const url = 'api/logout';
         this.http.post(url, {}).toPromise().then(() => {
+            localStorage.removeItem(BaseGuard.redirectKey);
             sessionStorage.clear();
             window.location.reload();
         });
@@ -60,9 +63,7 @@ export class UserService {
 
         // Register all the characters in parallel, but wait until they are all finished before continuing
         await Promise.all(data.characters.map(async (characterData) => {
-            if (characterData.scopes) {
-                await this.addCharacter(characterData);
-            }
+            await this.addCharacter(characterData);
         }));
 
         if (newCharacterUUID) {
@@ -96,7 +97,9 @@ export class UserService {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
                         await this.storeUser(response.data);
-                        this.router.navigate(['/dashboard']).then();
+                        const afterLoginUrl = localStorage.getItem(BaseGuard.redirectKey) || '/dashboard';
+                        this.ngZone.run(() => this.router.navigate([afterLoginUrl])).then();
+                        localStorage.removeItem(BaseGuard.redirectKey);
                     }
                 }
             });

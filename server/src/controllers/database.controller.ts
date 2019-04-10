@@ -82,7 +82,24 @@ export class DatabaseConnection {
             }
         }
 
-        this.pool = createPool(this.dbOptions);
+        await new Promise<void>((resolve) => {
+            this.pool = createPool(this.dbOptions);
+
+            this.pool.on('connection', () => {
+                resolve();
+            });
+
+            this.pool.on('error', (err) => {
+                throw err;
+            });
+
+            this.pool.getConnection((err) => {
+                if (err) {
+                    throw err;
+                }
+            });
+        });
+
         this.orm = await createConnection(this.dbOptions);
 
         logger.info('Database connected');

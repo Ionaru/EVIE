@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { Calc } from '../../shared/calc.helper';
 import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
 import { IESINamesData, INames } from '../../shared/interface.helper';
@@ -61,6 +62,12 @@ export class NamesService extends BaseService {
     public async getNames(...ids: Array<string | number>): Promise<void> {
 
         ids = Common.uniquifyArray(ids);
+
+        for (const element of ids) {
+            if (element > Calc.maxIntegerValue) {
+                throw new Error(`${element} is not a value that can get resolved to a name.`);
+            }
+        }
 
         // Check if all values in 'ids' are -1, if so then there's no point in calling the Names Endpoint
         if (ids.every((element) => element === -1)) {

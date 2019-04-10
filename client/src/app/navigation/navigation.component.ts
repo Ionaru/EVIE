@@ -41,8 +41,7 @@ export class NavigationComponent implements OnInit {
     public isCollapsed!: boolean;
     public playersCountUp!: CountUp;
 
-    constructor(private userService: UserService, private statusService: StatusService, private modalService: NgbModal,
-                private characterService: CharacterService) { }
+    constructor(private statusService: StatusService, private modalService: NgbModal, private characterService: CharacterService) { }
 
     public ngOnInit(): void {
         CharacterService.characterChangeEvent.subscribe((character) => {

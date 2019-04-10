@@ -16,12 +16,11 @@ export class UsersComponent implements OnInit {
     public tableSettings: ITableHeader[] = [{
         attribute: 'user.id',
         sort: true,
-        title: 'ID',
+        title: 'User ID',
     }, {
         attribute: 'name',
-        prefixFunction: (data) => `<img src="//imageserver.eveonline.com/Character/${data.characterId}_32.jpg" alt="${data.name}"> `,
+        prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Character/${data.characterId}_32.jpg" alt="${data.name}"> `,
         sort: true,
-        title: 'Name',
     }, {
         attribute: 'characterId',
         sort: true,

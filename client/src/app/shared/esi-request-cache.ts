@@ -7,7 +7,7 @@ interface ICacheData {
 
 export class ESIRequestCache {
 
-    public static get(identifier: string): HttpResponse<any> | undefined {
+    public static get(identifier: string): HttpResponse<any> | void {
         const cachedDataString = sessionStorage.getItem(identifier) || localStorage.getItem(identifier);
         if (cachedDataString) {
 
@@ -24,7 +24,7 @@ export class ESIRequestCache {
         }
     }
 
-    public static put(identifier: string, data: any, expiry: string, secureData: boolean): void {
+    public static put(identifier: string, data: any, expiry: string, secureData: boolean) {
         const cacheData: ICacheData = {
             data,
             expiry,

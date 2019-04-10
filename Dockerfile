@@ -1,6 +1,8 @@
 FROM node:10-alpine
 RUN mkdir /app/
 
+COPY ./tsconfig.json .
+
 ## INSTALL CLIENT
 
 RUN mkdir /app/client/

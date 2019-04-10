@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
@@ -6,11 +6,11 @@ import { URLSearchParams } from 'url';
 import { logger } from 'winston-pnp-logger';
 
 import { Calc } from '../../../client/src/shared/calc.helper';
-import { config } from '../controllers/configuration.controller';
-import { DataController } from '../controllers/data.controller';
+import { config, Configurator } from '../controllers/configuration.controller';
 import { SocketServer } from '../controllers/socket.controller';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
+import { BaseESIService } from '../services/base-esi.service';
 import { BaseRouter } from './base.router';
 
 const protocol = 'https://';
@@ -269,6 +269,7 @@ export class SSORouter extends BaseRouter {
      *  accessToken <required>: The Character's current access token
      */
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'uuid')
     private static async refreshToken(request: Request, response: Response): Promise<Response> {
 
         // Fetch the Character who's accessToken we will refresh.
@@ -377,7 +378,7 @@ export class SSORouter extends BaseRouter {
 
         const route = request.body.route as string;
         const text = request.body.text as string;
-        DataController.logWarning(route, text);
+        BaseESIService.logWarning(route, text);
 
         return SSORouter.sendResponse(response, httpStatus.OK, 'Logged');
     }
@@ -443,7 +444,7 @@ export class SSORouter extends BaseRouter {
 
         const authUrl = `${protocol}${oauthHost}${tokenPath}`;
         logger.debug(authUrl);
-        return axios.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+        return Configurator.axios.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             logger.error('Request failed:', authUrl, error.message);
             return;
         });
@@ -461,7 +462,7 @@ export class SSORouter extends BaseRouter {
 
         const revokeUrl = `${protocol}${oauthHost}${revokePath}`;
         logger.debug(revokeUrl);
-        return axios.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+        return Configurator.axios.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             logger.error('Request failed:', revokeUrl, error.message);
             return;
         });

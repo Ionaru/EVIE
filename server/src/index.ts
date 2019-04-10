@@ -34,7 +34,7 @@ import { Configurator } from './controllers/configuration.controller';
         application.stop().then();
     });
     // Promises that fail should not cause the application to stop, instead we log the error.
-    process.on('unhandledRejection', (reason: string, p: Promise<any>): void => {
+    process.on('unhandledRejection', (reason, p): void => {
         logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
     });
 

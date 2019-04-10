@@ -1,6 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
+import * as Sentry from '@sentry/browser';
 import { Observable, Observer } from 'rxjs';
+
+import { environment } from '../environments/environment';
 
 @Injectable()
 export class AppReadyEventService {
@@ -48,6 +51,12 @@ export class AppReadyEventService {
         }
 
         AppReadyEventService._appReady = true;
+
+        if (environment.production) {
+            Sentry.captureException(detail);
+        }
+
+        throw detail;
     }
 
     private createEvent(eventType: string): Event {

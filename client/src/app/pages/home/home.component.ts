@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { UserService } from '../../models/user/user.service';
 
@@ -12,7 +11,7 @@ export class HomeComponent implements OnInit {
 
     public isLoggedIn = false;
 
-    constructor(private modalService: NgbModal, private userService: UserService) { }
+    constructor(private userService: UserService) { }
 
     public ngOnInit() {
         this.isLoggedIn = !!UserService.user;

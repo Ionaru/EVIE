@@ -14,6 +14,7 @@ import { ApiOfflineMessageComponent } from './components/api-offline-message/api
 import { NoScopesMessageComponent } from './components/no-scopes-message/no-scopes-message.component';
 import { SorTableComponent } from './components/sor-table/sor-table.component';
 import { AttributesService } from './data-services/attributes.service';
+import { BlueprintsService } from './data-services/blueprints.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
 import { MarketService } from './data-services/market.service';
@@ -23,6 +24,7 @@ import { SkillGroupsService } from './data-services/skill-groups.service';
 import { SkillQueueService } from './data-services/skillqueue.service';
 import { SkillsService } from './data-services/skills.service';
 import { StatusService } from './data-services/status.service';
+import { StructuresService } from './data-services/structures.service';
 import { TypesService } from './data-services/types.service';
 import { UsersService } from './data-services/users.service';
 import { WalletJournalService } from './data-services/wallet-journal.service';
@@ -35,11 +37,13 @@ import { CharacterService } from './models/character/character.service';
 import { UserService } from './models/user/user.service';
 import { LogoutModalComponent } from './navigation/logout-modal.component';
 import { NavigationComponent } from './navigation/navigation.component';
+import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { OreComponent } from './pages/ore/ore.component';
+import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
@@ -73,6 +77,8 @@ if (environment.production) {
         ScopesComponent,
         NoScopesMessageComponent,
         ApiOfflineMessageComponent,
+        BlueprintCalculatorComponent,
+        RefiningProfitComponent,
     ],
     entryComponents: [
         LogoutModalComponent,
@@ -106,7 +112,9 @@ if (environment.production) {
         SkillGroupsService,
         SkillsService,
         IndustryJobsService,
+        BlueprintsService,
         IndustryService,
+        StructuresService,
         MarketService,
         SocketService,
         AppReadyGuard,

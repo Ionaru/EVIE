@@ -140,7 +140,7 @@ export class Application {
         process.on('uncaughtException', () => {
             Application.exit(exitCode);
         });
-        process.on('unhandledRejection', (reason: string, p: Promise<any>): void => {
+        process.on('unhandledRejection', (reason, p): void => {
             logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
             Application.exit(exitCode);
         });
@@ -176,14 +176,17 @@ export class Application {
                 await db.orm.close();
                 logger.info('ORM connection closed');
             }
-            if (db && db.pool) {
-                db.pool.end(() => {
-                    logger.info('DB pool closed');
-                    Application.exit(exitCode);
-                });
-            } else {
-                Application.exit(exitCode);
-            }
+            await new Promise<void>(((resolve) => {
+                if (db && db.pool) {
+                    db.pool.end(() => {
+                        logger.info('DB pool closed');
+                        resolve();
+                    });
+                } else {
+                    resolve();
+                }
+            }));
+            Application.exit(exitCode);
         }
     }
 }

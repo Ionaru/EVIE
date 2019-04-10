@@ -1,22 +1,35 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
-import * as httpStatus from 'http-status-codes';
-import { logger } from 'winston-pnp-logger';
-
 import { EVE } from '../../../client/src/shared/eve.helper';
 import {
-    IIndustryActivity, IIndustryActivityMaterials, IIndustryActivityProducts, IIndustryActivitySkills,
-    IManufacturingData, IMarketGroup, IndustryActivity, ISkillCategoryData, ISkillGroupData, ITypesData,
+    IIndustryActivity,
+    IIndustryActivityMaterials,
+    IIndustryActivityProducts,
+    IIndustryActivitySkills,
+    IInvTypeMaterials,
+    IManufacturingData,
+    IMarketGroup,
+    IndustryActivity,
+    IRefiningProducts,
+    ISkillCategoryData,
+    ISkillGroupData,
+    ITypesData,
 } from '../../../client/src/shared/interface.helper';
-import { RequestLogger } from '../loggers/request.logger';
-import { CacheController } from './cache.controller';
+import { BaseESIService } from '../services/base-esi.service';
 
 export class DataController {
 
-    public static deprecationsLogged: string[] = [];
+    public static async getRefiningProducts(typeId: number): Promise<IRefiningProducts[]> {
+        const materials = await BaseESIService.fetchESIData<IInvTypeMaterials[]>(EVE.getInvTypeMaterialsUrl());
+        if (!materials) {
+            return [];
+        }
+
+        const mt = materials.filter((material) => material.typeID === typeId);
+        return mt.map((material) => ({id: material.materialTypeID, quantity: material.quantity}));
+    }
 
     public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | undefined> {
 
-        const industryProducts = await DataController.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl());
+        const industryProducts = await BaseESIService.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl());
 
         let blueprint;
 
@@ -30,9 +43,9 @@ export class DataController {
         }
 
         const industryData = await Promise.all([
-            DataController.fetchESIData<IIndustryActivityMaterials[]>(EVE.getIndustryActivityMaterialsUrl()),
-            DataController.fetchESIData<IIndustryActivitySkills[]>(EVE.getIndustryActivitySkillsUrl()),
-            DataController.fetchESIData<IIndustryActivity[]>(EVE.getIndustryActivityUrl()),
+            BaseESIService.fetchESIData<IIndustryActivityMaterials[]>(EVE.getIndustryActivityMaterialsUrl()),
+            BaseESIService.fetchESIData<IIndustryActivitySkills[]>(EVE.getIndustryActivitySkillsUrl()),
+            BaseESIService.fetchESIData<IIndustryActivity[]>(EVE.getIndustryActivityUrl()),
         ]);
 
         const [industryMaterials, industrySkills, industryActivities] = industryData;
@@ -70,21 +83,21 @@ export class DataController {
     }
 
     public static getUniverseCategory(categoryId: number) {
-        return DataController.fetchESIData<ISkillCategoryData>(EVE.getUniverseCategoriesUrl(categoryId));
+        return BaseESIService.fetchESIData<ISkillCategoryData>(EVE.getUniverseCategoriesUrl(categoryId));
     }
 
     public static getUniverseGroup(groupId: number) {
-        return DataController.fetchESIData<ISkillGroupData>(EVE.getUniverseGroupsUrl(groupId));
+        return BaseESIService.fetchESIData<ISkillGroupData>(EVE.getUniverseGroupsUrl(groupId));
     }
 
     public static async getMarketIds() {
-        const marketGroups = await DataController.fetchESIData<number[]>(EVE.getMarketGroupsUrl());
+        const marketGroups = await BaseESIService.fetchESIData<number[]>(EVE.getMarketGroupsUrl());
 
         const marketIds: number[] = [];
 
         if (marketGroups) {
             await Promise.all(marketGroups.map(async (groupId) => {
-                const marketGroup = await DataController.fetchESIData<IMarketGroup>(EVE.getMarketGroupUrl(groupId));
+                const marketGroup = await BaseESIService.fetchESIData<IMarketGroup>(EVE.getMarketGroupUrl(groupId));
 
                 if (marketGroup) {
                     marketIds.push(...marketGroup.types);
@@ -143,7 +156,7 @@ export class DataController {
                     throw new Error(`Unable to get Type ${typeId}`);
                 }
 
-                type = await DataController.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
+                type = await BaseESIService.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
                 tries++;
             }
 
@@ -151,71 +164,5 @@ export class DataController {
         }));
 
         return typeData;
-    }
-
-    public static async fetchESIData<T>(url: string): Promise<T | undefined> {
-
-        if (CacheController.responseCache[url] && !CacheController.isExpired(CacheController.responseCache[url])) {
-            return CacheController.responseCache[url].data as T;
-        }
-
-        const requestConfig: AxiosRequestConfig = {
-            // Make sure 304 responses are not treated as errors.
-            validateStatus: (status) => status === httpStatus.OK || status === httpStatus.NOT_MODIFIED,
-        };
-
-        if (CacheController.responseCache[url] && CacheController.responseCache[url].etag) {
-            requestConfig.headers = {
-                'If-None-Match': `${CacheController.responseCache[url].etag}`,
-            };
-        }
-
-        const response = await axios.get<T>(url, requestConfig).catch((error: AxiosError) => {
-            logger.error('Request failed:', url, error.message);
-            return undefined;
-        });
-
-        if (response) {
-            logger.debug(`${url} => ${RequestLogger.getStatusColor(response.status)(`${response.status} ${response.statusText}`)}`);
-            if (response.status === httpStatus.OK) {
-                if (response.headers.warning) {
-                    DataController.logWarning(url, response.headers.warning);
-                }
-
-                if (response.headers.expires || response.headers.etag) {
-                    CacheController.responseCache[url] = {
-                        data: response.data,
-                    };
-
-                    if (response.headers.etag) {
-                        CacheController.responseCache[url].etag = response.headers.etag;
-                    }
-
-                    CacheController.responseCache[url].expiry =
-                        response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
-                }
-
-                return response.data;
-
-            } else if (response.status === httpStatus.NOT_MODIFIED) {
-
-                CacheController.responseCache[url].expiry =
-                    response.headers.expires ? new Date(response.headers.expires).getTime() : Date.now() + 300000;
-
-                return CacheController.responseCache[url].data as T;
-
-            } else {
-                logger.error('Request not OK:', url, response.status, response.statusText, response.data);
-            }
-        }
-
-        return;
-    }
-
-    public static logWarning(route: string, text?: string) {
-        if (!DataController.deprecationsLogged.includes(route)) {
-            logger.warn('HTTP request warning:', route, text);
-            DataController.deprecationsLogged.push(route);
-        }
     }
 }

@@ -209,23 +209,23 @@ export interface IWalletJournalData {
 
 export interface IIndustryJobsData {
     // Job activity ID
-    activityId: number;
+    activity_id: IndustryActivity;
 
     // blueprint_id integer
-    blueprintId: number;
+    blueprint_id: number;
 
     // Location ID of the location from which the blueprint was installed. Normally a station ID, but can also be an asset (e.g. container)
     // or corporation facility
-    blueprintLocationId: number;
+    blueprint_location_id: number;
 
     // blueprint_type_id integer
-    blueprintTypeId: number;
+    blueprint_type_id: number;
 
     // ID of the character which completed this job
-    completedCharacterId: number;
+    completed_character_id?: number;
 
     // Date and time when this job was completed
-    completedDate: Date;
+    completed_date?: string;
 
     // The sume of job installation fee and industry facility tax
     cost: number;
@@ -234,47 +234,99 @@ export interface IIndustryJobsData {
     duration: number;
 
     // Date and time when this job finished
-    endDate: Date;
+    end_date: string;
 
     // ID of the facility where this job is running
-    facilityId: number;
+    facility_id: number;
 
     // ID of the character which installed this job
-    installerId: number;
+    installer_id: number;
 
     // Unique job ID
-    jobId: number;
+    job_id: number;
 
     // Number of runs blueprint is licensed for
-    licensedRuns: number;
+    licensed_runs: number;
 
     // Location ID of the location to which the output of the job will be delivered. Normally a station ID, but can also be a
     // corporation facility.
-    outputLocationId: number;
+    output_location_id: number;
 
     // Date and time when this job was paused (i.e. time when the facility where this job was installed went offline)
-    pauseDate: Date;
+    pause_date?: string;
 
     // Chance of success for invention
-    probability: number;
+    probability?: number;
 
     // Type ID of product (manufactured, copied or invented)
-    productTypeId: number;
+    product_type_id?: number;
 
     // Number of runs for a manufacturing job, or number of copies to make for a blueprint copy
     runs: number;
 
     // Date and time when this job started
-    startDate: Date;
+    start_date: string;
 
     // ID of the station where industry facility is located
-    stationId: number;
+    station_id: number;
 
     // Status string
     status: 'active' | 'cancelled' | 'delivered' | 'paused' | 'ready' | 'reverted';
 
     // Number of successful runs for this job. Equal to runs unless this is an invention job
-    successfulRuns: number;
+    successful_runs?: number;
+}
+
+export interface ICharacterBlueprintsData {
+    // Unique ID for this item.
+    item_id: number;
+
+    // Type of the location_id
+    location_flag: string;
+
+    // References a solar system, station or item_id if this blueprint is located within a container.
+    // If the return value is an item_id, then the Character AssetList API must be queried to find the container using
+    // the given item_id to determine the correct location of the Blueprint.
+    location_id: number;
+
+    // Material Efficiency Level of the blueprint.
+    material_efficiency: number;
+
+    // A range of numbers with a minimum of -2 and no maximum value where -1 is an original and -2 is a copy.
+    // It can be a positive integer if it is a stack of blueprint originals fresh from the market
+    // (e.g. no activities performed on them yet).
+    quantity: number;
+
+    // Number of runs remaining if the blueprint is a copy, -1 if it is an original.
+    runs: number;
+
+    // Time Efficiency Level of the blueprint.
+    time_efficiency: number;
+
+    type_id: number;
+}
+
+export interface IStructurePosition {
+    x: number;
+    y: number;
+    z: number;
+}
+
+export interface IUniverseStructureData {
+    // The full name of the structure
+    name: string;
+
+    // The ID of the corporation who owns this particular structure
+    owner_id: number;
+
+    // Position of the structure with x/y/z coordinates.
+    position: IStructurePosition;
+
+    // Id of the solar system where the structure is located.
+    solar_system_id: number;
+
+    // Type id of the structure
+    type_id?: number;
 }
 
 export interface IIndustryActivityProducts {
@@ -298,6 +350,12 @@ export interface IIndustryActivityMaterials {
     quantity: number;
 }
 
+export interface IInvTypeMaterials {
+    typeID: number;
+    materialTypeID: number;
+    quantity: number;
+}
+
 export interface IIndustryActivity {
     typeID: number;
     activityID: number;
@@ -309,7 +367,8 @@ export enum IndustryActivity {
     manufacturing = 1,
     research_time_efficiency = 3,
     research_material_efficiency = 4,
-    copying = 6,
+    copying = 5,
+    duplicating = 6,
     reverse_engineering = 7,
     invention = 8,
     reactions = 11,
@@ -321,6 +380,11 @@ export interface IMarketGroup {
     name: string;
     parent_group_id: number;
     types: number[];
+}
+
+export interface IRefiningProducts {
+    id: number;
+    quantity: number;
 }
 
 export interface IManufacturingData {

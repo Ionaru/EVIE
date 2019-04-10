@@ -1,3 +1,35 @@
-* {
-    line-height: 1;
+.industry-job-container {
+    display: grid;
+    grid-template-columns: 40px 64px 40px 64px auto 200px;
+
+    padding: 10px;
+    box-shadow: 0 0 5px 0 rgba(0,0,0,0.75);
+
+    .icon-container {
+        align-self: center;
+        justify-self: center;
+    }
+
+    .percentage-container {
+        align-self: center;
+        justify-self: right;
+        display: grid;
+
+        span {
+            justify-self: right;
+        }
+    }
+}
+
+.copy {
+    filter: grayscale(0.1) sepia(0.4) hue-rotate(340deg) brightness(110%);
+}
+
+.blink {
+    animation: blink 1.5s ease-in infinite;
+}
+
+@keyframes blink {
+    from, to { opacity: 1 }
+    50% { opacity: 0 }
 }
