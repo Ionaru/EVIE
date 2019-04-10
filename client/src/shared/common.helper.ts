@@ -28,9 +28,9 @@ export class Common {
         return object;
     }
 
-    public static romanize(num: number) {
-        if (!+num) {
-            return NaN;
+    public static romanize(num: number): string {
+        if (isNaN(num)) {
+            throw new Error(`${num} is not a number that can be converted to roman numerals.`);
         }
 
         const digits = String(num).split('');
