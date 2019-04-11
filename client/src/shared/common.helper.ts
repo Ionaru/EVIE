@@ -2,12 +2,6 @@
  * Several static helper functions.
  */
 export class Common {
-    /**
-     * Simple function to return the input argument, usable in .catch() functions for promises.
-     * @param {T} parameter - Parameter to return.
-     * @return {T}
-     */
-    public static return = <T> (parameter: T): T => parameter;
 
     public static generateNumbersArray = (length: number) => Array(length).fill(undefined).map((_, i) => i + 1);
 
