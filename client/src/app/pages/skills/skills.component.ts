@@ -8,6 +8,7 @@ import {
     faExclamationTriangle,
     faFolderOpen,
 } from '@fortawesome/pro-solid-svg-icons';
+import { romanize } from '@ionaru/romanize';
 import * as countdown from 'countdown';
 import Timespan = countdown.Timespan;
 
@@ -138,7 +139,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         this.resetTimers();
     }
 
-    public romanize = (num: number) => Common.romanize(num);
+    public romanize = (num: number) => romanize(num);
 
     public countLvl5Skills = () => this.skills ? this.skills.skills.filter((skill) => skill.active_skill_level === 5).length : 0;
 

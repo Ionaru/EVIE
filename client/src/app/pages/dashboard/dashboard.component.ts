@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faCheck, faSync, faTrash, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
+import { romanize } from '@ionaru/romanize';
 import * as countdown from 'countdown';
 
 import { Calc } from '../../../shared/calc.helper';
-import { Common } from '../../../shared/common.helper';
 import { NamesService } from '../../data-services/names.service';
 import { ShipService } from '../../data-services/ship.service';
 import { SkillQueueService } from '../../data-services/skillqueue.service';
@@ -100,7 +100,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
 
     public getActivateButtonClass = (character: Character) => this.isCharacterSelected(character) ? 'btn-success' : 'btn-outline-success';
 
-    public romanize = (num: number) => Common.romanize(num);
+    public romanize = (num: number) => romanize(num);
 
     public switchToCharacter = (character: Character) => this.characterService.setActiveCharacter(character).then();
 
