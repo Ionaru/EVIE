@@ -1,3 +1,4 @@
+import { generateRandomString } from '@ionaru/random-string';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
@@ -5,7 +6,6 @@ import * as jwt from 'jsonwebtoken';
 import { URLSearchParams } from 'url';
 import { logger } from 'winston-pnp-logger';
 
-import { Calc } from '../../../client/src/shared/calc.helper';
 import { config, Configurator } from '../controllers/configuration.controller';
 import { SocketServer } from '../controllers/socket.controller';
 import { Character } from '../models/character.model';
@@ -25,7 +25,7 @@ export class SSORouter extends BaseRouter {
         // Generate a random string and set it as the state of the request, we will later verify the response of the
         // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery (XSRF), see this link for details:
         // http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
-        request.session!.state = Calc.generateRandomString(15);
+        request.session!.state = generateRandomString(15);
         const args = [
             'response_type=code',
             'redirect_uri=' + config.getProperty('SSO_login_redirect_uri'),
@@ -121,7 +121,7 @@ export class SSORouter extends BaseRouter {
         // Generate a random string and set it as the state of the request, we will later verify the response of the
         // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery, see this link for details:
         // http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
-        request.session!.state = Calc.generateRandomString(15);
+        request.session!.state = generateRandomString(15);
 
         const args = [
             'response_type=code',
