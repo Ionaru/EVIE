@@ -23,10 +23,10 @@ export class MarketService extends BaseService {
         if (response.headers.has('x-pages')) {
             const pages = Number(response.headers.get('x-pages'));
             if (pages > 1) {
-                const pIter = Common.generateNumbersArray(pages);
-                pIter.shift();
+                const pageIterable = Common.generateNumbersArray(pages);
+                pageIterable.shift();
 
-                await Promise.all(pIter.map(async (page) => {
+                await Promise.all(pageIterable.map(async (page) => {
                     const pageResponse = await this.getMarketOrdersPage(regionId, typeId, page, type);
                     if (pageResponse && pageResponse.body) {
                         orders.push(...pageResponse.body);
