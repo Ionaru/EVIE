@@ -15,7 +15,7 @@ export interface IUsersResponse {
     characters: IUsersResponseCharacters[];
 }
 
-export interface IMarketOrdersReponse {
+export interface IMarketOrdersResponse {
     order_id: number;
     type_id: number;
     location_id: number;
@@ -227,7 +227,7 @@ export interface IIndustryJobsData {
     // Date and time when this job was completed
     completed_date?: string;
 
-    // The sume of job installation fee and industry facility tax
+    // The sum of job installation fee and industry facility tax
     cost: number;
 
     // Job duration in seconds

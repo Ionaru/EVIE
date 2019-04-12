@@ -3,14 +3,14 @@ import { Injectable } from '@angular/core';
 
 import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
-import { IMarketOrdersReponse } from '../../shared/interface.helper';
+import { IMarketOrdersResponse } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
 
 @Injectable()
 export class MarketService extends BaseService {
 
     public async getMarketOrders(regionId: number, typeId: number, type: 'buy' | 'sell' | 'all' = 'all'):
-        Promise<IMarketOrdersReponse[] | undefined> {
+        Promise<IMarketOrdersResponse[] | undefined> {
 
         const response = await this.getMarketOrdersPage(regionId, typeId, 1, type);
 
@@ -39,11 +39,11 @@ export class MarketService extends BaseService {
     }
 
     private async getMarketOrdersPage(regionId: number, typeId: number, page: number, type: 'buy' | 'sell' | 'all' = 'all'):
-        Promise<HttpResponse<IMarketOrdersReponse[]> | undefined> {
+        Promise<HttpResponse<IMarketOrdersResponse[]> | undefined> {
         const url = EVE.getMarketOrdersURL(regionId, typeId, page, type);
 
         const response = await this.http.get<any>(url, {observe: 'response'})
-            .toPromise<HttpResponse<IMarketOrdersReponse[]>>()
+            .toPromise<HttpResponse<IMarketOrdersResponse[]>>()
             .catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;

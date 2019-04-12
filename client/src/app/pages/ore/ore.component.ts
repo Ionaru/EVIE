@@ -3,7 +3,7 @@ import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 
 import { Common } from '../../../shared/common.helper';
 import { EVE } from '../../../shared/eve.helper';
-import { IMarketOrdersReponse } from '../../../shared/interface.helper';
+import { IMarketOrdersResponse } from '../../../shared/interface.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
@@ -94,7 +94,7 @@ export class OreComponent implements OnInit {
         this.changeVisibleOres();
     }
 
-    public async getPriceForVolume(ore: number, orders: IMarketOrdersReponse[], volume: number, buy = true) {
+    public async getPriceForVolume(ore: number, orders: IMarketOrdersResponse[], volume: number, buy = true) {
         const buyOrders = orders.filter((order) => order.is_buy_order === buy);
         Common.sortArrayByObjectProperty(buyOrders, 'price', buy);
         const buySell = buy ? 'buy' : 'sell';
