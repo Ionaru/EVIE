@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
 import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
+import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import * as countdown from 'countdown';
 
 import { environment } from '../../../environments/environment';
 import { Calc } from '../../../shared/calc.helper';
-import { Common } from '../../../shared/common.helper';
 import { ICharacterBlueprintsData, IIndustryJobsData, IndustryActivity } from '../../../shared/interface.helper';
 import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
@@ -95,7 +95,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public async getBlueprints() {
         if (CharacterService.selectedCharacter && IndustryComponent.hasBlueprintScope) {
             const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
-            this.blueprints = Common.objectsArrayToObject(blueprintData, 'item_id');
+            this.blueprints = objectsArrayToObject(blueprintData, 'item_id');
         }
     }
 
@@ -120,8 +120,8 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                 job.timeLeft = countdown(undefined, end, this.countdownUnits);
             }
 
-            Common.sortArrayByObjectProperty(this.industryJobs, 'job_id', false);
-            Common.sortArrayByObjectProperty(this.industryJobs, 'percentageDone', true);
+            sortArrayByObjectProperty(this.industryJobs, 'job_id', false);
+            sortArrayByObjectProperty(this.industryJobs, 'percentageDone', true);
 
             this.setProductNames(this.industryJobs).then();
             this.getLocationNames(this.industryJobs).then();

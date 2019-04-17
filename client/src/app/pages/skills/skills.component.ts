@@ -8,12 +8,12 @@ import {
     faExclamationTriangle,
     faFolderOpen,
 } from '@fortawesome/pro-solid-svg-icons';
+import Timespan = countdown.Timespan;
+import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { romanize } from '@ionaru/romanize';
 import * as countdown from 'countdown';
-import Timespan = countdown.Timespan;
 
 import { Calc } from '../../../shared/calc.helper';
-import { Common } from '../../../shared/common.helper';
 import { IAttributesData, ISkillData, ISkillGroupData, ISkillQueueData, ISkillsData, ITypesData } from '../../../shared/interface.helper';
 import { AttributesService } from '../../data-services/attributes.service';
 import { NamesService } from '../../data-services/names.service';
@@ -164,7 +164,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public getSkillsForGroup(group: ISkillGroupData) {
         if (this.skills) {
             let skills = this.skills.skills.filter((skill) => group.types.includes(skill.skill_id));
-            skills = Common.sortArrayByObjectProperty(skills, 'name');
+            skills = sortArrayByObjectProperty(skills, 'name');
             return skills;
         }
         return [];
@@ -181,7 +181,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
             }
         }
 
-        return Common.sortArrayByObjectProperty(skills, 'name');
+        return sortArrayByObjectProperty(skills, 'name');
     }
 
     public getSPInGroup(groupId: number) {
@@ -211,7 +211,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
     private async setSkillGroups() {
         const skillGroups = await this.skillGroupsService.getSkillGroupInformation();
-        this.skillGroups = Common.sortArrayByObjectProperty(skillGroups, 'name');
+        this.skillGroups = sortArrayByObjectProperty(skillGroups, 'name');
     }
 
     private resetTimers() {
@@ -276,7 +276,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         }
 
         if (this.skills) {
-            this.trainedSkills = Common.objectsArrayToObject(this.skills.skills, 'skill_id');
+            this.trainedSkills = objectsArrayToObject(this.skills.skills, 'skill_id');
         }
 
         if (!this.hasSkillQueueScope) {

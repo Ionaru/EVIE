@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 
-import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
 import { ISkillCategoryData, ISkillGroupData } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
@@ -28,7 +28,7 @@ export class SkillGroupsService extends BaseService {
             }
         }));
 
-        Common.sortArrayByObjectProperty(skillInfo, 'name');
+        sortArrayByObjectProperty(skillInfo, 'name');
 
         return skillInfo;
     }

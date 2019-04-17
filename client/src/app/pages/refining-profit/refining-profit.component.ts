@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
+import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 
 import { Calc } from '../../../shared/calc.helper';
-import { Common } from '../../../shared/common.helper';
 import { EVE } from '../../../shared/eve.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { IndustryService } from '../../data-services/industry.service';
@@ -128,7 +128,7 @@ export class RefiningProfitComponent implements OnInit {
             return;
         }
 
-        Common.sortArrayByObjectProperty(oreSellOrders, 'price');
+        sortArrayByObjectProperty(oreSellOrders, 'price');
 
         const type = this.oreTypes[ore];
 
@@ -167,7 +167,7 @@ export class RefiningProfitComponent implements OnInit {
             if (!materialBuyOrders || !materialBuyOrders.length) {
                 return;
             }
-            Common.sortArrayByObjectProperty(materialBuyOrders, 'price', true);
+            sortArrayByObjectProperty(materialBuyOrders, 'price', true);
             let materialPrice = 0;
             let materialUnitsLeft = (material.quantity * ((volume / oreVolume) - unitsLeft)) * (this.refiningYield / 100);
             for (const order of materialBuyOrders) {

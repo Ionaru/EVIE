@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { uniquifyArray } from '@ionaru/array-utils';
 
 import { Calc } from '../../shared/calc.helper';
-import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
 import { IESINamesData, INames } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
@@ -61,7 +61,7 @@ export class NamesService extends BaseService {
 
     public async getNames(...ids: Array<string | number>): Promise<void> {
 
-        ids = Common.uniquifyArray(ids);
+        ids = uniquifyArray(ids);
 
         for (const element of ids) {
             if (element > Calc.maxIntegerValue) {

@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { faInfoCircle, faSort, faSortDown, faSortUp } from '@fortawesome/pro-solid-svg-icons';
-
-import { Common } from '../../../shared/common.helper';
+import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 
 export interface ITableHeader {
     attribute: string;
@@ -51,7 +50,7 @@ export class SorTableComponent implements OnChanges {
 
         this.invert = (this.currentSort && this.currentSort === column) ? !this.invert : false;
 
-        Common.sortArrayByObjectProperty(this.data, sortAttribute, this.invert);
+        sortArrayByObjectProperty(this.data, sortAttribute, this.invert);
         this.currentSort = column;
     }
 

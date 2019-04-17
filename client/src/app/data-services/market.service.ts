@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { generateNumbersArray } from '@ionaru/array-utils';
 
-import { Common } from '../../shared/common.helper';
 import { EVE } from '../../shared/eve.helper';
 import { IMarketOrdersResponse } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
@@ -23,7 +23,7 @@ export class MarketService extends BaseService {
         if (response.headers.has('x-pages')) {
             const pages = Number(response.headers.get('x-pages'));
             if (pages > 1) {
-                const pageIterable = Common.generateNumbersArray(pages);
+                const pageIterable = generateNumbersArray(pages);
                 pageIterable.shift();
 
                 await Promise.all(pageIterable.map(async (page) => {

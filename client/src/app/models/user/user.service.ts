@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
+import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { Subject } from 'rxjs';
 
-import { Common } from '../../../shared/common.helper';
 import { BaseGuard } from '../../guards/base.guard';
 import { SocketService } from '../../socket/socket.service';
 import { Character, IApiCharacterData } from '../character/character.model';
@@ -78,7 +78,7 @@ export class UserService {
     public async addCharacter(data: IApiCharacterData): Promise<Character> {
         const character = await this.characterService.registerCharacter(data);
         UserService.user.characters.push(character);
-        Common.sortArrayByObjectProperty(UserService.user.characters, 'name');
+        sortArrayByObjectProperty(UserService.user.characters, 'name');
         return character;
     }
 
