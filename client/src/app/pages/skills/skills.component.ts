@@ -61,7 +61,7 @@ interface IGroupedSkillTypes {
 export class SkillsComponent extends DataPageComponent implements OnInit, OnDestroy {
 
     public static adjustCountDownForDST(cd: Timespan, timeLeft: number) {
-        cd.hours = Calc.wholeHoursLeft(timeLeft) - (Calc.wholeDaysLeft(timeLeft) * 24);
+        cd.hours = Calc.wholeHours(timeLeft) - (Calc.wholeDays(timeLeft) * 24);
     }
 
     public faChevronDown = faChevronDown;
