@@ -41,6 +41,7 @@ import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/bluep
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
 import { HomeComponent } from './pages/home/home.component';
+import { IndustryCalculatorComponent } from './pages/industry-calculator/industry-calculator.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
@@ -79,6 +80,7 @@ if (environment.production) {
         ApiOfflineMessageComponent,
         BlueprintCalculatorComponent,
         RefiningProfitComponent,
+        IndustryCalculatorComponent,
     ],
     entryComponents: [
         LogoutModalComponent,

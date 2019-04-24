@@ -3,11 +3,25 @@ import { Injectable } from '@angular/core';
 import { generateNumbersArray } from '@ionaru/array-utils';
 
 import { EVE } from '../../shared/eve.helper';
-import { IMarketOrdersResponse } from '../../shared/interface.helper';
+import { IMarketOrdersResponse, IMarketPriceData, IServerResponse } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
 
 @Injectable()
 export class MarketService extends BaseService {
+
+    public async getMarketPrice(typeId: number): Promise<IMarketPriceData | undefined> {
+
+        const url = `data/market-price/${typeId}`;
+        const response = await this.http.get<any>(url)
+            .toPromise<IServerResponse<IMarketPriceData>>()
+            .catch(this.catchHandler);
+
+        if (response instanceof HttpErrorResponse || !response.data) {
+            return;
+        }
+
+        return response.data;
+    }
 
     public async getMarketOrders(regionId: number, typeId: number, type: 'buy' | 'sell' | 'all' = 'all'):
         Promise<IMarketOrdersResponse[] | undefined> {

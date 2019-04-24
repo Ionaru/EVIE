@@ -34,6 +34,11 @@
                         <fa-icon [icon]="orePricesIcon"></fa-icon>
                         BP
                     </a>
+                    <a class="dropdown-item" routerLink="industry-calculator" routerLinkActive="active"
+                       *ngIf="devEnvironment">
+                        <fa-icon [icon]="orePricesIcon"></fa-icon>
+                        Industry Calculator
+                    </a>
                     <a class="dropdown-item" routerLink="refining-profit" routerLinkActive="active"
                        *ngIf="devEnvironment">
                         <fa-icon [icon]="orePricesIcon"></fa-icon>

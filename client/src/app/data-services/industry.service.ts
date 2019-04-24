@@ -1,7 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { IManufacturingData, IRefiningProducts, IServerResponse } from '../../shared/interface.helper';
+import {
+    IIndustrySystemsData,
+    IManufacturingData,
+    IRefiningProducts,
+    IServerResponse,
+} from '../../shared/interface.helper';
 import { BaseService } from './base.service';
 
 interface IManufacturingCache {
@@ -50,5 +55,19 @@ export class IndustryService extends BaseService {
         const data = response && response.data ? response.data : [];
         this.refiningCache[url] = data;
         return data;
+    }
+
+    public async getSystemCostIndices(systemId: number): Promise<IIndustrySystemsData | undefined> {
+        const url = `data/cost-indices/${systemId}`;
+
+        const response = await this.http.get<any>(url)
+            .toPromise<IServerResponse<IIndustrySystemsData>>()
+            .catch(this.catchHandler);
+
+        if (response instanceof HttpErrorResponse || !response.data) {
+            return;
+        }
+
+        return response.data;
     }
 }

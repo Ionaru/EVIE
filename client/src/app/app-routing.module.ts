@@ -7,6 +7,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
+import { IndustryCalculatorComponent } from './pages/industry-calculator/industry-calculator.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
@@ -21,6 +22,7 @@ const routes: Routes = [
     // EVE data pages.
     {path: 'ore', component: OreComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'blueprint-calculator', component: BlueprintCalculatorComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
+    {path: 'industry-calculator', component: IndustryCalculatorComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
     {path: 'refining-profit', component: RefiningProfitComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
 
     // Character data pages.

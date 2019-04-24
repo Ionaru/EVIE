@@ -374,6 +374,18 @@ export enum IndustryActivity {
     reactions = 11,
 }
 
+export type IndustryActivityName =
+    'copying'
+    | 'duplicating'
+    | 'invention'
+    | 'manufacturing'
+    | 'none'
+    | 'reaction'
+    | 'researching_material_efficiency'
+    | 'researching_technology'
+    | 'researching_time_efficiency'
+    | 'reverse_engineering';
+
 export interface IMarketGroup {
     description: string;
     market_group_id: number;
@@ -387,19 +399,34 @@ export interface IRefiningProducts {
     quantity: number;
 }
 
+export interface IAmountOfItem {
+    id: number;
+    quantity: number;
+}
+
 export interface IManufacturingData {
     blueprintId: number;
-    materials: Array<{
-        id: number,
-        quantity: number,
-    }>;
+    materials: IAmountOfItem[];
     skills: Array<{
         id: number,
         level: number,
     }>;
     time: number;
-    result: {
-        id: number,
-        quantity: number,
-    };
+    result: IAmountOfItem;
+}
+
+export interface IMarketPriceData {
+    adjusted_price: number;
+    average_price: number;
+    type_id: number;
+}
+
+export interface ISystemCostIndex {
+    activity: IndustryActivityName;
+    cost_index: number;
+}
+
+export interface IIndustrySystemsData {
+    solar_system_id: number;
+    cost_indices: ISystemCostIndex[];
 }

@@ -280,6 +280,14 @@ export class EVE {
         return url;
     }
 
+    public static getMarketPricesURL() {
+        return EVE.constructESIURL(1, 'markets', 'prices');
+    }
+
+    public static getIndustrySystemsURL() {
+        return EVE.constructESIURL(1, 'industry', 'systems');
+    }
+
     public static getRegionsURL() {
         return EVE.constructESIURL(1, 'universe', 'regions');
     }

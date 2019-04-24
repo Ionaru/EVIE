@@ -4,9 +4,11 @@ import {
     IIndustryActivityMaterials,
     IIndustryActivityProducts,
     IIndustryActivitySkills,
+    IIndustrySystemsData,
     IInvTypeMaterials,
     IManufacturingData,
     IMarketGroup,
+    IMarketPriceData,
     IndustryActivity,
     IRefiningProducts,
     ISkillCategoryData,
@@ -16,6 +18,26 @@ import {
 import { BaseESIService } from '../services/base-esi.service';
 
 export class DataController {
+
+    public static async getCostIndices(systemId: number): Promise<IIndustrySystemsData | undefined> {
+        const systemsData = await BaseESIService.fetchESIData<IIndustrySystemsData[]>(EVE.getIndustrySystemsURL());
+
+        if (!systemsData) {
+            return;
+        }
+
+        return systemsData.filter((systemData) => systemData.solar_system_id === systemId)[0];
+    }
+
+    public static async getMarketPrice(typeId: number): Promise<IMarketPriceData | undefined> {
+        const marketPrices = await BaseESIService.fetchESIData<IMarketPriceData[]>(EVE.getMarketPricesURL());
+
+        if (!marketPrices) {
+            return;
+        }
+
+        return marketPrices.filter((marketPriceData) => marketPriceData.type_id === typeId)[0];
+    }
 
     public static async getRefiningProducts(typeId: number): Promise<IRefiningProducts[]> {
         const materials = await BaseESIService.fetchESIData<IInvTypeMaterials[]>(EVE.getInvTypeMaterialsUrl());

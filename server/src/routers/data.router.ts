@@ -81,6 +81,50 @@ export class DataRouter extends BaseRouter {
     }
 
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    private static async getMarketPrice(request: Request, response: Response): Promise<Response> {
+
+        if (!request.params || !request.params.typeId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
+        const typeId = Number(request.params.typeId);
+
+        if (isNaN(typeId)) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+        }
+
+        const data = await DataController.getMarketPrice(typeId);
+
+        if (!data) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidType');
+        }
+
+        return DataRouter.sendSuccessResponse(response, data);
+    }
+
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    private static async getCostIndices(request: Request, response: Response): Promise<Response> {
+
+        if (!request.params || !request.params.systemId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
+        const systemId = Number(request.params.systemId);
+
+        if (isNaN(systemId)) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+        }
+
+        const data = await DataController.getCostIndices(systemId);
+
+        if (!data) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidSystem');
+        }
+
+        return DataRouter.sendSuccessResponse(response, data);
+    }
+
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async getTypes(request: Request, response: Response): Promise<Response> {
 
         const typeIds = request.body;
@@ -103,8 +147,10 @@ export class DataRouter extends BaseRouter {
         this.createGetRoute('/skill-types', DataRouter.getSkillTypes);
         this.createGetRoute('/skill-ids', DataRouter.getSkillIds);
         this.createGetRoute('/market-types', DataRouter.getMarketTypes);
+        this.createGetRoute('/market-price/:typeId', DataRouter.getMarketPrice);
         this.createGetRoute('/market-ids', DataRouter.getMarketIds);
         this.createGetRoute('/manufacturing/:typeId', DataRouter.getManufacturingInfo);
+        this.createGetRoute('/cost-indices/:systemId', DataRouter.getCostIndices);
         this.createGetRoute('/refining/:typeId', DataRouter.getRefiningProducts);
     }
 }
