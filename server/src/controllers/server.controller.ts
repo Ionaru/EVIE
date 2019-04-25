@@ -2,7 +2,7 @@ import { Application } from 'express';
 import { createServer, Server } from 'http';
 import { logger } from 'winston-pnp-logger';
 
-import { config } from './configuration.controller';
+import { config } from '../index';
 
 export class WebServer {
 
@@ -12,7 +12,7 @@ export class WebServer {
     constructor(expressApplication: Application) {
         logger.info('Creating web server');
         this.server = createServer(expressApplication as any);
-        this.port = config.getProperty('server_port') as number || 1234;
+        this.port = Number(config.getProperty('server_port')) || 1234;
         this.server.listen(this.port);
         this.server.on('error', (error) => this.serverError(error));
         this.server.on('listening', () => this.announceListening());

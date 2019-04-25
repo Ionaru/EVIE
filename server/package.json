@@ -25,6 +25,8 @@
         ]
     },
     "dependencies": {
+        "@ionaru/configurator": "^1.0.0",
+        "@ionaru/eve-utils": "0.0.1-2.0",
         "@ionaru/random-string": "^1.0.0",
         "@sentry/node": "^5.0.6",
         "agentkeepalive": "^4.0.0",

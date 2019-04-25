@@ -10,6 +10,7 @@ import * as helmet from 'helmet';
 import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
+import { config, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
 import { AngularRedirectRouter } from '../routers/angular.router';
 import { APIRouter } from '../routers/api.router';
@@ -18,8 +19,6 @@ import { ErrorRouter } from '../routers/error.router';
 import { GlobalRouter } from '../routers/global.router';
 import { SSORouter } from '../routers/sso.router';
 import { UserRouter } from '../routers/user.router';
-import { CacheController } from './cache.controller';
-import { config } from './configuration.controller';
 import { DatabaseConnection, db } from './database.controller';
 import { WebServer } from './server.controller';
 import { SocketServer } from './socket.controller';
@@ -125,7 +124,7 @@ export class Application {
         logger.info('Express configuration set');
 
         logger.info('Reading files into cache');
-        CacheController.readCache();
+        // CacheController.readCache();
 
         logger.info('App startup done');
 
@@ -153,7 +152,7 @@ export class Application {
         logger.warn(quitMessage);
 
         logger.info('Dumping cache to files');
-        CacheController.dumpCache();
+        esiCache.dumpCache();
 
         if (this.socketServer) {
             if (process.env.NODE_ENV === 'production') {
