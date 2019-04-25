@@ -5,7 +5,6 @@ export class EVE {
 
     public static readonly ESIURL = 'https://esi.evetech.net';
     public static readonly SDEURL = 'https://sde.zzeve.com';
-    public static useTestServer = false;
 
     public static readonly skillCategoryId = 16;
 
@@ -217,10 +216,6 @@ export class EVE {
         let url = `${EVE.ESIURL}/v${version}/`;
         if (path.length) {
             url += `${path.join('/')}/`;
-        }
-
-        if (EVE.useTestServer) {
-            url += '?datasource=singularity';
         }
 
         return url;
