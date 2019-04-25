@@ -1,3 +1,4 @@
+import { WebServer } from '@ionaru/web-server';
 import * as Sentry from '@sentry/node';
 import * as appRoot from 'app-root-path';
 import * as bodyParser from 'body-parser';
@@ -20,7 +21,6 @@ import { GlobalRouter } from '../routers/global.router';
 import { SSORouter } from '../routers/sso.router';
 import { UserRouter } from '../routers/user.router';
 import { DatabaseConnection, db } from './database.controller';
-import { WebServer } from './server.controller';
 import { SocketServer } from './socket.controller';
 
 export class Application {
@@ -128,9 +128,12 @@ export class Application {
 
         logger.info('App startup done');
 
-        this.webServer = new WebServer(expressApplication);
+        const serverPort = config.getProperty('server_port');
+        this.webServer = new WebServer(expressApplication, Number(serverPort));
 
         this.socketServer = new SocketServer(this.webServer, this.sessionParser);
+
+        await this.webServer.listen();
     }
 
     public async stop(error?: Error): Promise<void> {
@@ -154,6 +157,10 @@ export class Application {
         logger.info('Dumping cache to files');
         esiCache.dumpCache();
 
+        if (this.webServer) {
+            await this.webServer.close();
+        }
+
         if (this.socketServer) {
             if (process.env.NODE_ENV === 'production') {
                 this.socketServer.io.emit('STOP');
@@ -161,14 +168,7 @@ export class Application {
             this.socketServer.io.close();
         }
 
-        if (this.webServer) {
-            this.webServer.server.close(async () => {
-                logger.info('HTTP server closed');
-                closeDBConnection().then();
-            });
-        } else {
-            closeDBConnection().then();
-        }
+        closeDBConnection().then();
 
         async function closeDBConnection() {
             if (db && db.orm) {

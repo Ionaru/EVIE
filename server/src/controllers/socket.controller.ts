@@ -1,9 +1,8 @@
+import { WebServer } from '@ionaru/web-server';
 import * as express from 'express';
 import * as SocketIO from 'socket.io';
 import * as SocketIOSession from 'socket.io-express-session';
 import { logger } from 'winston-pnp-logger';
-
-import { WebServer } from './server.controller';
 
 export class SocketServer {
 
