@@ -1,11 +1,10 @@
-import { esiService } from '../index';
 import {
     EVE,
-    IIndustryActivityData,
-    IIndustryActivityMaterialsData, IIndustryActivityProductsData, IIndustryActivitySkillsData,
-    IInvTypeMaterialsData, IMarketGroupData,
-    IndustryActivity, IUniverseCategoriesData, IUniverseGroupsData, IUniverseTypesData
+    IIndustryActivityData, IIndustryActivityMaterialsData, IIndustryActivityProductsData, IIndustryActivitySkillsData,
+    IInvTypeMaterialsData, IMarketGroupData, IndustryActivity, IUniverseCategoriesData, IUniverseGroupsData, IUniverseTypesData,
 } from '@ionaru/eve-utils';
+
+import { esiService } from '../index';
 
 interface IManufacturingData {
     blueprintId: number;
