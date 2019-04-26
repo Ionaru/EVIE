@@ -19,14 +19,6 @@
         "start": "node ./dist/index.js",
         "preversion": "npm run test"
     },
-    "nyc": {
-        "exclude": [
-            "src/**/*.spec.ts"
-        ],
-        "extension": [
-            ".ts"
-        ]
-    },
     "dependencies": {
         "@ionaru/configurator": "^1.0.0",
         "@ionaru/eve-utils": "0.0.1-6.0",
