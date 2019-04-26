@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ICharacterWalletJournalData } from '@ionaru/eve-utils';
 
-import { IWalletJournalData } from '../../../shared/interface.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { WalletJournalService } from '../../data-services/wallet-journal.service';
 import { WalletService } from '../../data-services/wallet.service';
@@ -16,7 +16,7 @@ import { ScopesComponent } from '../scopes/scopes.component';
 })
 export class WalletComponent extends DataPageComponent implements OnInit {
 
-    public journalData: IWalletJournalData[] = [];
+    public journalData: ICharacterWalletJournalData = [];
     public balanceCountUp?: CountUp;
 
     public tableSettings: ITableHeader[] = [{

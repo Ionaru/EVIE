@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EVE } from '@ionaru/eve-utils';
 
-import { EVE } from '../../shared/eve.helper';
 import { Character } from '../models/character/character.model';
 import { ScopesComponent } from '../pages/scopes/scopes.component';
 import { BaseService } from './base.service';

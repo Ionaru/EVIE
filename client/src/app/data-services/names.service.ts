@@ -1,11 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { uniquifyArray } from '@ionaru/array-utils';
+import { EVE, IUniverseNamesData, IUniverseNamesDataUnit } from '@ionaru/eve-utils';
 
 import { Calc } from '../../shared/calc.helper';
-import { EVE } from '../../shared/eve.helper';
-import { IESINamesData, INames } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
+
+export interface INames {
+    [id: string]: IUniverseNamesDataUnit;
+}
 
 @Injectable()
 export class NamesService extends BaseService {
@@ -102,7 +105,7 @@ export class NamesService extends BaseService {
 
     private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
         const url = EVE.getUniverseNamesUrl();
-        const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch(this.catchHandler);
+        const response = await this.http.post<any>(url, ids).toPromise<IUniverseNamesData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }

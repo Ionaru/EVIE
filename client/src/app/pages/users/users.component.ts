@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { IUsersResponse } from '../../../shared/interface.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
-import { UsersService } from '../../data-services/users.service';
+import { IUsersResponse, UsersService } from '../../data-services/users.service';
 
 @Component({
     selector: 'app-users',

@@ -1,16 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
+import { EVE, IUniverseCategoriesData, IUniverseGroupsData } from '@ionaru/eve-utils';
 
-import { EVE } from '../../shared/eve.helper';
-import { ISkillCategoryData, ISkillGroupData } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
 
 @Injectable()
 export class SkillGroupsService extends BaseService {
 
-    public async getSkillGroupInformation(): Promise<ISkillGroupData[]> {
-        const skillInfo: ISkillGroupData[] = [];
+    public async getSkillGroupInformation(): Promise<IUniverseGroupsData[]> {
+        const skillInfo: IUniverseGroupsData[] = [];
 
         const skillCategory = await this.getSkillCategory();
 
@@ -33,18 +32,18 @@ export class SkillGroupsService extends BaseService {
         return skillInfo;
     }
 
-    private async getSkillCategory(): Promise<ISkillCategoryData | undefined> {
+    private async getSkillCategory(): Promise<IUniverseCategoriesData | undefined> {
         const url = EVE.getUniverseCategoriesUrl(EVE.skillCategoryId);
-        const response = await this.http.get<any>(url).toPromise<ISkillCategoryData>().catch(this.catchHandler);
+        const response = await this.http.get<any>(url).toPromise<IUniverseCategoriesData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }
         return response;
     }
 
-    private async getSkillGroup(groupId: number): Promise<ISkillGroupData | undefined> {
+    private async getSkillGroup(groupId: number): Promise<IUniverseGroupsData | undefined> {
         const url = EVE.getUniverseGroupsUrl(groupId);
-        const response = await this.http.get<any>(url).toPromise<ISkillGroupData>().catch(this.catchHandler);
+        const response = await this.http.get<any>(url).toPromise<IUniverseGroupsData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }

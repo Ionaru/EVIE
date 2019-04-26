@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
+import { EVE } from '@ionaru/eve-utils';
 
 import { Calc } from '../../../shared/calc.helper';
-import { EVE } from '../../../shared/eve.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { IndustryService } from '../../data-services/industry.service';
 import { MarketService } from '../../data-services/market.service';
