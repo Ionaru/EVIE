@@ -30,7 +30,7 @@
         "@ionaru/eve-utils": "0.0.1-5.0",
         "@ionaru/random-string": "^1.0.0",
         "@ionaru/web-server": "^1.0.1",
-        "@sentry/node": "^5.0.6",
+        "@sentry/node": "^5.1.0",
         "agentkeepalive": "^4.0.0",
         "app-root-path": "^2.1.0",
         "axios": "^0.18.0",
