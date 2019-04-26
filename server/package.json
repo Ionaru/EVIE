@@ -8,7 +8,8 @@
         "url": "https://github.com/Ionaru/EVIE.git"
     },
     "scripts": {
-        "build": "tsc --project tsconfig.json",
+        "clean": "npx -q rimraf dist",
+        "build": "npm run clean && tsc --project tsconfig.json",
         "start": "cross-env NODE_ENV=production node ./dist/server/src/index.js",
         "serve": "gulp clean && npm run build && npm run start",
         "lint": "tslint --project tsconfig.json -c tslint.json \"src/**/*.ts\" --format stylish",
