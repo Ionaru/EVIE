@@ -10,11 +10,14 @@
     "scripts": {
         "clean": "npx -q rimraf dist",
         "build": "npm run clean && tsc --project tsconfig.json",
+        "lint": "npm run lint:src && npm run lint:test",
+        "lint:src": "tslint --project tsconfig.json -c tslint.json --format stylish",
+        "lint:test": "tslint -c tslint.json src/**/*.spec.ts --format stylish",
+        "pretest": "npm run lint",
+        "test": "echo \"Error: no test specified\" && exit 0",
+        "prepare": "npm run build",
         "start": "node ./dist/index.js",
-        "serve": "gulp clean && npm run build && npm run start",
-        "lint": "tslint --project tsconfig.json -c tslint.json \"src/**/*.ts\" --format stylish",
-        "unit": "nyc mocha --require ts-node/register src/**/*.spec.ts",
-        "test": "npm run lint && npm run unit"
+        "preversion": "npm run test"
     },
     "nyc": {
         "exclude": [
