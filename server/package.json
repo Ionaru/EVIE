@@ -10,7 +10,7 @@
     "scripts": {
         "clean": "npx -q rimraf dist",
         "build": "npm run clean && tsc --project tsconfig.json",
-        "start": "cross-env NODE_ENV=production node ./dist/server/src/index.js",
+        "start": "cross-env NODE_ENV=production node ./dist/index.js",
         "serve": "gulp clean && npm run build && npm run start",
         "lint": "tslint --project tsconfig.json -c tslint.json \"src/**/*.ts\" --format stylish",
         "unit": "nyc mocha --require ts-node/register src/**/*.spec.ts",
@@ -27,7 +27,7 @@
     },
     "dependencies": {
         "@ionaru/configurator": "^1.0.0",
-        "@ionaru/eve-utils": "0.0.1-5.0",
+        "@ionaru/eve-utils": "0.0.1-6.0",
         "@ionaru/random-string": "^1.0.0",
         "@ionaru/web-server": "^1.0.1",
         "@sentry/node": "^5.1.0",

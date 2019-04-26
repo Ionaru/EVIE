@@ -1,4 +1,3 @@
-import { PublicESIService } from '@ionaru/eve-utils';
 import { generateRandomString } from '@ionaru/random-string';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
@@ -8,7 +7,7 @@ import { URLSearchParams } from 'url';
 import { logger } from 'winston-pnp-logger';
 
 import { SocketServer } from '../controllers/socket.controller';
-import { axiosInstance, config } from '../index';
+import { axiosInstance, config, esiService } from '../index';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
@@ -378,7 +377,7 @@ export class SSORouter extends BaseRouter {
 
         const route = request.body.route as string;
         const text = request.body.text as string;
-        PublicESIService.logWarning(route, text);
+        esiService.logWarning(route, text);
 
         return SSORouter.sendResponse(response, httpStatus.OK, 'Logged');
     }

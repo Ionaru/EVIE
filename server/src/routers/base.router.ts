@@ -3,8 +3,13 @@ import { PathParams, RequestHandlerParams } from 'express-serve-static-core';
 import * as httpStatus from 'http-status-codes';
 import { logger } from 'winston-pnp-logger';
 
-import { IServerResponse } from '../../../client/src/shared/interface.helper';
 import { User } from '../models/user.model';
+
+export interface IServerResponse<T> {
+    state: string;
+    message: string;
+    data?: T;
+}
 
 export interface IResponse extends Response {
     route?: string[];
