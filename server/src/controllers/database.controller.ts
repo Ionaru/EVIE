@@ -4,10 +4,10 @@ import * as path from 'path';
 import { Connection, createConnection, Logger } from 'typeorm';
 import { logger } from 'winston-pnp-logger';
 
+import { config, configPath } from '../index';
 import { QueryLogger } from '../loggers/query.logger';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
-import { config, configPath } from './configuration.controller';
 
 interface IDBOptions {
     database: string;
@@ -51,7 +51,7 @@ export class DatabaseConnection {
             logger: new QueryLogger(),
             logging: ['query', 'error'],
             password: config.getProperty('db_pass') as string,
-            port: config.getProperty('db_port') as number || 3306,
+            port: Number(config.getProperty('db_port')) || 3306,
             synchronize: config.getProperty('db_synchronize') as boolean,
             type: 'mysql',
             user: config.getProperty('db_user') as string,

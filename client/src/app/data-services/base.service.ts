@@ -3,6 +3,12 @@ import { Injectable } from '@angular/core';
 
 import { Character } from '../models/character/character.model';
 
+export interface IServerResponse<T> {
+    state: string;
+    message: string;
+    data?: T;
+}
+
 @Injectable()
 export class BaseService {
 

@@ -2,11 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
 import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
+import { ICharacterBlueprintsDataUnit, ICharacterIndustryJobsDataUnit, IndustryActivity } from '@ionaru/eve-utils';
 import * as countdown from 'countdown';
 
 import { environment } from '../../../environments/environment';
 import { Calc } from '../../../shared/calc.helper';
-import { ICharacterBlueprintsData, IIndustryJobsData, IndustryActivity } from '../../../shared/interface.helper';
 import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
 import { NamesService } from '../../data-services/names.service';
@@ -15,7 +15,7 @@ import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
 
-interface IExtendedIndustryJobsData extends IIndustryJobsData {
+interface IExtendedIndustryJobsData extends ICharacterIndustryJobsDataUnit {
     percentageDone?: number;
     timeLeft?: number | countdown.Timespan;
     productName?: string;
@@ -23,7 +23,7 @@ interface IExtendedIndustryJobsData extends IIndustryJobsData {
 }
 
 interface IBlueprints {
-    [index: number]: ICharacterBlueprintsData;
+    [index: number]: ICharacterBlueprintsDataUnit;
 }
 
 @Component({

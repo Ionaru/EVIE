@@ -1,24 +1,32 @@
-import { EVE } from '../../../client/src/shared/eve.helper';
 import {
-    IIndustryActivity,
-    IIndustryActivityMaterials,
-    IIndustryActivityProducts,
-    IIndustryActivitySkills,
-    IInvTypeMaterials,
-    IManufacturingData,
-    IMarketGroup,
-    IndustryActivity,
-    IRefiningProducts,
-    ISkillCategoryData,
-    ISkillGroupData,
-    ITypesData,
-} from '../../../client/src/shared/interface.helper';
-import { BaseESIService } from '../services/base-esi.service';
+    EVE,
+    IIndustryActivityData, IIndustryActivityMaterialsData, IIndustryActivityProductsData, IIndustryActivitySkillsData,
+    IInvTypeMaterialsData, IMarketGroupData, IndustryActivity, IUniverseCategoriesData, IUniverseGroupsData, IUniverseTypesData,
+} from '@ionaru/eve-utils';
+
+import { esiService } from '../index';
+
+interface IManufacturingData {
+    blueprintId: number;
+    materials: Array<{
+        id: number,
+        quantity: number,
+    }>;
+    skills: Array<{
+        id: number,
+        level: number,
+    }>;
+    time: number;
+    result: {
+        id: number,
+        quantity: number,
+    };
+}
 
 export class DataController {
 
-    public static async getRefiningProducts(typeId: number): Promise<IRefiningProducts[]> {
-        const materials = await BaseESIService.fetchESIData<IInvTypeMaterials[]>(EVE.getInvTypeMaterialsUrl());
+    public static async getRefiningProducts(typeId: number): Promise<Array<{ id: number, quantity: number }>> {
+        const materials = await esiService.fetchESIData<IInvTypeMaterialsData>(EVE.getInvTypeMaterialsUrl());
         if (!materials) {
             return [];
         }
@@ -29,7 +37,7 @@ export class DataController {
 
     public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | undefined> {
 
-        const industryProducts = await BaseESIService.fetchESIData<IIndustryActivityProducts[]>(EVE.getIndustryActivityProductsUrl());
+        const industryProducts = await esiService.fetchESIData<IIndustryActivityProductsData>(EVE.getIndustryActivityProductsUrl());
 
         let blueprint;
 
@@ -43,9 +51,9 @@ export class DataController {
         }
 
         const industryData = await Promise.all([
-            BaseESIService.fetchESIData<IIndustryActivityMaterials[]>(EVE.getIndustryActivityMaterialsUrl()),
-            BaseESIService.fetchESIData<IIndustryActivitySkills[]>(EVE.getIndustryActivitySkillsUrl()),
-            BaseESIService.fetchESIData<IIndustryActivity[]>(EVE.getIndustryActivityUrl()),
+            esiService.fetchESIData<IIndustryActivityMaterialsData>(EVE.getIndustryActivityMaterialsUrl()),
+            esiService.fetchESIData<IIndustryActivitySkillsData>(EVE.getIndustryActivitySkillsUrl()),
+            esiService.fetchESIData<IIndustryActivityData>(EVE.getIndustryActivityUrl()),
         ]);
 
         const [industryMaterials, industrySkills, industryActivities] = industryData;
@@ -83,21 +91,21 @@ export class DataController {
     }
 
     public static getUniverseCategory(categoryId: number) {
-        return BaseESIService.fetchESIData<ISkillCategoryData>(EVE.getUniverseCategoriesUrl(categoryId));
+        return esiService.fetchESIData<IUniverseCategoriesData>(EVE.getUniverseCategoriesUrl(categoryId));
     }
 
     public static getUniverseGroup(groupId: number) {
-        return BaseESIService.fetchESIData<ISkillGroupData>(EVE.getUniverseGroupsUrl(groupId));
+        return esiService.fetchESIData<IUniverseGroupsData>(EVE.getUniverseGroupsUrl(groupId));
     }
 
     public static async getMarketIds() {
-        const marketGroups = await BaseESIService.fetchESIData<number[]>(EVE.getMarketGroupsUrl());
+        const marketGroups = await esiService.fetchESIData<number[]>(EVE.getMarketGroupsUrl());
 
         const marketIds: number[] = [];
 
         if (marketGroups) {
             await Promise.all(marketGroups.map(async (groupId) => {
-                const marketGroup = await BaseESIService.fetchESIData<IMarketGroup>(EVE.getMarketGroupUrl(groupId));
+                const marketGroup = await esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(groupId));
 
                 if (marketGroup) {
                     marketIds.push(...marketGroup.types);
@@ -144,19 +152,19 @@ export class DataController {
 
     public static async getUniverseTypes(...typeIds: number[]) {
 
-        const typeData: ITypesData[] = [];
+        const typeData: IUniverseTypesData[] = [];
 
         await Promise.all(typeIds.map(async (typeId) => {
             let tries = 0;
 
-            let type: ITypesData | undefined;
+            let type: IUniverseTypesData | undefined;
 
             while (!type) {
                 if (tries > 3) {
                     throw new Error(`Unable to get Type ${typeId}`);
                 }
 
-                type = await BaseESIService.fetchESIData<ITypesData>(EVE.getUniverseTypesUrl(typeId));
+                type = await esiService.fetchESIData<IUniverseTypesData>(EVE.getUniverseTypesUrl(typeId));
                 tries++;
             }
 

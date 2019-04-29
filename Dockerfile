@@ -56,4 +56,4 @@ VOLUME /app/server/config
 EXPOSE  3001
 ENV LEVEL debug
 ENV NODE_ENV production
-CMD ["npm", "run", "start"]
+CMD ["npm", "start"]

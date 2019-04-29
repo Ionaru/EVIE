@@ -1,8 +1,7 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EVE, IUniverseStructureData } from '@ionaru/eve-utils';
 
-import { EVE } from '../../shared/eve.helper';
-import { IUniverseStructureData } from '../../shared/interface.helper';
 import { Character } from '../models/character/character.model';
 import { ScopesComponent } from '../pages/scopes/scopes.component';
 import { BaseService } from './base.service';

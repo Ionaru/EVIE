@@ -6,11 +6,10 @@ import * as jwt from 'jsonwebtoken';
 import { URLSearchParams } from 'url';
 import { logger } from 'winston-pnp-logger';
 
-import { config, Configurator } from '../controllers/configuration.controller';
 import { SocketServer } from '../controllers/socket.controller';
+import { axiosInstance, config, esiService } from '../index';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
-import { BaseESIService } from '../services/base-esi.service';
 import { BaseRouter } from './base.router';
 
 const protocol = 'https://';
@@ -378,7 +377,7 @@ export class SSORouter extends BaseRouter {
 
         const route = request.body.route as string;
         const text = request.body.text as string;
-        BaseESIService.logWarning(route, text);
+        esiService.logWarning(route, text);
 
         return SSORouter.sendResponse(response, httpStatus.OK, 'Logged');
     }
@@ -444,7 +443,7 @@ export class SSORouter extends BaseRouter {
 
         const authUrl = `${protocol}${oauthHost}${tokenPath}`;
         logger.debug(authUrl);
-        return Configurator.axios.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+        return axiosInstance.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             logger.error('Request failed:', authUrl, error.message);
             return;
         });
@@ -462,7 +461,7 @@ export class SSORouter extends BaseRouter {
 
         const revokeUrl = `${protocol}${oauthHost}${revokePath}`;
         logger.debug(revokeUrl);
-        return Configurator.axios.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+        return axiosInstance.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             logger.error('Request failed:', revokeUrl, error.message);
             return;
         });

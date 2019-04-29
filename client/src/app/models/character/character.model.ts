@@ -1,4 +1,4 @@
-import { ISkillQueueData } from '../../../shared/interface.helper';
+import { ICharacterSkillQueueDataUnit } from '@ionaru/eve-utils';
 
 export class Character {
     public characterId: number;
@@ -113,6 +113,6 @@ export interface IDeleteCharacterResponse {
     message: string;
 }
 
-export interface ISkillQueueDataWithName extends ISkillQueueData {
+export interface ISkillQueueDataWithName extends ICharacterSkillQueueDataUnit {
     name?: string;
 }

@@ -1,8 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EVE, IStatusData } from '@ionaru/eve-utils';
 
-import { EVE } from '../../shared/eve.helper';
-import { IStatusData } from '../../shared/interface.helper';
 import { BaseService } from './base.service';
 
 @Injectable()

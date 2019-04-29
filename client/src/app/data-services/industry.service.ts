@@ -1,8 +1,29 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { IManufacturingData, IRefiningProducts, IServerResponse } from '../../shared/interface.helper';
-import { BaseService } from './base.service';
+import { BaseService, IServerResponse } from './base.service';
+
+export interface IManufacturingData {
+    blueprintId: number;
+    materials: Array<{
+        id: number,
+        quantity: number,
+    }>;
+    skills: Array<{
+        id: number,
+        level: number,
+    }>;
+    time: number;
+    result: {
+        id: number,
+        quantity: number,
+    };
+}
+
+export interface IRefiningProducts {
+    id: number;
+    quantity: number;
+}
 
 interface IManufacturingCache {
     [index: string]: IManufacturingData | undefined;

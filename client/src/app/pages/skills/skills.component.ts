@@ -10,11 +10,18 @@ import {
 } from '@fortawesome/pro-solid-svg-icons';
 import Timespan = countdown.Timespan;
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
+import {
+    ICharacterAttributesData,
+    ICharacterSkillQueueDataUnit,
+    ICharacterSkillsData,
+    ISkillsData,
+    IUniverseGroupsData,
+    IUniverseTypesData,
+} from '@ionaru/eve-utils';
 import { romanize } from '@ionaru/romanize';
 import * as countdown from 'countdown';
 
 import { Calc } from '../../../shared/calc.helper';
-import { IAttributesData, ISkillData, ISkillGroupData, ISkillQueueData, ISkillsData, ITypesData } from '../../../shared/interface.helper';
 import { AttributesService } from '../../data-services/attributes.service';
 import { NamesService } from '../../data-services/names.service';
 import { SkillGroupsService } from '../../data-services/skill-groups.service';
@@ -24,7 +31,7 @@ import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
 
-interface IExtendedSkillQueueData extends ISkillQueueData {
+interface IExtendedSkillQueueData extends ICharacterSkillQueueDataUnit {
     status?: 'training' | 'finished' | 'scheduled' | 'inactive';
     countdown?: number | countdown.Timespan;
     name?: string;
@@ -33,11 +40,11 @@ interface IExtendedSkillQueueData extends ISkillQueueData {
     percentageDone?: number;
 }
 
-interface IExtendedSkillData extends ISkillData {
+interface IExtendedSkillData extends ISkillsData {
     name?: string;
 }
 
-interface IExtendedSkillsData extends ISkillsData {
+interface IExtendedSkillsData extends ICharacterSkillsData {
     skills: IExtendedSkillData[];
 }
 
@@ -50,7 +57,7 @@ interface IGroupedSKillData {
 }
 
 interface IGroupedSkillTypes {
-    [groupId: number]: ITypesData[];
+    [groupId: number]: IUniverseTypesData[];
 }
 
 @Component({
@@ -92,16 +99,16 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public totalQueueTimer?: number;
     public updateQueueTimer?: number;
 
-    public skillGroups: ISkillGroupData[] = [];
+    public skillGroups: IUniverseGroupsData[] = [];
     public skillList: IGroupedSKillData = {};
 
     public skillQueueVisible = true;
 
-    public skillTypes?: ITypesData[];
+    public skillTypes?: IUniverseTypesData[];
 
     public trainedSkills?: ITrainedSkills;
 
-    public attributes?: IAttributesData;
+    public attributes?: ICharacterAttributesData;
 
     public currentTrainingSkill?: number;
     public currentTrainingSPGain?: number;
@@ -161,7 +168,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         }
     }
 
-    public getSkillsForGroup(group: ISkillGroupData) {
+    public getSkillsForGroup(group: IUniverseGroupsData) {
         if (this.skills) {
             let skills = this.skills.skills.filter((skill) => group.types.includes(skill.skill_id));
             skills = sortArrayByObjectProperty(skills, 'name');
@@ -170,9 +177,9 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         return [];
     }
 
-    public getSkillList(group: ISkillGroupData, allSkills = true) {
+    public getSkillList(group: IUniverseGroupsData, allSkills = true) {
 
-        let skills: ITypesData[] = [];
+        let skills: IUniverseTypesData[] = [];
 
         if (this.skillTypes) {
             skills = this.skillTypes.filter((skill) => skill.group_id === group.group_id);

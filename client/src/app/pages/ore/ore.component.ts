@@ -1,9 +1,8 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
+import { EVE, IMarketOrdersData } from '@ionaru/eve-utils';
 
-import { EVE } from '../../../shared/eve.helper';
-import { IMarketOrdersResponse } from '../../../shared/interface.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
@@ -94,7 +93,7 @@ export class OreComponent implements OnInit {
         this.changeVisibleOres();
     }
 
-    public async getPriceForVolume(ore: number, orders: IMarketOrdersResponse[], volume: number, buy = true) {
+    public async getPriceForVolume(ore: number, orders: IMarketOrdersData, volume: number, buy = true) {
         const buyOrders = orders.filter((order) => order.is_buy_order === buy);
         sortArrayByObjectProperty(buyOrders, 'price', buy);
         const buySell = buy ? 'buy' : 'sell';

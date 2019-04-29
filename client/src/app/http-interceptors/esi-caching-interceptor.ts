@@ -1,9 +1,9 @@
 import { HttpClient, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EVE } from '@ionaru/eve-utils';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { EVE } from '../../shared/eve.helper';
 import { ESIRequestCache } from '../shared/esi-request-cache';
 
 @Injectable()
