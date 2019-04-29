@@ -1,6 +1,6 @@
 {
     "name": "evie-server",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "author": "Jeroen Akkerman",
     "description": "Server module for EVIE",
     "repository": {
@@ -22,7 +22,7 @@
     "dependencies": {
         "@ionaru/configurator": "^1.0.0",
         "@ionaru/esi-service": "^1.0.2",
-        "@ionaru/eve-utils": "^2.0.0",
+        "@ionaru/eve-utils": "^3.0.0",
         "@ionaru/random-string": "^1.0.0",
         "@ionaru/web-server": "^1.0.1",
         "@sentry/node": "^5.1.0",

@@ -41,7 +41,7 @@ export class Application {
         Sentry.init({
             dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
             enabled: process.env.NODE_ENV === 'production',
-            release: 'evie-server@0.7.0',
+            release: 'evie-server@0.7.1',
         });
 
         await new DatabaseConnection().connect();
