@@ -1,5 +1,6 @@
 import { Configurator } from '@ionaru/configurator';
 import { CacheController, PublicESIService } from '@ionaru/esi-service';
+import * as Sentry from '@sentry/node';
 import { HttpsAgent } from 'agentkeepalive';
 import axios, { AxiosInstance } from 'axios';
 import 'reflect-metadata'; // Required by TypeORM.
@@ -41,7 +42,13 @@ export let axiosInstance: AxiosInstance;
     });
 
     esiCache = new CacheController('data/responseCache.json');
-    esiService = new PublicESIService({axiosInstance, cacheController: esiCache});
+    esiService = new PublicESIService({
+        axiosInstance,
+        cacheController: esiCache,
+        onRouteWarning: (route, text) => {
+            Sentry.captureMessage(`${text}: ${route}`, Sentry.Severity.Warning);
+        },
+    });
 
     const application = new Application();
 
