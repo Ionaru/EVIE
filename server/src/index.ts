@@ -1,5 +1,5 @@
 import { Configurator } from '@ionaru/configurator';
-import { CacheController, PublicESIService } from '@ionaru/eve-utils';
+import { CacheController, PublicESIService } from '@ionaru/esi-service';
 import { HttpsAgent } from 'agentkeepalive';
 import axios, { AxiosInstance } from 'axios';
 import 'reflect-metadata'; // Required by TypeORM.
