@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
+
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
 
