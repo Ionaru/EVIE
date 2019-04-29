@@ -175,7 +175,7 @@ export class Application {
                 await db.orm.close();
                 logger.info('ORM connection closed');
             }
-            await new Promise<void>(((resolve) => {
+            await new Promise((resolve) => {
                 if (db && db.pool) {
                     db.pool.end(() => {
                         logger.info('DB pool closed');
@@ -184,7 +184,7 @@ export class Application {
                 } else {
                     resolve();
                 }
-            }));
+            });
             Application.exit(exitCode);
         }
     }
