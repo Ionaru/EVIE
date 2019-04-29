@@ -22,7 +22,7 @@ interface IHandshakeResponse {
 })
 export class AppComponent {
 
-    public readonly version = '0.7.1';
+    public readonly version = '0.7.2';
 
     constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Error during app startup', error));
