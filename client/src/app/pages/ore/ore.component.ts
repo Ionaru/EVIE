@@ -41,6 +41,7 @@ export class OreComponent implements OnInit {
         prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
         sort: true,
         sortAttribute: 'index',
+        suffixFunction: (data) => `<span class="text-muted">${data.volume}m³</span>`,
         title: 'Type',
     }, {
         attribute: 'buy',
@@ -87,6 +88,7 @@ export class OreComponent implements OnInit {
                 index,
                 name: NamesService.getNameFromData(ore),
                 sell: this.orePrices.sell[ore],
+                volume: this.oreTypes[ore].volume,
             };
         });
 
