@@ -4,9 +4,11 @@ const PROXY_CONFIG = [
             '/api',
             '/sso',
             '/data',
+            '/socket.io',
         ],
         secure: false,
         target: 'http://localhost:3000',
+        ws: true,
     },
 ];
 
