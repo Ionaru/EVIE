@@ -104,7 +104,7 @@ export class DatabaseConnection {
         });
 
         if (this.dbOptions.synchronize) {
-            process.emitWarning('Database synchronize is enabled');
+            process.emitWarning('Database synchronize is enabled, this may cause unexpected changed to the database structure');
         }
 
         this.orm = await createConnection(this.dbOptions);
