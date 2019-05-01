@@ -27,9 +27,9 @@ RUN npm ci
 RUN npm cache clean --force
 
 # Add volumes
-VOLUME /app/server/logs
-VOLUME /app/server/data
-VOLUME /app/server/config
+VOLUME /app/logs
+VOLUME /app/data
+VOLUME /app/config
 
 ## RUN
 
