@@ -75,10 +75,10 @@ export class DatabaseConnection {
 
     public async connect(): Promise<void> {
         if (this.dbOptions.ssl && !this.dbOptions.ssl.rejectUnauthorized) {
-            logger.warn('SSL connection to Database is not secure, \'db_reject\' should be true');
+            process.emitWarning('SSL connection to Database is not secure, \'db_reject\' should be true');
         } else if (!this.dbOptions.ssl) {
             if (['localhost', '0.0.0.0', '127.0.0.1'].indexOf(config.getProperty('db_host') as string) === -1) {
-                logger.warn('Connection to Database is not secure, always use SSL to connect to external databases!');
+                process.emitWarning('Connection to Database is not secure, always use SSL to connect to external databases!');
             }
         }
 

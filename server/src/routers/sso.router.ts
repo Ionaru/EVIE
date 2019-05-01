@@ -45,7 +45,7 @@ export class SSORouter extends BaseRouter {
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
-            logger.warn(
+            process.emitWarning(
                 `Invalid state from /login-callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`,
             );
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
@@ -149,7 +149,7 @@ export class SSORouter extends BaseRouter {
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
-            logger.warn(
+            process.emitWarning(
                 `Invalid state from /auth-callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`,
             );
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
@@ -410,19 +410,19 @@ export class SSORouter extends BaseRouter {
         const clientIds = [config.getProperty('SSO_login_client_ID'), config.getProperty('client_ID')];
         if (!clientIds.includes(token.azp)) {
             // Authorized party is not correct.
-            logger.warn('Authorized party is not correct.', `Expected: ${clientIds}, got: ${token.azp}`);
+            process.emitWarning('Authorized party is not correct.', `Expected: ${clientIds}, got: ${token.azp}`);
             return false;
         }
 
         if (![oauthHost, protocol + oauthHost].includes(token.iss)) {
             // Token issuer is incorrect.
-            logger.warn('Unknown token issuer.', `Expected: '${oauthHost}' or '${protocol + oauthHost}', got: '${token.iss}'`);
+            process.emitWarning('Unknown token issuer.', `Expected: '${oauthHost}' or '${protocol + oauthHost}', got: '${token.iss}'`);
             return false;
         }
 
         if (Date.now() > (token.exp * 1000)) {
             // Check if token is still valid.
-            logger.warn('Token is expired.', `Expiry was ${((token.exp * 1000) - Date.now()) / 1000}s ago.`);
+            process.emitWarning('Token is expired.', `Expiry was ${((token.exp * 1000) - Date.now()) / 1000}s ago.`);
             return false;
         }
 

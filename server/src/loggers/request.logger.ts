@@ -52,7 +52,7 @@ export class RequestLogger {
                     if (endResponse.statusCode >= 500) {
                         logger.error(logContent);
                     } else if (endResponse.statusCode >= 400) {
-                        logger.warn(logContent);
+                        process.emitWarning(logContent);
                     } else {
                         logger.debug(logContent);
                     }

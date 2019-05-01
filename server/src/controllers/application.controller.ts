@@ -152,7 +152,7 @@ export class Application {
             quitMessage += ' because of an uncaught exception!';
             logger.error('Reason: ', error);
         }
-        logger.warn(quitMessage);
+        process.emitWarning(quitMessage);
 
         logger.info('Dumping cache to files');
         esiCache.dumpCache();
