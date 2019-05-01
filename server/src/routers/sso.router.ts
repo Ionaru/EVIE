@@ -88,6 +88,7 @@ export class SSORouter extends BaseRouter {
 
         const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
         if (sockets.length) {
+            SSORouter.debug(`Emitting to socket ${sockets[0].id}, session ${sockets[0].handshake.session.id}`);
             sockets[0].emit('SSO_LOGON_END', {
                 data: user.sanitizedCopy,
                 message: 'SSOSuccessful',
@@ -253,6 +254,7 @@ export class SSORouter extends BaseRouter {
 
         const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
         if (sockets.length) {
+            SSORouter.debug(`Emitting to socket ${sockets[0].id}, session ${sockets[0].handshake.session.id}`);
             sockets[0].emit('SSO_AUTH_END', {
                 data: {user: user!.sanitizedCopy, newCharacter: character.uuid},
                 message: 'SSOSuccessful',

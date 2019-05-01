@@ -6,6 +6,7 @@
 
 # Main files
 *.log
+.env
 
 # Client files
 /client/coverage/

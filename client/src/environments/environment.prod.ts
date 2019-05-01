@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    socketHost: 'https://spaceships.app',
+    socketHost: 'http://localhost:4200/socket.io',
 };

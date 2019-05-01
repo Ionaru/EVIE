@@ -92,7 +92,9 @@ export class UserService {
         }
 
         if (UserService.authWindow) {
+            console.log('LISTENING SOCKET!');
             SocketService.socket.once('SSO_LOGON_END', async (response: ISSOLoginResponse) => {
+                console.log(response);
                 if (UserService.authWindow && !UserService.authWindow.closed) {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
