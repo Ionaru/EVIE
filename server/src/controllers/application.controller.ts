@@ -170,24 +170,22 @@ export class Application {
             this.socketServer.io.close();
         }
 
-        closeDBConnection().then();
-
-        async function closeDBConnection() {
-            if (db && db.orm) {
-                await db.orm.close();
-                debug('ORM connection closed');
-            }
-            await new Promise((resolve) => {
-                if (db && db.pool) {
-                    db.pool.end(() => {
-                        debug('DB pool closed');
-                        resolve();
-                    });
-                } else {
-                    resolve();
-                }
-            });
-            Application.exit(exitCode);
+        if (db && db.orm) {
+            await db.orm.close();
+            debug('ORM connection closed');
         }
+
+        await new Promise((resolve) => {
+            if (db && db.pool) {
+                db.pool.end(() => {
+                    debug('DB pool closed');
+                    resolve();
+                });
+            } else {
+                resolve();
+            }
+        });
+
+        Application.exit(exitCode);
     }
 }
