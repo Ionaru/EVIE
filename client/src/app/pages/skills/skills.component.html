@@ -1,4 +1,8 @@
-<div class="container skills-page-container">
+<app-no-scopes-message *ngIf="missingAllRequiredScopes">
+    To display the skills page, you need to grant the "Read skills" scope.
+</app-no-scopes-message>
+
+<div class="container skills-page-container" *ngIf="missingAllRequiredScopes === false">
     <div class="skill-points-container">
         <div>
             <h2>Skillpoints</h2>
@@ -9,17 +13,40 @@
                 </span>
             </p>
         </div>
-        <div>
+        <div class="training-speed" *ngIf="hasSkillQueueScope">
             <h2>Training speed</h2>
-            <span class="training-speed" *ngIf="skills">
+            <span *ngIf="skills">
                 {{ spPerSec * 60 | number:'1.0-2' }} SP/min
             </span>
         </div>
     </div>
 
+    <div class="attributes-container justify-content-evenly" *ngIf="hasSkillsScope">
+        <div class="attribute" [ngbTooltip]="'Perception'">
+            <img src="/assets/images/22_32_1.png" alt="Perception">
+            <p>{{ attributes?.perception }}</p>
+        </div>
+        <div class="attribute" [ngbTooltip]="'Memory'">
+            <img src="/assets/images/22_32_2.png" alt="Memory">
+            <p>{{ attributes?.memory }}</p>
+        </div>
+        <div class="attribute" [ngbTooltip]="'Willpower'">
+            <img src="/assets/images/22_32_3.png" alt="Willpower">
+            <p>{{ attributes?.willpower }}</p>
+        </div>
+        <div class="attribute" [ngbTooltip]="'Intelligence'">
+            <img src="/assets/images/22_32_4.png" alt="Intelligence">
+            <p>{{ attributes?.intelligence }}</p>
+        </div>
+        <div class="attribute" [ngbTooltip]="'Charisma'">
+            <img src="/assets/images/22_32_5.png" alt="Charisma">
+            <p>{{ attributes?.charisma }}</p>
+        </div>
+    </div>
+
     <hr>
 
-    <div class="skill-queue-container">
+    <div class="skill-queue-container" *ngIf="hasSkillQueueScope">
         <div class="d-flex justify-content-between">
             <h2>Skill queue ( {{ skillQueueCount }} )</h2>
             <h2 (click)="skillQueueVisible = !skillQueueVisible"><fa-icon [icon]="faChevronDown"></fa-icon></h2>
@@ -71,11 +98,12 @@
                 </ng-container>
             </ng-container>
         </div>
+
+        <hr>
+
     </div>
 
-    <hr>
-
-    <div class="skill-list-container">
+    <div class="skill-list-container" *ngIf="hasSkillsScope">
         <h2>
             Skill overview ( {{ skills?.skills.length || 0 }}
             <ng-container *ngIf="showUntrainedSkills">
@@ -97,50 +125,52 @@
         </div>
         <div class="skill-list" *ngIf="skills">
             <ngb-accordion *ngIf="skills">
-                <ngb-panel *ngFor="let group of skillGroups">
-                    <ng-template ngbPanelTitle>
-                        <div class="d-flex justify-content-between">
-                            <span>
-                                <fa-icon [icon]="faChevronDown"></fa-icon>
-                                <strong> {{ group.name }}</strong>
-                                (
-                                {{ trainedSkillsGrouped[group.group_id]?.length }}
-                                <ng-container *ngIf="showUntrainedSkills">
-                                     / {{ skillsGrouped[group.group_id]?.length }}
-                                </ng-container>
-                                )
-                            </span>
-                            <span>
-                                {{ getSPInGroup(group.group_id) | number:'1.0-0' }} SP
-                            </span>
-                        </div>
-                    </ng-template>
-                    <ng-template ngbPanelContent>
-                        <p class="skill-name d-flex justify-content-between"
-                           [ngClass]="{'text-muted': !trainedSkills[skill.type_id]}"
-                           *ngFor="let skill of (showUntrainedSkills ? skillsGrouped[group.group_id] : trainedSkillsGrouped[group.group_id])">
-                            <span
-                                [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id]?.skill_id}">
-                                {{ skill.name }}
-                                <span *ngIf="trainedSkills[skill.type_id]" class="text-info">
-                                    {{ romanize(trainedSkills[skill.type_id].trained_skill_level) || 'Injected' }}
-                                    <span *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">
-                                        <span class="text-primary">
-                                        <fa-icon [icon]="faArrowAltRight"></fa-icon>
+                <ng-container *ngFor="let group of skillGroups">
+                    <ngb-panel *ngIf="trainedSkillsGrouped[group.group_id]?.length || showUntrainedSkills">
+                        <ng-template ngbPanelTitle>
+                            <div class="d-flex justify-content-between">
+                                <span>
+                                    <fa-icon [icon]="faChevronDown"></fa-icon>
+                                    <strong> {{ group.name }}</strong>
+                                    (
+                                    {{ trainedSkillsGrouped[group.group_id]?.length }}
+                                    <ng-container *ngIf="showUntrainedSkills">
+                                         / {{ skillsGrouped[group.group_id]?.length }}
+                                    </ng-container>
+                                    )
+                                </span>
+                                <span>
+                                    {{ getSPInGroup(group.group_id) | number:'1.0-0' }} SP
+                                </span>
+                            </div>
+                        </ng-template>
+                        <ng-template ngbPanelContent>
+                            <p class="skill-name d-flex justify-content-between"
+                               [ngClass]="{'text-muted': !trainedSkills[skill.type_id]}"
+                               *ngFor="let skill of (showUntrainedSkills ? skillsGrouped[group.group_id] : trainedSkillsGrouped[group.group_id])">
+                                <span
+                                    [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id]?.skill_id}">
+                                    {{ skill.name }}
+                                    <span *ngIf="trainedSkills[skill.type_id]" class="text-info">
+                                        {{ romanize(trainedSkills[skill.type_id].trained_skill_level) || 'Injected' }}
+                                        <span *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">
+                                            <span class="text-primary">
+                                            <fa-icon [icon]="faArrowAltRight"></fa-icon>
+                                            </span>
+                                            {{ romanize(trainedSkills[skill.type_id].trained_skill_level + 1) }}
                                         </span>
-                                        {{ romanize(trainedSkills[skill.type_id].trained_skill_level + 1) }}
                                     </span>
                                 </span>
-                            </span>
-                            <span *ngIf="trainedSkills[skill.type_id]"
-                                  [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id].skill_id}">
-                                {{ (currentTrainingSkill === trainedSkills[skill.type_id].skill_id ? trainedSkills[skill.type_id].skillpoints_in_skill + (currentTrainingSPGain || 0) : trainedSkills[skill.type_id].skillpoints_in_skill) || 0 | number:'1.0-0' }}
-                                <ng-container *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">/ {{ currentTrainingSPEnd | number:'1.0-0' }}</ng-container>
-                                SP
-                            </span>
-                        </p>
-                    </ng-template>
-                </ngb-panel>
+                                <span *ngIf="trainedSkills[skill.type_id]"
+                                      [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id].skill_id}">
+                                    {{ (currentTrainingSkill === trainedSkills[skill.type_id].skill_id ? trainedSkills[skill.type_id].skillpoints_in_skill + (currentTrainingSPGain || 0) : trainedSkills[skill.type_id].skillpoints_in_skill) || 0 | number:'1.0-0' }}
+                                    <ng-container *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">/ {{ currentTrainingSPEnd | number:'1.0-0' }}</ng-container>
+                                    SP
+                                </span>
+                            </p>
+                        </ng-template>
+                    </ngb-panel>
+                </ng-container>
             </ngb-accordion>
         </div>
     </div>

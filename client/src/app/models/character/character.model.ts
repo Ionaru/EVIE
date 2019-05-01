@@ -1,5 +1,4 @@
-import * as countdown from 'countdown';
-import { ISkillQueueData } from '../../../shared/interface.helper';
+import { ICharacterSkillQueueDataUnit } from '@ionaru/eve-utils';
 
 export class Character {
     public characterId: number;
@@ -40,6 +39,7 @@ export class Character {
         type?: string | null;
     } = {};
     public refreshTimer?: number;
+    public refreshRetryTimeout?: number;
 
     public constructor(data: IApiCharacterData) {
         this.characterId = data.characterId;
@@ -47,7 +47,7 @@ export class Character {
         this.accessToken = data.accessToken;
         this.ownerHash = data.ownerHash;
         this.uuid = data.uuid;
-        this.scopes = data.scopes.split(' ');
+        this.scopes = data.scopes ? data.scopes.split(' ') : [];
         this.tokenExpiry = new Date(data.tokenExpiry);
     }
 
@@ -59,6 +59,10 @@ export class Character {
         this.uuid = data.uuid;
         this.scopes = data.scopes.split(' ');
         this.tokenExpiry = new Date(data.tokenExpiry);
+    }
+
+    public hasScope(scope: string) {
+        return this.scopes.includes(scope);
     }
 
     public getAuthorizationHeader() {
@@ -109,6 +113,6 @@ export interface IDeleteCharacterResponse {
     message: string;
 }
 
-export interface ISkillQueueDataWithName extends ISkillQueueData {
+export interface ISkillQueueDataWithName extends ICharacterSkillQueueDataUnit {
     name?: string;
 }

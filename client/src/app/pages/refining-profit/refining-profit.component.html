@@ -1,0 +1,55 @@
+<div class="d-flex justify-content-between">
+    <div class="btn-group btn-group-toggle">
+        <label class="btn-outline-success" ngbButtonLabel>
+            <input type="checkbox" ngbButton [(ngModel)]="model.highSecOres" (ngModelChange)="changeVisibleOres()">
+            <fa-icon [icon]="model.highSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
+            Highsec
+        </label>
+        <label class="btn-outline-primary" ngbButtonLabel>
+            <input type="checkbox" ngbButton [(ngModel)]="model.lowSecOres" (ngModelChange)="changeVisibleOres()">
+            <fa-icon [icon]="model.lowSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
+            Lowsec
+        </label>
+        <label class="btn-outline-danger" ngbButtonLabel>
+            <input type="checkbox" ngbButton [(ngModel)]="model.nullSecOres" (ngModelChange)="changeVisibleOres()">
+            <fa-icon [icon]="model.nullSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
+            Nullsec
+        </label>
+    </div>
+
+    <div class="btn-group btn-group-toggle">
+        <label class="btn-outline-primary" ngbButtonLabel>
+            <input type="checkbox" ngbButton [(ngModel)]="model.regularOres" (ngModelChange)="changeVisibleOres()">
+            <fa-icon [icon]="model.regularOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
+            Regular ores
+        </label>
+        <label class="btn-outline-primary" ngbButtonLabel>
+            <input type="checkbox" ngbButton [(ngModel)]="model.beltVariants" (ngModelChange)="changeVisibleOres()">
+            <fa-icon [icon]="model.beltVariants ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
+            Belt variants
+        </label>
+        <label class="btn-outline-primary" ngbButtonLabel>
+            <input type="checkbox" ngbButton [(ngModel)]="model.moonVariants" (ngModelChange)="changeVisibleOres()">
+            <fa-icon [icon]="model.moonVariants ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
+            Moon variants
+        </label>
+    </div>
+</div>
+<hr>
+<label>
+    Refining yield
+    <input type="number" [(ngModel)]="refiningYield">
+</label>
+<button (click)="ngOnInit().then()">Run calculation</button>
+<hr>
+<ng-container *ngIf="visibleData; else ore_loading_message">
+    <p>Prices are based on 8.000m³ of ore and buying and selling in The Forge</p>
+    <app-sor-table [data]="visibleData" [columns]="tableSettings"></app-sor-table>
+</ng-container>
+
+<ng-template #ore_loading_message>
+    <span>
+        Calculating profit...
+        <span class="m-progress m-progress-small"></span>
+    </span>
+</ng-template>

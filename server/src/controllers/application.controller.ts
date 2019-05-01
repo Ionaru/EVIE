@@ -1,3 +1,5 @@
+import { WebServer } from '@ionaru/web-server';
+import * as Sentry from '@sentry/node';
 import * as appRoot from 'app-root-path';
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
@@ -9,6 +11,7 @@ import * as helmet from 'helmet';
 import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
+import { config, debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
 import { AngularRedirectRouter } from '../routers/angular.router';
 import { APIRouter } from '../routers/api.router';
@@ -17,16 +20,13 @@ import { ErrorRouter } from '../routers/error.router';
 import { GlobalRouter } from '../routers/global.router';
 import { SSORouter } from '../routers/sso.router';
 import { UserRouter } from '../routers/user.router';
-import { CacheController } from './cache.controller';
-import { config } from './configuration.controller';
 import { DatabaseConnection, db } from './database.controller';
-import { WebServer } from './server.controller';
 import { SocketServer } from './socket.controller';
 
 export class Application {
 
     private static exit(exitCode: number) {
-        logger.info('Shutting down');
+        debug('Shutting down');
         process.exit(exitCode);
     }
 
@@ -37,12 +37,23 @@ export class Application {
     private socketServer?: SocketServer;
 
     public async start() {
+
+        debug(`Initializing Sentry (enabled: ${process.env.NODE_ENV === 'production'})`);
+        Sentry.init({
+            dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
+            enabled: process.env.NODE_ENV === 'production',
+            release: 'evie-server@0.7.2',
+        });
+
+        debug('Creating database connection');
         await new DatabaseConnection().connect();
 
-        logger.info('Beginning Express startup');
+        debug('Beginning Express startup');
 
         const expressApplication = express();
-        logger.info('Express application constructed');
+        debug('Express application constructed');
+
+        expressApplication.use(Sentry.Handlers.requestHandler());
 
         // Request logger
         expressApplication.use(RequestLogger.logRequest());
@@ -90,7 +101,7 @@ export class Application {
 
         expressApplication.use(this.sessionParser);
 
-        logger.info('Express session store loaded');
+        debug('Express session store loaded');
 
         // Use static client folder for serving assets
         expressApplication.use(express.static(path.join(appRoot.toString(), '../client/dist/client/')));
@@ -107,19 +118,24 @@ export class Application {
         // Re-route all other requests to the Angular app.
         expressApplication.use('*', new AngularRedirectRouter().router);
 
+        expressApplication.use(Sentry.Handlers.errorHandler());
+
         // Error router.
         expressApplication.use(ErrorRouter.errorRoute);
 
-        logger.info('Express configuration set');
+        debug('Express configuration set');
 
-        logger.info('Reading files into cache');
-        CacheController.readCache();
+        debug('Reading files into cache');
+        // CacheController.readCache();
 
-        logger.info('App startup done');
+        debug('App startup done');
 
-        this.webServer = new WebServer(expressApplication);
+        const serverPort = config.getProperty('server_port');
+        this.webServer = new WebServer(expressApplication, Number(serverPort));
 
         this.socketServer = new SocketServer(this.webServer, this.sessionParser);
+
+        await this.webServer.listen();
     }
 
     public async stop(error?: Error): Promise<void> {
@@ -128,7 +144,7 @@ export class Application {
         process.on('uncaughtException', () => {
             Application.exit(exitCode);
         });
-        process.on('unhandledRejection', (reason: string, p: Promise<any>): void => {
+        process.on('unhandledRejection', (reason, p): void => {
             logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
             Application.exit(exitCode);
         });
@@ -138,10 +154,14 @@ export class Application {
             quitMessage += ' because of an uncaught exception!';
             logger.error('Reason: ', error);
         }
-        logger.warn(quitMessage);
+        process.emitWarning(quitMessage);
 
-        logger.info('Dumping cache to files');
-        CacheController.dumpCache();
+        debug('Dumping cache to files');
+        esiCache.dumpCache();
+
+        if (this.webServer && this.webServer.server.listening) {
+            await this.webServer.close();
+        }
 
         if (this.socketServer) {
             if (process.env.NODE_ENV === 'production') {
@@ -150,28 +170,22 @@ export class Application {
             this.socketServer.io.close();
         }
 
-        if (this.webServer) {
-            this.webServer.server.close(async () => {
-                logger.info('HTTP server closed');
-                closeDBConnection().then();
-            });
-        } else {
-            closeDBConnection().then();
+        if (db && db.orm) {
+            await db.orm.close();
+            debug('ORM connection closed');
         }
 
-        async function closeDBConnection() {
-            if (db && db.orm) {
-                await db.orm.close();
-                logger.info('ORM connection closed');
-            }
+        await new Promise((resolve) => {
             if (db && db.pool) {
                 db.pool.end(() => {
-                    logger.info('DB pool closed');
-                    Application.exit(exitCode);
+                    debug('DB pool closed');
+                    resolve();
                 });
             } else {
-                Application.exit(exitCode);
+                resolve();
             }
-        }
+        });
+
+        Application.exit(exitCode);
     }
 }

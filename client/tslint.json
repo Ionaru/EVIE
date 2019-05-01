@@ -1,45 +1,18 @@
 {
-    "defaultSeverity": "error",
     "extends": [
         "tslint-angular",
-        "tslint:latest"
+        "../tslint.json"
     ],
     "rulesDirectory": [
         "codelyzer"
     ],
     "rules": {
-        "max-line-length": [
-            true,
-            140
-        ],
-        "no-null-keyword": true,
         "no-submodule-imports": [
             true,
             "rxjs",
             "@angular",
             "zone.js",
             "core-js"
-        ],
-        "no-unused-expression": [
-            true,
-            "allow-new"
-        ],
-        "quotemark": [
-            true,
-            "single"
-        ],
-        "trailing-comma": [
-            true,
-            {
-                "multiline": "always",
-                "singleline": "never"
-            }
-        ],
-        "variable-name": [
-            true,
-            "ban-keywords",
-            "check-format",
-            "allow-leading-underscore"
         ]
     }
 }

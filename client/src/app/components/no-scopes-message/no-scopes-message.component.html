@@ -1,0 +1,12 @@
+<div class="container">
+    <ngb-alert class="scopes-alert" [dismissible]="false" type="danger">
+        <fa-icon [icon]="noScopesIcon"></fa-icon>
+        <strong>EVIE does not have the required data scopes to display this page</strong>
+        <div class="scopes-alert-content">
+            <hr>
+            <ng-content></ng-content>
+            <br>
+            Click <a routerLink="/scopes">here</a> to edit the scopes.
+        </div>
+    </ngb-alert>
+</div>

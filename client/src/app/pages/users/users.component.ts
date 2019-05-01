@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { IUsersResponse } from '../../../shared/interface.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
-import { UsersService } from '../../data-services/users.service';
+import { IUsersResponse, UsersService } from '../../data-services/users.service';
 
 @Component({
     selector: 'app-users',
@@ -14,25 +13,23 @@ export class UsersComponent implements OnInit {
     public users: IUsersResponse[] = [];
 
     public tableSettings: ITableHeader[] = [{
-        attribute: 'id',
+        attribute: 'user.id',
         sort: true,
-        title: 'ID',
+        title: 'User ID',
     }, {
-        attribute: 'uuid',
-        sort: true,
-    }, {
-        attribute: 'email',
+        attribute: 'name',
+        prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Character/${data.characterId}_32.jpg" alt="${data.name}"> `,
         sort: true,
     }, {
-        attribute: 'characters.length',
+        attribute: 'characterId',
         sort: true,
-        title: 'Characters',
+        title: 'Character ID',
     }, {
-        attribute: 'timesLogin',
+        attribute: 'user.timesLogin',
         sort: true,
         title: 'Times logged in',
     }, {
-        attribute: 'lastLogin',
+        attribute: 'user.lastLogin',
         pipe: 'date',
         pipeVar: 'yyyy-MM-dd HH:mm:ss',
         sort: true,

@@ -1,24 +1,8 @@
-<h2><span id="wallet-balance"></span> ISK</h2>
+<app-no-scopes-message *ngIf="missingAllRequiredScopes">
+    To display the wallet page, you need to grant the "Read wallet balance" scope.
+</app-no-scopes-message>
 
-<!--<table >-->
-    <!--<thead>-->
-    <!--<tr>-->
-        <!--<td>Timestamp-->
-            <!--<span placement="right" ngbTooltip="In EVE-Time">-->
-                <!--<fa-icon [icon]="faInfoCircle"></fa-icon>-->
-            <!--</span>-->
-        <!--</td>-->
-        <!--<td>Amount</td>-->
-        <!--<td>Info</td>-->
-    <!--</tr>-->
-    <!--</thead>-->
-    <!--<tbody>-->
-    <!--<tr *ngFor="let journalEntry of journalData">-->
-        <!--<td>{{ journalEntry.date | date:'yyyy-MM-dd HH:mm:ss' }}</td>-->
-        <!--<td>{{ journalEntry.amount |  number:'0.0-2' }} ISK</td>-->
-        <!--<td>{{ journalEntry.description }}</td>-->
-    <!--</tr>-->
-    <!--</tbody>-->
-<!--</table>-->
-
-<app-sor-table *ngIf="journalData.length" [data]="journalData" [columns]="tableSettings"></app-sor-table>
+<div class="wallet-page-container container" [ngClass]="{'d-none': missingAllRequiredScopes}">
+    <h2><span id="wallet-balance"></span> ISK</h2>
+    <app-sor-table *ngIf="journalData.length" [data]="journalData" [columns]="tableSettings"></app-sor-table>
+</div>

@@ -1,0 +1,62 @@
+<div class="container">
+    <h1>
+        Choose scopes
+    </h1>
+    <p>To display your data from EVE Online, EVIE requires permission to use your 'scopes'.</p>
+    <br>
+    <h3>What are scopes?</h3>
+    <p>Scopes are certain sets of data that a third-party application, like EVIE, can access from your character.</p>
+    <p>For example you can grant access to view your skill queue, but not your wallet balance.</p>
+
+    <hr>
+
+    <div class="button-grid-container all-scopes-button">
+        <div class="btn-group btn-group-toggle">
+            <label class="button-label-grid btn-outline-primary w-100" ngbButtonLabel>
+                <input type="checkbox" ngbButton [(ngModel)]="allComponentsEnabled">
+                <fa-icon [icon]="allComponentsEnabled ? viewEnabledIcon : viewDisabledIcon"></fa-icon>
+                <span class="button-label-text">Enable all scopes</span>
+            </label>
+        </div>
+    </div>
+
+    <hr>
+
+    <ng-container *ngFor="let scope of scopes; let last = last">
+        <div class="button-grid-container">
+            <div class="btn-group btn-group-toggle">
+                <label class="button-label-grid btn-outline-primary w-100" ngbButtonLabel>
+                    <input type="checkbox" ngbButton [(ngModel)]="scope.enabled">
+                    <fa-icon [icon]="scope.enabled ? viewEnabledIcon : viewDisabledIcon"></fa-icon>
+                    <span class="button-label-text">{{ scope.name }}</span>
+                    <span class="button-page-icons">
+                        <ng-container *ngFor="let usagePage of scope.usagePages">
+                            <img class="page-image" src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/{{ usagePage }}.svg" alt="Market icon">
+                        </ng-container>
+                    </span>
+                </label>
+            </div>
+            <button class="btn btn-secondary" (click)="scope.infoVisible = !scope.infoVisible">
+                <fa-icon [icon]="scope.infoVisible ? caretUp: caretDown"></fa-icon>
+            </button>
+            <div class="info-container" *ngIf="scope.infoVisible">
+                <pre>{{ scope.code }}</pre>
+                "{{ scope.eveDescription }}"
+                <hr>
+                {{ scope.usageDescription }}
+            </div>
+        </div>
+
+        <ng-container *ngIf="!last">
+            <br>
+        </ng-container>
+    </ng-container>
+
+    <hr>
+
+    <button class="btn btn-outline-primary add-character-button" (click)="authCharacter()">
+        <fa-icon [icon]="addCharacterIcon"></fa-icon>
+        Continue authorization
+    </button>
+
+</div>

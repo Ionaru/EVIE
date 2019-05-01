@@ -1,18 +1,29 @@
-// TODO: Remove line below.
-// tslint:disable
-import { Component, OnInit } from '@angular/core';
-import { faGem } from '@fortawesome/pro-regular-svg-icons';
-import { faHourglass } from '@fortawesome/pro-solid-svg-icons';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
+import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
+import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
+import { ICharacterBlueprintsDataUnit, ICharacterIndustryJobsDataUnit, IndustryActivity } from '@ionaru/eve-utils';
+import * as countdown from 'countdown';
 
-import { IManufacturingData } from '../../../shared/interface.helper';
+import { environment } from '../../../environments/environment';
+import { Calc } from '../../../shared/calc.helper';
+import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
-import { IndustryService } from '../../data-services/industry.service';
 import { NamesService } from '../../data-services/names.service';
-import { TypesService } from '../../data-services/types.service';
+import { StructuresService } from '../../data-services/structures.service';
+import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { ScopesComponent } from '../scopes/scopes.component';
 
-interface IManufacturingCache {
-    [index: string]: IManufacturingData;
+interface IExtendedIndustryJobsData extends ICharacterIndustryJobsDataUnit {
+    percentageDone?: number;
+    timeLeft?: number | countdown.Timespan;
+    productName?: string;
+    locationName?: string;
+}
+
+interface IBlueprints {
+    [index: number]: ICharacterBlueprintsDataUnit;
 }
 
 @Component({
@@ -20,178 +31,166 @@ interface IManufacturingCache {
     styleUrls: ['./industry.component.scss'],
     templateUrl: './industry.component.html',
 })
-export class IndustryComponent extends DataPageComponent implements OnInit {
+export class IndustryComponent extends DataPageComponent implements OnInit, OnDestroy {
 
-    // public faHourglass = faHourglass;
-    // public faGem = faGem;
+    // Icons
+    public manufacturingIcon = faCog;
+    public jobInProgressIcon = faCogSolid;
+    public jobFinishedIcon = faCheck;
+    public copyIcon = faCopy;
+    public materialResearchIcon = faGem;
+    public timeResearchIcon = faHourglass;
+    public inventionIcon = faMicroscope;
+    public arrowRight = faArrowRight;
+    public jobRunsIcon = faRepeat;
 
-    // public bpMats: number[] = [];
+    public runningJobsTimer?: number;
 
-    public baseMats: string[] = [];
-    public bups: yyy = {};
+    public industryJobs?: IExtendedIndustryJobsData[];
 
-    // public manufactuingCache: IManufacturingCache = {};
+    public blueprints: IBlueprints = {};
 
-    constructor(private industryJobsService: IndustryJobsService, private typesService: TypesService,
-                private industryService: IndustryService, private namesService: NamesService) {
+    public IndustryActivity = IndustryActivity;
+
+    public debugMode = !environment.production;
+
+    // tslint:disable-next-line:no-bitwise
+    private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
+
+    constructor(private industryJobsService: IndustryJobsService, private blueprintsService: BlueprintsService,
+                private namesService: NamesService, private structuresService: StructuresService) {
         super();
+        countdown.setLabels(
+            '|s|m|h|d',
+            '|s|m|h|d',
+            ', ');
+        this.requiredScopes = [ScopesComponent.scopeCodes.JOBS];
     }
 
     public ngOnInit() {
         super.ngOnInit();
-        this.bups = {};
-        this.baseMats = [];
-        // this.fun().then();
-        this.recFun().then();
-
-        // const jsp = jsPlumb.getInstance();
-        // console.log(jsp.addEndpoint());
-
-        // this.getMats().then((mats) => {
-        //     console.log(mats);
-        // });
-        // if (CharacterService.selectedCharacter) {
-        //     this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter).then();
-        // }
-        //
-        // this.typesService.getTypes(34, 35).then();
+        this.getIndustryJobs().then();
+        this.getBlueprints().then();
     }
 
-    // public async fun() {
-    //     const i = await this.industryService.getManufacturingData(40340);
-    //     if (i) {
-    //         this.bps.push(i.blueprintId);
-    //
-    //         for (const material of i.materials) {
-    //             const j = await this.industryService.getManufacturingData(material.id);
-    //
-    //             if (j) {
-    //                 this.bps.push(j.blueprintId);
-    //
-    //                 for (const submat of j.materials) {
-    //                     const k = await this.industryService.getManufacturingData(submat.id);
-    //
-    //                     if (k) {
-    //                         this.bps.push(k.blueprintId);
-    //                     } else {
-    //                         this.bps.push(submat.id);
-    //                     }
-    //                 }
-    //             } else {
-    //                 this.bps.push(material.id);
-    //             }
-    //         }
-    //     }
-    //
-    //     // await this.namesService.getNames(...this.bps);
-    //     //
-    //     // for (const x of this.bps) {
-    //     //     console.log(NamesService.getNameFromData(x));
-    //     // }
-    // }
+    public ngOnDestroy() {
+        super.ngOnDestroy();
+        this.resetTimers();
+    }
 
-    public async getMats(m = 12003) {
+    public static get hasIndustryJobsScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.JOBS);
+    }
 
-        const mats: any[] = [];
+    public static get hasBlueprintScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.BLUEPRINTS);
+    }
 
-        const i = await this.industryService.getManufacturingData(m);
-        if (i) {
-            for (const ma of i.materials) {
-                mats.push(await this.getMats(ma.id));
+    public resetTimers() {
+        if (this.runningJobsTimer) {
+            clearInterval(this.runningJobsTimer);
+        }
+    }
+
+    public async getBlueprints() {
+        if (CharacterService.selectedCharacter && IndustryComponent.hasBlueprintScope) {
+            const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
+            this.blueprints = objectsArrayToObject(blueprintData, 'item_id');
+        }
+    }
+
+    public async getIndustryJobs() {
+        if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScope) {
+            this.industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
+        }
+
+        if (this.industryJobs) {
+
+            // Get ME / TE for BP
+
+            for (const job of this.industryJobs) {
+                const start = new Date(job.start_date).getTime();
+                const duration = job.duration * 1000;
+                const end = start + duration;
+                const now = Date.now();
+
+                const timeElapsed = now - start;
+                job.percentageDone = Math.min(Calc.partPercentage((timeElapsed), duration), 100);
+
+                job.timeLeft = countdown(undefined, end, this.countdownUnits);
+            }
+
+            sortArrayByObjectProperty(this.industryJobs, 'job_id', false);
+            sortArrayByObjectProperty(this.industryJobs, 'percentageDone', true);
+
+            this.setProductNames(this.industryJobs).then();
+            this.getLocationNames(this.industryJobs).then();
+        }
+    }
+
+    public async setProductNames(industryJobs: IExtendedIndustryJobsData[]) {
+        const namesToGet = industryJobs.map((job) => {
+            if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
+                return job.product_type_id;
+            }
+            return 0;
+        }).filter(Boolean);
+
+        await this.namesService.getNames(...namesToGet);
+        for (const job of industryJobs) {
+            if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
+                job.productName = NamesService.getNameFromData(job.product_type_id);
             }
         }
-
-        return mats;
     }
 
-    // KEEPSTAR 40340
-    // ZEALOT 12003
+    public async getLocationNames(industryJobs: IExtendedIndustryJobsData[]) {
 
-    public bupKeys = () => Object.keys(this.bups);
-
-    public async recFun(m = 40340) {
-        const i = await this.industryService.getManufacturingData(m);
-        if (!i) {
-            return;
-        }
-
-        this.bups[0] = [m];
-
-        let bupcCount = 1;
-
-        const matob: xxx = {};
-
-        // this.bpMats = i.materials.map((h) => h.id);
-
-        const materials = i.materials;
-
-        this.bups[bupcCount] = i.materials.map((b) => b.id);
-
-        for (const mat of materials) {
-            matob[mat.id] = mat.quantity;
-        }
-
-        const bp = [];
-
-        let matsLeft = true;
-
-        while (matsLeft) {
-
-            matsLeft = false;
-
-            for (const [id, quantity] of Object.entries(matob)) {
-                const j = await this.industryService.getManufacturingData(Number(id));
-                if (j) {
-                    for (const mat of j.materials) {
-                        const q = mat.quantity * quantity;
-                        matob[mat.id] = matob[mat.id] ? matob[mat.id] + q : q;
+        for (const job of industryJobs) {
+            if (job.output_location_id > Calc.maxIntegerValue) {
+                if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScope) {
+                    const structure = await this.structuresService.getStructureInfo(
+                        CharacterService.selectedCharacter, job.output_location_id);
+                    if (structure) {
+                        job.locationName = structure.name;
                     }
-                    matsLeft = true;
-                    bp.push(j.blueprintId.toString());
-                    delete matob[id];
                 }
-            }
-
-            if (matsLeft) {
-                bupcCount++;
-                this.bups[bupcCount] = Object.keys(matob).map((z) => Number(z));
+            } else {
+                await this.namesService.getNames(job.output_location_id);
+                job.locationName = NamesService.getNameFromData(job.output_location_id);
             }
         }
-
-        console.log(this.bups);
-
-        this.baseMats.push(...Object.keys(matob));
-        this.baseMats.push(...bp);
-
-        await this.namesService.getNames(...Object.keys(matob));
-
-        const matob2: xxx = {};
-        for (const id of Object.keys(matob)) {
-            matob2[NamesService.getNameFromData(Number(id))] = matob[id];
-        }
-
-        console.log(matob2);
-
-        //
-        // for (const mat of materials.slice()) {
-        //     const j = await this.industryService.getManufacturingData(mat.id);
-        //     if (j) {
-        //         basemats.push(materials.splice(materials.indexOf(mat), 1)[0]);
-        //         // console.log(materials);
-        //     }
-        // }
-        //
-        //
-        // for (const x of basemats) {
-        //     console.log(NamesService.getNameFromData(x.id));
-        // }
     }
-}
 
-interface xxx {
-    [index: string]: number;
-}
+    public getIndustryActivityName(activity: number) {
+        switch (activity) {
+            case IndustryActivity.research_material_efficiency:
+                return 'Material efficiency research';
+            case IndustryActivity.research_time_efficiency:
+                return 'Time efficiency research';
+            case IndustryActivity.copying:
+                return 'Copying';
+            case IndustryActivity.invention:
+                return 'Invention';
+            case IndustryActivity.manufacturing:
+            default:
+                return 'Manufacturing';
+        }
+    }
 
-interface yyy {
-    [index: string]: number[];
+    public getIconForIndustryActivity(activity: number) {
+        switch (activity) {
+            case IndustryActivity.research_material_efficiency:
+                return this.materialResearchIcon;
+            case IndustryActivity.research_time_efficiency:
+                return this.timeResearchIcon;
+            case IndustryActivity.copying:
+                return this.copyIcon;
+            case IndustryActivity.invention:
+                return this.inventionIcon;
+            case IndustryActivity.manufacturing:
+            default:
+                return this.manufacturingIcon;
+        }
+    }
 }

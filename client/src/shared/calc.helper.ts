@@ -3,24 +3,14 @@
  */
 export class Calc {
 
-    public static maxIntegerValue = Math.pow(2, 31);
+    public static maxIntegerValue = 0x7FFFFFFF;
 
     public static partPercentage = (part: number, total: number) => (part / total) * 100;
+    public static profitPercentage = (old: number, newAmount: number) => ((newAmount - old) / old) * 100;
 
-    public static wholeHoursLeft = (duration: number) => Math.floor(duration / (3600000));
-    public static wholeDaysLeft = (duration: number) => Math.floor(duration / (86400000));
-
-    /**
-     * Generate a random string from a range of 62 characters
-     * @param {number} length - The length of the desired string
-     * @return {string} - The randomly generated string
-     */
-    public static generateRandomString(length: number): string {
-        let output = '';
-        const possibleCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < length; i++) {
-            output += possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
-        }
-        return output;
-    }
+    public static wholeSeconds = (duration: number) => Math.floor(duration / 1000);
+    public static wholeMinutes = (duration: number) => Math.floor(duration / 60000);
+    public static wholeHours = (duration: number) => Math.floor(duration / 3600000);
+    public static wholeDays = (duration: number) => Math.floor(duration / 86400000);
+    public static wholeWeeks = (duration: number) => Math.floor(duration / 604800000);
 }

@@ -1,8 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EVE } from '@ionaru/eve-utils';
 import { Subject } from 'rxjs';
 
-import { EVE } from '../../../shared/eve.helper';
 import { Character, IApiCharacterData, IDeleteCharacterResponse, IEveCharacterData, ITokenRefreshResponse } from './character.model';
 
 const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
@@ -59,7 +59,7 @@ export class CharacterService {
         const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
-            window.setTimeout(() => {
+            character.refreshRetryTimeout = window.setTimeout(() => {
                 this.refreshToken(character).then();
             }, 5 * 1000);
             return;
@@ -93,6 +93,10 @@ export class CharacterService {
         if (response.state === 'success') {
             if (character.refreshTimer) {
                 window.clearInterval(character.refreshTimer);
+            }
+
+            if (character.refreshRetryTimeout) {
+                window.clearTimeout(character.refreshRetryTimeout);
             }
 
             if (CharacterService.selectedCharacter && CharacterService.selectedCharacter.uuid === character.uuid) {

@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
+import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { Subject } from 'rxjs';
 
-import { Common } from '../../../shared/common.helper';
+import { BaseGuard } from '../../guards/base.guard';
 import { SocketService } from '../../socket/socket.service';
 import { Character, IApiCharacterData } from '../character/character.model';
 import { CharacterService } from '../character/character.service';
-import { ISSOLoginResponse, IUserApiData, User } from './user.model';
+import { ISSOAuthResponse, ISSOLoginResponse, IUserApiData, User } from './user.model';
 
 @Injectable()
 export class UserService {
@@ -20,28 +21,54 @@ export class UserService {
     private static _user: User;
     public static get user() { return this._user; }
 
-    constructor(private http: HttpClient, private characterService: CharacterService, private router: Router) { }
+    private static openCenteredPopup(url: string, w: number, h: number) {
+        const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+        const dualScreenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+
+        if (document.documentElement) {
+            const docWidth = document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+            const docHeight = document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+            const width = window.innerWidth ? window.innerWidth : docWidth;
+            const height = window.innerHeight ? window.innerHeight : docHeight;
+
+            const left = ((width / 2) - (w / 2)) + dualScreenLeft;
+            const top = ((height / 2) - (h / 2)) + dualScreenTop;
+            const newWindow = window.open(url, '_blank', 'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+            // Puts focus on the newWindow
+            if (window.focus && newWindow) {
+                newWindow.focus();
+            }
+
+            return newWindow;
+        }
+        return;
+    }
+
+    constructor(private http: HttpClient, private characterService: CharacterService, private router: Router, private ngZone: NgZone) { }
 
     public logoutUser(): void {
         const url = 'api/logout';
         this.http.post(url, {}).toPromise().then(() => {
+            localStorage.removeItem(BaseGuard.redirectKey);
             sessionStorage.clear();
             window.location.reload();
         });
     }
 
-    public async storeUser(data: IUserApiData): Promise<User> {
+    public async storeUser(data: IUserApiData, newCharacterUUID?: string): Promise<User> {
         const user = new User(data);
         UserService._user = user;
 
         // Register all the characters in parallel, but wait until they are all finished before continuing
         await Promise.all(data.characters.map(async (characterData) => {
-            if (characterData.scopes) {
-                await this.addCharacter(characterData);
-            }
+            await this.addCharacter(characterData);
         }));
 
-        if (user.characters && user.characters.length && !CharacterService.selectedCharacter) {
+        if (newCharacterUUID) {
+            this.characterService.setActiveCharacter(user.characters.filter((character) => character.uuid === newCharacterUUID)[0]).then();
+        } else if (user.characters && user.characters.length && !CharacterService.selectedCharacter) {
             this.characterService.setActiveCharacter(user.characters[0]).then();
         }
         UserService.userChangeEvent.next(user);
@@ -51,7 +78,7 @@ export class UserService {
     public async addCharacter(data: IApiCharacterData): Promise<Character> {
         const character = await this.characterService.registerCharacter(data);
         UserService.user.characters.push(character);
-        Common.sortArrayByObjectProperty(UserService.user.characters, 'name');
+        sortArrayByObjectProperty(UserService.user.characters, 'name');
         return character;
     }
 
@@ -61,7 +88,7 @@ export class UserService {
         if (UserService.authWindow && !UserService.authWindow.closed) {
             UserService.authWindow.focus();
         } else {
-            UserService.authWindow = window.open(url, '_blank', 'width=600,height=850');
+            UserService.authWindow = UserService.openCenteredPopup(url, 600, 850);
         }
 
         if (UserService.authWindow) {
@@ -70,31 +97,35 @@ export class UserService {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
                         await this.storeUser(response.data);
-                        this.router.navigate(['/dashboard']).then();
+                        const afterLoginUrl = localStorage.getItem(BaseGuard.redirectKey) || '/dashboard';
+                        this.ngZone.run(() => this.router.navigate([afterLoginUrl])).then();
+                        localStorage.removeItem(BaseGuard.redirectKey);
                     }
                 }
             });
         }
     }
 
-    public authCharacter(character?: Character): void {
+    public authCharacter(scopes?: string[]): void {
         let url = '/sso/auth';
-        if (character) {
-            url += '?characterUUID=' + character.uuid;
+
+        if (scopes) {
+            url += '?scopes=' + scopes.join(' ');
         }
 
         if (UserService.authWindow && !UserService.authWindow.closed) {
             UserService.authWindow.focus();
         } else {
-            UserService.authWindow = window.open(url, '_blank', 'width=600,height=850');
+            UserService.authWindow = UserService.openCenteredPopup(url, 600, 850);
         }
 
         if (UserService.authWindow) {
-            SocketService.socket.once('SSO_AUTH_END', async (response: ISSOLoginResponse) => {
+            SocketService.socket.once('SSO_AUTH_END', async (response: ISSOAuthResponse) => {
                 if (UserService.authWindow && !UserService.authWindow.closed) {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
-                        this.storeUser(response.data).then();
+                        await this.storeUser(response.data.user, response.data.newCharacter);
+                        this.router.navigate(['/dashboard']).then();
                     }
                 }
             });

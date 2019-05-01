@@ -1,12 +1,17 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { uniquifyArray } from '@ionaru/array-utils';
+import { EVE, IUniverseNamesData, IUniverseNamesDataUnit } from '@ionaru/eve-utils';
 
-import { Common } from '../../shared/common.helper';
-import { EVE } from '../../shared/eve.helper';
-import { IESINamesData, INames } from '../../shared/interface.helper';
+import { Calc } from '../../shared/calc.helper';
+import { BaseService } from './base.service';
+
+export interface INames {
+    [id: string]: IUniverseNamesDataUnit;
+}
 
 @Injectable()
-export class NamesService {
+export class NamesService extends BaseService {
 
     public static getNameFromData(id: number, unknownMessage = 'Unknown'): string {
         if (!NamesService.names || !Object.keys(NamesService.names).length) {
@@ -20,17 +25,7 @@ export class NamesService {
         }
     }
 
-    private static names: INames;
-    private static namesExpiry: number;
-    private static namesMaxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
-    private static namesStoreTag = 'names';
-
-    private static resetNames(): void {
-        NamesService.namesExpiry = 0;
-        NamesService.names = {};
-    }
-
-    private static getNamesFromStore(): void {
+    public static getNamesFromStore(): void {
 
         const storeData = localStorage.getItem(NamesService.namesStoreTag);
         if (!storeData) {
@@ -50,6 +45,16 @@ export class NamesService {
         }
     }
 
+    private static names: INames;
+    private static namesExpiry: number;
+    private static namesMaxAge = 604_800_000; // 7 days
+    private static namesStoreTag = 'names';
+
+    private static resetNames(): void {
+        NamesService.namesExpiry = 0;
+        NamesService.names = {};
+    }
+
     private static setNames() {
         if (!NamesService.namesExpiry) {
             NamesService.namesExpiry = Date.now() + NamesService.namesMaxAge;
@@ -57,19 +62,15 @@ export class NamesService {
         localStorage.setItem(NamesService.namesStoreTag, JSON.stringify({expiry: NamesService.namesExpiry, names: NamesService.names}));
     }
 
-    private static uniquifyArray(array: any[]): any[] {
-        return array.filter((elem, index, self) => {
-            return index === self.indexOf(elem);
-        });
-    }
-
-    constructor(private http: HttpClient) {
-        NamesService.getNamesFromStore();
-    }
-
     public async getNames(...ids: Array<string | number>): Promise<void> {
 
-        ids = NamesService.uniquifyArray(ids);
+        ids = uniquifyArray(ids);
+
+        for (const element of ids) {
+            if (element > Calc.maxIntegerValue) {
+                throw new Error(`${element} is not a value that can get resolved to a name.`);
+            }
+        }
 
         // Check if all values in 'ids' are -1, if so then there's no point in calling the Names Endpoint
         if (ids.every((element) => element === -1)) {
@@ -104,7 +105,7 @@ export class NamesService {
 
     private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
         const url = EVE.getUniverseNamesUrl();
-        const response = await this.http.post<any>(url, ids).toPromise<IESINamesData[]>().catch(Common.return);
+        const response = await this.http.post<any>(url, ids).toPromise<IUniverseNamesData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }

@@ -1,12 +1,19 @@
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express';
 import { PathParams, RequestHandlerParams } from 'express-serve-static-core';
 import * as httpStatus from 'http-status-codes';
-import { logger } from 'winston-pnp-logger';
 
+import { debug } from '../index';
 import { User } from '../models/user.model';
+
+export interface IServerResponse<T> {
+    state: string;
+    message: string;
+    data?: T;
+}
 
 export interface IResponse extends Response {
     route?: string[];
+    data?: IServerResponse<any>;
 }
 
 export class BaseRouter {
@@ -14,7 +21,7 @@ export class BaseRouter {
     public static sendResponse(response: Response, statusCode: number, message: string, data?: any): Response {
         const state = statusCode < 400 ? 'success' : 'error';
 
-        const responseData = {
+        const responseData: IServerResponse<any> = {
             data,
             message,
             state,
@@ -24,6 +31,7 @@ export class BaseRouter {
             delete responseData.data;
         }
         response.status(statusCode);
+        (response as IResponse).data = responseData;
         return response.json(responseData);
     }
 
@@ -37,6 +45,10 @@ export class BaseRouter {
 
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     public static async checkAdmin(request: Request, response: Response, nextFunction: any) {
+        if (process.env.NODE_ENV !== 'production') {
+            return nextFunction;
+        }
+
         const user: User | undefined = await User.doQuery()
             .select(['user.isAdmin'])
             .where('user.id = :id', {id: request.session!.user.id})
@@ -45,6 +57,35 @@ export class BaseRouter {
             BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NoPermissions');
             return;
         }
+        return nextFunction;
+    }
+
+    public static checkAuthorizedClient(request: Request, response: Response, nextFunction: any) {
+
+        if (process.env.NODE_ENV !== 'production') {
+            // Allow all clients when running in debug mode, useful for working with Postman to test the API.
+            return nextFunction;
+        }
+
+        const requestOrigin = request.headers.origin;
+        const allowedHosts = BaseRouter.allowedHosts.filter((host) => requestOrigin && requestOrigin.includes(host));
+
+        if (!allowedHosts.length) {
+            process.emitWarning(`Unknown host tried to connect, possible CORS: ${requestOrigin}`);
+            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadHost');
+            return;
+        }
+
+        const serverToken = request.session!.token;
+        const clientToken = request.headers['x-evie-token'];
+
+        // Only allow requests from a logged-in user, or with a valid and matching token.
+        if (!request.session!.user.id && (!serverToken || !clientToken || serverToken !== clientToken)) {
+            process.emitWarning(`Unauthorized client: ${clientToken}, expected: ${serverToken}`);
+            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadClient');
+            return;
+        }
+
         return nextFunction;
     }
 
@@ -89,10 +130,16 @@ export class BaseRouter {
         };
     }
 
+    protected static debug = debug.extend('router');
+
+    private static allowedHosts = [
+        'localhost', '0.0.0.0', '192.168.2.11', 'spaceships.app',
+    ];
+
     public router = Router();
 
     constructor() {
-        logger.info(`New express router: ${this.constructor.name}`);
+        BaseRouter.debug(`New express router: ${this.constructor.name}`);
     }
 
     public createAllRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
@@ -107,10 +154,12 @@ export class BaseRouter {
         this.router.post(url, this.asyncHandler(routeFunction));
     }
 
+    // noinspection JSUnusedGlobalSymbols
     public createPutRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
         this.router.put(url, this.asyncHandler(routeFunction));
     }
 
+    // noinspection JSUnusedGlobalSymbols
     public createDeleteRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
         this.router.delete(url, this.asyncHandler(routeFunction));
     }

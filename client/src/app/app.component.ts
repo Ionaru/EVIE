@@ -1,7 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 
 import { AppReadyEventService } from './app-ready-event.service';
+import { NamesService } from './data-services/names.service';
+import { BaseGuard } from './guards/base.guard';
 import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
@@ -20,15 +22,18 @@ interface IHandshakeResponse {
 })
 export class AppComponent {
 
-    public version = '0.6.0';
+    public static serverToken = '';
+    public readonly version = '0.7.2';
 
     constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Error during app startup', error));
     }
 
     private async boot(): Promise<void> {
+        localStorage.removeItem(BaseGuard.redirectKey);
         await this.shakeHands();
         new SocketService();
+        NamesService.getNamesFromStore();
         SocketService.socket.on('STOP', (): void => {
             // The server will send STOP upon shutting down.
             // Reloading the window ensures nobody keeps using the site while the server is down.
@@ -40,10 +45,12 @@ export class AppComponent {
     private async shakeHands(): Promise<any> {
         const url = 'api/handshake';
 
-        const response = await this.http.get<any>(url).toPromise<IHandshakeResponse>();
+        const response = await this.http.get<any>(url, {observe: 'response'}).toPromise<HttpResponse<IHandshakeResponse>>();
 
-        if (response && response.message === 'LoggedIn' && response.data) {
-            await this.userService.storeUser(response.data);
+        AppComponent.serverToken = response.headers.get('x-evie-token') || '';
+
+        if (response.body && response.body.message === 'LoggedIn' && response.body.data) {
+            await this.userService.storeUser(response.body.data);
         }
     }
 

@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { ICharacterWalletJournalData } from '@ionaru/eve-utils';
 
-import { IWalletJournalData } from '../../../shared/interface.helper';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { WalletJournalService } from '../../data-services/wallet-journal.service';
 import { WalletService } from '../../data-services/wallet.service';
 import { CharacterService } from '../../models/character/character.service';
 import { CountUp } from '../../shared/count-up';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { ScopesComponent } from '../scopes/scopes.component';
 
 @Component({
     selector: 'app-wallet',
@@ -15,8 +16,8 @@ import { DataPageComponent } from '../data-page/data-page.component';
 })
 export class WalletComponent extends DataPageComponent implements OnInit {
 
-    public journalData: IWalletJournalData[] = [];
-    public balanceCountUp!: CountUp;
+    public journalData: ICharacterWalletJournalData = [];
+    public balanceCountUp?: CountUp;
 
     public tableSettings: ITableHeader[] = [{
         attribute: 'date',
@@ -43,18 +44,28 @@ export class WalletComponent extends DataPageComponent implements OnInit {
 
     constructor(private walletService: WalletService, private journalService: WalletJournalService) {
         super();
+        this.requiredScopes = [ScopesComponent.scopeCodes.WALLET];
     }
 
     public ngOnInit() {
         super.ngOnInit();
-        this.balanceCountUp = new CountUp('wallet-balance', 0, 0, 2);
-        this.getBalanceData().then();
-        this.getJournalData().then();
+        this.balanceCountUp = undefined;
+        if (WalletComponent.hasWalletScope) {
+            this.getBalanceData().then();
+            this.getJournalData().then();
+        }
+    }
+
+    public static get hasWalletScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.WALLET);
     }
 
     public async getBalanceData() {
         if (CharacterService.selectedCharacter) {
             this.balance = await this.walletService.getWalletBalance(CharacterService.selectedCharacter);
+            if (!this.balanceCountUp) {
+                this.balanceCountUp = new CountUp('wallet-balance', 0, 0, 2);
+            }
             this.balanceCountUp.update(this.balance);
         }
     }

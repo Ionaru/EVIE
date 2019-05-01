@@ -1,20 +1,25 @@
+import { WebServer } from '@ionaru/web-server';
 import * as express from 'express';
 import * as SocketIO from 'socket.io';
 import * as SocketIOSession from 'socket.io-express-session';
-import { logger } from 'winston-pnp-logger';
 
-import { WebServer } from './server.controller';
+import { debug } from '../index';
 
 export class SocketServer {
 
     public static sockets: ISessionSocket[] = [];
+
+    private static debug = debug.extend('socket');
 
     public io: SocketIO.Server;
 
     constructor(webServer: WebServer, sessionParser: express.RequestHandler) {
 
         // Pass the HTTP server to SocketIO for configuration.
-        this.io = SocketIO.listen(webServer.server);
+        this.io = SocketIO.listen(webServer.server, {
+            // SocketIO cookie is unused: https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662
+            cookie: false,
+        });
 
         // The websocket server listens on '/'
         const socketServer = this.io.of('/');
@@ -26,12 +31,12 @@ export class SocketServer {
         socketServer.on('connection', async (socket: ISessionSocket) => {
             socket.handshake.session.socket = socket.id;
             socket.handshake.session.save(() => undefined);
-            logger.debug(`Socket connect: ${socket.id}, session ${socket.handshake.session.id}`);
+            SocketServer.debug(`Socket connect: ${socket.id}, session ${socket.handshake.session.id}`);
             SocketServer.sockets.push(socket);
 
             // Remove the socket from the socket list when a client disconnects
             socket.on('disconnect', async () => {
-                logger.debug(`Socket disconnect: ${socket.id}, session ${socket.handshake.session.id}`);
+                SocketServer.debug(`Socket disconnect: ${socket.id}, session ${socket.handshake.session.id}`);
                 SocketServer.sockets.splice(SocketServer.sockets.indexOf(socket), 1);
             });
         });

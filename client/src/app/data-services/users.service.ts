@@ -1,16 +1,38 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Common } from '../../shared/common.helper';
-import { IServerResponse, IUsersResponse } from '../../shared/interface.helper';
+import { BaseService, IServerResponse } from './base.service';
+
+export interface IUsersResponseCharacters {
+    accessToken: string;
+    characterId: number;
+    id: number;
+    isActive: boolean;
+    name: string;
+    ownerHash: string;
+    refreshToken: string;
+    scopes: string;
+    tokenExpiry: Date;
+    uuid: string;
+}
+
+export interface IUsersResponse {
+    email: string;
+    id: number;
+    isAdmin: boolean;
+    lastLogin: Date;
+    timesLogin: number;
+    username: string;
+    uuid: string;
+    characters: IUsersResponseCharacters[];
+}
 
 @Injectable()
-export class UsersService {
-    constructor(private http: HttpClient) { }
+export class UsersService extends BaseService {
 
     public async getUsers(): Promise<IUsersResponse[] | undefined> {
         const url = 'api/users';
-        const response = await this.http.get<any>(url).toPromise<IServerResponse<IUsersResponse[]>>().catch(Common.return);
+        const response = await this.http.get<any>(url).toPromise<IServerResponse<IUsersResponse[]>>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return undefined;
         }

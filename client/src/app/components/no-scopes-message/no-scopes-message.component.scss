@@ -1,0 +1,8 @@
+.scopes-alert {
+    display: grid;
+    grid-template-columns: 38px auto;
+
+    .scopes-alert-content {
+        grid-column: 1/3;
+    }
+}

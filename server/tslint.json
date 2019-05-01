@@ -1,34 +1,8 @@
 {
-    "defaultSeverity": "error",
     "extends": [
-        "tslint:latest"
+        "../tslint.json"
     ],
     "rules": {
-        "max-line-length": [
-            true,
-            140
-        ],
-        "no-implicit-dependencies": [true, "dev", ["express-serve-static-core"]],
-        "no-unused-expression": [
-            true,
-            "allow-new"
-        ],
-        "quotemark": [
-            true,
-            "single"
-        ],
-        "trailing-comma": [
-            true,
-            {
-                "multiline": "always",
-                "singleline": "never"
-            }
-        ],
-        "variable-name": [
-            true,
-            "ban-keywords",
-            "check-format",
-            "allow-leading-underscore"
-        ]
+        "no-implicit-dependencies": [true, "dev", ["express-serve-static-core"]]
     }
 }

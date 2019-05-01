@@ -18,7 +18,7 @@
                     <span class="nav-link-text"><fa-icon [icon]="dashboardIcon"></fa-icon></span>
                 </a>
             </li>
-            <li *ngIf="isLoggedIn" class="nav-item dropdown" ngbDropdown>
+            <li class="nav-item dropdown" ngbDropdown>
                 <a class="nav-link dropdown-toggle" ngbDropdownToggle>
                     <span class="nav-link-text">
                         <fa-icon [icon]="industryToolsIcon"></fa-icon>
@@ -28,6 +28,16 @@
                     <a class="dropdown-item" routerLink="ore" routerLinkActive="active">
                         <fa-icon [icon]="orePricesIcon"></fa-icon>
                         Ore prices
+                    </a>
+                    <a class="dropdown-item" routerLink="blueprint-calculator" routerLinkActive="active"
+                       *ngIf="devEnvironment">
+                        <fa-icon [icon]="orePricesIcon"></fa-icon>
+                        BP
+                    </a>
+                    <a class="dropdown-item" routerLink="refining-profit" routerLinkActive="active"
+                       *ngIf="devEnvironment">
+                        <fa-icon [icon]="orePricesIcon"></fa-icon>
+                        Minerals
                     </a>
                     <!--<a class="dropdown-item" routerLink="ore" routerLinkActive="active">-->
                         <!--<fa-icon [icon]="connectionIcon"></fa-icon>-->
@@ -50,7 +60,7 @@
                     </span>
                 </a>
             </li>
-            <li *ngIf="isLoggedIn && isAdmin" class="nav-item">
+            <li *ngIf="isLoggedIn && (isAdmin || devEnvironment)" class="nav-item">
                 <a class="nav-link" routerLink="users" routerLinkActive="active">
                     <span class="nav-link-text">
                         <fa-icon [icon]="userAdminIcon"></fa-icon>
@@ -68,48 +78,48 @@
 
 <nav class="navbar fixed-left navbar-inverse">
     <div class="scrollContainer">
-        <a class="character-item" [ngClass]="{'disabled': !activatedCharacter}" (click)="nextCharacter()">
-            <img src="//image.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
+        <a class="character-item" [ngClass]="{'disabled': !hasCharacters}" (click)="nextCharacter()">
+            <img src="https://imageserver.eveonline.com/Character/{{ char }}_50.jpg" alt="Character image">
         </a>
         <a routerLink="dashboard" routerLinkActive="active" class="navbar-item d-lg-none"
            [ngClass]="{'disabled': !activatedCharacter}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/recruitment.svg" alt="Dashboard sheet icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/recruitment.svg" alt="Dashboard sheet icon">
         </a>
         <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': true}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">
         </a>
         <a routerLink="skills" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': !activatedCharacter}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg" alt="Skills icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/skills.svg" alt="Skills icon">
         </a>
         <a routerLink="contacts" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': true}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/contacts.svg" alt="Contacts icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/contacts.svg" alt="Contacts icon">
         </a>
         <a routerLink="mail" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': true }">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg" alt="Mail icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/evemail.svg" alt="Mail icon">
         </a>
         <a routerLink="market" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': !activatedCharacter || !devEnvironment}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg" alt="Market icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/market.svg" alt="Market icon">
         </a>
         <a routerLink="wallet" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': !activatedCharacter}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg" alt="Wallet icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg" alt="Wallet icon">
         </a>
         <a routerLink="assets" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': true}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg" alt="Assets icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg" alt="Assets icon">
         </a>
         <a routerLink="planets" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': true}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg" alt="Planets icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/planets.svg" alt="Planets icon">
         </a>
         <a routerLink="industry" routerLinkActive="active" class="navbar-item"
-           [ngClass]="{'disabled': !activatedCharacter || !devEnvironment}">
-            <img src="//data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg" alt="Industry icon">
+           [ngClass]="{'disabled': !activatedCharacter}">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg" alt="Industry icon">
         </a>
         <a class="navbar-item time"
            [ngClass]="{'disabled': true}">

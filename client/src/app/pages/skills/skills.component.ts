@@ -1,20 +1,37 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
-import { faArrowAltRight, faChevronDown, faClock, faCog, faExclamationTriangle, faFolderOpen } from '@fortawesome/pro-solid-svg-icons';
-import * as countdown from 'countdown';
+import {
+    faArrowAltRight,
+    faChevronDown,
+    faClock,
+    faCog,
+    faExclamationTriangle,
+    faFolderOpen,
+} from '@fortawesome/pro-solid-svg-icons';
 import Timespan = countdown.Timespan;
+import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
+import {
+    ICharacterAttributesData,
+    ICharacterSkillQueueDataUnit,
+    ICharacterSkillsData,
+    ISkillsData,
+    IUniverseGroupsData,
+    IUniverseTypesData,
+} from '@ionaru/eve-utils';
+import { romanize } from '@ionaru/romanize';
+import * as countdown from 'countdown';
 
 import { Calc } from '../../../shared/calc.helper';
-import { Common } from '../../../shared/common.helper';
-import { ISkillData, ISkillGroupData, ISkillQueueData, ISkillsData, ITypesData } from '../../../shared/interface.helper';
+import { AttributesService } from '../../data-services/attributes.service';
 import { NamesService } from '../../data-services/names.service';
 import { SkillGroupsService } from '../../data-services/skill-groups.service';
 import { SkillQueueService } from '../../data-services/skillqueue.service';
 import { SkillsService } from '../../data-services/skills.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { ScopesComponent } from '../scopes/scopes.component';
 
-interface IExtendedSkillQueueData extends ISkillQueueData {
+interface IExtendedSkillQueueData extends ICharacterSkillQueueDataUnit {
     status?: 'training' | 'finished' | 'scheduled' | 'inactive';
     countdown?: number | countdown.Timespan;
     name?: string;
@@ -23,11 +40,11 @@ interface IExtendedSkillQueueData extends ISkillQueueData {
     percentageDone?: number;
 }
 
-interface IExtendedSkillData extends ISkillData {
+interface IExtendedSkillData extends ISkillsData {
     name?: string;
 }
 
-interface IExtendedSkillsData extends ISkillsData {
+interface IExtendedSkillsData extends ICharacterSkillsData {
     skills: IExtendedSkillData[];
 }
 
@@ -40,7 +57,7 @@ interface IGroupedSKillData {
 }
 
 interface IGroupedSkillTypes {
-    [groupId: number]: ITypesData[];
+    [groupId: number]: IUniverseTypesData[];
 }
 
 @Component({
@@ -51,7 +68,7 @@ interface IGroupedSkillTypes {
 export class SkillsComponent extends DataPageComponent implements OnInit, OnDestroy {
 
     public static adjustCountDownForDST(cd: Timespan, timeLeft: number) {
-        cd.hours = Calc.wholeHoursLeft(timeLeft) - (Calc.wholeDaysLeft(timeLeft) * 24);
+        cd.hours = Calc.wholeHours(timeLeft) - (Calc.wholeDays(timeLeft) * 24);
     }
 
     public faChevronDown = faChevronDown;
@@ -82,14 +99,16 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public totalQueueTimer?: number;
     public updateQueueTimer?: number;
 
-    public skillGroups: ISkillGroupData[] = [];
+    public skillGroups: IUniverseGroupsData[] = [];
     public skillList: IGroupedSKillData = {};
 
     public skillQueueVisible = true;
 
-    public skillTypes?: ITypesData[];
+    public skillTypes?: IUniverseTypesData[];
 
     public trainedSkills?: ITrainedSkills;
+
+    public attributes?: ICharacterAttributesData;
 
     public currentTrainingSkill?: number;
     public currentTrainingSPGain?: number;
@@ -103,15 +122,23 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
 
     constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService,
-                private skillGroupsService: SkillGroupsService) {
+                private skillGroupsService: SkillGroupsService, private attributesService: AttributesService) {
         super();
+        this.requiredScopes = [ScopesComponent.scopeCodes.SKILLS];
     }
 
-    public async ngOnInit() {
+    public ngOnInit() {
         super.ngOnInit();
-        await Promise.all([this.getSkillQueue(), this.getSkills(), this.setSkillGroups()]);
 
-        this.parseSkillQueue();
+        if (this.hasSkillsScope) {
+            this.getAttributes().then();
+        }
+
+        Promise.all([
+            this.hasSkillQueueScope ? this.getSkillQueue() : undefined,
+            this.hasSkillsScope ? this.getSkills() : undefined,
+            this.hasSkillsScope ? this.setSkillGroups() : undefined,
+        ]).then(() => this.parseSkillQueue());
     }
 
     public async ngOnDestroy() {
@@ -119,7 +146,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         this.resetTimers();
     }
 
-    public romanize = (num: number) => Common.romanize(num);
+    public romanize = (num: number) => romanize(num);
 
     public countLvl5Skills = () => this.skills ? this.skills.skills.filter((skill) => skill.active_skill_level === 5).length : 0;
 
@@ -127,18 +154,32 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
     public skillQueueLow = () => !this.skillTrainingPaused && this.skillQueueTimeLeft < (24 * 60 * 60 * 1000);
 
-    public getSkillsForGroup(group: ISkillGroupData) {
+    public get hasSkillsScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.SKILLS);
+    }
+
+    public get hasSkillQueueScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.SKILLQUEUE);
+    }
+
+    public async getAttributes() {
+        if (CharacterService.selectedCharacter) {
+            this.attributes = await this.attributesService.getAttributes(CharacterService.selectedCharacter);
+        }
+    }
+
+    public getSkillsForGroup(group: IUniverseGroupsData) {
         if (this.skills) {
             let skills = this.skills.skills.filter((skill) => group.types.includes(skill.skill_id));
-            skills = Common.sortArrayByObjectProperty(skills, 'name');
+            skills = sortArrayByObjectProperty(skills, 'name');
             return skills;
         }
         return [];
     }
 
-    public getSkillList(group: ISkillGroupData, allSkills = true) {
+    public getSkillList(group: IUniverseGroupsData, allSkills = true) {
 
-        let skills: ITypesData[] = [];
+        let skills: IUniverseTypesData[] = [];
 
         if (this.skillTypes) {
             skills = this.skillTypes.filter((skill) => skill.group_id === group.group_id);
@@ -147,7 +188,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
             }
         }
 
-        return Common.sortArrayByObjectProperty(skills, 'name');
+        return sortArrayByObjectProperty(skills, 'name');
     }
 
     public getSPInGroup(groupId: number) {
@@ -177,7 +218,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
     private async setSkillGroups() {
         const skillGroups = await this.skillGroupsService.getSkillGroupInformation();
-        this.skillGroups = Common.sortArrayByObjectProperty(skillGroups, 'name');
+        this.skillGroups = sortArrayByObjectProperty(skillGroups, 'name');
     }
 
     private resetTimers() {
@@ -197,7 +238,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     private async getSkillQueue() {
         if (CharacterService.selectedCharacter) {
             this.skillQueue = await this.skillQueueService.getSkillQueue(CharacterService.selectedCharacter);
-            const skillIds = this.skillQueue.map((e) => e.skill_id);
+            const skillIds = this.skillQueue.map((skill) => skill.skill_id);
             await this.namesService.getNames(...skillIds);
         }
     }
@@ -206,7 +247,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         if (CharacterService.selectedCharacter) {
             const skills = await this.skillsService.getSkillsData(CharacterService.selectedCharacter);
             if (skills) {
-                await this.namesService.getNames(...skills.skills.map((e) => e.skill_id));
+                await this.namesService.getNames(...skills.skills.map((skill) => skill.skill_id));
                 for (const skill of skills.skills) {
                     (skill as IExtendedSkillData).name = NamesService.getNameFromData(skill.skill_id, 'Unknown skill');
                 }
@@ -239,6 +280,14 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
             this.trainedSkillsGrouped[group.group_id] = this.skillsGrouped[group.group_id].filter(
                 (skill) => this.trainedSkillIds.includes(skill.type_id),
             );
+        }
+
+        if (this.skills) {
+            this.trainedSkills = objectsArrayToObject(this.skills.skills, 'skill_id');
+        }
+
+        if (!this.hasSkillQueueScope) {
+            return;
         }
 
         for (const skillInQueue of this.skillQueue) {
@@ -363,10 +412,6 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
                 skillInQueue.status = 'inactive';
                 this.spPerSec = 0;
             }
-        }
-
-        if (this.skills) {
-            this.trainedSkills = Common.objectsArrayToObject(this.skills.skills, 'skill_id');
         }
 
         this.skillQueue = this.skillQueue.filter((skill) => skill.status !== 'inactive');

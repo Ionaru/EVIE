@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faCheck, faSync, faTrash, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
+import { romanize } from '@ionaru/romanize';
 import * as countdown from 'countdown';
 
 import { Calc } from '../../../shared/calc.helper';
-import { Common } from '../../../shared/common.helper';
 import { NamesService } from '../../data-services/names.service';
 import { ShipService } from '../../data-services/ship.service';
 import { SkillQueueService } from '../../data-services/skillqueue.service';
@@ -13,6 +13,7 @@ import { Character } from '../../models/character/character.model';
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { ScopesComponent } from '../scopes/scopes.component';
 import { SkillsComponent } from '../skills/skills.component';
 
 @Component({
@@ -99,17 +100,24 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
 
     public getActivateButtonClass = (character: Character) => this.isCharacterSelected(character) ? 'btn-success' : 'btn-outline-success';
 
-    public romanize = (num: number) => Common.romanize(num);
+    public romanize = (num: number) => romanize(num);
 
     public switchToCharacter = (character: Character) => this.characterService.setActiveCharacter(character).then();
 
-    public authCharacter = (character?: Character) => this.userService.authCharacter(character);
+    public authCharacter(character?: Character) {
+        if (character) {
+            this.characterService.setActiveCharacter(character).then();
+        } else {
+            this.characterService.setActiveCharacter().then();
+        }
+        this.router.navigate(['/scopes']).then();
+    }
 
     public async getCharacterInfo(character: Character) {
         await Promise.all([
-            this.getShipData(character),
-            this.getSkillQueueData(character),
-            this.getCharacterWalletBalance(character),
+            this.hasShipTypeScope(character) ? this.getShipData(character) : undefined,
+            this.hasSkillQueueScope(character) ? this.getSkillQueueData(character) : undefined,
+            this.hasWalletScope(character) ? this.getCharacterWalletBalance(character) : undefined,
         ]);
     }
 
@@ -122,6 +130,10 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     public async getCharacterWalletBalance(character: Character) {
         character.balance = await this.walletService.getWalletBalance(character);
     }
+
+    public hasWalletScope = (character: Character) => character.hasScope(ScopesComponent.scopeCodes.WALLET);
+    public hasShipTypeScope = (character: Character) => character.hasScope(ScopesComponent.scopeCodes.SHIP_TYPE);
+    public hasSkillQueueScope = (character: Character) => character.hasScope(ScopesComponent.scopeCodes.SKILLQUEUE);
 
     public async getShipData(character: Character): Promise<void> {
         const shipData: { id: number, name: string } = await this.shipService.getCurrentShip(character);

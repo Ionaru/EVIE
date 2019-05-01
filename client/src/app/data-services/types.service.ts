@@ -1,16 +1,16 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EVE, IUniverseTypesData } from '@ionaru/eve-utils';
 
-import { EVE } from '../../shared/eve.helper';
-import { IServerResponse, ITypesData } from '../../shared/interface.helper';
-import { BaseService } from './base.service';
+import { AppComponent } from '../app.component';
+import { BaseService, IServerResponse } from './base.service';
 
 @Injectable()
 export class TypesService extends BaseService {
 
-    private typesCache: ITypesData[] = [];
+    private typesCache: IUniverseTypesData[] = [];
 
-    public async getTypes(...typeIds: number[]): Promise<ITypesData[] | undefined> {
+    public async getTypes(...typeIds: number[]): Promise<IUniverseTypesData[] | undefined> {
         const typesFromCache = this.typesCache.filter((type) => typeIds.includes(type.type_id));
 
         if (typesFromCache.length === typeIds.length) {
@@ -21,7 +21,10 @@ export class TypesService extends BaseService {
         const missingTypes = typeIds.filter((typeId) => !cachedTypeIds.includes(typeId));
 
         const url = 'data/types';
-        const response = await this.http.post<any>(url, missingTypes).toPromise<IServerResponse<ITypesData[]>>().catch(this.catchHandler);
+        const headers = new HttpHeaders({'x-evie-token': AppComponent.serverToken});
+        const response = await this.http.post<any>(url, missingTypes, {headers})
+            .toPromise<IServerResponse<IUniverseTypesData[]>>()
+            .catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return undefined;
         }
@@ -34,9 +37,9 @@ export class TypesService extends BaseService {
         return response.data;
     }
 
-    public async getType(typeId: number): Promise<ITypesData | undefined> {
+    public async getType(typeId: number): Promise<IUniverseTypesData | undefined> {
         const url = EVE.getUniverseTypesUrl(typeId);
-        const response = await this.http.get<any>(url).toPromise<ITypesData>().catch(this.catchHandler);
+        const response = await this.http.get<any>(url).toPromise<IUniverseTypesData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return undefined;
         }

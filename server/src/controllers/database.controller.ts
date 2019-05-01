@@ -2,12 +2,11 @@ import * as fs from 'fs';
 import { createPool, Pool } from 'mysql';
 import * as path from 'path';
 import { Connection, createConnection, Logger } from 'typeorm';
-import { logger } from 'winston-pnp-logger';
 
+import { config, configPath, debug } from '../index';
 import { QueryLogger } from '../loggers/query.logger';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
-import { config, configPath } from './configuration.controller';
 
 interface IDBOptions {
     database: string;
@@ -34,6 +33,8 @@ export let db: DatabaseConnection;
 
 export class DatabaseConnection {
 
+    private static debug = debug.extend('database');
+
     public pool?: Pool;
     public orm?: Connection;
 
@@ -51,7 +52,7 @@ export class DatabaseConnection {
             logger: new QueryLogger(),
             logging: ['query', 'error'],
             password: config.getProperty('db_pass') as string,
-            port: config.getProperty('db_port') as number || 3306,
+            port: Number(config.getProperty('db_port')) || 3306,
             synchronize: config.getProperty('db_synchronize') as boolean,
             type: 'mysql',
             user: config.getProperty('db_user') as string,
@@ -74,17 +75,40 @@ export class DatabaseConnection {
     }
 
     public async connect(): Promise<void> {
+        DatabaseConnection.debug(`Connecting to ${this.dbOptions.host}:${this.dbOptions.port}/${this.dbOptions.database}`);
+
         if (this.dbOptions.ssl && !this.dbOptions.ssl.rejectUnauthorized) {
-            logger.warn('SSL connection to Database is not secure, \'db_reject\' should be true');
+            process.emitWarning('SSL connection to Database is not secure, \'db_reject\' should be true');
         } else if (!this.dbOptions.ssl) {
             if (['localhost', '0.0.0.0', '127.0.0.1'].indexOf(config.getProperty('db_host') as string) === -1) {
-                logger.warn('Connection to Database is not secure, always use SSL to connect to external databases!');
+                process.emitWarning('Connection to Database is not secure, always use SSL to connect to external databases!');
             }
         }
 
-        this.pool = createPool(this.dbOptions);
+        await new Promise<void>((resolve) => {
+            this.pool = createPool(this.dbOptions);
+
+            this.pool.on('connection', () => {
+                resolve();
+            });
+
+            this.pool.on('error', (err) => {
+                throw err;
+            });
+
+            this.pool.getConnection((err) => {
+                if (err) {
+                    throw err;
+                }
+            });
+        });
+
+        if (this.dbOptions.synchronize) {
+            process.emitWarning('Database synchronize is enabled, this may cause unexpected changed to the database structure');
+        }
+
         this.orm = await createConnection(this.dbOptions);
 
-        logger.info('Database connected');
+        DatabaseConnection.debug('Database connected');
     }
 }

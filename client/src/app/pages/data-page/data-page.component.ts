@@ -12,6 +12,10 @@ import { NavigationComponent } from '../../navigation/navigation.component';
 })
 export class DataPageComponent implements OnInit, OnDestroy {
 
+    public missingAllRequiredScopes?: boolean;
+
+    protected requiredScopes: string[] = [];
+
     private characterChangeSubscription: Subscription;
     private userChangeSubscription: Subscription;
     private serverStatusSubscription: Subscription;
@@ -32,7 +36,7 @@ export class DataPageComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit() {
-        // Method stub
+        this.checkScopes();
     }
 
     public ngOnDestroy() {
@@ -44,5 +48,14 @@ export class DataPageComponent implements OnInit, OnDestroy {
     public softReload() {
         this.ngOnInit();
         this.ngOnDestroy();
+    }
+
+    private checkScopes() {
+        this.missingAllRequiredScopes = !this.requiredScopes.some((scope) => {
+            if (CharacterService.selectedCharacter) {
+                return CharacterService.selectedCharacter.hasScope(scope);
+            }
+            return false;
+        });
     }
 }

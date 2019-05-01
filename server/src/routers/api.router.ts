@@ -1,5 +1,7 @@
+import { generateRandomString } from '@ionaru/random-string';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
+
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
 
@@ -14,6 +16,9 @@ export class APIRouter extends BaseRouter {
      *  200 NotLoggedIn: No client session was found
      */
     private static async doHandShake(request: Request, response: Response): Promise<Response> {
+
+        request.session!.token = generateRandomString(10);
+        response.setHeader('x-evie-token', request.session!.token);
 
         if (!request.session!.user.id) {
             return BaseRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');

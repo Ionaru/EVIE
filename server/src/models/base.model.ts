@@ -11,6 +11,7 @@ import {
 @Entity()
 export class BaseModel extends BaseEntity {
 
+    // noinspection JSUnusedGlobalSymbols
     public static async deleteAll(): Promise<void> {
         await this.createQueryBuilder()
             .delete()

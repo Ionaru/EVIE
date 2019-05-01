@@ -1,9 +1,9 @@
 import { HttpClient, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { EVE } from '@ionaru/eve-utils';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { EVE } from '../../shared/eve.helper';
 import { ESIRequestCache } from '../shared/esi-request-cache';
 
 @Injectable()
@@ -37,7 +37,12 @@ export class ESICachingInterceptor implements HttpInterceptor {
 
                     // Only cache when the response is successful and has an expiry header.
                     if (event.status === 200 && event.headers.has('expires')) {
-                        ESIRequestCache.put(request.urlWithParams, event.body, event.headers.get('expires') as string);
+                        ESIRequestCache.put(
+                            request.urlWithParams,
+                            event.body,
+                            event.headers.get('expires') as string,
+                            request.headers.has('Authorization'),
+                        );
                     }
                 }
             }),
