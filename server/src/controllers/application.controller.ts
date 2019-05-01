@@ -159,7 +159,7 @@ export class Application {
         debug('Dumping cache to files');
         esiCache.dumpCache();
 
-        if (this.webServer) {
+        if (this.webServer && this.webServer.server.listening) {
             await this.webServer.close();
         }
 
