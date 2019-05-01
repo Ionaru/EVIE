@@ -13,7 +13,6 @@ import { logger } from 'winston-pnp-logger';
 
 import { config, debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
-import { AngularRedirectRouter } from '../routers/angular.router';
 import { APIRouter } from '../routers/api.router';
 import { DataRouter } from '../routers/data.router';
 import { ErrorRouter } from '../routers/error.router';
@@ -114,9 +113,6 @@ export class Application {
         expressApplication.use(/\/api\/users?/, new UserRouter().router);
         expressApplication.use('/sso', new SSORouter().router);
         expressApplication.use('/data', new DataRouter().router);
-
-        // Re-route all other requests to the Angular app.
-        expressApplication.use('*', new AngularRedirectRouter().router);
 
         expressApplication.use(Sentry.Handlers.errorHandler());
 
