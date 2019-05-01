@@ -1,12 +1,16 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { EVE, IMarketOrdersData } from '@ionaru/eve-utils';
+import { EVE, IMarketOrdersData, IUniverseTypesData } from '@ionaru/eve-utils';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
+
+interface IOreTypesDict {
+    [index: number]: IUniverseTypesData | undefined;
+}
 
 @Component({
     selector: 'app-ore',
@@ -27,7 +31,7 @@ export class OreComponent implements OnInit {
     public variantsVisibleIcon = faEye;
     public variantsHiddenIcon = faEyeSlash;
 
-    public oreTypes: any = {};
+    public oreTypes: IOreTypesDict = {};
     public orePrices: any = {
         buy: {},
         sell: {},
@@ -88,7 +92,8 @@ export class OreComponent implements OnInit {
                 index,
                 name: NamesService.getNameFromData(ore),
                 sell: this.orePrices.sell[ore],
-                volume: this.oreTypes[ore] ? this.oreTypes[ore].volume : '?',
+                // tslint:disable-next-line:no-non-null-assertion
+                volume: this.oreTypes[ore] ? this.oreTypes[ore]!.volume : '?',
             };
         });
 
