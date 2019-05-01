@@ -6,6 +6,7 @@ import { BaseRouter, IResponse } from './base.router';
 
 export class ErrorRouter extends BaseRouter {
 
+    // noinspection JSUnusedLocalSymbols
     /**
      * Handle errors thrown in requests, show or hide the stacktrace in the response depending on the environment.
      */

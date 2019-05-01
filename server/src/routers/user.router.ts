@@ -7,6 +7,7 @@ import { BaseRouter } from './base.router';
 
 export class UserRouter extends BaseRouter {
 
+    // noinspection JSUnusedLocalSymbols
     @BaseRouter.requestDecorator(BaseRouter.checkAdmin)
     private static async getUsers(_request: Request, response: Response): Promise<Response> {
         const characters = await Character.doQuery()

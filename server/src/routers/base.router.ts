@@ -154,10 +154,12 @@ export class BaseRouter {
         this.router.post(url, this.asyncHandler(routeFunction));
     }
 
+    // noinspection JSUnusedGlobalSymbols
     public createPutRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
         this.router.put(url, this.asyncHandler(routeFunction));
     }
 
+    // noinspection JSUnusedGlobalSymbols
     public createDeleteRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
         this.router.delete(url, this.asyncHandler(routeFunction));
     }
