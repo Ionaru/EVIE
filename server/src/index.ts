@@ -1,3 +1,7 @@
+// Create and export the debug instance so imported classes can create extensions of it.
+import Debug from 'debug';
+export let debug = Debug('evie');
+
 import { Configurator } from '@ionaru/configurator';
 import { CacheController, PublicESIService } from '@ionaru/esi-service';
 import * as Sentry from '@sentry/node';
@@ -24,9 +28,11 @@ export let axiosInstance: AxiosInstance;
         showMilliSeconds: true,
     });
 
+    debug('Loading configuration');
     config = new Configurator(configPath);
     config.addConfigFiles('main', 'database', 'sso');
 
+    debug('Creating axios instance');
     axiosInstance = axios.create({
         // 60 sec timeout
         timeout: 60000,
@@ -41,7 +47,10 @@ export let axiosInstance: AxiosInstance;
         maxContentLength: 50 * 1000 * 1000,
     });
 
+    debug('Creating CacheController instance');
     esiCache = new CacheController('data/responseCache.json');
+
+    debug('Creating PublicESIService instance');
     esiService = new PublicESIService({
         axiosInstance,
         cacheController: esiCache,
@@ -50,6 +59,7 @@ export let axiosInstance: AxiosInstance;
         },
     });
 
+    debug('Creating Application');
     const application = new Application();
 
     // Ensure application shuts down gracefully at all times.

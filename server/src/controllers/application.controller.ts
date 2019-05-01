@@ -11,7 +11,7 @@ import * as helmet from 'helmet';
 import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
-import { config, esiCache } from '../index';
+import { config, debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
 import { AngularRedirectRouter } from '../routers/angular.router';
 import { APIRouter } from '../routers/api.router';
@@ -26,7 +26,7 @@ import { SocketServer } from './socket.controller';
 export class Application {
 
     private static exit(exitCode: number) {
-        logger.info('Shutting down');
+        debug('Shutting down');
         process.exit(exitCode);
     }
 
@@ -38,18 +38,20 @@ export class Application {
 
     public async start() {
 
+        debug(`Initializing Sentry (enabled: ${process.env.NODE_ENV === 'production'})`);
         Sentry.init({
             dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
             enabled: process.env.NODE_ENV === 'production',
             release: 'evie-server@0.7.2',
         });
 
+        debug('Creating database connection');
         await new DatabaseConnection().connect();
 
-        logger.info('Beginning Express startup');
+        debug('Beginning Express startup');
 
         const expressApplication = express();
-        logger.info('Express application constructed');
+        debug('Express application constructed');
 
         expressApplication.use(Sentry.Handlers.requestHandler());
 
@@ -99,7 +101,7 @@ export class Application {
 
         expressApplication.use(this.sessionParser);
 
-        logger.info('Express session store loaded');
+        debug('Express session store loaded');
 
         // Use static client folder for serving assets
         expressApplication.use(express.static(path.join(appRoot.toString(), '../client/dist/client/')));
@@ -121,12 +123,12 @@ export class Application {
         // Error router.
         expressApplication.use(ErrorRouter.errorRoute);
 
-        logger.info('Express configuration set');
+        debug('Express configuration set');
 
-        logger.info('Reading files into cache');
+        debug('Reading files into cache');
         // CacheController.readCache();
 
-        logger.info('App startup done');
+        debug('App startup done');
 
         const serverPort = config.getProperty('server_port');
         this.webServer = new WebServer(expressApplication, Number(serverPort));
@@ -154,7 +156,7 @@ export class Application {
         }
         process.emitWarning(quitMessage);
 
-        logger.info('Dumping cache to files');
+        debug('Dumping cache to files');
         esiCache.dumpCache();
 
         if (this.webServer) {
@@ -173,12 +175,12 @@ export class Application {
         async function closeDBConnection() {
             if (db && db.orm) {
                 await db.orm.close();
-                logger.info('ORM connection closed');
+                debug('ORM connection closed');
             }
             await new Promise((resolve) => {
                 if (db && db.pool) {
                     db.pool.end(() => {
-                        logger.info('DB pool closed');
+                        debug('DB pool closed');
                         resolve();
                     });
                 } else {

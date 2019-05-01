@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import * as onFinished from 'on-finished';
 import { logger } from 'winston-pnp-logger';
 
+import { debug } from '../index';
 import { IResponse } from '../routers/base.router';
 
 export class RequestLogger {
@@ -54,7 +55,7 @@ export class RequestLogger {
                     } else if (endResponse.statusCode >= 400) {
                         process.emitWarning(logContent);
                     } else {
-                        logger.debug(logContent);
+                        RequestLogger.debug(logContent);
                     }
                 }
             });
@@ -75,6 +76,8 @@ export class RequestLogger {
             return chalk.whiteBright;
         }
     }
+
+    private static debug = debug.extend('request');
 
     private static getIp(request: Request) {
         let ip = request.ip ||

@@ -1,8 +1,8 @@
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express';
 import { PathParams, RequestHandlerParams } from 'express-serve-static-core';
 import * as httpStatus from 'http-status-codes';
-import { logger } from 'winston-pnp-logger';
 
+import { debug } from '../index';
 import { User } from '../models/user.model';
 
 export interface IServerResponse<T> {
@@ -134,10 +134,12 @@ export class BaseRouter {
         'localhost', '0.0.0.0', '192.168.2.11', 'spaceships.app',
     ];
 
+    private static debug = debug.extend('router');
+
     public router = Router();
 
     constructor() {
-        logger.info(`New express router: ${this.constructor.name}`);
+        BaseRouter.debug(`New express router: ${this.constructor.name}`);
     }
 
     public createAllRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {

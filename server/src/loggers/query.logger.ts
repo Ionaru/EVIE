@@ -2,7 +2,11 @@ import chalk from 'chalk';
 import { Logger, QueryRunner } from 'typeorm';
 import { logger } from 'winston-pnp-logger';
 
+import { debug } from '../index';
+
 export class QueryLogger implements Logger {
+
+    private static debug = debug.extend('query');
 
     private static colorizeQuery(query: string): string {
         const queryWords = query.split(' ');
@@ -20,7 +24,7 @@ export class QueryLogger implements Logger {
         if (parameters && parameters.length) {
             output += `; ${chalk.white(`(${parameters})`)}`;
         }
-        logger.debug(output);
+        QueryLogger.debug(output);
     }
 
     public logQueryError(_error: string, query: string, parameters?: any[], _queryRunner?: QueryRunner): void {

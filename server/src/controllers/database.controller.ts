@@ -2,9 +2,8 @@ import * as fs from 'fs';
 import { createPool, Pool } from 'mysql';
 import * as path from 'path';
 import { Connection, createConnection, Logger } from 'typeorm';
-import { logger } from 'winston-pnp-logger';
 
-import { config, configPath } from '../index';
+import { config, configPath, debug } from '../index';
 import { QueryLogger } from '../loggers/query.logger';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
@@ -33,6 +32,8 @@ interface IDBOptions {
 export let db: DatabaseConnection;
 
 export class DatabaseConnection {
+
+    private static debug = debug.extend('database');
 
     public pool?: Pool;
     public orm?: Connection;
@@ -74,6 +75,8 @@ export class DatabaseConnection {
     }
 
     public async connect(): Promise<void> {
+        DatabaseConnection.debug(`Connecting to ${this.dbOptions.host}:${this.dbOptions.port}/${this.dbOptions.database}`);
+
         if (this.dbOptions.ssl && !this.dbOptions.ssl.rejectUnauthorized) {
             process.emitWarning('SSL connection to Database is not secure, \'db_reject\' should be true');
         } else if (!this.dbOptions.ssl) {
@@ -100,8 +103,12 @@ export class DatabaseConnection {
             });
         });
 
+        if (this.dbOptions.synchronize) {
+            process.emitWarning('Database synchronize is enabled');
+        }
+
         this.orm = await createConnection(this.dbOptions);
 
-        logger.info('Database connected');
+        DatabaseConnection.debug('Database connected');
     }
 }

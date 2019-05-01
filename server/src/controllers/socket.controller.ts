@@ -2,11 +2,14 @@ import { WebServer } from '@ionaru/web-server';
 import * as express from 'express';
 import * as SocketIO from 'socket.io';
 import * as SocketIOSession from 'socket.io-express-session';
-import { logger } from 'winston-pnp-logger';
+
+import { debug } from '../index';
 
 export class SocketServer {
 
     public static sockets: ISessionSocket[] = [];
+
+    private static debug = debug.extend('socket');
 
     public io: SocketIO.Server;
 
@@ -28,12 +31,12 @@ export class SocketServer {
         socketServer.on('connection', async (socket: ISessionSocket) => {
             socket.handshake.session.socket = socket.id;
             socket.handshake.session.save(() => undefined);
-            logger.debug(`Socket connect: ${socket.id}, session ${socket.handshake.session.id}`);
+            SocketServer.debug(`Socket connect: ${socket.id}, session ${socket.handshake.session.id}`);
             SocketServer.sockets.push(socket);
 
             // Remove the socket from the socket list when a client disconnects
             socket.on('disconnect', async () => {
-                logger.debug(`Socket disconnect: ${socket.id}, session ${socket.handshake.session.id}`);
+                SocketServer.debug(`Socket disconnect: ${socket.id}, session ${socket.handshake.session.id}`);
                 SocketServer.sockets.splice(SocketServer.sockets.indexOf(socket), 1);
             });
         });
