@@ -71,6 +71,7 @@ export class BaseRouter {
         const allowedHosts = BaseRouter.allowedHosts.filter((host) => requestOrigin && requestOrigin.includes(host));
 
         if (!allowedHosts.length) {
+            process.emitWarning(`Unknown host tried to connect, possible CORS: ${requestOrigin}`);
             BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadHost');
             return;
         }
@@ -80,6 +81,7 @@ export class BaseRouter {
 
         // Only allow requests from a logged-in user, or with a valid and matching token.
         if (!request.session!.user.id && (!serverToken || !clientToken || serverToken !== clientToken)) {
+            process.emitWarning(`Unauthorized client: ${clientToken}, expected: ${serverToken}`);
             BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadClient');
             return;
         }
