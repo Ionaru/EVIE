@@ -130,11 +130,11 @@ export class BaseRouter {
         };
     }
 
+    protected static debug = debug.extend('router');
+
     private static allowedHosts = [
         'localhost', '0.0.0.0', '192.168.2.11', 'spaceships.app',
     ];
-
-    private static debug = debug.extend('router');
 
     public router = Router();
 

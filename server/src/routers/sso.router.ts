@@ -20,6 +20,8 @@ const revokePath = '/v2/oauth/revoke';
 
 export class SSORouter extends BaseRouter {
 
+    protected static debug = BaseRouter.debug.extend('sso');
+
     private static async SSOLogin(request: Request, response: Response): Promise<Response> {
         // Generate a random string and set it as the state of the request, we will later verify the response of the
         // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery (XSRF), see this link for details:
@@ -442,7 +444,7 @@ export class SSORouter extends BaseRouter {
             new URLSearchParams({grant_type: 'authorization_code', code});
 
         const authUrl = `${protocol}${oauthHost}${tokenPath}`;
-        logger.debug(authUrl);
+        SSORouter.debug(`Requesting authorization: ${code} (refresh: ${refresh})`);
         return axiosInstance.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             logger.error('Request failed:', authUrl, error.message);
             return;
@@ -460,7 +462,7 @@ export class SSORouter extends BaseRouter {
         const requestBody = new URLSearchParams({token: key, token_type_hint: keyType});
 
         const revokeUrl = `${protocol}${oauthHost}${revokePath}`;
-        logger.debug(revokeUrl);
+        SSORouter.debug(`Revoking token of type ${keyType}: ${key}`);
         return axiosInstance.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             logger.error('Request failed:', revokeUrl, error.message);
             return;
