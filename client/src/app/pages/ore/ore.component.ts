@@ -12,6 +12,24 @@ interface IOreTypesDict {
     [index: number]: IUniverseTypesData | undefined;
 }
 
+interface IOrePrices {
+    buy: IOrePrice;
+    sell: IOrePrice;
+}
+
+interface IOrePrice {
+    [index: number]: number;
+}
+
+interface IOresData {
+    buy: number;
+    id: number;
+    index: number;
+    name: string;
+    sell: number;
+    volume: number | string;
+}
+
 @Component({
     selector: 'app-ore',
     styleUrls: ['./ore.component.scss'],
@@ -32,20 +50,20 @@ export class OreComponent implements OnInit {
     public variantsHiddenIcon = faEyeSlash;
 
     public oreTypes: IOreTypesDict = {};
-    public orePrices: any = {
+    public orePrices: IOrePrices = {
         buy: {},
         sell: {},
     };
 
-    public data: any[] = [];
-    public visibleData?: any[];
+    public data: IOresData[] = [];
+    public visibleData?: IOresData[];
 
     public tableSettings: ITableHeader[] = [{
         attribute: 'name',
-        prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
+        prefixFunction: (data: IOresData) => `<img src="https://imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
         sort: true,
         sortAttribute: 'index',
-        suffixFunction: (data) => `<span class="text-muted">${data.volume}m³</span>`,
+        suffixFunction: (data: IOresData) => `<span class="text-muted">${data.volume}m³</span>`,
         title: 'Type',
     }, {
         attribute: 'buy',
