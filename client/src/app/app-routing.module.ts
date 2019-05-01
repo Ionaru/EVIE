@@ -19,7 +19,7 @@ const routes: Routes = [
     {path: '', component: HomeComponent, resolve: [AppReadyGuard]},
 
     // EVE data pages.
-    {path: 'ore', component: OreComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
+    {path: 'ore', component: OreComponent, resolve: [AppReadyGuard]},
     {path: 'blueprint-calculator', component: BlueprintCalculatorComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
     {path: 'refining-profit', component: RefiningProfitComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
 

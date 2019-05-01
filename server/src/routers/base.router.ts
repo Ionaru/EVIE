@@ -60,6 +60,17 @@ export class BaseRouter {
         return nextFunction;
     }
 
+    public static checkHost(request: Request, response: Response, nextFunction: any) {
+        const requestOrigin = request.headers.origin;
+        const allowedHosts = BaseRouter.allowedHosts.filter((host) => requestOrigin && requestOrigin.includes(host));
+
+        if (!allowedHosts.length) {
+            BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'BadHost');
+            return;
+        }
+        return nextFunction;
+    }
+
     public static checkLogin(request: Request, response: Response, nextFunction: any) {
         if (!request.session!.user.id) {
             BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
@@ -100,6 +111,10 @@ export class BaseRouter {
             return descriptor;
         };
     }
+
+    private static allowedHosts = [
+        'localhost', '192.168.2.11', 'spaceships.app',
+    ];
 
     public router = Router();
 

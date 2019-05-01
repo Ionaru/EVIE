@@ -88,7 +88,7 @@ export class OreComponent implements OnInit {
                 index,
                 name: NamesService.getNameFromData(ore),
                 sell: this.orePrices.sell[ore],
-                volume: this.oreTypes[ore].volume,
+                volume: this.oreTypes[ore] ? this.oreTypes[ore].volume : '?',
             };
         });
 
