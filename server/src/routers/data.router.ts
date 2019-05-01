@@ -80,7 +80,7 @@ export class DataRouter extends BaseRouter {
         return DataRouter.sendSuccessResponse(response, marketTypes);
     }
 
-    @BaseRouter.requestDecorator(BaseRouter.checkHost)
+    @BaseRouter.requestDecorator(BaseRouter.checkAuthorizedClient)
     private static async getTypes(request: Request, response: Response): Promise<Response> {
 
         const typeIds = request.body;

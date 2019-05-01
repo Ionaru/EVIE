@@ -1,7 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { EVE, IUniverseTypesData } from '@ionaru/eve-utils';
 
+import { AppComponent } from '../app.component';
 import { BaseService, IServerResponse } from './base.service';
 
 @Injectable()
@@ -20,7 +21,8 @@ export class TypesService extends BaseService {
         const missingTypes = typeIds.filter((typeId) => !cachedTypeIds.includes(typeId));
 
         const url = 'data/types';
-        const response = await this.http.post<any>(url, missingTypes)
+        const headers = new HttpHeaders({'x-evie-token': AppComponent.serverToken});
+        const response = await this.http.post<any>(url, missingTypes, {headers})
             .toPromise<IServerResponse<IUniverseTypesData[]>>()
             .catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 
 import { AppReadyEventService } from './app-ready-event.service';
@@ -22,6 +22,7 @@ interface IHandshakeResponse {
 })
 export class AppComponent {
 
+    public static serverToken = '';
     public readonly version = '0.7.2';
 
     constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
@@ -44,10 +45,12 @@ export class AppComponent {
     private async shakeHands(): Promise<any> {
         const url = 'api/handshake';
 
-        const response = await this.http.get<any>(url).toPromise<IHandshakeResponse>();
+        const response = await this.http.get<any>(url, {observe: 'response'}).toPromise<HttpResponse<IHandshakeResponse>>();
 
-        if (response && response.message === 'LoggedIn' && response.data) {
-            await this.userService.storeUser(response.data);
+        AppComponent.serverToken = response.headers.get('x-evie-token') || '';
+
+        if (response.body && response.body.message === 'LoggedIn' && response.body.data) {
+            await this.userService.storeUser(response.body.data);
         }
     }
 

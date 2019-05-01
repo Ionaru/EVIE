@@ -60,14 +60,30 @@ export class BaseRouter {
         return nextFunction;
     }
 
-    public static checkHost(request: Request, response: Response, nextFunction: any) {
+    public static checkAuthorizedClient(request: Request, response: Response, nextFunction: any) {
+
+        if (process.env.NODE_ENV !== 'production') {
+            // Allow all clients when running in debug mode, useful for working with Postman to test the API.
+            return nextFunction;
+        }
+
         const requestOrigin = request.headers.origin;
         const allowedHosts = BaseRouter.allowedHosts.filter((host) => requestOrigin && requestOrigin.includes(host));
 
         if (!allowedHosts.length) {
-            BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'BadHost');
+            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadHost');
             return;
         }
+
+        const serverToken = request.session!.token;
+        const clientToken = request.headers['x-evie-token'];
+
+        // Only allow requests from a logged-in user, or with a valid and matching token.
+        if (!request.session!.user.id && (!serverToken || !clientToken || serverToken !== clientToken)) {
+            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadClient');
+            return;
+        }
+
         return nextFunction;
     }
 
@@ -113,7 +129,7 @@ export class BaseRouter {
     }
 
     private static allowedHosts = [
-        'localhost', '192.168.2.11', 'spaceships.app',
+        'localhost', '0.0.0.0', '192.168.2.11', 'spaceships.app',
     ];
 
     public router = Router();
