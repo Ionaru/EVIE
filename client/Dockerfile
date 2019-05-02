@@ -28,5 +28,7 @@ RUN npm cache clean --force
 
 FROM nginx:mainline-alpine
 COPY ./nginx.conf /etc/nginx/conf.d
+RUN mkdir /etc/nginx/conf.d/proxy
+COPY ./nginx-proxy.conf /etc/nginx/conf.d/proxy
 RUN rm /etc/nginx/conf.d/default.conf
 COPY --from=0 /app /app
