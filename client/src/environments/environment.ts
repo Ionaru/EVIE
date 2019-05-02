@@ -7,7 +7,7 @@ import { version } from '../../package.json';
 export const environment = {
     VERSION: version,
     production: false,
-    socketHost: 'http://localhost:3000/',
+    socketHost: 'http://localhost:4200/',
 };
 
 /*
