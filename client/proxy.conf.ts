@@ -7,7 +7,7 @@ const PROXY_CONFIG = [
             '/socket.io',
         ],
         secure: false,
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3731',
         ws: true,
     },
 ];
