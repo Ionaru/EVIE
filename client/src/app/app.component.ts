@@ -1,6 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 
+import { environment } from '../environments/environment';
 import { AppReadyEventService } from './app-ready-event.service';
 import { NamesService } from './data-services/names.service';
 import { BaseGuard } from './guards/base.guard';
@@ -23,7 +24,7 @@ interface IHandshakeResponse {
 export class AppComponent {
 
     public static serverToken = '';
-    public readonly version = '0.7.2';
+    public readonly version = environment.VERSION;
 
     constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Error during app startup', error));

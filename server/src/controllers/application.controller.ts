@@ -11,6 +11,7 @@ import * as helmet from 'helmet';
 import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
+import { version } from '../../package.json';
 import { config, debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
 import { APIRouter } from '../routers/api.router';
@@ -41,7 +42,7 @@ export class Application {
         Sentry.init({
             dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
             enabled: process.env.NODE_ENV === 'production',
-            release: 'evie-server@0.7.2',
+            release: `evie-server@${version}`,
         });
 
         debug('Creating database connection');
