@@ -1,6 +1,6 @@
 {
     "name": "evie-server",
-    "version": "0.7.4",
+    "version": "0.7.5",
     "author": "Jeroen Akkerman",
     "description": "Server module for EVIE",
     "repository": {
