@@ -21,14 +21,14 @@ COPY ./src ./src
 # Build client for production
 ENV NODE_ENV production
 RUN npm run build:prod
-RUN npm ci
-RUN npm cache clean --force
 
 ## RUN NGINX
 
 FROM nginx:mainline-alpine
+
 COPY ./nginx.conf /etc/nginx/conf.d
 RUN mkdir /etc/nginx/conf.d/proxy
 COPY ./nginx-proxy.conf /etc/nginx/conf.d/proxy
 RUN rm /etc/nginx/conf.d/default.conf
+
 COPY --from=0 /app /app
