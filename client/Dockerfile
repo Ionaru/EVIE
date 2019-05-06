@@ -1,19 +1,16 @@
 FROM node:12-alpine
-RUN mkdir /app
-WORKDIR /app
 
 ## INSTALL CLIENT
 
-# Install dependencies
-COPY ./.npmrc .
-COPY ./package.json .
-COPY ./package-lock.json .
-ARG FA_TOKEN
-RUN npm install
+RUN mkdir /app
+WORKDIR /app
 
 # Copy needed build files
-COPY ./angular.json .
-COPY ./tsconfig.json .
+COPY ./.npmrc ./package.json ./package-lock.json ./angular.json ./tsconfig.json ./
+
+# Install dependencies
+ARG FA_TOKEN
+RUN npm install
 
 # Copy source files
 COPY ./src ./src
