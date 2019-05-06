@@ -1,23 +1,21 @@
 version: '3'
 services:
 
-    evie-client:
+    client:
         build:
             context: ./client
             args:
                 FA_TOKEN: ${EVIE_FA_TOKEN}
-        container_name: evie-client
         env_file:
             - .env
         restart: unless-stopped
         ports:
             - "${EVIE_CLIENT_PORT:-80}:80"
         depends_on:
-            - evie-server
+            - server
 
-    evie-server:
+    server:
         build: ./server
-        container_name: evie-server
         env_file:
             - .env
         ports:
