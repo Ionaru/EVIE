@@ -21,7 +21,7 @@ services:
         env_file:
             - .env
         ports:
-            - "${EVIE_SERVER_PORT:-3731}:3731"
+            - "${EVIE_SERVER_PORT:-3731}"
         restart: unless-stopped
         volumes:
             - ${EVIE_CONFIG_VOLUME:-config-volume}:/app/config

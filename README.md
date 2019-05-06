@@ -33,7 +33,7 @@ Right now the features are limited, but new pages are being built and I have a l
 
 #### General
 * Option to switch between TQ and SiSi.
-* Use shared functions between client and server
+* ~~Use shared functions between client and server~~
 * ~~Selecting a subset of scopes for SSO~~
 * Something special on character birthday / April fools / christmas
 * Responsiveness
@@ -46,8 +46,8 @@ Right now the features are limited, but new pages are being built and I have a l
 * Cash-flow breakdown
 
 #### Industry page
-* Fetch industry information from SDE(-like API) to server
-* Create routes so client can fetch industry info in small portions
+* ~~Fetch industry information from SDE(-like API) to server~~
+* ~~Create routes so client can fetch industry info in small portions~~
 * Do cost calculations on resources, recursively
 
 ---
