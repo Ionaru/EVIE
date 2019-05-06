@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import chalk from 'chalk';
 import { Logger, QueryRunner } from 'typeorm';
 import { logger } from 'winston-pnp-logger';
@@ -27,12 +28,15 @@ export class QueryLogger implements Logger {
         QueryLogger.debug(output);
     }
 
-    public logQueryError(_error: string, query: string, parameters?: any[], _queryRunner?: QueryRunner): void {
+    public logQueryError(error: string, query: string, parameters?: any[], _queryRunner?: QueryRunner): void {
+
         let output = QueryLogger.colorizeQuery(query);
         if (parameters && parameters.length) {
             output += `; ${chalk.white(`(${parameters})`)}`;
         }
-        logger.error(_error);
+
+        Sentry.captureException(error);
+        logger.error(error);
         logger.error(output);
     }
 

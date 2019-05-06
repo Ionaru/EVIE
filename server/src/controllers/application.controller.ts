@@ -11,7 +11,6 @@ import * as helmet from 'helmet';
 import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
-import { version } from '../../package.json';
 import { config, debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
 import { APIRouter } from '../routers/api.router';
@@ -37,13 +36,6 @@ export class Application {
     private socketServer?: SocketServer;
 
     public async start() {
-
-        debug(`Initializing Sentry (enabled: ${process.env.NODE_ENV === 'production'})`);
-        Sentry.init({
-            dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
-            enabled: process.env.NODE_ENV === 'production',
-            release: `evie-server@${version}`,
-        });
 
         debug('Creating database connection');
         await new DatabaseConnection().connect();
@@ -137,12 +129,12 @@ export class Application {
 
     public async stop(error?: Error): Promise<void> {
         const exitCode = error ? 1 : 0;
+
         // Ensure the app exits when there is an exception during shutdown.
         process.on('uncaughtException', () => {
             Application.exit(exitCode);
         });
-        process.on('unhandledRejection', (reason, p): void => {
-            logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
+        process.on('unhandledRejection', (): void => {
             Application.exit(exitCode);
         });
 

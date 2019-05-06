@@ -11,6 +11,7 @@ import 'reflect-metadata'; // Required by TypeORM.
 import * as sourceMapSupport from 'source-map-support';
 import { WinstonPnPLogger } from 'winston-pnp-logger';
 
+import { version } from '../package.json';
 import { Application } from './controllers/application.controller';
 
 export let configPath = 'config';
@@ -22,7 +23,15 @@ export let axiosInstance: AxiosInstance;
 (function start() {
     sourceMapSupport.install();
 
-    const logger = new WinstonPnPLogger({
+    debug(`Initializing Sentry (enabled: ${process.env.NODE_ENV === 'production'})`);
+    Sentry.init({
+        debug: process.env.NODE_ENV !== 'production',
+        dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
+        enabled: process.env.NODE_ENV === 'production',
+        release: `evie-server@${version}`,
+    });
+
+    new WinstonPnPLogger({
         announceSelf: false,
         logDir: 'logs',
         showMilliSeconds: true,
@@ -65,7 +74,7 @@ export let axiosInstance: AxiosInstance;
     // Ensure application shuts down gracefully at all times.
     process.stdin.resume();
     process.on('uncaughtException', (error: Error) => {
-        logger.error('Uncaught Exception!', error);
+        Sentry.captureException(error);
         application.stop(error).then();
     });
     process.on('SIGINT', () => {
@@ -76,7 +85,7 @@ export let axiosInstance: AxiosInstance;
     });
     // Promises that fail should not cause the application to stop, instead we log the error.
     process.on('unhandledRejection', (reason, p): void => {
-        logger.error('Unhandled Rejection at: Promise ', p, ' reason: ', reason);
+        Sentry.captureMessage(`Unhandled Rejection at: Promise ${p}, reason: ${reason}`, Sentry.Severity.Error);
     });
 
     application.start().then().catch((error: Error) => application.stop(error));
