@@ -33,5 +33,4 @@ VOLUME /app/config
 
 ## RUN
 
-EXPOSE  3000
 CMD ["npm", "start"]
