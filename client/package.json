@@ -7,9 +7,7 @@
         "start": "ng serve --host=0.0.0.0 --proxy-config proxy.conf.ts --source-map --port 4200 --watch --aot",
         "build": "ng build",
         "build:prod": "ng build --prod",
-        "test": "ng test",
-        "lint": "ng lint client --type-check --format stylish",
-        "e2e": "ng e2e"
+        "lint": "ng lint client --type-check --format stylish"
     },
     "private": true,
     "dependencies": {
