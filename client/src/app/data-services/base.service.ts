@@ -12,6 +12,8 @@ export interface IServerResponse<T> {
 @Injectable()
 export class BaseService {
 
+    public static serverToken = '';
+
     protected static confirmRequiredScope(character: Character, scope: string, functionName: string) {
         if (!character.hasScope(scope)) {
             throw new Error(`Character ${ character.name } (${ character.uuid }) does not have\

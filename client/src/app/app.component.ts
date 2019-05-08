@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 
 import { environment } from '../environments/environment';
 import { AppReadyEventService } from './app-ready-event.service';
+import { BaseService } from './data-services/base.service';
 import { NamesService } from './data-services/names.service';
 import { BaseGuard } from './guards/base.guard';
 import { IUserApiData } from './models/user/user.model';
@@ -23,7 +24,6 @@ interface IHandshakeResponse {
 })
 export class AppComponent {
 
-    public static serverToken = '';
     public readonly version = environment.VERSION;
 
     constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
@@ -48,7 +48,7 @@ export class AppComponent {
 
         const response = await this.http.get<any>(url, {observe: 'response'}).toPromise<HttpResponse<IHandshakeResponse>>();
 
-        AppComponent.serverToken = response.headers.get('x-evie-token') || '';
+        BaseService.serverToken = response.headers.get('x-evie-token') || '';
 
         if (response.body && response.body.message === 'LoggedIn' && response.body.data) {
             await this.userService.storeUser(response.body.data);
