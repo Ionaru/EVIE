@@ -10,7 +10,7 @@ import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 
 interface IOreTypesDict {
-    [index: number]: IUniverseTypesData | undefined;
+    [index: number]: IUniverseTypesData;
 }
 
 interface IOrePrices {
@@ -28,6 +28,8 @@ interface IOresData {
     index: number;
     name: string;
     sell: number;
+    spread: number;
+    venture: number;
     volume: number | string;
 }
 
@@ -59,16 +61,16 @@ export class OreComponent implements OnInit {
     public data: IOresData[] = [];
     public visibleData?: IOresData[];
 
-    public tableSettings: ITableHeader[] = [{
+    public tableSettings: Array<ITableHeader<IOresData>> = [{
         attribute: 'name',
-        prefixFunction: (data: IOresData) => `<img src="https://imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
+        prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
         sort: true,
         sortAttribute: 'index',
-        suffixFunction: (data: IOresData) => `<span class="text-muted">${data.volume}m³</span>`,
+        suffixFunction: (data) => `<span class="text-muted">${data.volume}m³</span>`,
         title: 'Type',
     }, {
         attribute: 'buy',
-        hint: 'Average for using buy orders to sell 8.000m³ of ore.',
+        hint: 'Average for using buy orders to sell 5.000m³ of ore.',
         pipe: 'number',
         pipeVar: '0.2-2',
         sort: true,
@@ -76,12 +78,28 @@ export class OreComponent implements OnInit {
         title: 'Buy price / m³',
     }, {
         attribute: 'sell',
-        hint: 'Average for using sell orders to buy 8.000m³ of ore.',
+        hint: 'Average for using sell orders to buy 5.000m³ of ore.',
         pipe: 'number',
         pipeVar: '0.2-2',
         sort: true,
         suffix: ' ISK',
         title: 'Sell price / m³',
+    }, {
+        attribute: 'spread',
+        hint: 'Difference between buy and sell prices.',
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        sort: true,
+        suffix: ' ISK',
+        title: 'Spread',
+    }, {
+        attribute: 'venture',
+        hint: '5000m³',
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        sort: true,
+        suffix: ' ISK',
+        title: 'Sell price / Venture',
     }];
 
     constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService,
@@ -105,16 +123,17 @@ export class OreComponent implements OnInit {
 
         await this.namesService.getNames(...EVE.ores.all);
 
-        const types = await this.typesService.getTypes(...EVE.ores.all);
+        const types = await this.typesService.getTypes(...EVE.ores.all) || [];
         for (const ore of EVE.ores.all) {
-            this.oreTypes[ore] = types ? types.filter((type) => type.type_id === ore)[0] : undefined;
+            this.oreTypes[ore] = types.filter((type) => type.type_id === ore)[0];
         }
 
         await Promise.all(EVE.ores.all.map(async (ore) => {
             const orders = await this.marketService.getMarketOrders(10000002, ore);
             if (orders) {
-                this.getPriceForVolume(ore, orders, 8000).then();
-                this.getPriceForVolume(ore, orders, 8000, false).then();
+                const jitaOrders = orders.filter((order) => order.location_id === 60003760);
+                this.getPriceForVolume(ore, jitaOrders, 5000).then();
+                this.getPriceForVolume(ore, jitaOrders, 5000, false).then();
             }
         }));
 
@@ -125,8 +144,9 @@ export class OreComponent implements OnInit {
                 index,
                 name: NamesService.getNameFromData(ore),
                 sell: this.orePrices.sell[ore],
-                // tslint:disable-next-line:no-non-null-assertion
-                volume: this.oreTypes[ore] ? this.oreTypes[ore]!.volume : '?',
+                spread: this.orePrices.sell[ore] - this.orePrices.buy[ore],
+                venture: this.orePrices.sell[ore] * 5000,
+                volume: this.oreTypes[ore] ? this.oreTypes[ore].volume : '?',
             };
         });
 
@@ -145,11 +165,11 @@ export class OreComponent implements OnInit {
             return;
         }
 
-        const veldVolume = type.volume;
-        const cargoCap = volume;
+        const oreVolume = type.volume;
+        const cargoCapacity = volume;
 
         let price = 0;
-        let unitsLeft = cargoCap / veldVolume;
+        let unitsLeft = cargoCapacity / oreVolume;
         for (const order of buyOrders) {
             const amountFromThisOrder = Math.min(order.volume_remain, unitsLeft);
 
@@ -166,7 +186,7 @@ export class OreComponent implements OnInit {
             return;
         }
 
-        this.orePrices[buySell][ore] = price / cargoCap;
+        this.orePrices[buySell][ore] = price / cargoCapacity;
     }
 
     public changeVisibleOres() {

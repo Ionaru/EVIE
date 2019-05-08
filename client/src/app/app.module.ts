@@ -40,6 +40,7 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
+import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { OreComponent } from './pages/ore/ore.component';
@@ -79,6 +80,7 @@ if (environment.production) {
         ApiOfflineMessageComponent,
         BlueprintCalculatorComponent,
         RefiningProfitComponent,
+        GasChartComponent,
     ],
     entryComponents: [
         LogoutModalComponent,

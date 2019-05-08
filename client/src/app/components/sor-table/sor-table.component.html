@@ -23,13 +23,13 @@
             <span [innerHTML]="prefixFunction(column, row) || column.prefix"></span>
             <ng-container [ngSwitch]="column.pipe">
                 <ng-container *ngSwitchCase="'number'">
-                    {{ getData(column.attribute, row) | number:column.pipeVar ? column.pipeVar : '1.0-0' }}
+                    {{ getData(column, row) | number:column.pipeVar ? column.pipeVar : '1.0-0' }}
                 </ng-container>
                 <ng-container *ngSwitchCase="'date'">
-                    {{ getData(column.attribute, row) | date:column.pipeVar ? column.pipeVar : 'yyyy-MM-dd HH:mm:ss' }}
+                    {{ getData(column, row) | date:column.pipeVar ? column.pipeVar : 'yyyy-MM-dd HH:mm:ss' }}
                 </ng-container>
                 <ng-container *ngSwitchDefault>
-                    {{ getData(column.attribute, row) }}
+                    {{ getData(column, row) }}
                 </ng-container>
             </ng-container>
             <span [innerHTML]="suffixFunction(column, row) || column.suffix"></span>
