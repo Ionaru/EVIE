@@ -80,14 +80,14 @@ export class RequestLogger {
     private static debug = debug.extend('request');
 
     private static getIp(request: Request) {
-        let ip = request.ip ||
-            request.headers['x-forwarded-for'] ||
+
+        const ip = request.headers['x-forwarded-for'] ||
             request.connection.remoteAddress ||
             request.socket.remoteAddress ||
+            request.ip ||
             'Unknown IP';
-        if (typeof ip === 'string' && ip.substr(0, 7) === '::ffff:') {
-            ip = ip.substr(7);
-        }
-        return ip;
+
+        // make IPv6 readable.
+        return (typeof ip === 'string' && ip.substr(0, 7) === '::ffff:') ? ip.substr(7) : ip;
     }
 }

@@ -1,21 +1,16 @@
 FROM node:12-alpine
-RUN mkdir /app
-WORKDIR /app
 
 ## INSTALL SERVER
 
-RUN mkdir /app/logs
-RUN mkdir /app/data
-RUN mkdir /app/config
-
-# Install dependencies
-COPY ./package.json .
-COPY ./package-lock.json .
-RUN npm install
+RUN mkdir -p /app/logs /app/data /app/config
+WORKDIR /app
 
 # Copy needed build files
-COPY ./tsconfig.json .
 COPY ./config ./config
+COPY ./package.json ./package-lock.json ./tsconfig.json ./
+
+# Install dependencies
+RUN npm install
 
 # Copy source files
 COPY ./src ./src
@@ -27,11 +22,8 @@ RUN npm ci
 RUN npm cache clean --force
 
 # Add volumes
-VOLUME /app/logs
-VOLUME /app/data
-VOLUME /app/config
+VOLUME /app/logs /app/data /app/config
 
 ## RUN
 
-EXPOSE  3000
 CMD ["npm", "start"]

@@ -1,4 +1,5 @@
 import { generateRandomString } from '@ionaru/random-string';
+import * as Sentry from '@sentry/node';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
@@ -448,6 +449,7 @@ export class SSORouter extends BaseRouter {
         const authUrl = `${protocol}${oauthHost}${tokenPath}`;
         SSORouter.debug(`Requesting authorization: ${code} (refresh: ${refresh})`);
         return axiosInstance.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+            Sentry.captureException(error);
             logger.error('Request failed:', authUrl, error.message);
             return;
         });
@@ -466,6 +468,7 @@ export class SSORouter extends BaseRouter {
         const revokeUrl = `${protocol}${oauthHost}${revokePath}`;
         SSORouter.debug(`Revoking token of type ${keyType}: ${key}`);
         return axiosInstance.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+            Sentry.captureException(error);
             logger.error('Request failed:', revokeUrl, error.message);
             return;
         });
