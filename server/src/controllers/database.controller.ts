@@ -79,10 +79,9 @@ export class DatabaseConnection {
 
         if (this.dbOptions.ssl && !this.dbOptions.ssl.rejectUnauthorized) {
             process.emitWarning('SSL connection to Database is not secure, \'db_reject\' should be true');
-        } else if (!this.dbOptions.ssl) {
-            if (['localhost', '0.0.0.0', '127.0.0.1'].indexOf(config.getProperty('db_host') as string) === -1) {
-                process.emitWarning('Connection to Database is not secure, always use SSL to connect to external databases!');
-            }
+
+        } else if (!this.dbOptions.ssl && ['localhost', '0.0.0.0', '127.0.0.1'].indexOf(config.getProperty('db_host') as string) === -1) {
+            process.emitWarning('Connection to Database is not secure, always use SSL to connect to external databases!');
         }
 
         await new Promise<void>((resolve) => {

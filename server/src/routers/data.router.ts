@@ -87,7 +87,8 @@ export class DataRouter extends BaseRouter {
 
         // Check if request body contains an array with only positive numbers.
         if (typeIds instanceof Array) {
-            if (typeIds.filter((item) => typeof item !== 'number' || item <= 0).length) {
+            const invalidTypeIds = typeIds.filter((item) => typeof item !== 'number' || item <= 0);
+            if (invalidTypeIds.length) {
                 return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidElements');
             }
         }

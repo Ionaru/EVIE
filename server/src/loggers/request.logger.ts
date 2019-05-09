@@ -34,7 +34,7 @@ export class RequestLogger {
                     const status = statusColor(`${endResponse.statusCode} ${endResponse.statusMessage}`);
 
                     const route = endResponse.route;
-                    const router = chalk.white(route && route.length ? route!.join(' > ') : 'ServeStatic');
+                    const router = chalk.white(route && route.length ? route.join(' > ') : 'ServeStatic');
 
                     const ip = RequestLogger.getIp(request);
                     const identifier = `${ip} (${chalk.white(request.sessionID!)})`;

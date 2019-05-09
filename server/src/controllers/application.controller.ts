@@ -113,10 +113,6 @@ export class Application {
         expressApplication.use(ErrorRouter.errorRoute);
 
         debug('Express configuration set');
-
-        debug('Reading files into cache');
-        // CacheController.readCache();
-
         debug('App startup done');
 
         const serverPort = config.getProperty('server_port');
