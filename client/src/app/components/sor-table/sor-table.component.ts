@@ -4,7 +4,6 @@ import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 
 export interface ITableHeader<T> {
     attribute: keyof T;
-    sortAttribute?: keyof T;
     classFunction?: (value: T) => string;
     dataFunction?: (value: T) => any;
     hint?: string;
@@ -12,10 +11,11 @@ export interface ITableHeader<T> {
     pipeVar?: string;
     prefix?: string;
     prefixFunction?: (value: T) => string;
-    title?: string;
     sort?: boolean;
+    sortAttribute?: keyof T;
     suffix?: string;
     suffixFunction?: (value: T) => string;
+    title?: string;
 }
 
 export interface ITableData {
