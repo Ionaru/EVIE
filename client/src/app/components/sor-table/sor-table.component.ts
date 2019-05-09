@@ -3,7 +3,7 @@ import { faInfoCircle, faSort, faSortDown, faSortUp } from '@fortawesome/pro-sol
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 
 export interface ITableHeader<T> {
-    attribute: keyof T;
+    attribute: string;
     classFunction?: (value: T) => string;
     dataFunction?: (value: T) => any;
     hint?: string;
@@ -12,7 +12,7 @@ export interface ITableHeader<T> {
     prefix?: string;
     prefixFunction?: (value: T) => string;
     sort?: boolean;
-    sortAttribute?: keyof T;
+    sortAttribute?: string;
     suffix?: string;
     suffixFunction?: (value: T) => string;
     title?: string;
@@ -41,7 +41,7 @@ export class SorTableComponent implements OnChanges {
     public hintIcon = faInfoCircle;
 
     public getData(column: ITableHeader<ITableData>, data: ITableData) {
-        const attribute = column.attribute.toString();
+        const attribute = column.attribute;
         const dataValue = attribute.split('.').reduce((o, i) => o ? o[i] : o, data);
         return column.dataFunction ? column.dataFunction(data) : dataValue;
     }
@@ -51,7 +51,7 @@ export class SorTableComponent implements OnChanges {
             return;
         }
 
-        const sortAttribute = (column.sortAttribute || column.attribute).toString();
+        const sortAttribute = (column.sortAttribute || column.attribute);
 
         this.invert = (this.currentSort && this.currentSort === column) ? !this.invert : false;
 
