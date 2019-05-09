@@ -20,24 +20,25 @@ export class QueryLogger implements Logger {
         return queryWords.join(' ');
     }
 
-    public logQuery(query: string, parameters?: any[], _queryRunner?: QueryRunner): void {
+    private static getQueryText(query: string, parameters: any[] = []) {
         let output = QueryLogger.colorizeQuery(query);
-        if (parameters && parameters.length) {
-            output += `; ${chalk.white(`(${parameters})`)}`;
+
+        if (parameters.length) {
+            const parametersText = `(${parameters})`;
+            output += `; ${chalk.white(parametersText)}`;
         }
-        QueryLogger.debug(output);
+
+        return output;
+    }
+
+    public logQuery(query: string, parameters?: any[], _queryRunner?: QueryRunner): void {
+        QueryLogger.debug(QueryLogger.getQueryText(query, parameters));
     }
 
     public logQueryError(error: string, query: string, parameters?: any[], _queryRunner?: QueryRunner): void {
-
-        let output = QueryLogger.colorizeQuery(query);
-        if (parameters && parameters.length) {
-            output += `; ${chalk.white(`(${parameters})`)}`;
-        }
-
         Sentry.captureException(error);
         logger.error(error);
-        logger.error(output);
+        logger.error(QueryLogger.getQueryText(query, parameters));
     }
 
     public logQuerySlow(_time: number, _query: string, _parameters?: any[], _queryRunner?: QueryRunner): void {
