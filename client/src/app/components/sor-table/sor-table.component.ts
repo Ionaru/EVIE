@@ -3,8 +3,8 @@ import { faInfoCircle, faSort, faSortDown, faSortUp } from '@fortawesome/pro-sol
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 
 export interface ITableHeader<T> {
-    attribute: string;
-    sortAttribute?: string;
+    attribute: keyof T;
+    sortAttribute?: keyof T;
     classFunction?: (value: T) => string;
     dataFunction?: (value: T) => any;
     hint?: string;
@@ -41,7 +41,8 @@ export class SorTableComponent implements OnChanges {
     public hintIcon = faInfoCircle;
 
     public getData(column: ITableHeader<ITableData>, data: ITableData) {
-        const dataValue = column.attribute.split('.').reduce((o, i) =>  o ? o[i] : o, data);
+        const attribute = column.attribute.toString();
+        const dataValue = attribute.split('.').reduce((o, i) => o ? o[i] : o, data);
         return column.dataFunction ? column.dataFunction(data) : dataValue;
     }
 
@@ -50,7 +51,7 @@ export class SorTableComponent implements OnChanges {
             return;
         }
 
-        const sortAttribute = column.sortAttribute || column.attribute;
+        const sortAttribute = (column.sortAttribute || column.attribute).toString();
 
         this.invert = (this.currentSort && this.currentSort === column) ? !this.invert : false;
 
@@ -58,11 +59,17 @@ export class SorTableComponent implements OnChanges {
         this.currentSort = column;
     }
 
-    public getClass = (column: ITableHeader<ITableData>, data: ITableData) => column.classFunction ? column.classFunction(data) : '';
+    public getClass(column: ITableHeader<ITableData>, data: ITableData) {
+        return column.classFunction ? column.classFunction(data) : '';
+    }
 
-    public prefixFunction = (column: ITableHeader<ITableData>, data: ITableData) => column.prefixFunction ? column.prefixFunction(data) : undefined;
+    public prefixFunction(column: ITableHeader<ITableData>, data: ITableData) {
+        return column.prefixFunction ? column.prefixFunction(data) : undefined;
+    }
 
-    public suffixFunction = (column: ITableHeader<ITableData>, data: ITableData) => column.suffixFunction ? column.suffixFunction(data) : undefined;
+    public suffixFunction(column: ITableHeader<ITableData>, data: ITableData) {
+        return column.suffixFunction ? column.suffixFunction(data) : undefined;
+    }
 
     public ngOnChanges(change: SimpleChanges) {
         if (change.data) {

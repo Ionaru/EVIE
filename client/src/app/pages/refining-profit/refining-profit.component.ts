@@ -37,7 +37,7 @@ export class RefiningProfitComponent implements OnInit {
 
     public refiningYield = 71;
 
-    public tableSettings: ITableHeader[] = [{
+    public tableSettings: Array<ITableHeader<any>> = [{
         attribute: 'name',
         prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
         sort: true,

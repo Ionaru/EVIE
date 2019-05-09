@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
-import { IUsersResponse, UsersService } from '../../data-services/users.service';
+import { IUsersResponse, IUsersResponseCharacters, UsersService } from '../../data-services/users.service';
 
 @Component({
     selector: 'app-users',
@@ -12,7 +12,7 @@ export class UsersComponent implements OnInit {
 
     public users: IUsersResponse[] = [];
 
-    public tableSettings: ITableHeader[] = [{
+    public tableSettings: Array<ITableHeader<IUsersResponseCharacters>> = [{
         attribute: 'user.id',
         sort: true,
         title: 'User ID',

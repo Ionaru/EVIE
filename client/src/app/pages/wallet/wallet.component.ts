@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ICharacterWalletJournalData } from '@ionaru/eve-utils';
+import { ICharacterWalletJournalData, ICharacterWalletJournalDataUnit } from '@ionaru/eve-utils';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { WalletJournalService } from '../../data-services/wallet-journal.service';
@@ -19,7 +19,7 @@ export class WalletComponent extends DataPageComponent implements OnInit {
     public journalData: ICharacterWalletJournalData = [];
     public balanceCountUp?: CountUp;
 
-    public tableSettings: ITableHeader[] = [{
+    public tableSettings: Array<ITableHeader<ICharacterWalletJournalDataUnit>> = [{
         attribute: 'date',
         hint: 'In EVE-Time',
         pipe: 'date',
@@ -27,7 +27,7 @@ export class WalletComponent extends DataPageComponent implements OnInit {
         title: 'Timestamp',
     }, {
         attribute: 'amount',
-        classFunction: (data) => data.amount < 0 ? 'negative' : 'positive',
+        classFunction: (data) => (!data.amount || data.amount < 0) ? 'negative' : 'positive',
         pipe: 'number',
         pipeVar: '0.0-2',
         suffix: ' ISK',
