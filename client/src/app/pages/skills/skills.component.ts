@@ -31,8 +31,10 @@ import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
 
+type skillStatus = 'training' | 'finished' | 'scheduled' | 'inactive';
+
 interface IExtendedSkillQueueData extends ICharacterSkillQueueDataUnit {
-    status?: 'training' | 'finished' | 'scheduled' | 'inactive';
+    status?: skillStatus;
     countdown?: number | countdown.Timespan;
     name?: string;
     spAtEnd?: number;
@@ -184,7 +186,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         if (this.skillTypes) {
             skills = this.skillTypes.filter((skill) => skill.group_id === group.group_id);
             if (!allSkills && this.skills) {
-                skills.filter((skill) => this.trainedSkillIds.includes(skill.type_id));
+                skills = skills.filter((skill) => this.trainedSkillIds.includes(skill.type_id));
             }
         }
 
@@ -301,7 +303,6 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
                 const skillFinishDate = new Date(skillInQueue.finish_date);
                 const skillStartDate = new Date(skillInQueue.start_date);
                 skillInQueue.spLeft = skillInQueue.level_end_sp - skillInQueue.training_start_sp;
-                // const spForLevel = skillInQueue.level_end_sp - skillInQueue.level_start_sp;
 
                 if (skillFinishDate < now) {
                     // This skill finished training sometime in the past.
@@ -383,7 +384,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
                     let spBeforeThisSkill = this.totalSP;
                     const skillInTraining = this.skillQueue.filter((skill) => skill.status === 'training');
                     if (skillInTraining[0].spAtEnd) {
-                        spBeforeThisSkill = skillInTraining[0].spAtEnd as number;
+                        spBeforeThisSkill = skillInTraining[0].spAtEnd;
                     }
 
                     // Get and add the amount of SP from previously scheduled skills.

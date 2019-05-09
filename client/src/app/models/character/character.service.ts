@@ -13,7 +13,7 @@ export class CharacterService {
     private static _characterChangeEvent = new Subject<Character>();
     public static get characterChangeEvent() { return this._characterChangeEvent; }
 
-    private static _selectedCharacter: Character | undefined;
+    private static _selectedCharacter?: Character;
     public static get selectedCharacter(): Character | undefined { return this._selectedCharacter; }
 
     constructor(private http: HttpClient) { }
@@ -67,7 +67,7 @@ export class CharacterService {
         character.accessToken = response.data.token;
     }
 
-    public async setActiveCharacter(character?: Character, skipServerCall?: boolean): Promise<void> {
+    public async setActiveCharacter(character?: Character, skipServerCall = false): Promise<void> {
 
         if (!skipServerCall) {
             const url = '/sso/activate';
