@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/node';
 import chalk from 'chalk';
 import { Logger, QueryRunner } from 'typeorm';
-import { logger } from 'winston-pnp-logger';
 
 import { debug } from '../index';
 
@@ -37,8 +36,8 @@ export class QueryLogger implements Logger {
 
     public logQueryError(error: string, query: string, parameters?: any[], _queryRunner?: QueryRunner): void {
         Sentry.captureException(error);
-        logger.error(error);
-        logger.error(QueryLogger.getQueryText(query, parameters));
+        process.stderr.write(error + '\n');
+        process.stderr.write(QueryLogger.getQueryText(query, parameters) + '\n');
     }
 
     public logQuerySlow(_time: number, _query: string, _parameters?: any[], _queryRunner?: QueryRunner): void {

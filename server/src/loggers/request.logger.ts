@@ -1,7 +1,6 @@
 import chalk, { Chalk, ColorSupport } from 'chalk';
 import { NextFunction, Request, Response } from 'express';
 import * as onFinished from 'on-finished';
-import { logger } from 'winston-pnp-logger';
 
 import { debug } from '../index';
 import { IResponse } from '../routers/base.router';
@@ -51,7 +50,7 @@ export class RequestLogger {
                     logContent += `${status}, ${requestDuration}ms`;
 
                     if (endResponse.statusCode >= 500) {
-                        logger.error(logContent);
+                        process.stderr.write(logContent + '\n');
                     } else if (endResponse.statusCode >= 400) {
                         process.emitWarning(logContent);
                     } else {

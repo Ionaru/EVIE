@@ -5,7 +5,6 @@ import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
 import { URLSearchParams } from 'url';
-import { logger } from 'winston-pnp-logger';
 
 import { SocketServer } from '../controllers/socket.controller';
 import { axiosInstance, config, esiService } from '../index';
@@ -450,7 +449,7 @@ export class SSORouter extends BaseRouter {
         SSORouter.debug(`Requesting authorization: ${code} (refresh: ${refresh})`);
         return axiosInstance.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             Sentry.captureException(error);
-            logger.error('Request failed:', authUrl, error.message);
+            process.stderr.write(`Request failed: ${authUrl}\n${error.message}\n`);
             return;
         });
     }
@@ -469,7 +468,7 @@ export class SSORouter extends BaseRouter {
         SSORouter.debug(`Revoking token of type ${keyType}: ${key}`);
         return axiosInstance.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             Sentry.captureException(error);
-            logger.error('Request failed:', revokeUrl, error.message);
+            process.stderr.write(`Request failed: ${revokeUrl}\n${error.message}\n`);
             return;
         });
     }

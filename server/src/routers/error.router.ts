@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/node';
 import { NextFunction, Request } from 'express';
 import * as httpStatus from 'http-status-codes';
-import { logger } from 'winston-pnp-logger';
 
 import { BaseRouter, IResponse } from './base.router';
 
@@ -17,7 +16,7 @@ export class ErrorRouter extends BaseRouter {
         response.status(httpStatus.INTERNAL_SERVER_ERROR);
 
         Sentry.captureException(error);
-        logger.error(`Error on ${request.method} ${request.originalUrl} -> ${error.stack}`);
+        process.stderr.write(`Error on ${request.method} ${request.originalUrl} -> ${error.stack}\n`);
 
         const errorDetails = process.env.NODE_ENV === 'production' ? undefined : {error: error.stack};
         ErrorRouter.sendResponse(response, httpStatus.INTERNAL_SERVER_ERROR, 'InternalServerError', errorDetails);

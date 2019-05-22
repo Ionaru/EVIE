@@ -9,7 +9,6 @@ import { HttpsAgent } from 'agentkeepalive';
 import axios, { AxiosInstance } from 'axios';
 import 'reflect-metadata'; // Required by TypeORM.
 import * as sourceMapSupport from 'source-map-support';
-import { WinstonPnPLogger } from 'winston-pnp-logger';
 
 import { version } from '../package.json';
 import { Application } from './controllers/application.controller';
@@ -29,12 +28,6 @@ export let axiosInstance: AxiosInstance;
         dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
         enabled: process.env.NODE_ENV === 'production',
         release: `evie-server@${version}`,
-    });
-
-    new WinstonPnPLogger({
-        announceSelf: false,
-        logDir: 'logs',
-        showMilliSeconds: true,
     });
 
     debug('Loading configuration');

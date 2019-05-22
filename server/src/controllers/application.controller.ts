@@ -8,7 +8,6 @@ import * as express from 'express';
 import * as MySQLStore from 'express-mysql-session';
 import * as es from 'express-session';
 import * as path from 'path';
-import { logger } from 'winston-pnp-logger';
 
 import { config, debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
@@ -135,7 +134,7 @@ export class Application {
         let quitMessage = 'Quitting';
         if (error) {
             quitMessage += ' because of an uncaught exception!';
-            logger.error('Reason: ', error);
+            process.stderr.write(`Reason: ${error}\n`);
         }
         process.emitWarning(quitMessage);
 
