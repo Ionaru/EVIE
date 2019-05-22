@@ -268,8 +268,7 @@ export class SSORouter extends BaseRouter {
     /**
      * Refresh the access token by requesting a new one using the refresh token
      * Params:
-     *  characterUUID <required>: The UUID of the Character who's token to refresh
-     *  accessToken <required>: The Character's current access token
+     *  uuid <required>: The UUID of the Character who's token to refresh
      */
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'uuid')
