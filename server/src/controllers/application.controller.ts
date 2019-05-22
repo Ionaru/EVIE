@@ -7,7 +7,6 @@ import * as cors from 'cors';
 import * as express from 'express';
 import * as MySQLStore from 'express-mysql-session';
 import * as es from 'express-session';
-import * as helmet from 'helmet';
 import * as path from 'path';
 import { logger } from 'winston-pnp-logger';
 
@@ -55,7 +54,6 @@ export class Application {
             credentials: true,
             origin: 'http://192.168.2.11:8100',
         }));
-        expressApplication.use(helmet());
         expressApplication.set('trust proxy', 1);
 
         // Setup bodyParser
