@@ -5,7 +5,7 @@ import { environment } from '../environments/environment';
 
 Sentry.init({
     dsn: 'https://4064eff091454347b283cc8b939a99a0@sentry.io/1318977',
-    enabled: true,
+    enabled: environment.production,
     release: `evie-client@${environment.VERSION}`,
 });
 
