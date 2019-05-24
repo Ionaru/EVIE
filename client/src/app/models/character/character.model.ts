@@ -1,4 +1,5 @@
 import { ICharacterSkillQueueDataUnit } from '@ionaru/eve-utils';
+import * as jwt from 'jwt-decode';
 
 export class Character {
     public characterId: number;
@@ -42,13 +43,16 @@ export class Character {
     public refreshRetryTimeout?: number;
 
     public constructor(data: IApiCharacterData) {
-        this.characterId = data.characterId;
-        this.name = data.name;
         this.accessToken = data.accessToken;
-        this.ownerHash = data.ownerHash;
         this.uuid = data.uuid;
-        this.scopes = data.scopes ? data.scopes.split(' ') : [];
-        this.tokenExpiry = new Date(data.tokenExpiry);
+
+        // Decode access token for information
+        const tokenData = jwt(this.accessToken) as IJWTToken;
+        this.tokenExpiry = new Date(tokenData.exp * 1000);
+        this.scopes = typeof tokenData.scp === 'string' ? [tokenData.scp] : tokenData.scp;
+        this.ownerHash = tokenData.owner;
+        this.name = tokenData.name;
+        this.characterId = Number(tokenData.sub.split(':').pop());
     }
 
     public updateAuth(data: IApiCharacterData): void {
@@ -115,4 +119,16 @@ export interface IDeleteCharacterResponse {
 
 export interface ISkillQueueDataWithName extends ICharacterSkillQueueDataUnit {
     name?: string;
+}
+
+interface IJWTToken {
+    scp: string[] | string;
+    jti: string;
+    kid: string;
+    sub: string;
+    azp: string;
+    name: string;
+    owner: string;
+    exp: number;
+    iss: string;
 }

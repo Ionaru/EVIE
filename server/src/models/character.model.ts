@@ -66,6 +66,11 @@ export class Character extends BaseModel {
         delete copy.user;
         delete copy.createdOn;
         delete copy.updatedOn;
+        delete copy.characterId;
+        delete copy.ownerHash;
+        delete copy.tokenExpiry;
+        delete copy.name;
+        delete copy.scopes;
         return copy;
     }
 }
