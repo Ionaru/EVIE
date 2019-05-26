@@ -45,13 +45,16 @@
                 <p class="button-row">
                     <button class="btn" [disabled]="isCharacterSelected(character)"
                             [ngClass]="getActivateButtonClass(character)" (click)="switchToCharacter(character).then()">
-                        <fa-icon [icon]="faCheck"></fa-icon>
+<!--                        <fa-icon [icon]="faCheck"></fa-icon>-->
+                        Activate
                     </button>
                     <button class="btn btn-outline-info" (click)="authCharacter(character)">
-                        <fa-icon [icon]="faSync"></fa-icon>
+<!--                        <fa-icon [icon]="faSync"></fa-icon>-->
+                        Refresh
                     </button>
                     <button class="btn btn-outline-danger" (click)="deleteCharacter(character).then()">
-                        <fa-icon [icon]="faTrash"></fa-icon>
+<!--                        <fa-icon [icon]="faTrash"></fa-icon>-->
+                        Delete
                     </button>
                 </p>
             </div>

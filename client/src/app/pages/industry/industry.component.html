@@ -64,12 +64,19 @@
         </p>
     </div>
 
+    <hr>
+
+    <div>
+        <h3>Profit calculator</h3>
+        <input type="text" [(ngModel)]="manufacturingSystem">
+    </div>
+
     <ng-container *ngIf="debugMode">
         <hr>
         <h3>Debug data</h3>
         <p>Industry data</p>
         <pre>{{ industryJobs | json }}</pre>
-        <hr>
+        <br>
         <p>Blueprint data</p>
         <pre>{{ blueprints | json }}</pre>
     </ng-container>

@@ -9,6 +9,8 @@ import { environment } from '../../../environments/environment';
 import { Calc } from '../../../shared/calc.helper';
 import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
+import { IndustryService } from '../../data-services/industry.service';
+import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { StructuresService } from '../../data-services/structures.service';
 import { CharacterService } from '../../models/character/character.service';
@@ -44,6 +46,8 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public arrowRight = faArrowRight;
     public jobRunsIcon = faRepeat;
 
+    public manufacturingSystem = 30021392;
+
     public runningJobsTimer?: number;
 
     public industryJobs?: IExtendedIndustryJobsData[];
@@ -58,7 +62,8 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
 
     constructor(private industryJobsService: IndustryJobsService, private blueprintsService: BlueprintsService,
-                private namesService: NamesService, private structuresService: StructuresService) {
+                private industryService: IndustryService, private namesService: NamesService, private structuresService: StructuresService,
+                private marketService: MarketService) {
         super();
         countdown.setLabels(
             '|s|m|h|d',
@@ -70,7 +75,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public ngOnInit() {
         super.ngOnInit();
         this.getIndustryJobs().then();
-        this.getBlueprints().then();
+        this.getBlueprints().then(() => this.doCalculations().then());
     }
 
     public ngOnDestroy() {
@@ -89,6 +94,37 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public resetTimers() {
         if (this.runningJobsTimer) {
             clearInterval(this.runningJobsTimer);
+        }
+    }
+
+    public async doCalculations() {
+        for (const blueprint of Object.values(this.blueprints)) {
+            const typeId = (blueprint as ICharacterBlueprintsDataUnit).type_id;
+
+            const product = await this.industryService.getBlueprintProduct(typeId);
+            if (!product) {
+                continue;
+            }
+
+            const manufacturingData = await this.industryService.getManufacturingData(product);
+            if (!manufacturingData) {
+                continue;
+            }
+
+            let price = 0;
+            for (const material of manufacturingData.materials) {
+                price += await this.getPriceForAmount(material.id, material.quantity);
+            }
+
+            // pre-fetch types
+            // this.typesService.getTypes(...manufacturingData.materials.map((material) => material.id));
+
+            // const x = await this.getPriceForAmount(manufacturingData.materials[0].id, manufacturingData.materials[0].quantity);
+
+            // const orders = await this.marketService.getMarketOrders(10000016, manufacturingData.materials[0].id, 'buy');
+            await this.namesService.getNames(product);
+            console.log(NamesService.getNameFromData(product), price);
+            // break;
         }
     }
 
@@ -192,5 +228,44 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
             default:
                 return this.manufacturingIcon;
         }
+    }
+
+    private async getPriceForAmount(item: number, amount: number): Promise<number> {
+        const orders = await this.marketService.getMarketOrders(10000016, item, 'sell');
+
+        if (!orders || !orders.length) {
+            return Infinity;
+        }
+
+        sortArrayByObjectProperty(orders, 'price');
+
+        // const type = await this.typesService.getTypes(item);
+
+        // if (!type) {
+        //     return -1;
+        // }
+
+        // const gasVolume = type[0].volume;
+        // const cargoCapacity = volume;
+
+        let price = 0;
+        let unitsLeft = amount;
+        for (const order of orders) {
+            const amountFromThisOrder = Math.min(order.volume_remain, unitsLeft);
+
+            price += amountFromThisOrder * order.price;
+            unitsLeft -= amountFromThisOrder;
+
+            if (!unitsLeft) {
+                break;
+            }
+        }
+
+        if (unitsLeft) {
+            // this.gasPrices[buySell][gas] = price / unitsLeft;
+            return Infinity;
+        }
+
+        return price;
     }
 }

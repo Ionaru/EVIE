@@ -28,6 +28,27 @@ export class DataRouter extends BaseRouter {
     }
 
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    private static async getBlueprintProduct(request: Request, response: Response): Promise<Response> {
+        if (!request.params || !request.params.typeId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
+        const typeId = Number(request.params.typeId);
+
+        if (isNaN(typeId)) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+        }
+
+        const data = await DataController.getBlueprintProduct(typeId);
+
+        if (!data) {
+            return DataRouter.sendResponse(response, httpStatus.NO_CONTENT, 'OK');
+        }
+
+        return DataRouter.sendSuccessResponse(response, data);
+    }
+
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async getRefiningProducts(request: Request, response: Response): Promise<Response> {
         if (!request.params || !request.params.typeId) {
             return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
@@ -106,6 +127,7 @@ export class DataRouter extends BaseRouter {
         this.createGetRoute('/market-types', DataRouter.getMarketTypes);
         this.createGetRoute('/market-ids', DataRouter.getMarketIds);
         this.createGetRoute('/manufacturing/:typeId', DataRouter.getManufacturingInfo);
+        this.createGetRoute('/blueprint-product/:typeId', DataRouter.getBlueprintProduct);
         this.createGetRoute('/refining/:typeId', DataRouter.getRefiningProducts);
     }
 }

@@ -25,6 +25,18 @@ interface IManufacturingData {
 
 export class DataController {
 
+    public static async getBlueprintProduct(blueprintTypeId: number): Promise<number | undefined> {
+        const industryProducts = await esiService.fetchESIData<IIndustryActivityProductsData>(EVE.getIndustryActivityProductsUrl());
+
+        if (!industryProducts) {
+            return;
+        }
+
+        return industryProducts.filter((product) =>
+            product.typeID === blueprintTypeId && product.activityID === IndustryActivity.manufacturing
+        )[0].productTypeID;
+    }
+
     public static async getRefiningProducts(typeId: number): Promise<Array<{ id: number, quantity: number }>> {
         const materials = await esiService.fetchESIData<IInvTypeMaterialsData>(EVE.getInvTypeMaterialsUrl());
         if (!materials) {

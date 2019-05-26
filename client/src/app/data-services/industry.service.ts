@@ -72,4 +72,15 @@ export class IndustryService extends BaseService {
         this.refiningCache[url] = data;
         return data;
     }
+
+    public async getBlueprintProduct(typeId: number): Promise<number | undefined> {
+        const url = `data/blueprint-product/${typeId}`;
+
+        const response = await this.http.get<any>(url).toPromise<IServerResponse<number>>().catch(this.catchHandler);
+        if (response instanceof HttpErrorResponse) {
+            return;
+        }
+
+        return response && response.data ? response.data : undefined;
+    }
 }
