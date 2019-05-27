@@ -31,7 +31,7 @@ export class SocketServer {
         socketServer.on('connection', async (socket: ISessionSocket) => {
             socket.handshake.session.socket = socket.id;
             socket.handshake.session.save(() => undefined);
-            SocketServer.debug(`Socket connect: ${socket.id}, session ${socket.handshake.session.id}`);
+            SocketServer.debug(`Socket connect: ${socket.id}, session ${socket.handshake.session.id}, namespace: ${socket.nsp.name}`);
             SocketServer.sockets.push(socket);
 
             // Remove the socket from the socket list when a client disconnects
