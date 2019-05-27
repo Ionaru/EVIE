@@ -67,8 +67,10 @@
     <hr>
 
     <div>
-        <h3>Profit calculator</h3>
-        <input type="text" [(ngModel)]="manufacturingSystem">
+        <h3>Blueprints</h3>
+<!--        <input type="text" [(ngModel)]="manufacturingSystem">-->
+
+        <app-sor-table [data]="blueprintTableData" [columns]="blueprintTableSettings"></app-sor-table>
     </div>
 
     <ng-container *ngIf="debugMode">

@@ -1,12 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
 import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
-import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { ICharacterBlueprintsDataUnit, ICharacterIndustryJobsDataUnit, IndustryActivity } from '@ionaru/eve-utils';
+import { objectsArrayToObject, sortArrayByObjectProperty, uniquifyArray } from '@ionaru/array-utils';
+import {
+    ICharacterBlueprintsData,
+    ICharacterBlueprintsDataUnit,
+    ICharacterIndustryJobsDataUnit,
+    IndustryActivity,
+} from '@ionaru/eve-utils';
 import * as countdown from 'countdown';
 
 import { environment } from '../../../environments/environment';
 import { Calc } from '../../../shared/calc.helper';
+import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../data-services/industry-jobs.service';
 import { IndustryService } from '../../data-services/industry.service';
@@ -46,8 +52,6 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public arrowRight = faArrowRight;
     public jobRunsIcon = faRepeat;
 
-    public manufacturingSystem = 30021392;
-
     public runningJobsTimer?: number;
 
     public industryJobs?: IExtendedIndustryJobsData[];
@@ -57,6 +61,28 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public IndustryActivity = IndustryActivity;
 
     public debugMode = !environment.production;
+
+    public blueprintTableData: any[] = [];
+
+    public blueprintTableSettings: Array<ITableHeader<any>> = [{
+        attribute: 'name',
+        prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Type/${data.id}_32.png" alt="${data.name}"> `,
+    }, {
+        attribute: 'cost',
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        suffix: ' ISK',
+    }, {
+        attribute: 'value',
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        suffix: ' ISK',
+    }, {
+        attribute: 'profit',
+        pipe: 'number',
+        pipeVar: '0.2-2',
+        suffix: ' %',
+    }];
 
     // tslint:disable-next-line:no-bitwise
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
@@ -98,8 +124,13 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     }
 
     public async doCalculations() {
-        for (const blueprint of Object.values(this.blueprints)) {
-            const typeId = (blueprint as ICharacterBlueprintsDataUnit).type_id;
+        const blueprints = Object.values(this.blueprints) as ICharacterBlueprintsData;
+        const blueprintTypeIds = blueprints.map((blueprint) => blueprint.type_id);
+        const uniqueBlueprintTypeIds = uniquifyArray(blueprintTypeIds);
+
+        this.blueprintTableData = [];
+
+        for (const typeId of uniqueBlueprintTypeIds) {
 
             const product = await this.industryService.getBlueprintProduct(typeId);
             if (!product) {
@@ -111,20 +142,40 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                 continue;
             }
 
+            const blueprintME = blueprints.filter((blueprint) => blueprint.type_id === typeId)[0].material_efficiency;
+            const materials = manufacturingData.materials.map((material) => {
+                return {
+                    id: material.id,
+                    quantity: material.quantity - Math.floor(material.quantity * (blueprintME / 100)),
+                };
+            });
+
             let price = 0;
-            for (const material of manufacturingData.materials) {
+            for (const material of materials) {
                 price += await this.getPriceForAmount(material.id, material.quantity);
             }
 
-            // pre-fetch types
-            // this.typesService.getTypes(...manufacturingData.materials.map((material) => material.id));
-
-            // const x = await this.getPriceForAmount(manufacturingData.materials[0].id, manufacturingData.materials[0].quantity);
-
-            // const orders = await this.marketService.getMarketOrders(10000016, manufacturingData.materials[0].id, 'buy');
             await this.namesService.getNames(product);
-            console.log(NamesService.getNameFromData(product), price);
+
+            const orders = await this.marketService.getMarketOrders(10000002, product, 'buy');
+            if (!orders || !orders.length) {
+                continue;
+            }
+
+            sortArrayByObjectProperty(orders, 'price', true);
+
+            const sellPrice = orders[0].price;
+
+            console.log(NamesService.getNameFromData(product), price, sellPrice);
             // break;
+
+            this.blueprintTableData.push({
+                cost: price,
+                id: typeId,
+                name: NamesService.getNameFromData(product),
+                profit: Calc.profitPercentage(price, sellPrice),
+                value: sellPrice,
+            });
         }
     }
 
