@@ -186,7 +186,8 @@ export class SSORouter extends BaseRouter {
             .where('character.characterId = :characterID', {characterID})
             .getOne();
 
-        if (character) {
+        // Only revoke the token if the new one is different.
+        if (character && character.refreshToken && character.refreshToken && authResponse.data.refresh_token) {
             // Revoke old token
             if (character.refreshToken) {
                 SSORouter.revokeKey(character.refreshToken, 'refresh_token').then();
