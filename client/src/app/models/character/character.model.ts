@@ -52,7 +52,7 @@ export class Character {
         this.scopes = typeof tokenData.scp === 'string' ? [tokenData.scp] : tokenData.scp;
         this.ownerHash = tokenData.owner;
         this.name = tokenData.name;
-        this.characterId = Number(tokenData.sub.split(':').pop());
+        this.characterId = Number(tokenData.sub.split(':')[2]);
     }
 
     public updateAuth(data: IApiCharacterData): void {
