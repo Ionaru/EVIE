@@ -29,4 +29,4 @@ RUN mkdir /etc/nginx/conf.d/proxy
 COPY ./nginx-proxy.conf /etc/nginx/conf.d/proxy
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY --from=build /app /app
+COPY --from=build /app/dist/client /app
