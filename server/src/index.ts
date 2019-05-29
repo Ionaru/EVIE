@@ -71,9 +71,11 @@ export let axiosInstance: AxiosInstance;
         application.stop(error).then();
     });
     process.on('SIGINT', () => {
+        debug('SIGINT received');
         application.stop().then();
     });
     process.on('SIGTERM', () => {
+        debug('SIGTERM received');
         application.stop().then();
     });
     // Promises that fail should not cause the application to stop, instead we log the error.
