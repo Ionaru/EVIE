@@ -6,6 +6,7 @@ services:
             context: ./client
             args:
                 FA_TOKEN: ${EVIE_FA_TOKEN}
+                EVIE_ENV: ${EVIE_ENV:-local}
         env_file:
             - .env
         restart: unless-stopped

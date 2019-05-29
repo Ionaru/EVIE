@@ -17,7 +17,8 @@ COPY ./src ./src
 
 # Build client for production
 ENV NODE_ENV production
-RUN npm run build:prod
+ARG EVIE_ENV
+RUN npx ng build --configuration=${EVIE_ENV}
 
 ## RUN NGINX
 
