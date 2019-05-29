@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:12-alpine as build
 
 ## INSTALL CLIENT
 
@@ -21,11 +21,11 @@ RUN npm run build:prod
 
 ## RUN NGINX
 
-FROM nginx:mainline-alpine
+FROM nginx:mainline-alpine as serve
 
 COPY ./nginx.conf /etc/nginx/conf.d
 RUN mkdir /etc/nginx/conf.d/proxy
 COPY ./nginx-proxy.conf /etc/nginx/conf.d/proxy
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY --from=0 /app /app
+COPY --from=build /app /app
