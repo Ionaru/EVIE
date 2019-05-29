@@ -187,10 +187,7 @@ export class SSORouter extends BaseRouter {
             .getOne();
 
         if (character) {
-            // Revoke old tokens
-            if (character.accessToken) {
-                SSORouter.revokeKey(character.accessToken, 'access_token').then();
-            }
+            // Revoke old token
             if (character.refreshToken) {
                 SSORouter.revokeKey(character.refreshToken, 'refresh_token').then();
             }
@@ -329,10 +326,7 @@ export class SSORouter extends BaseRouter {
 
         const characterToDelete = characterToDeleteList[0];
 
-        // Revoke tokens
-        if (characterToDelete.accessToken) {
-            SSORouter.revokeKey(characterToDelete.accessToken, 'access_token').then();
-        }
+        // Revoke token
         if (characterToDelete.refreshToken) {
             SSORouter.revokeKey(characterToDelete.refreshToken, 'refresh_token').then();
         }
