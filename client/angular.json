@@ -52,11 +52,7 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "extractCss": true,
-                            "namedChunks": true,
                             "aot": true,
-                            "extractLicenses": true,
-                            "vendorChunk": true,
-                            "commonChunk": true,
                             "buildOptimizer": true
                         },
                         "production": {
@@ -69,11 +65,7 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "extractCss": true,
-                            "namedChunks": true,
                             "aot": true,
-                            "extractLicenses": true,
-                            "vendorChunk": true,
-                            "commonChunk": true,
                             "buildOptimizer": true
                         }
                     }
