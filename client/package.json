@@ -8,6 +8,7 @@
         "lint": "ng lint client --type-check --format stylish",
         "pretest": "npm run lint",
         "test": "echo \"Error: no test specified\" && exit 0",
+        "posttest": "ng build --prod",
         "build": "ng build",
         "build:prod": "ng build --prod"
     },
