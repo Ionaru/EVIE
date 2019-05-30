@@ -1,3 +1,4 @@
+/* tslint:disable:no-duplicate-string */
 import { generateRandomString } from '@ionaru/random-string';
 import * as Sentry from '@sentry/node';
 import { AxiosError, AxiosRequestConfig } from 'axios';
@@ -147,6 +148,7 @@ export class SSORouter extends BaseRouter {
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
     @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'state')
+    // tslint:disable-next-line:cognitive-complexity
     private static async SSOAuthCallback(request: Request, response: Response): Promise<Response> {
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.

@@ -10,6 +10,7 @@ export class RequestLogger {
     public static ignoredExtension = ['.ico', '.js', '.css', '.png', '.jpg', '.svg', '.html'];
     public static arrow = chalk.white('->');
 
+    // tslint:disable-next-line:cognitive-complexity
     public static logRequest(): any {
         return function log(request: Request, response: Response, next: NextFunction) {
 
