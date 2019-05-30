@@ -189,9 +189,7 @@ export class SSORouter extends BaseRouter {
         // Only revoke the token if the new one is different.
         if (character && character.refreshToken && character.refreshToken !== authResponse.data.refresh_token) {
             // Revoke old token
-            if (character.refreshToken) {
-                SSORouter.revokeKey(character.refreshToken, 'refresh_token').then();
-            }
+            SSORouter.revokeKey(character.refreshToken, 'refresh_token').then();
         }
 
         if (character && character.ownerHash !== characterOwnerHash) {
