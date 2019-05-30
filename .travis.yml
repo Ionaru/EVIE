@@ -11,6 +11,7 @@ jobs:
           before_install: cd server
 
         - stage: deploy
+          language: bash
           script: skip
           deploy:
               - provider: script
