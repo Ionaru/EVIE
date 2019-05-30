@@ -172,19 +172,13 @@ export class SSORouter extends BaseRouter {
 
         const {characterID, characterName, characterOwnerHash, characterScopes} = SSORouter.extractJWTValues(token);
 
-        let user: User | undefined = await User.doQuery()
-            .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session!.user.id})
-            .getOne();
+        let user = await User.getFromId(request.session!.user.id);
 
         if (!user) {
             return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
         }
 
-        let character = await Character.doQuery()
-            .innerJoinAndSelect('character.user', 'user')
-            .where('character.characterId = :characterID', {characterID})
-            .getOne();
+        let character = await Character.getFromId(characterID);
 
         // Only revoke the token if the new one is different.
         if (character && character.refreshToken && character.refreshToken !== authResponse.data.refresh_token) {
@@ -243,10 +237,7 @@ export class SSORouter extends BaseRouter {
         delete request.session!.characterUUID;
 
         // Refresh user data.
-        user = await User.doQuery()
-            .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session!.user.id})
-            .getOne();
+        user = await User.getFromId(request.session!.user.id);
 
         const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
         if (sockets.length) {

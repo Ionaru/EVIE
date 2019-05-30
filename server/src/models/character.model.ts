@@ -11,6 +11,13 @@ export class Character extends BaseModel {
         return this.createQueryBuilder('character');
     }
 
+    public static getFromId(id: number) {
+        return Character.doQuery()
+            .innerJoinAndSelect('character.user', 'user')
+            .where('character.characterId = :id', {id})
+            .getOne();
+    }
+
     @Column({
         nullable: true,
     })
