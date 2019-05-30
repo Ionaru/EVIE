@@ -1,3 +1,4 @@
+/* tslint:disable:no-duplicate-string */
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';

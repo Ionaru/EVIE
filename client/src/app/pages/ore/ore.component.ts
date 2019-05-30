@@ -189,6 +189,7 @@ export class OreComponent implements OnInit {
         this.orePrices[buySell][ore] = price / cargoCapacity;
     }
 
+    // tslint:disable-next-line:cognitive-complexity
     public changeVisibleOres() {
         const visibleOres: number[] = [];
 

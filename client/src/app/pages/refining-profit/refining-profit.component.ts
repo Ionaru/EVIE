@@ -117,6 +117,7 @@ export class RefiningProfitComponent implements OnInit {
         this.changeVisibleOres();
     }
 
+    // tslint:disable-next-line:cognitive-complexity
     public async getPrices(ore: number, volume: number) {
 
         const oreSellOrders = await this.marketService.getMarketOrders(10000002, ore, 'sell');
@@ -191,6 +192,7 @@ export class RefiningProfitComponent implements OnInit {
         this.prices[ore].sell = totalPrice / 100;
     }
 
+    // tslint:disable-next-line:cognitive-complexity
     public changeVisibleOres() {
         const visibleOres: number[] = [];
 

@@ -170,6 +170,7 @@ export class CountUp {
         return this.options.prefix + x1 + x2 + this.options.suffix;
     }
 
+    // tslint:disable-next-line:cognitive-complexity
     private count(timestamp: number): void {
         if (!this.startTime) {
             this.startTime = timestamp;

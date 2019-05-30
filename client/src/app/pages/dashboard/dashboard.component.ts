@@ -48,6 +48,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
             ', ');
     }
 
+    // tslint:disable-next-line:cognitive-complexity
     public async ngOnInit() {
         super.ngOnInit();
         this.characters = UserService.user.characters;

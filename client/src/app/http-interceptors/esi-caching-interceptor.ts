@@ -11,6 +11,7 @@ export class ESICachingInterceptor implements HttpInterceptor {
 
     constructor(private http: HttpClient) { }
 
+    // tslint:disable-next-line:cognitive-complexity
     public intercept(request: HttpRequest<any>, next: HttpHandler) {
 
         // We only want to cache GET ESI calls.
@@ -31,7 +32,7 @@ export class ESICachingInterceptor implements HttpInterceptor {
                     if (event.status === 200 && event.headers.has('warning')) {
                         const warningText = event.headers.get('warning') as string;
                         if (warningText.includes('199') || warningText.includes('299')) {
-                            this.http.post('sso/log-route-warning', {route: request.url, text: warningText}).subscribe();
+                            this.http.post('sso/log-route-warning', {route: request.url, text: warningText}).toPromise().then();
                         }
                     }
 

@@ -261,6 +261,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         this.skillTypes = await this.skillsService.getAllSkills();
     }
 
+    // tslint:disable-next-line:cognitive-complexity
     private parseSkillQueue() {
 
         this.resetTimers();

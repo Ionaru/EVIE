@@ -85,18 +85,20 @@ export class NamesService extends BaseService {
             }
         }
 
-        if (namesToGet.length) {
-            const maxChunkSize = 1000;
-            while (true) {
-                const namesToGetChunk = namesToGet.splice(0, maxChunkSize);
+        if (!namesToGet.length) {
+            return;
+        }
 
-                if (namesToGetChunk.length > 0) {
-                    await this.getNamesFromAPI(namesToGetChunk);
-                }
+        const maxChunkSize = 1000;
+        while (true) {
+            const namesToGetChunk = namesToGet.splice(0, maxChunkSize);
 
-                if (namesToGetChunk.length < 1000) {
-                    break;
-                }
+            if (namesToGetChunk.length > 0) {
+                await this.getNamesFromAPI(namesToGetChunk);
+            }
+
+            if (namesToGetChunk.length < 1000) {
+                break;
             }
         }
 

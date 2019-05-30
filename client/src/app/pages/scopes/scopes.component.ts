@@ -1,3 +1,4 @@
+/* tslint:disable:no-duplicate-string */
 import { Component, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { faChevronDown, faChevronUp, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
