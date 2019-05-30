@@ -1,27 +1,14 @@
 jobs:
     include:
         - stage: client
-          node_js:
-              - '12' # EOL: April 2022
-              - '11' # EOL: June 2019
-              - '10' # EOL: April 2021
-              - '8' # EOL: December 2019
-          script:
-              - cd client
-              - npm test
+          node_js: '12'
+          before_install: cd client
 
         - stage: server
-          node_js:
-              - '12' # EOL: April 2022
-              - '11' # EOL: June 2019
-              - '10' # EOL: April 2021
-              - '8' # EOL: December 2019
-          script:
-              - cd server
-              - npm test
+          node_js: '12'
+          before_install: cd server
 
         - stage: deploy
-          node_js: lts/*
           script: skip
           deploy:
               - provider: script
