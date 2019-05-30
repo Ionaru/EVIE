@@ -1,0 +1,8 @@
+# https://github.com/browserslist/browserslist#queries
+
+> 1%
+Firefox ESR
+not IE 11
+not OperaMini all
+not UCAndroid 11.8
+not dead

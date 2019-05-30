@@ -4,6 +4,7 @@
         "declaration": false,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "module": "esnext",
         "moduleResolution": "node",
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
@@ -22,6 +23,6 @@
             "esnext"
         ],
         "outDir": "./dist/out-tsc",
-        "target": "es2016"
+        "target": "es2015"
     }
 }
