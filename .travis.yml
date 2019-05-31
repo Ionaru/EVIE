@@ -1,16 +1,16 @@
 jobs:
     include:
-        - stage: client
+        - stage: "Client test"
           language: node_js
           node_js: '12'
           before_install: cd client
 
-        - stage: server
+        - stage: "Server test"
           language: node_js
           node_js: '12'
           before_install: cd server
 
-        - stage: deploy
+        - stage: Deploy
           language: bash
           script: skip
           deploy:
