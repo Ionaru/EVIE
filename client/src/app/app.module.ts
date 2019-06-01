@@ -11,6 +11,7 @@ import { AppReadyEventService } from './app-ready-event.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ApiOfflineMessageComponent } from './components/api-offline-message/api-offline-message.component';
+import { LoadingMessageComponent } from './components/loading-message/loading-message.component';
 import { NoScopesMessageComponent } from './components/no-scopes-message/no-scopes-message.component';
 import { SorTableComponent } from './components/sor-table/sor-table.component';
 import { AttributesService } from './data-services/attributes.service';
@@ -81,6 +82,7 @@ if (environment.production) {
         BlueprintCalculatorComponent,
         RefiningProfitComponent,
         GasChartComponent,
+        LoadingMessageComponent,
     ],
     entryComponents: [
         LogoutModalComponent,
