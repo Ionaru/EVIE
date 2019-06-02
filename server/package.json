@@ -25,7 +25,7 @@
         "@ionaru/eve-utils": "^3.1.1",
         "@ionaru/random-string": "^1.0.0",
         "@ionaru/web-server": "^1.0.1",
-        "@sentry/node": "^5.3.0",
+        "@sentry/node": "^5.4.0",
         "agentkeepalive": "^4.0.0",
         "app-root-path": "^2.1.0",
         "axios": "^0.19.0",
