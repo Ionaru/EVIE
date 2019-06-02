@@ -4,7 +4,7 @@ import {
     IInvTypeMaterialsData, IMarketGroupData, IndustryActivity, IUniverseCategoriesData, IUniverseGroupsData, IUniverseTypesData,
 } from '@ionaru/eve-utils';
 
-import { esiService } from '../index';
+import { esiCache, esiService } from '../index';
 
 interface IManufacturingData {
     blueprintId: number;
@@ -155,22 +155,36 @@ export class DataController {
         const typeData: IUniverseTypesData[] = [];
 
         await Promise.all(typeIds.map(async (typeId) => {
-            let tries = 0;
-
-            let type: IUniverseTypesData | undefined;
-
-            while (!type) {
-                if (tries > 3) {
-                    throw new Error(`Unable to get Type ${typeId}`);
-                }
-
-                type = await esiService.fetchESIData<IUniverseTypesData>(EVE.getUniverseTypesUrl(typeId));
-                tries++;
-            }
-
+            const type = await DataController.getUniverseType(typeId);
             typeData.push(type);
         }));
 
         return typeData;
+    }
+
+    public static async getUniverseType(typeId: number) {
+        let tries = 0;
+
+        let type: IUniverseTypesData | undefined;
+
+        const url = EVE.getUniverseTypesUrl(typeId);
+
+        while (!type || tries < 3) {
+
+            type = await esiService.fetchESIData<IUniverseTypesData>(url).catch(() => undefined);
+
+            tries++;
+        }
+
+        if (!type) {
+            // Try to get a result from a previously cached response.
+            type = esiCache.responseCache[url] && esiCache.responseCache[url]!.data;
+        }
+
+        if (!type) {
+            throw new Error(`Unable to get Type ${typeId}`);
+        }
+
+        return type;
     }
 }
