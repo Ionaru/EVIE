@@ -141,10 +141,6 @@ export class Application {
         debug('Dumping cache to files');
         esiCache.dumpCache();
 
-        if (this.webServer && this.webServer.server.listening) {
-            await this.webServer.close();
-        }
-
         if (this.socketServer) {
             if (process.env.NODE_ENV === 'production') {
                 this.socketServer.io.emit('STOP');
