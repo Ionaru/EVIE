@@ -27,6 +27,6 @@ export class GlobalRouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createAllRoute('/', GlobalRouter.globalRoute);
+        this.createRoute('all', '/', GlobalRouter.globalRoute);
     }
 }

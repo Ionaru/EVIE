@@ -65,7 +65,7 @@ export class APIRouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/handshake', APIRouter.doHandShake);
-        this.createPostRoute('/logout', APIRouter.logoutUser);
+        this.createRoute('get', '/handshake', APIRouter.doHandShake);
+        this.createRoute('post', '/logout', APIRouter.logoutUser);
     }
 }

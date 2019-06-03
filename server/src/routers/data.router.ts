@@ -100,12 +100,12 @@ export class DataRouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createPostRoute('/types', DataRouter.getTypes);
-        this.createGetRoute('/skill-types', DataRouter.getSkillTypes);
-        this.createGetRoute('/skill-ids', DataRouter.getSkillIds);
-        this.createGetRoute('/market-types', DataRouter.getMarketTypes);
-        this.createGetRoute('/market-ids', DataRouter.getMarketIds);
-        this.createGetRoute('/manufacturing/:typeId', DataRouter.getManufacturingInfo);
-        this.createGetRoute('/refining/:typeId', DataRouter.getRefiningProducts);
+        this.createRoute('post', '/types', DataRouter.getTypes);
+        this.createRoute('get', '/skill-types', DataRouter.getSkillTypes);
+        this.createRoute('get', '/skill-ids', DataRouter.getSkillIds);
+        this.createRoute('get', '/market-types', DataRouter.getMarketTypes);
+        this.createRoute('get', '/market-ids', DataRouter.getMarketIds);
+        this.createRoute('get', '/manufacturing/:typeId', DataRouter.getManufacturingInfo);
+        this.createRoute('get', '/refining/:typeId', DataRouter.getRefiningProducts);
     }
 }

@@ -16,6 +16,8 @@ export interface IResponse extends Response {
     data?: IServerResponse<any>;
 }
 
+type Method = 'post' | 'put' | 'get' | 'delete' | 'all';
+
 export class BaseRouter {
 
     public static sendResponse(response: Response, statusCode: number, message: string, data?: any): Response {
@@ -142,26 +144,9 @@ export class BaseRouter {
         BaseRouter.debug(`New express router: ${this.constructor.name}`);
     }
 
-    public createAllRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
-        this.router.all(url, this.asyncHandler(routeFunction));
-    }
-
-    public createGetRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
-        this.router.get(url, this.asyncHandler(routeFunction));
-    }
-
-    public createPostRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
-        this.router.post(url, this.asyncHandler(routeFunction));
-    }
-
-    // noinspection JSUnusedGlobalSymbols
-    public createPutRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
-        this.router.put(url, this.asyncHandler(routeFunction));
-    }
-
-    // noinspection JSUnusedGlobalSymbols
-    public createDeleteRoute(url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
-        this.router.delete(url, this.asyncHandler(routeFunction));
+    public createRoute(method: Method, url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {
+        BaseRouter.debug(`New route: ${method.toUpperCase()} ${url}`);
+        this.router[method](url, this.asyncHandler(routeFunction));
     }
 
     private asyncHandler(routeFunction: any): any {

@@ -43,9 +43,9 @@ export class UserRouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/', UserRouter.getUsers);
-        this.createGetRoute('/:uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', UserRouter.getUser);
-        this.createGetRoute('/:id([0-9])', UserRouter.getUserById);
-        this.createAllRoute('*', (_request: Request, response: Response) => BaseRouter.send404(response));
+        this.createRoute('get', '/', UserRouter.getUsers);
+        this.createRoute('get', '/:uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', UserRouter.getUser);
+        this.createRoute('get', '/:id([0-9])', UserRouter.getUserById);
+        this.createRoute('all', '*', (_request: Request, response: Response) => BaseRouter.send404(response));
     }
 }

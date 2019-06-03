@@ -460,17 +460,17 @@ export class SSORouter extends BaseRouter {
 
     constructor() {
         super();
-        this.createGetRoute('/refresh', SSORouter.refreshToken);
-        this.createPostRoute('/delete', SSORouter.deleteCharacter);
-        this.createPostRoute('/activate', SSORouter.activateCharacter);
-        this.createPostRoute('/log-route-warning', SSORouter.logDeprecation);
+        this.createRoute('get', '/refresh', SSORouter.refreshToken);
+        this.createRoute('post', '/delete', SSORouter.deleteCharacter);
+        this.createRoute('post', '/activate', SSORouter.activateCharacter);
+        this.createRoute('post', '/log-route-warning', SSORouter.logDeprecation);
 
         // SSO login
-        this.createGetRoute('/login', SSORouter.SSOLogin);
-        this.createGetRoute('/login-callback', SSORouter.SSOLoginCallback);
+        this.createRoute('get', '/login', SSORouter.SSOLogin);
+        this.createRoute('get', '/login-callback', SSORouter.SSOLoginCallback);
 
         // SSO character auth
-        this.createGetRoute('/auth', SSORouter.SSOAuth);
-        this.createGetRoute('/auth-callback', SSORouter.SSOAuthCallback);
+        this.createRoute('get', '/auth', SSORouter.SSOAuth);
+        this.createRoute('get', '/auth-callback', SSORouter.SSOAuthCallback);
     }
 }
