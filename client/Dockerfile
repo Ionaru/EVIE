@@ -6,7 +6,7 @@ RUN mkdir /app
 WORKDIR /app
 
 # Copy needed build files
-COPY ./.npmrc ./package.json ./package-lock.json ./angular.json ./tsconfig.json ./
+COPY ./browserslist ./.npmrc ./package.json ./package-lock.json ./angular.json ./tsconfig.json ./
 
 # Install dependencies
 ARG FA_TOKEN
