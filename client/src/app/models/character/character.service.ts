@@ -10,8 +10,7 @@ const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
 @Injectable()
 export class CharacterService {
 
-    private static _characterChangeEvent = new Subject<Character>();
-    public static get characterChangeEvent() { return this._characterChangeEvent; }
+    public static readonly characterChangeEvent = new Subject<Character>();
 
     private static _selectedCharacter?: Character;
     public static get selectedCharacter(): Character | undefined { return this._selectedCharacter; }

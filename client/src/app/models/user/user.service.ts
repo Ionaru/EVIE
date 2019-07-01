@@ -13,10 +13,9 @@ import { ISSOAuthResponse, ISSOLoginResponse, IUserApiData, User } from './user.
 @Injectable()
 export class UserService {
 
-    private static authWindow?: Window | null;
+    public static readonly userChangeEvent = new Subject<User>();
 
-    private static _userChangeEvent = new Subject<User>();
-    public static get userChangeEvent() { return this._userChangeEvent; }
+    private static authWindow?: Window | null;
 
     private static _user: User;
     public static get user() { return this._user; }
