@@ -28,7 +28,7 @@
         "@fortawesome/pro-regular-svg-icons": "^5.8.2",
         "@fortawesome/pro-solid-svg-icons": "^5.8.2",
         "@ionaru/array-utils": "^1.1.0",
-        "@ionaru/eve-utils": "^3.1.1",
+        "@ionaru/eve-utils": "^3.2.0",
         "@ionaru/romanize": "^1.1.0",
         "@ng-bootstrap/ng-bootstrap": "^4.2.0",
         "@sentry/browser": "^5.4.0",
