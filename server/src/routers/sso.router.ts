@@ -211,6 +211,7 @@ export class SSORouter extends BaseRouter {
                 .set({
                     email: character.user.email || user.email,
                     isAdmin: character.user.isAdmin || user.isAdmin,
+                    timesLogin: character.user.timesLogin + user.timesLogin,
                 })
                 .where('user.id = :id', {id: request.session!.user.id})
                 .execute();
