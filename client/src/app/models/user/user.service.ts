@@ -66,7 +66,7 @@ export class UserService {
         }));
 
         if (newCharacterUUID) {
-            this.characterService.setActiveCharacter(user.characters.filter((character) => character.uuid === newCharacterUUID)[0]).then();
+            this.characterService.setActiveCharacter(user.characters.find((character) => character.uuid === newCharacterUUID)).then();
         } else if (user.characters && user.characters.length && !CharacterService.selectedCharacter) {
             this.characterService.setActiveCharacter(user.characters[0]).then();
         }

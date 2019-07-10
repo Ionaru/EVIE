@@ -212,6 +212,6 @@ export class GasChartComponent implements OnInit {
 
     private getGasName(gas: number) {
         const keys = Object.keys as <T>(o: T) => Array<Extract<keyof T, string>>;
-        return keys(EVE.gas).filter((name) => EVE.gas[name] === gas)[0];
+        return keys(EVE.gas).find((name) => EVE.gas[name] === gas) || 'Unknown gas';
     }
 }

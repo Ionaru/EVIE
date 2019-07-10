@@ -19,11 +19,11 @@ export class RequestLogger {
             // Runs when the request has finished.
             onFinished(response, async (_err, endResponse: IResponse) => {
 
-                const ignoredUrlMatch = RequestLogger.ignoredUrls.filter(
-                    (ignoredUrl) => request.originalUrl.startsWith(ignoredUrl)).length;
+                const ignoredUrlMatch = RequestLogger.ignoredUrls.some(
+                    (ignoredUrl) => request.originalUrl.startsWith(ignoredUrl));
 
-                const ignoredExtensionMatch = RequestLogger.ignoredExtension.filter(
-                    (ignoredExtension) => request.originalUrl.endsWith(ignoredExtension)).length;
+                const ignoredExtensionMatch = RequestLogger.ignoredExtension.some(
+                    (ignoredExtension) => request.originalUrl.endsWith(ignoredExtension));
 
                 // Do not log requests to static URLs and files unless their status code is not OK.
                 if ((!ignoredExtensionMatch && !ignoredUrlMatch) || (endResponse.statusCode !== 200 && endResponse.statusCode !== 304)) {

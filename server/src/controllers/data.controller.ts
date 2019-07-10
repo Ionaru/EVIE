@@ -42,8 +42,8 @@ export class DataController {
         let blueprint;
 
         if (industryProducts) {
-            blueprint = industryProducts.filter((product) =>
-                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing)[0];
+            blueprint = industryProducts.find((product) =>
+                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing);
         }
 
         if (!blueprint) {
@@ -62,8 +62,8 @@ export class DataController {
 
             let bpInfo: IManufacturingData;
 
-            const bluePrint = industryProducts.filter((product) =>
-                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing)[0];
+            const bluePrint = industryProducts.find((product) =>
+                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing);
 
             if (!bluePrint) {
                 return;
@@ -73,15 +73,15 @@ export class DataController {
                 material.typeID === bluePrint.typeID && material.activityID === IndustryActivity.manufacturing);
             const skills = industrySkills.filter((skill) =>
                 skill.typeID === bluePrint.typeID && skill.activityID === IndustryActivity.manufacturing);
-            const time = industryActivities.filter((activity) =>
-                activity.typeID === bluePrint.typeID && activity.activityID === IndustryActivity.manufacturing)[0];
+            const time = industryActivities.find((activity) =>
+                activity.typeID === bluePrint.typeID && activity.activityID === IndustryActivity.manufacturing);
 
             bpInfo = {
                 blueprintId: bluePrint.typeID,
                 materials: materials.map((mat) => ({id: mat.materialTypeID, quantity: mat.quantity})),
                 result: {id: typeId, quantity: bluePrint.quantity},
                 skills: skills.map((skill) => ({id: skill.skillID, level: skill.level})),
-                time: time.time,
+                time: time!.time,
             };
 
             return bpInfo;

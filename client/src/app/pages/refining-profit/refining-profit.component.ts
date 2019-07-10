@@ -93,7 +93,7 @@ export class RefiningProfitComponent implements OnInit {
 
         const types = await this.typesService.getTypes(...EVE.ores.all);
         for (const ore of EVE.ores.all) {
-            this.oreTypes[ore] = types ? types.filter((type) => type.type_id === ore)[0] : undefined;
+            this.oreTypes[ore] = types ? types.find((type) => type.type_id === ore) : undefined;
         }
 
         await Promise.all(EVE.ores.all.map(async (ore) => {

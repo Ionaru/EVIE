@@ -125,7 +125,8 @@ export class OreComponent implements OnInit {
 
         const types = await this.typesService.getTypes(...EVE.ores.all) || [];
         for (const ore of EVE.ores.all) {
-            this.oreTypes[ore] = types.filter((type) => type.type_id === ore)[0];
+            // tslint:disable-next-line:no-non-null-assertion
+            this.oreTypes[ore] = types.find((type) => type.type_id === ore)!;
         }
 
         await Promise.all(EVE.ores.all.map(async (ore) => {

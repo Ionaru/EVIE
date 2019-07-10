@@ -152,7 +152,8 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
     public countLvl5Skills = () => this.skills ? this.skills.skills.filter((skill) => skill.active_skill_level === 5).length : 0;
 
-    public getSkillGroup = (skillId: number) => this.skillGroups.filter((group) => group.types.includes(skillId))[0].name;
+    // tslint:disable-next-line:no-non-null-assertion
+    public getSkillGroup = (skillId: number) => this.skillGroups.find((group) => group.types.includes(skillId))!.name;
 
     public skillQueueLow = () => !this.skillTrainingPaused && this.skillQueueTimeLeft < (24 * 60 * 60 * 1000);
 
