@@ -1,7 +1,7 @@
 import {
     EVE,
     IIndustryActivityData, IIndustryActivityMaterialsData, IIndustryActivityProductsData, IIndustryActivitySkillsData,
-    IInvTypeMaterialsData, IMarketGroupData, IndustryActivity, IUniverseCategoriesData, IUniverseGroupsData, IUniverseTypesData,
+    IInvTypeMaterialsData, IMarketGroupData, IndustryActivity, IUniverseCategoryData, IUniverseGroupData, IUniverseTypeData,
 } from '@ionaru/eve-utils';
 
 import { esiCache, esiService } from '../index';
@@ -91,11 +91,11 @@ export class DataController {
     }
 
     public static getUniverseCategory(categoryId: number) {
-        return esiService.fetchESIData<IUniverseCategoriesData>(EVE.getUniverseCategoriesUrl(categoryId));
+        return esiService.fetchESIData<IUniverseCategoryData>(EVE.getUniverseCategoryUrl(categoryId));
     }
 
     public static getUniverseGroup(groupId: number) {
-        return esiService.fetchESIData<IUniverseGroupsData>(EVE.getUniverseGroupsUrl(groupId));
+        return esiService.fetchESIData<IUniverseGroupData>(EVE.getUniverseGroupUrl(groupId));
     }
 
     public static async getMarketIds() {
@@ -152,7 +152,7 @@ export class DataController {
 
     public static async getUniverseTypes(...typeIds: number[]) {
 
-        const typeData: IUniverseTypesData[] = [];
+        const typeData: IUniverseTypeData[] = [];
 
         await Promise.all(typeIds.map(async (typeId) => {
             const type = await DataController.getUniverseType(typeId);
@@ -165,13 +165,13 @@ export class DataController {
     public static async getUniverseType(typeId: number) {
         let tries = 0;
 
-        let type: IUniverseTypesData | undefined;
+        let type: IUniverseTypeData | undefined;
 
         const url = EVE.getUniverseTypesUrl(typeId);
 
         while (!type || tries < 3) {
 
-            type = await esiService.fetchESIData<IUniverseTypesData>(url).catch(() => undefined);
+            type = await esiService.fetchESIData<IUniverseTypeData>(url).catch(() => undefined);
 
             tries++;
         }

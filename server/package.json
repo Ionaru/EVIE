@@ -20,11 +20,11 @@
         "preversion": "npm run test"
     },
     "dependencies": {
-        "@ionaru/configurator": "^1.0.0",
-        "@ionaru/esi-service": "^3.1.0",
-        "@ionaru/eve-utils": "^3.1.1",
-        "@ionaru/random-string": "^1.0.0",
-        "@ionaru/web-server": "^1.0.1",
+        "@ionaru/configurator": "^2.0.0",
+        "@ionaru/esi-service": "^3.1.1",
+        "@ionaru/eve-utils": "^4.0.1",
+        "@ionaru/random-string": "^1.1.0",
+        "@ionaru/web-server": "^2.0.0",
         "@sentry/node": "^5.4.0",
         "agentkeepalive": "^4.0.0",
         "app-root-path": "^2.1.0",
