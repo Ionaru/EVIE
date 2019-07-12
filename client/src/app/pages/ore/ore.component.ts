@@ -2,7 +2,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { EVE, IMarketOrdersData, IUniverseTypesData } from '@ionaru/eve-utils';
+import { EVE, IMarketOrdersData, IUniverseTypeData } from '@ionaru/eve-utils';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
@@ -10,7 +10,7 @@ import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 
 interface IOreTypesDict {
-    [index: number]: IUniverseTypesData;
+    [index: number]: IUniverseTypeData;
 }
 
 interface IOrePrices {
@@ -30,7 +30,7 @@ interface IOresData {
     sell: number;
     spread: number;
     venture: number;
-    volume: number | string;
+    volume?: number | string;
 }
 
 @Component({
@@ -161,7 +161,7 @@ export class OreComponent implements OnInit {
 
         const type = this.oreTypes[ore];
 
-        if (!type) {
+        if (!type || !type.volume) {
             this.orePrices[buySell][ore] = -1;
             return;
         }

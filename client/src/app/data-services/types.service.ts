@@ -1,15 +1,15 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EVE, IUniverseTypesData } from '@ionaru/eve-utils';
+import { EVE, IUniverseTypeData } from '@ionaru/eve-utils';
 
 import { BaseService, IServerResponse } from './base.service';
 
 @Injectable()
 export class TypesService extends BaseService {
 
-    private typesCache: IUniverseTypesData[] = [];
+    private typesCache: IUniverseTypeData[] = [];
 
-    public async getTypes(...typeIds: number[]): Promise<IUniverseTypesData[] | undefined> {
+    public async getTypes(...typeIds: number[]): Promise<IUniverseTypeData[] | undefined> {
         const typesFromCache = this.typesCache.filter((type) => typeIds.includes(type.type_id));
 
         if (typesFromCache.length === typeIds.length) {
@@ -22,7 +22,7 @@ export class TypesService extends BaseService {
         const url = 'data/types';
         const headers = new HttpHeaders({'x-evie-token': BaseService.serverToken});
         const response = await this.http.post<any>(url, missingTypes, {headers})
-            .toPromise<IServerResponse<IUniverseTypesData[]>>()
+            .toPromise<IServerResponse<IUniverseTypeData[]>>()
             .catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return undefined;
@@ -36,9 +36,9 @@ export class TypesService extends BaseService {
         return response.data;
     }
 
-    public async getType(typeId: number): Promise<IUniverseTypesData | undefined> {
-        const url = EVE.getUniverseTypesUrl(typeId);
-        const response = await this.http.get<any>(url).toPromise<IUniverseTypesData>().catch(this.catchHandler);
+    public async getType(typeId: number): Promise<IUniverseTypeData | undefined> {
+        const url = EVE.getUniverseTypeUrl(typeId);
+        const response = await this.http.get<any>(url).toPromise<IUniverseTypeData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return undefined;
         }

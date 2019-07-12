@@ -3,7 +3,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { EVE, IMarketOrdersData, IUniverseTypesData } from '@ionaru/eve-utils';
+import { EVE, IMarketOrdersData, IUniverseTypeData } from '@ionaru/eve-utils';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
@@ -16,7 +16,7 @@ interface IGassesData {
     sell: number;
     spread: number;
     venture: number;
-    volume: number | string;
+    volume?: number | string;
 }
 
 interface IGasPrices {
@@ -29,7 +29,7 @@ interface IGasPrice {
 }
 
 interface IGasTypesDict {
-    [index: number]: IUniverseTypesData;
+    [index: number]: IUniverseTypeData;
 }
 
 @Component({
@@ -118,7 +118,7 @@ export class GasChartComponent implements OnInit {
 
         await this.fetchGasTypeInformation();
 
-        await Promise.all(EVE.gasses.ALL.map(async (gas) => {
+        await Promise.all(EVE.gasses.all.map(async (gas) => {
             const orders = await this.marketService.getMarketOrders(10000002, gas);
             if (orders) {
                 const jitaOrders = orders.filter((order) => order.location_id === 60003760);
@@ -127,7 +127,7 @@ export class GasChartComponent implements OnInit {
             }
         }));
 
-        this.data = EVE.gasses.ALL.map((gas) => {
+        this.data = EVE.gasses.all.map((gas) => {
             return {
                 buy: this.gasPrices.buy[gas],
                 id: gas,
@@ -148,15 +148,15 @@ export class GasChartComponent implements OnInit {
         const visibleGasses: number[] = [];
 
         if (this.visibleGroups.Fullerenes) {
-            visibleGasses.push(...EVE.gasses.Fullerenes);
+            visibleGasses.push(...EVE.gasses.fullerenes);
         }
 
         if (this.visibleGroups['Booster Gas Clouds']) {
-            visibleGasses.push(...EVE.gasses['Booster Gas Clouds']);
+            visibleGasses.push(...EVE.gasses.boosterGasClouds);
         }
 
         if (this.visibleGroups.Other) {
-            const otherGasses = EVE.gasses.ALL.filter((i) => ![...EVE.gasses.Fullerenes, ...EVE.gasses['Booster Gas Clouds']].includes(i));
+            const otherGasses = EVE.gasses.all.filter((gas) => ![...EVE.gasses.fullerenes, ...EVE.gasses.boosterGasClouds].includes(gas));
             visibleGasses.push(...otherGasses);
         }
 
@@ -176,7 +176,7 @@ export class GasChartComponent implements OnInit {
 
         const type = this.gasTypes[gas];
 
-        if (!type) {
+        if (!type || !type.volume) {
             this.gasPrices[buySell][gas] = -1;
             return;
         }
@@ -206,7 +206,7 @@ export class GasChartComponent implements OnInit {
     }
 
     private async fetchGasTypeInformation() {
-        const types = await this.typesService.getTypes(...EVE.gasses.ALL) || [];
+        const types = await this.typesService.getTypes(...EVE.gasses.all) || [];
         this.gasTypes = objectsArrayToObject(types, 'type_id');
     }
 

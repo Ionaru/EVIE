@@ -167,7 +167,7 @@ export class DataController {
 
         let type: IUniverseTypeData | undefined;
 
-        const url = EVE.getUniverseTypesUrl(typeId);
+        const url = EVE.getUniverseTypeUrl(typeId);
 
         while (!type || tries < 3) {
 

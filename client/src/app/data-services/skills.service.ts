@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EVE, ICharacterSkillsData, IUniverseTypesData } from '@ionaru/eve-utils';
+import { EVE, ICharacterSkillsData, IUniverseTypeData } from '@ionaru/eve-utils';
 
 import { Character } from '../models/character/character.model';
 import { ScopesComponent } from '../pages/scopes/scopes.component';
@@ -23,7 +23,7 @@ export class SkillsService extends BaseService {
 
     public async getAllSkills(): Promise<any | undefined> {
         const url = 'data/skill-types';
-        const response = await this.http.get<any>(url).toPromise<IServerResponse<IUniverseTypesData>>().catch(this.catchHandler);
+        const response = await this.http.get<any>(url).toPromise<IServerResponse<IUniverseTypeData>>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }

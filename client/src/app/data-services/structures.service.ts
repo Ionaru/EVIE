@@ -12,7 +12,7 @@ export class StructuresService extends BaseService {
     public async getStructureInfo(character: Character, structureId: number): Promise<IUniverseStructureData | void> {
         BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.STRUCTURES, 'getStructureInfo');
 
-        const url = EVE.getUniverseStructuresUrl(structureId);
+        const url = EVE.getUniverseStructureUrl(structureId);
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
         const response = await this.http.get<any>(url, {headers}).toPromise<IUniverseStructureData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {

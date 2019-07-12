@@ -15,8 +15,8 @@ import {
     ICharacterSkillQueueDataUnit,
     ICharacterSkillsData,
     ISkillsData,
-    IUniverseGroupsData,
-    IUniverseTypesData,
+    IUniverseGroupData,
+    IUniverseTypeData,
 } from '@ionaru/eve-utils';
 import { romanize } from '@ionaru/romanize';
 import * as countdown from 'countdown';
@@ -59,7 +59,7 @@ interface IGroupedSKillData {
 }
 
 interface IGroupedSkillTypes {
-    [groupId: number]: IUniverseTypesData[];
+    [groupId: number]: IUniverseTypeData[];
 }
 
 @Component({
@@ -101,12 +101,12 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public totalQueueTimer?: number;
     public updateQueueTimer?: number;
 
-    public skillGroups: IUniverseGroupsData[] = [];
+    public skillGroups: IUniverseGroupData[] = [];
     public skillList: IGroupedSKillData = {};
 
     public skillQueueVisible = true;
 
-    public skillTypes?: IUniverseTypesData[];
+    public skillTypes?: IUniverseTypeData[];
 
     public trainedSkills?: ITrainedSkills;
 
@@ -171,7 +171,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         }
     }
 
-    public getSkillsForGroup(group: IUniverseGroupsData) {
+    public getSkillsForGroup(group: IUniverseGroupData) {
         if (this.skills) {
             const skills = this.skills.skills.filter((skill) => group.types.includes(skill.skill_id));
             return sortArrayByObjectProperty(skills, 'name');
@@ -179,9 +179,9 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         return [];
     }
 
-    public getSkillList(group: IUniverseGroupsData, allSkills = true) {
+    public getSkillList(group: IUniverseGroupData, allSkills = true) {
 
-        let skills: IUniverseTypesData[] = [];
+        let skills: IUniverseTypeData[] = [];
 
         if (this.skillTypes) {
             skills = this.skillTypes.filter((skill) => skill.group_id === group.group_id);

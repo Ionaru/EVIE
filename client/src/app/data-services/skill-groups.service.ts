@@ -1,15 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { EVE, IUniverseCategoriesData, IUniverseGroupsData } from '@ionaru/eve-utils';
+import { EVE, IUniverseCategoryData, IUniverseGroupData } from '@ionaru/eve-utils';
 
 import { BaseService } from './base.service';
 
 @Injectable()
 export class SkillGroupsService extends BaseService {
 
-    public async getSkillGroupInformation(): Promise<IUniverseGroupsData[]> {
-        const skillInfo: IUniverseGroupsData[] = [];
+    public async getSkillGroupInformation(): Promise<IUniverseGroupData[]> {
+        const skillInfo: IUniverseGroupData[] = [];
 
         const skillCategory = await this.getSkillCategory();
 
@@ -32,18 +32,18 @@ export class SkillGroupsService extends BaseService {
         return skillInfo;
     }
 
-    private async getSkillCategory(): Promise<IUniverseCategoriesData | undefined> {
-        const url = EVE.getUniverseCategoriesUrl(EVE.skillCategoryId);
-        const response = await this.http.get<any>(url).toPromise<IUniverseCategoriesData>().catch(this.catchHandler);
+    private async getSkillCategory(): Promise<IUniverseCategoryData | undefined> {
+        const url = EVE.getUniverseCategoryUrl(EVE.skillCategoryId);
+        const response = await this.http.get<any>(url).toPromise<IUniverseCategoryData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }
         return response;
     }
 
-    private async getSkillGroup(groupId: number): Promise<IUniverseGroupsData | undefined> {
-        const url = EVE.getUniverseGroupsUrl(groupId);
-        const response = await this.http.get<any>(url).toPromise<IUniverseGroupsData>().catch(this.catchHandler);
+    private async getSkillGroup(groupId: number): Promise<IUniverseGroupData | undefined> {
+        const url = EVE.getUniverseGroupUrl(groupId);
+        const response = await this.http.get<any>(url).toPromise<IUniverseGroupData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }
