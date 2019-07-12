@@ -417,7 +417,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         }
 
         this.skillQueue = this.skillQueue.filter((skill) => skill.status !== 'inactive');
-        this.skillQueueCount = this.skillQueue.filter((_) => _.status && ['training', 'scheduled'].includes(_.status)).length;
+        this.skillQueueCount = this.skillQueue.filter((skill) => skill.status && ['training', 'scheduled'].includes(skill.status)).length;
         this.updateQueueCountdown();
         if (this.skillQueueCount) {
             this.totalQueueTimer = window.setInterval(() => {
