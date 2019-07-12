@@ -87,10 +87,10 @@ export class SSORouter extends BaseRouter {
 
         request.session!.user.id = user.id;
 
-        const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
-        if (sockets.length) {
-            SSORouter.debug(`Emitting to socket ${sockets[0].id}, session ${sockets[0].handshake.session.id}`);
-            sockets[0].emit('SSO_LOGON_END', {
+        const userSocket = SocketServer.sockets.find((socket) => request.session && socket.id === request.session.socket);
+        if (userSocket) {
+            SSORouter.debug(`Emitting to socket ${userSocket.id}, session ${userSocket.handshake.session.id}`);
+            userSocket.emit('SSO_LOGON_END', {
                 data: user.sanitizedCopy,
                 message: 'SSOSuccessful',
                 state: 'success',
@@ -242,10 +242,10 @@ export class SSORouter extends BaseRouter {
         // Refresh user data.
         user = await User.getFromId(request.session!.user.id);
 
-        const sockets = SocketServer.sockets.filter((socket) => request.session && socket.id === request.session.socket);
-        if (sockets.length) {
-            SSORouter.debug(`Emitting to socket ${sockets[0].id}, session ${sockets[0].handshake.session.id}`);
-            sockets[0].emit('SSO_AUTH_END', {
+        const userSocket = SocketServer.sockets.find((socket) => request.session && socket.id === request.session.socket);
+        if (userSocket) {
+            SSORouter.debug(`Emitting to socket ${userSocket.id}, session ${userSocket.handshake.session.id}`);
+            userSocket.emit('SSO_AUTH_END', {
                 data: {user: user!.sanitizedCopy, newCharacter: character.uuid},
                 message: 'SSOSuccessful',
                 state: 'success',
@@ -310,14 +310,12 @@ export class SSORouter extends BaseRouter {
             return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
         }
 
-        const characterToDeleteList = user.characters.filter((_) => _.uuid === request.body.characterUUID);
+        const characterToDelete = user.characters.find((character) => character.uuid === request.body.characterUUID);
 
-        if (characterToDeleteList.length === 0) {
+        if (!characterToDelete) {
             // That character does not exist
             return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'NoCharacterFound');
         }
-
-        const characterToDelete = characterToDeleteList[0];
 
         // Revoke token
         if (characterToDelete.refreshToken) {

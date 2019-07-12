@@ -70,9 +70,9 @@ export class BaseRouter {
         }
 
         const requestOrigin = request.headers.origin;
-        const allowedHosts = BaseRouter.allowedHosts.filter((host) => requestOrigin && requestOrigin.includes(host));
+        const isAllowed = BaseRouter.allowedHosts.some((host) => requestOrigin && requestOrigin.includes(host));
 
-        if (!allowedHosts.length) {
+        if (!isAllowed) {
             process.emitWarning(`Unknown host tried to connect, possible CORS: ${requestOrigin}`);
             BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadHost');
             return;

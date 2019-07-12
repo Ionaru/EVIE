@@ -173,9 +173,8 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
     public getSkillsForGroup(group: IUniverseGroupsData) {
         if (this.skills) {
-            let skills = this.skills.skills.filter((skill) => group.types.includes(skill.skill_id));
-            skills = sortArrayByObjectProperty(skills, 'name');
-            return skills;
+            const skills = this.skills.skills.filter((skill) => group.types.includes(skill.skill_id));
+            return sortArrayByObjectProperty(skills, 'name');
         }
         return [];
     }
@@ -384,9 +383,9 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
                     // Get and add the amount of SP gained so far by the skill in training.
                     let spBeforeThisSkill = this.totalSP;
-                    const skillInTraining = this.skillQueue.filter((skill) => skill.status === 'training');
-                    if (skillInTraining[0].spAtEnd) {
-                        spBeforeThisSkill = skillInTraining[0].spAtEnd;
+                    const skillInTraining = this.skillQueue.find((skill) => skill.status === 'training');
+                    if (skillInTraining && skillInTraining.spAtEnd) {
+                        spBeforeThisSkill = skillInTraining.spAtEnd;
                     }
 
                     // Get and add the amount of SP from previously scheduled skills.

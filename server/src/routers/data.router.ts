@@ -89,7 +89,7 @@ export class DataRouter extends BaseRouter {
         if (typeIds instanceof Array) {
             const invalidTypeIds = typeIds.filter((item) => typeof item !== 'number' || item <= 0);
             if (invalidTypeIds.length) {
-                return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidElements');
+                return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidElements', invalidTypeIds);
             }
         }
 
