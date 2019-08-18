@@ -1,8 +1,9 @@
-import { HttpResponse } from '@angular/common/http';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
 
 interface ICacheData {
     data: any;
     expiry: string;
+    pages?: string;
 }
 
 export class ESIRequestCache {
@@ -19,15 +20,17 @@ export class ESIRequestCache {
             if (expiryDate > now) {
                 return new HttpResponse({
                     body: cachedData.data,
+                    headers: new HttpHeaders({'x-pages': cachedData.pages || '1'}),
                 });
             }
         }
     }
 
-    public static put(identifier: string, data: any, expiry: string, secureData: boolean) {
+    public static put(identifier: string, data: any, expiry: string, secureData: boolean, pages?: string) {
         const cacheData: ICacheData = {
             data,
             expiry,
+            pages,
         };
 
         const cachedDataString = JSON.stringify(cacheData);
