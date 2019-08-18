@@ -78,8 +78,8 @@ export class BaseRouter {
             return;
         }
 
-        const serverToken = request.session!.token;
-        const clientToken = request.headers['x-evie-token'];
+        const serverToken = request.session!.token as unknown;
+        const clientToken = request.headers['x-evie-token'] as unknown;
 
         // Only allow requests from a logged-in user, or with a valid and matching token.
         if (!request.session!.user.id && (!serverToken || !clientToken || serverToken !== clientToken)) {
