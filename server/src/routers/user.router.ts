@@ -19,6 +19,10 @@ export class UserRouter extends BaseRouter {
 
     @BaseRouter.requestDecorator(BaseRouter.checkAdmin)
     private static async getUser(request: Request, response: Response): Promise<Response> {
+        if (!request.params || Array.isArray(request.params) || !request.params.uuid) {
+            return BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
         const user: User | undefined = await User.findOne({uuid: request.params.uuid});
 
         if (!user) {
@@ -31,6 +35,10 @@ export class UserRouter extends BaseRouter {
 
     @BaseRouter.requestDecorator(BaseRouter.checkAdmin)
     private static async getUserById(request: Request, response: Response): Promise<Response> {
+        if (!request.params || Array.isArray(request.params) || !request.params.id) {
+            return BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
         const user: User | undefined = await User.findOne(request.params.id);
 
         if (!user) {

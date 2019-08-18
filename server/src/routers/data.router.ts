@@ -6,13 +6,21 @@ import { BaseRouter } from './base.router';
 
 export class DataRouter extends BaseRouter {
 
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
-    private static async getManufacturingInfo(request: Request, response: Response): Promise<Response> {
-        if (!request.params || !request.params.typeId) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+    private static getTypeId(request: Request) {
+        if (!request.params || Array.isArray(request.params) || !request.params.typeId) {
+            return;
         }
 
-        const typeId = Number(request.params.typeId);
+        return Number(request.params.typeId);
+    }
+
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    private static async getManufacturingInfo(request: Request, response: Response): Promise<Response> {
+        const typeId = DataRouter.getTypeId(request);
+
+        if (!typeId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
 
         if (isNaN(typeId)) {
             return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
@@ -29,11 +37,11 @@ export class DataRouter extends BaseRouter {
 
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     private static async getRefiningProducts(request: Request, response: Response): Promise<Response> {
-        if (!request.params || !request.params.typeId) {
+        const typeId = DataRouter.getTypeId(request);
+
+        if (!typeId) {
             return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
         }
-
-        const typeId = Number(request.params.typeId);
 
         if (isNaN(typeId)) {
             return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
