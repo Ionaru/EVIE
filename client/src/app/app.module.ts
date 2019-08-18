@@ -14,6 +14,7 @@ import { ApiOfflineMessageComponent } from './components/api-offline-message/api
 import { LoadingMessageComponent } from './components/loading-message/loading-message.component';
 import { NoScopesMessageComponent } from './components/no-scopes-message/no-scopes-message.component';
 import { SorTableComponent } from './components/sor-table/sor-table.component';
+import { AssetsService } from './data-services/assets.service';
 import { AttributesService } from './data-services/attributes.service';
 import { BlueprintsService } from './data-services/blueprints.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
@@ -121,6 +122,7 @@ if (environment.production) {
         StructuresService,
         MarketService,
         SocketService,
+        AssetsService,
         AppReadyGuard,
         AuthGuard,
         AdminGuard,
