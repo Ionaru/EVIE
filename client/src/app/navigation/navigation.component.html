@@ -115,7 +115,7 @@
             <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/wallet.svg" alt="Wallet icon">
         </a>
         <a routerLink="assets" routerLinkActive="active" class="navbar-item"
-           [ngClass]="{'disabled': true}">
+           [ngClass]="{'disabled': !activatedCharacter || !devEnvironment}">
             <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/assets.svg" alt="Assets icon">
         </a>
         <a routerLink="planets" routerLinkActive="active" class="navbar-item"

@@ -39,6 +39,7 @@ import { CharacterService } from './models/character/character.service';
 import { UserService } from './models/user/user.service';
 import { LogoutModalComponent } from './navigation/logout-modal.component';
 import { NavigationComponent } from './navigation/navigation.component';
+import { AssetsComponent } from './pages/assets/assets.component';
 import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
@@ -84,6 +85,7 @@ if (environment.production) {
         RefiningProfitComponent,
         GasChartComponent,
         LoadingMessageComponent,
+        AssetsComponent,
     ],
     entryComponents: [
         LogoutModalComponent,
