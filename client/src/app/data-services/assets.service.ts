@@ -1,5 +1,6 @@
-import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { generateNumbersArray } from '@ionaru/array-utils';
 import { EVE, ICharacterAssetsData, ICharacterAssetsLocationsData, ICharacterAssetsNamesData } from '@ionaru/eve-utils';
 
 import { Character } from '../models/character/character.model';
@@ -12,13 +13,30 @@ export class AssetsService extends BaseService {
     public async getAssets(character: Character): Promise<ICharacterAssetsData> {
         BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.ASSETS, 'getAssets');
 
-        const url = EVE.getCharacterAssetsUrl(character.characterId);
-        const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
-        const response = await this.http.get<any>(url, {headers}).toPromise<ICharacterAssetsData>().catch(this.catchHandler);
-        if (response instanceof HttpErrorResponse) {
+        const response = await this.getAssetsPage(character, 1);
+
+        if (!response) {
             return [];
         }
-        return response;
+
+        const assets = response.body || [];
+
+        if (response.headers.has('x-pages')) {
+            const pages = Number(response.headers.get('x-pages'));
+            if (pages > 1) {
+                const pageIterable = generateNumbersArray(pages);
+                pageIterable.shift();
+
+                await Promise.all(pageIterable.map(async (page) => {
+                    const pageResponse = await this.getAssetsPage(character, page);
+                    if (pageResponse && pageResponse.body) {
+                        assets.push(...pageResponse.body);
+                    }
+                }));
+            }
+        }
+
+        return assets;
     }
 
     public async getAssetsLocations(character: Character, items: number[]): Promise<ICharacterAssetsLocationsData> {
@@ -50,6 +68,20 @@ export class AssetsService extends BaseService {
         if (response instanceof HttpErrorResponse) {
             return [];
         }
+        return response;
+    }
+
+    private async getAssetsPage(character: Character, page: number) {
+        const url = EVE.getCharacterAssetsUrl(character.characterId, page);
+        const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
+        const response = await this.http.get<any>(
+            url,
+            {headers, observe: 'response'},
+        ).toPromise<HttpResponse<ICharacterAssetsData>>().catch(this.catchHandler);
+        if (response instanceof HttpErrorResponse) {
+            return;
+        }
+
         return response;
     }
 }
