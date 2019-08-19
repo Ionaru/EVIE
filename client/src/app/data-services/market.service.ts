@@ -22,8 +22,7 @@ export class MarketService extends BaseService {
         if (response.headers.has('x-pages')) {
             const pages = Number(response.headers.get('x-pages'));
             if (pages > 1) {
-                const pageIterable = generateNumbersArray(pages);
-                pageIterable.shift();
+                const pageIterable = generateNumbersArray(pages, 2);
 
                 await Promise.all(pageIterable.map(async (page) => {
                     const pageResponse = await this.getMarketOrdersPage(regionId, typeId, page, type);
