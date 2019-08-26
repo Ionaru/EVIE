@@ -1,13 +1,17 @@
 // TODO: Remove line below.
 // tslint:disable
+
 import { Component, OnInit } from '@angular/core';
+// import { BlueprintsService } from '../../data-services/blueprints.service';
 // import { faGem } from '@fortawesome/pro-regular-svg-icons';
 // import { faHourglass } from '@fortawesome/pro-solid-svg-icons';
 
 // import { IManufacturingData } from '../../../shared/interface.helper';
 // import { IndustryJobsService } from '../../data-services/industry-jobs.service';
 import { IndustryService } from '../../data-services/industry.service';
+import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
+// import { CharacterService } from '../../models/character/character.service';
 // import { TypesService } from '../../data-services/types.service';
 // import { DataPageComponent } from '../data-page/data-page.component';
 
@@ -30,16 +34,29 @@ export class BlueprintCalculatorComponent implements OnInit {
     public baseMats: string[] = [];
     public bups: yyy = {};
 
+    // public prices: IItemPrices;
+
     // public manufactuingCache: IManufacturingCache = {};
 
-    constructor(private industryService: IndustryService, private namesService: NamesService) {
-    }
+    constructor(
+        // private blueprintsService: BlueprintsService,
+        private industryService: IndustryService,
+        private marketService: MarketService,
+        private namesService: NamesService
+    ) { }
 
     public ngOnInit() {
         this.bups = {};
         this.baseMats = [];
         // this.fun().then();
         this.recFun().then();
+        this.recFun2().then();
+
+        // if (CharacterService.selectedCharacter) {
+        //     this.blueprintsService.getBlueprints(CharacterService.selectedCharacter).then((res) => {
+        //         console.log(res);
+        //     })
+        // }
 
         // const jsp = jsPlumb.getInstance();
         // console.log(jsp.addEndpoint());
@@ -106,7 +123,57 @@ export class BlueprintCalculatorComponent implements OnInit {
 
     public bupKeys = () => Object.keys(this.bups);
 
-    public async recFun(m = 40340) {
+    public async recFun2(m = 11184) {
+        const i = await this.industryService.getManufacturingData(m);
+        if (!i) {
+            return;
+        }
+
+        const componentPrices: xxx = {};
+
+        console.log(i);
+        await this.namesService.getNames(...i.materials.map((mat) => mat.id));
+
+        for (const mat of i.materials) {
+            const price = await this.marketService.getPriceForAmount(10000002, mat.id, mat.quantity, 'sell');
+
+            if (!price) {
+                throw new Error(`Price not found for ${mat.id}`);
+            }
+
+            console.log('COMPONENT PRICE', price);
+
+            const subMatData = await this.industryService.getManufacturingData(mat.id);
+
+            let materialPrices = 0;
+
+            if (!subMatData) {
+                componentPrices[mat.id] = price;
+            } else {
+
+                for (const subMat of subMatData.materials) {
+                    const subPrice = await this.marketService.getPriceForAmount(10000002, subMat.id, subMat.quantity, 'sell');
+
+                    if (subPrice) {
+                        materialPrices += subPrice;
+                    } else {
+                        materialPrices = Infinity;
+                        break;
+                    }
+                }
+
+                console.log('MATERIAL PRICE', materialPrices);
+            }
+
+            if (materialPrices && materialPrices < price) {
+                console.log(`MAKE ${NamesService.getNameFromData(mat.id)} WITH MATERIALS`);
+            } else {
+                console.log(`BUY ${NamesService.getNameFromData(mat.id)} OFF MARKET`);
+            }
+        }
+    }
+
+    public async recFun(m = 11184) {
         const i = await this.industryService.getManufacturingData(m);
         if (!i) {
             return;
@@ -155,7 +222,7 @@ export class BlueprintCalculatorComponent implements OnInit {
             }
         }
 
-        console.log(this.bups);
+        // console.log(this.bups);
 
         this.baseMats.push(...Object.keys(matob));
         this.baseMats.push(...bp);
@@ -167,7 +234,7 @@ export class BlueprintCalculatorComponent implements OnInit {
             matob2[NamesService.getNameFromData(Number(id))] = matob[id];
         }
 
-        console.log(matob2);
+        // console.log(matob2);
 
         //
         // for (const mat of materials.slice()) {
@@ -184,6 +251,10 @@ export class BlueprintCalculatorComponent implements OnInit {
         // }
     }
 }
+
+// interface IItemPrices {
+//     [index: string]: number;
+// }
 
 interface xxx {
     [index: string]: number;

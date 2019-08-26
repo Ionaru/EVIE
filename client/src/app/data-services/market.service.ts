@@ -1,12 +1,43 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { generateNumbersArray } from '@ionaru/array-utils';
+import { generateNumbersArray, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { EVE, IMarketOrdersData } from '@ionaru/eve-utils';
 
 import { BaseService } from './base.service';
 
 @Injectable()
 export class MarketService extends BaseService {
+
+    public async getPriceForAmount(regionId: number, typeId: number, amount: number, type: 'buy' | 'sell' = 'sell'):
+        Promise<number | undefined> {
+        const orders = await this.getMarketOrders(regionId, typeId, type);
+
+        if (!orders) {
+            return;
+        }
+
+        sortArrayByObjectProperty(orders, 'price');
+
+        let price = 0;
+        let unitsLeft = amount;
+
+        for (const order of orders) {
+            const amountFromThisOrder = Math.min(order.volume_remain, unitsLeft);
+
+            price += amountFromThisOrder * order.price;
+            unitsLeft -= amountFromThisOrder;
+
+            if (!unitsLeft) {
+                break;
+            }
+        }
+
+        if (unitsLeft) {
+            return Infinity;
+        }
+
+        return price;
+    }
 
     public async getMarketOrders(regionId: number, typeId: number, type: 'buy' | 'sell' | 'all' = 'all'):
         Promise<IMarketOrdersData | undefined> {
