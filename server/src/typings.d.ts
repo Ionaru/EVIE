@@ -22,16 +22,6 @@ interface IAuthResponseData {
     refresh_token: string;
 }
 
-interface IVerifyResponseData {
-    CharacterID: number;
-    CharacterName: string;
-    ExpiresOn: string;
-    Scopes: string;
-    TokenType: string;
-    CharacterOwnerHash: string;
-    IntellectualProperty: string;
-}
-
 interface IJWTToken {
     scp: string[] | string;
     jti: string;
