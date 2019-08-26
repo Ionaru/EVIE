@@ -3,7 +3,8 @@ import Debug from 'debug';
 export let debug = Debug('evie');
 
 import { Configurator } from '@ionaru/configurator';
-import { CacheController, PublicESIService } from '@ionaru/esi-service';
+import { CacheController, IDefaultExpireTimes, PublicESIService } from '@ionaru/esi-service';
+import { EVE } from '@ionaru/eve-utils';
 import * as Sentry from '@sentry/node';
 import { HttpsAgent } from 'agentkeepalive';
 import axios, { AxiosInstance } from 'axios';
@@ -50,7 +51,9 @@ export let axiosInstance: AxiosInstance;
     });
 
     debug('Creating CacheController instance');
-    esiCache = new CacheController('data/responseCache.json');
+    const defaultExpireTimes: IDefaultExpireTimes = {};
+    defaultExpireTimes[EVE.SDEURL] = 7200000; // 2 hours
+    esiCache = new CacheController('data/responseCache.json', defaultExpireTimes);
 
     debug('Creating PublicESIService instance');
     esiService = new PublicESIService({
