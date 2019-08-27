@@ -120,8 +120,8 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                 job.timeLeft = countdown(undefined, end, this.countdownUnits);
             }
 
-            sortArrayByObjectProperty(this.industryJobs, 'job_id', false);
-            sortArrayByObjectProperty(this.industryJobs, 'percentageDone', true);
+            sortArrayByObjectProperty(this.industryJobs, 'job_id');
+            sortArrayByObjectProperty(this.industryJobs, 'timeLeft');
 
             this.setProductNames(this.industryJobs).then();
             this.getLocationNames(this.industryJobs).then();

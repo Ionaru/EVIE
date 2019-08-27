@@ -56,7 +56,7 @@
         </div>
 
         <p class="percentage-container">
-            <span>{{ job.percentageDone }}%
+            <span>{{ job.percentageDone | number:'1.0-0' }}%
                 <fa-icon *ngIf="job.timeLeft.value > 0" [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon>
                 <fa-icon *ngIf="job.timeLeft.value <= 0" [icon]="jobFinishedIcon"></fa-icon>
             </span>
