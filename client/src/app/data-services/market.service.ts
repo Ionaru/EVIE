@@ -16,7 +16,7 @@ export class MarketService extends BaseService {
             return;
         }
 
-        sortArrayByObjectProperty(orders, 'price');
+        sortArrayByObjectProperty(orders, 'price', type === 'buy');
 
         let price = 0;
         let unitsLeft = amount;

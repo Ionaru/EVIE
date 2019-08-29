@@ -22,3 +22,13 @@
     <img *ngFor="let bp of bups[key]" src="https://imageserver.eveonline.com/Type/{{bp}}_64.png" />
     <hr>
 </div>
+
+<div id="shopping-list">
+    <h2>Shopping list</h2>
+    <ul>
+        <li *ngFor="let item of shoppingList.list | keyvalue">
+            <p><img src="https://imageserver.eveonline.com/Type/{{item.key}}_32.png"> {{ getName(item.key) }} x {{ item.value }}</p>
+        </li>
+    </ul>
+    <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
+</div>
