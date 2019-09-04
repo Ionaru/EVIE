@@ -2,24 +2,14 @@
 // tslint:disable
 
 import { Component, OnInit } from '@angular/core';
+
 import { Calc } from '../../../shared/calc.helper';
 import { BlueprintsService } from '../../data-services/blueprints.service';
-// import { IManufacturingData } from '../../../shared/interface.helper';
-// import { IndustryJobsService } from '../../data-services/industry-jobs.service';
-import { IndustryService } from '../../data-services/industry.service';
+import { IManufacturingData, IndustryService } from '../../data-services/industry.service';
 import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
-// import { faGem } from '@fortawesome/pro-regular-svg-icons';
-// import { faHourglass } from '@fortawesome/pro-solid-svg-icons';
-// import { CharacterService } from '../../models/character/character.service';
-// import { TypesService } from '../../data-services/types.service';
-// import { DataPageComponent } from '../data-page/data-page.component';
-
-// interface IManufacturingCache {
-//     [index: string]: IManufacturingData;
-// }
 
 class ShoppingList {
 
@@ -51,19 +41,10 @@ class ShoppingList {
 })
 export class BlueprintCalculatorComponent implements OnInit {
 
-    // public faHourglass = faHourglass;
-    // public faGem = faGem;
-
-    // public bpMats: number[] = [];
-
     public baseMats: string[] = [];
     public bups: yyy = {};
 
-    // public prices: IItemPrices;
-
     public readonly shoppingList = new ShoppingList();
-
-    // public manufactuingCache: IManufacturingCache = {};
 
     constructor(
         private blueprintsService: BlueprintsService,
@@ -76,82 +57,40 @@ export class BlueprintCalculatorComponent implements OnInit {
     public ngOnInit() {
         this.bups = {};
         this.baseMats = [];
-        // this.fun().then();
-        this.recFun().then();
-        this.recFun2().then();
 
-        // if (CharacterService.selectedCharacter) {
-        //     this.blueprintsService.getBlueprints(CharacterService.selectedCharacter).then((res) => {
-        //         console.log(res);
-        //     })
-        // }
+        // const item = 11393; // Retribution
+        // const item = 40340; // Keepstar
+        // const item = 12003; // Zealot
+        const item = 11365; // Vengeance
+        // const item = 11184; // Crusader
 
-        // const jsp = jsPlumb.getInstance();
-        // console.log(jsp.addEndpoint());
-
-        // this.getMats().then((mats) => {
-        //     console.log(mats);
-        // });
-        // if (CharacterService.selectedCharacter) {
-        //     this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter).then();
-        // }
-        //
-        // this.typesService.getTypes(34, 35).then();
+        this.recFun(item).then();
+        this.recFun2(item).then();
     }
-
-    // public async fun() {
-    //     const i = await this.industryService.getManufacturingData(40340);
-    //     if (i) {
-    //         this.bps.push(i.blueprintId);
-    //
-    //         for (const material of i.materials) {
-    //             const j = await this.industryService.getManufacturingData(material.id);
-    //
-    //             if (j) {
-    //                 this.bps.push(j.blueprintId);
-    //
-    //                 for (const submat of j.materials) {
-    //                     const k = await this.industryService.getManufacturingData(submat.id);
-    //
-    //                     if (k) {
-    //                         this.bps.push(k.blueprintId);
-    //                     } else {
-    //                         this.bps.push(submat.id);
-    //                     }
-    //                 }
-    //             } else {
-    //                 this.bps.push(material.id);
-    //             }
-    //         }
-    //     }
-    //
-    //     // await this.namesService.getNames(...this.bps);
-    //     //
-    //     // for (const x of this.bps) {
-    //     //     console.log(NamesService.getNameFromData(x));
-    //     // }
-    // }
-
-    public async getMats(m = 12003) {
-
-        const mats: any[] = [];
-
-        const i = await this.industryService.getManufacturingData(m);
-        if (i) {
-            for (const ma of i.materials) {
-                mats.push(await this.getMats(ma.id));
-            }
-        }
-
-        return mats;
-    }
-
-    // KEEPSTAR 40340
-    // ZEALOT 12003
 
     public getName = (id: number | string) => NamesService.getNameFromData(Number(id));
 
     public bupKeys = () => Object.keys(this.bups);
+
+    public async adjustMaterialsNeededByBlueprintMaterialEfficiency(manufacturingData: IManufacturingData) {
+        const blueprints = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter!);
+        const subBlueprint = blueprints.find((blueprint) => blueprint.type_id === manufacturingData.blueprintId);
+
+        if (subBlueprint) {
+            manufacturingData.materials = manufacturingData.materials.map((material) => {
+
+                const materialMultiplier = subBlueprint.material_efficiency / 100;
+                const materialsToSubtract = material.quantity * materialMultiplier;
+
+                return {
+                    id: material.id,
+                    quantity: Math.ceil(material.quantity - materialsToSubtract)
+                }
+            });
+
+        }
+        return manufacturingData.materials;
+    }
 
     public async recFun2(m = 11184) {
     // public async recFun2(m = 12003) {
@@ -160,70 +99,38 @@ export class BlueprintCalculatorComponent implements OnInit {
         const marketRegion = 10000043; // Domain
 
         // public async recFun2(m = 25898) {
-        const i = await this.industryService.getManufacturingData(m);
-        if (!i) {
+        const manufacturingData = await this.industryService.getManufacturingData(m);
+        if (!manufacturingData) {
             return;
         }
 
-        const blueprints = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter!);
-        const blueprint = blueprints.find((blueprint) => blueprint.type_id === i.blueprintId);
-
-        if (blueprint) {
-
-            await this.namesService.getNames(...i.materials.map((mat) => mat.id));
-
-            i.materials = i.materials.map((material) => {
-
-                const materialMultiplier = blueprint.material_efficiency / 100;
-                const materialsToSubtract = material.quantity * materialMultiplier;
-
-                return {
-                    id: material.id,
-                    quantity: Math.ceil(material.quantity - materialsToSubtract)
-                }
-            });
-        }
+        const materials = await this.adjustMaterialsNeededByBlueprintMaterialEfficiency(manufacturingData);
 
         let totalPrice = 0;
 
-        for (const mat of i.materials) {
-            const price = await this.marketService.getPriceForAmount(marketRegion, mat.id, mat.quantity, 'sell');
+        for (const material of materials) {
+            const price = await this.marketService.getPriceForAmount(marketRegion, material.id, material.quantity, 'buy');
 
             if (!price) {
-                throw new Error(`Price not found for ${mat.id}`);
+                throw new Error(`Price not found for ${material.id}`);
             }
 
-            // console.log('COMPONENT PRICE', price);
-
-            const subMatData = await this.industryService.getManufacturingData(mat.id);
+            const subMatData = await this.industryService.getManufacturingData(material.id);
 
             let materialPrices = 0;
 
             if (!subMatData) {
-                // console.log(`BUY ${NamesService.getNameFromData(mat.id)} OFF MARKET`);
+                // Can't be produced.
                 totalPrice += price;
-                this.shoppingList.add(mat.id, mat.quantity);
+                this.shoppingList.add(material.id, material.quantity);
             } else {
 
-                const subBlueprint = blueprints.find((blueprint) => blueprint.type_id === subMatData.blueprintId);
-
-                if (subBlueprint) {
-                    subMatData.materials = subMatData.materials.map((material) => {
-
-                        const materialMultiplier = subBlueprint.material_efficiency / 100;
-                        const materialsToSubtract = material.quantity * materialMultiplier;
-
-                        return {
-                            id: material.id,
-                            quantity: Math.ceil(material.quantity - materialsToSubtract)
-                        }
-                    });
-                }
+                const subMaterials = await this.adjustMaterialsNeededByBlueprintMaterialEfficiency(subMatData);
 
                 const subMatShoppingList = new ShoppingList();
 
-                for (const subMat of subMatData.materials) {
-                    const subPrice = await this.marketService.getPriceForAmount(marketRegion, subMat.id, subMat.quantity, 'sell');
+                for (const subMat of subMaterials) {
+                    const subPrice = await this.marketService.getPriceForAmount(marketRegion, subMat.id, subMat.quantity, 'buy');
 
                     subMatShoppingList.add(subMat.id, subMat.quantity);
 
@@ -235,28 +142,29 @@ export class BlueprintCalculatorComponent implements OnInit {
                     }
                 }
 
-                // console.log('MATERIAL PRICE', materialPrices);
-
-                if (materialPrices && (materialPrices * mat.quantity) < price) {
-                    // console.log(`MAKE ${NamesService.getNameFromData(mat.id)} WITH MATERIALS`);
-                    totalPrice += (materialPrices * mat.quantity);
-                    this.shoppingList.merge(subMatShoppingList, mat.quantity);
+                if (materialPrices && (materialPrices * material.quantity) < price) {
+                    // Cheaper to produce.
+                    totalPrice += (materialPrices * material.quantity);
+                    this.shoppingList.merge(subMatShoppingList, material.quantity);
 
                 } else {
-                    // console.log(`BUY ${NamesService.getNameFromData(mat.id)} OFF MARKET`);
+                    // Cheaper to buy
                     totalPrice += price;
-                    this.shoppingList.add(mat.id, mat.quantity);
+                    this.shoppingList.add(material.id, material.quantity);
                 }
             }
         }
 
-        const itemPrice = await this.marketService.getPriceForAmount(marketRegion, m, 1, 'buy');
+        const itemPrice = await this.marketService.getPriceForAmount(marketRegion, m, 1, 'sell');
 
         if (itemPrice) {
 
             const types = Object.keys(this.shoppingList.list).map((key) => Number(key));
 
-            const typeInfo = await this.typesService.getTypes(...types);
+            const typeInfo = (await Promise.all([
+                this.typesService.getTypes(...types),
+                this.namesService.getNames(...types),
+            ]))[0];
 
             if (typeInfo) {
                 this.shoppingList.volume = typeInfo.reduce((accumulator, type) => accumulator + (type.volume! * this.shoppingList.list[type.type_id]), 0)
@@ -319,8 +227,6 @@ export class BlueprintCalculatorComponent implements OnInit {
             }
         }
 
-        // console.log(this.bups);
-
         this.baseMats.push(...Object.keys(matob));
         this.baseMats.push(...bp);
 
@@ -330,28 +236,8 @@ export class BlueprintCalculatorComponent implements OnInit {
         for (const id of Object.keys(matob)) {
             matob2[NamesService.getNameFromData(Number(id))] = matob[id];
         }
-
-        // console.log(matob2);
-
-        //
-        // for (const mat of materials.slice()) {
-        //     const j = await this.industryService.getManufacturingData(mat.id);
-        //     if (j) {
-        //         basemats.push(materials.splice(materials.indexOf(mat), 1)[0]);
-        //         // console.log(materials);
-        //     }
-        // }
-        //
-        //
-        // for (const x of basemats) {
-        //     console.log(NamesService.getNameFromData(x.id));
-        // }
     }
 }
-
-// interface IItemPrices {
-//     [index: string]: number;
-// }
 
 interface xxx {
     [index: string]: number;
