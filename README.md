@@ -13,19 +13,19 @@ Right now the features are limited, but new pages are being built and I have a l
 ### Screenshots
 **Dashboard**
 
-![](https://discourse-cdn-sjc1.com/eveonline/uploads/default/original/3X/3/c/3c85ba76bd9a07094fcdf1f6514f7b9ad011eac5.png)
+![](https://data.saturnserver.org/images/dashboard.png)
 
 **Skills Page**
 
-![](https://discourse-cdn-sjc1.com/eveonline/uploads/default/original/3X/7/b/7b1bebf9af1891e7ab20672364694a6a6cc1107a.png)
+![](https://data.saturnserver.org/images/skills.png)
 
 **Wallet Page**
 
-![](https://discourse-cdn-sjc1.com/eveonline/uploads/default/original/3X/8/5/85918fa3469a553295603760681ae6cbac743f05.png)
+![](https://data.saturnserver.org/images/wallet.png)
 
 **Ore prices table**
 
-![](https://discourse-cdn-sjc1.com/eveonline/uploads/default/original/3X/b/4/b434f9da4e3628d1fc7ff523ea6bbaed58e18f56.png)
+![](https://data.saturnserver.org/images/ores.png)
 
 ---
 
