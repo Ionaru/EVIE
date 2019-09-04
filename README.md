@@ -49,9 +49,3 @@ Right now the features are limited, but new pages are being built and I have a l
 * ~~Fetch industry information from SDE(-like API) to server~~
 * ~~Create routes so client can fetch industry info in small portions~~
 * Do cost calculations on resources, recursively
-
----
-
-Cross-browser testing for guaranteed compatibility, provided by
-
-[![](https://camo.githubusercontent.com/f33f902e2e990851bff52b6e284c4f384f89378b/68747470733a2f2f7777772e62726f77736572737461636b2e636f6d2f696d616765732f6d61696c2f62726f77736572737461636b2d6c6f676f2d666f6f7465722e706e67)](https://browserstack.com)
