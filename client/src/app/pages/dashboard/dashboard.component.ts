@@ -23,6 +23,13 @@ import { SkillsComponent } from '../skills/skills.component';
 })
 export class DashboardComponent extends DataPageComponent implements OnInit, OnDestroy {
 
+    private static adjustCountDownForDST(finish: Date, cd: number | countdown.Timespan) {
+        if (typeof cd !== 'number') {
+            const timeLeft = finish.getTime() - Date.now();
+            SkillsComponent.adjustCountDownForDST(cd, timeLeft);
+        }
+    }
+
     public faUserPlus = faUserPlus;
     public faCheck = faCheck;
     public faSync = faSync;
@@ -59,12 +66,14 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
             const now = new Date();
 
             for (const character of this.characters) {
-                if (character.currentTrainingSkill && character.currentTrainingFinish) {
+                if (character.currentTrainingFinish) {
                     character.currentTrainingCountdown = countdown(now, character.currentTrainingFinish, this.countdownUnits);
-                    if (typeof character.currentTrainingCountdown !== 'number') {
-                        const timeLeft = character.currentTrainingFinish.getTime() - now.getTime();
-                        SkillsComponent.adjustCountDownForDST(character.currentTrainingCountdown, timeLeft);
-                    }
+                    DashboardComponent.adjustCountDownForDST(character.currentTrainingFinish, character.currentTrainingCountdown);
+                }
+
+                if (character.totalTrainingFinish) {
+                    character.totalTrainingCountdown = countdown(now, character.totalTrainingFinish, this.countdownUnits);
+                    DashboardComponent.adjustCountDownForDST(character.totalTrainingFinish, character.totalTrainingCountdown);
                 }
             }
         }, 1000);
@@ -98,6 +107,10 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     }
 
     public isCharacterSelected = (character: Character) => character === CharacterService.selectedCharacter;
+
+    public skillQueueLow =
+        // tslint:disable-next-line:semicolon
+        (character: Character) => character.totalTrainingFinish && character.totalTrainingFinish.getTime() < (Date.now() + 86400000);
 
     public getActivateButtonClass = (character: Character) => this.isCharacterSelected(character) ? 'btn-success' : 'btn-outline-success';
 
@@ -155,7 +168,10 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     }
 
     public async getSkillQueueData(character: Character): Promise<void> {
+
         const skillQueueData = await this.skillQueueService.getSkillQueue(character);
+
+        let latestFinishDate: Date = new Date();
 
         for (const skillInQueue of skillQueueData) {
             if (skillInQueue.start_date && skillInQueue.finish_date) {
@@ -164,17 +180,22 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
                 const startDate = new Date(skillInQueue.start_date);
                 const finishDate = new Date(skillInQueue.finish_date);
 
+                if (!latestFinishDate || latestFinishDate < finishDate) {
+                    latestFinishDate = finishDate;
+                }
+
                 if (startDate < now && now < finishDate) {
                     await this.namesService.getNames(skillInQueue.skill_id);
                     character.currentTrainingSkill = skillInQueue;
                     character.currentTrainingSkill.name = NamesService.getNameFromData(skillInQueue.skill_id);
                     character.currentTrainingFinish = finishDate;
                     character.currentTrainingCountdown = countdown(now, finishDate, this.countdownUnits);
-                    if (typeof character.currentTrainingCountdown !== 'number') {
-                        const timeLeft = finishDate.getTime() - now.getTime();
-                        SkillsComponent.adjustCountDownForDST(character.currentTrainingCountdown, timeLeft);
-                    }
+                    DashboardComponent.adjustCountDownForDST(character.currentTrainingFinish, character.currentTrainingCountdown);
                 }
+
+                character.totalTrainingFinish = latestFinishDate;
+                character.totalTrainingCountdown = countdown(now, finishDate, this.countdownUnits);
+                DashboardComponent.adjustCountDownForDST(character.totalTrainingFinish, character.totalTrainingCountdown);
             }
         }
     }

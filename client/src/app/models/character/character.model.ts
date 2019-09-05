@@ -26,6 +26,10 @@ export class Character {
     public currentTrainingSkill?: ISkillQueueDataWithName;
     public currentTrainingFinish?: Date;
     public currentTrainingCountdown?: number | countdown.Timespan;
+
+    public totalTrainingFinish?: Date;
+    public totalTrainingCountdown?: number | countdown.Timespan;
+
     public skillQueue: number[] = [];
     public assets: object[] = [];
     public planets: object[] = [];

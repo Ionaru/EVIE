@@ -39,7 +39,11 @@
                             {{ romanize(character.currentTrainingSkill?.finished_level) }}
                         </span>
                         <br>
-                        {{ character.currentTrainingCountdown }}
+                        <span [ngClass]="{'text-warning': skillQueueLow(character)}">
+                            {{ character.currentTrainingCountdown }}
+                            <br>
+                            ( {{ character.totalTrainingCountdown }} )
+                        </span>
                     </p>
                 </a>
                 <p class="button-row">
