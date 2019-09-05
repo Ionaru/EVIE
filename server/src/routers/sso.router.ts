@@ -148,7 +148,6 @@ export class SSORouter extends BaseRouter {
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
     @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'state')
-    // tslint:disable-next-line:cognitive-complexity
     private static async SSOAuthCallback(request: Request, response: Response): Promise<Response> {
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
@@ -196,28 +195,8 @@ export class SSORouter extends BaseRouter {
 
         if (character && character.user.id !== request.session!.user.id) {
             // Merge Users
-
-            // Move Characters to new User
-            await Character.doQuery()
-                .update()
-                .set({user})
-                .where('character.userId = :userId', {userId: character.user.id})
-                .execute();
+            await user.merge(character.user);
             await character.reload();
-
-            // Copy relevant information from the old User to the new User.
-            await User.doQuery()
-                .update()
-                .set({
-                    email: character.user.email || user.email,
-                    isAdmin: character.user.isAdmin || user.isAdmin,
-                    timesLogin: character.user.timesLogin + user.timesLogin,
-                })
-                .where('user.id = :id', {id: request.session!.user.id})
-                .execute();
-
-            // Delete the old User
-            User.delete(character.user.id).then();
         }
 
         if (!character) {

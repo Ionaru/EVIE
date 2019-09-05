@@ -52,4 +52,27 @@ export class User extends BaseModel {
         copy.characters = this.characters ? this.characters.map((character) => character.sanitizedCopy) : [];
         return copy;
     }
+
+    public async merge(userToMerge: User) {
+        // Move Characters to new User
+        await Character.doQuery()
+            .update()
+            .set({user: this})
+            .where('character.userId = :userId', {userId: userToMerge.id})
+            .execute();
+
+        // Copy relevant information from the old User to the new User.
+        User.doQuery()
+            .update()
+            .set({
+                email: userToMerge.email || this.email,
+                isAdmin: userToMerge.isAdmin || this.isAdmin,
+                timesLogin: userToMerge.timesLogin + this.timesLogin,
+            })
+            .where('user.id = :id', {id: this.id})
+            .execute();
+
+        // Delete the old User
+        User.delete(userToMerge.id).then();
+    }
 }
