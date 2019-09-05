@@ -3,12 +3,20 @@
         Welcome to the Character Dashboard, here you can see and manage the characters you added to EVIE, or add
         new characters.
     </p>
-    <p class="text-center">
+    <div class="text-center add-sort-buttons">
         <button class="btn btn-outline-primary add-character-button" (click)="authCharacter()">
             <fa-icon [icon]="faUserPlus"></fa-icon>
             Add a new character
         </button>
-    </p>
+        <div ngbDropdown class="d-inline-block">
+            <button class="btn btn-outline-primary" id="sortChoice" ngbDropdownToggle>Sort by {{ selectedSortOption }}</button>
+            <div ngbDropdownMenu aria-labelledby="sortChoice">
+                <button ngbDropdownItem *ngFor="let sort of sortOptions" (click)="setSortOption(sort)">{{ sort }}</button>
+                <div class="dropdown-divider"></div>
+                <button ngbDropdownItem (click)="invertSort()">Invert sort</button>
+            </div>
+        </div>
+    </div>
 
     <div class="row justify-content-around">
         <div *ngFor="let character of characters" [ngClass]="{'selected' : isCharacterSelected(character)}"

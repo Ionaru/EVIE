@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faCheck, faSync, faTrash, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
+import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { romanize } from '@ionaru/romanize';
 import * as countdown from 'countdown';
 
@@ -15,6 +16,8 @@ import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
 import { SkillsComponent } from '../skills/skills.component';
+
+type sortOption = 'name' | 'skillqueue' | 'ISK';
 
 @Component({
     selector: 'app-dashboard',
@@ -40,6 +43,10 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
 
     public skillQueueInterval?: number;
     public skillQueueTimer?: number;
+
+    public sortOptions: sortOption[] = ['name', 'skillqueue', 'ISK'];
+    public selectedSortOption: sortOption = this.sortOptions[0];
+    public sortInverted = false;
 
     // tslint:disable-next-line:no-bitwise
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
@@ -94,6 +101,8 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
                 this.skillQueueTimer = window.setTimeout(() => this.softReload, timeUntilEarliestSkillComplete);
             }
         }
+
+        this.setSortOption(this.selectedSortOption);
     }
 
     public ngOnDestroy() {
@@ -125,6 +134,35 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
             this.characterService.setActiveCharacter().then();
         }
         this.router.navigate(['/scopes']).then();
+    }
+
+    public setSortOption(selectedSortOption: sortOption) {
+
+        let property = '';
+        let inverse = false;
+
+        switch (selectedSortOption) {
+            case this.sortOptions[0]:
+                property = 'name';
+                break;
+
+            case this.sortOptions[1]:
+                property = 'totalTrainingFinish';
+                break;
+
+            case this.sortOptions[2]:
+                property = 'balance';
+                inverse = true;
+                break;
+        }
+
+        sortArrayByObjectProperty(this.characters, property, this.sortInverted ? !inverse : inverse);
+        this.selectedSortOption = selectedSortOption;
+    }
+
+    public invertSort() {
+        this.sortInverted = !this.sortInverted;
+        this.setSortOption(this.selectedSortOption);
     }
 
     public async getCharacterInfo(character: Character) {
