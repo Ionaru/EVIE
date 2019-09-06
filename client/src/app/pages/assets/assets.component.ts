@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ICharacterBlueprintsDataUnit } from '@ionaru/eve-utils';
+import { ICharacterAssetsData, ICharacterBlueprintsDataUnit } from '@ionaru/eve-utils';
+
 import { Calc } from '../../../shared/calc.helper';
 import { AssetsService } from '../../data-services/assets.service';
 import { BlueprintsService } from '../../data-services/blueprints.service';
@@ -41,56 +42,53 @@ export class AssetsComponent extends DataPageComponent implements OnInit, OnDest
         super.ngOnDestroy();
     }
 
-    // tslint:disable-next-line:cognitive-complexity
     public async getBlueprints() {
         if (CharacterService.selectedCharacter) {
             const character = CharacterService.selectedCharacter;
 
-            const res = await this.blueprintsService.getBlueprints(character);
+            const [blueprints, assets] = await Promise.all([
+                this.blueprintsService.getBlueprints(character),
+                this.assetsService.getAssets(character),
+            ]);
 
-            const assets = await this.assetsService.getAssets(character);
-
-            const types = res.map((blueprint) => blueprint.type_id);
+            const types = blueprints.map((blueprint) => blueprint.type_id);
             this.namesService.getNames(...types).then();
 
-            this.blueprints = res;
+            (blueprints as IExtendedCharacterBlueprintsDataUnit[]).forEach((async (blueprint) => {
+                blueprint.location_name = await this.getBlueprintLocation(blueprint, assets);
+            }));
 
-            for (const result of this.blueprints) {
-                const blueprint = assets.find((asset) => asset.item_id === result.item_id);
-                if (blueprint) {
-
-                    const container = assets.find((asset) => asset.item_id === blueprint.location_id);
-                    if (container) {
-
-                        await this.namesService.getNames(container.location_id);
-                        result.location_name = NamesService.getNameFromData(container.location_id);
-
-                    } else if (blueprint.location_flag === 'Hangar') {
-
-                        let structureInfo;
-
-                        if (blueprint.location_id > Calc.maxIntegerValue) {
-                            structureInfo = await this.structuresService.getStructureInfo(character, blueprint.location_id);
-                        }
-
-                        let locationName;
-
-                        if (structureInfo) {
-                            locationName = structureInfo.name;
-                        } else {
-                            await this.namesService.getNames(blueprint.location_id);
-                            locationName = NamesService.getNameFromData(blueprint.location_id);
-                        }
-
-                        result.location_name = locationName;
-                    }
-
-                }
-            }
+            this.blueprints = blueprints;
         }
     }
 
     public getName(id: number) {
         return NamesService.getNameFromData(id);
+    }
+
+    private async getBlueprintLocation(blueprint: ICharacterBlueprintsDataUnit, assets: ICharacterAssetsData): Promise<string> {
+        const container = assets.find((asset) => asset.item_id === blueprint.location_id);
+        if (container) {
+            // Blueprint is in a container.
+
+            await this.namesService.getNames(container.location_id);
+            return NamesService.getNameFromData(container.location_id);
+
+        } else if (blueprint.location_flag === 'Hangar') {
+            // Blueprint is in a hangar somewhere.
+
+            if (blueprint.location_id > Calc.maxIntegerValue && CharacterService.selectedCharacter) {
+                const character = CharacterService.selectedCharacter;
+                const structureInfo = await this.structuresService.getStructureInfo(character, blueprint.location_id);
+                if (structureInfo) {
+                    return structureInfo.name;
+                }
+            }
+
+            await this.namesService.getNames(blueprint.location_id);
+            return NamesService.getNameFromData(blueprint.location_id);
+        }
+
+        return 'Unknown location';
     }
 }
