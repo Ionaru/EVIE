@@ -9,4 +9,4 @@ authHeader="Authorization: Bearer ${apiKey}"
 contentHeader="Content-Type: application/xml"
 originHeader="Origin: https://travis-ci.org"
 
-curl -vvv -l --request POST ${url} --data "${data}" --header "${contentHeader}" --header "${authHeader}" --header "${originHeader}"
+curl -vvv -l ${url} --data "${data}" --header "${contentHeader}" --header "${authHeader}" --header "${originHeader}"
