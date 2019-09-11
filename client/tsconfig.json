@@ -18,11 +18,9 @@
         ],
         "lib": [
             "dom",
-            "es2017",
-            "es2018",
             "esnext"
         ],
         "outDir": "./dist/out-tsc",
-        "target": "es2015"
+        "target": "es2016"
     }
 }
