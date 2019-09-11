@@ -17,7 +17,6 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "aot": true,
                         "outputPath": "dist/client",
                         "index": "src/index.html",
                         "main": "src/main.ts",
@@ -52,6 +51,7 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "extractCss": true,
+                            "aot": true,
                             "buildOptimizer": true
                         },
                         "production": {
@@ -64,6 +64,7 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "extractCss": true,
+                            "aot": true,
                             "buildOptimizer": true
                         }
                     }
