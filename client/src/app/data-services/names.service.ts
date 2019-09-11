@@ -14,7 +14,7 @@ export interface INames {
 export class NamesService extends BaseService {
 
     public static getNameFromData(id: number, unknownMessage = 'Unknown'): string {
-        if (!NamesService.names || !Object.keys(NamesService.names).length) {
+        if (!NamesService.names || !Object.entries(NamesService.names).length) {
             return unknownMessage;
         }
 
