@@ -22,5 +22,8 @@
         ],
         "outDir": "./dist/out-tsc",
         "target": "es2016"
+    },
+    "angularCompilerOptions": {
+        "enableIvy": true
     }
 }
