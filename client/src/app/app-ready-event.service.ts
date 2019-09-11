@@ -17,7 +17,7 @@ export class AppReadyEventService {
     private static _appReady = false;
     public static get appReady() { return this._appReady; }
 
-    constructor(@Inject(DOCUMENT) private doc: Document) { }
+    constructor(@Inject(DOCUMENT) private document: Document) { }
 
     public triggerSuccess(): void {
         // If the app-ready event has already been triggered, just ignore any calls to trigger it again.
@@ -28,7 +28,7 @@ export class AppReadyEventService {
         AppReadyEventService._appReady = true;
         AppReadyEventService._appReadyObserver.next(undefined);
         AppReadyEventService._appReadyObserver.complete();
-        this.doc.dispatchEvent(this.createEvent('StartupSuccess'));
+        this.document.dispatchEvent(new CustomEvent('StartupSuccess'));
     }
 
     public triggerFailure(info = 'Unexpected error', detail: Error): void {
@@ -38,14 +38,14 @@ export class AppReadyEventService {
         }
 
         // Fire StartupFailed first so the 'error-info' and 'error-info-detail' elements are created.
-        this.doc.dispatchEvent(this.createEvent('StartupFailed'));
+        this.document.dispatchEvent(new CustomEvent('StartupFailed'));
 
-        const errorInfoElement = this.doc.getElementById('error-info');
+        const errorInfoElement = this.document.getElementById('error-info');
         if (errorInfoElement) {
             errorInfoElement.innerText = info;
         }
 
-        const errorInfoDetailElement = this.doc.getElementById('error-info-detail');
+        const errorInfoDetailElement = this.document.getElementById('error-info-detail');
         if (errorInfoDetailElement) {
             errorInfoDetailElement.innerText = detail.message;
         }
@@ -57,18 +57,5 @@ export class AppReadyEventService {
         }
 
         throw detail;
-    }
-
-    private createEvent(eventType: string): Event {
-        // IE (shakes fist) uses some other kind of event initialization. As such, we'll default to trying the "normal" event generation and
-        // then fallback to using the IE version.
-        let customEvent: CustomEvent;
-        try {
-            customEvent = new CustomEvent(eventType);
-        } catch (error) {
-            customEvent = this.doc.createEvent('CustomEvent');
-            customEvent.initCustomEvent(eventType, false, false, undefined);
-        }
-        return (customEvent);
     }
 }
