@@ -10,6 +10,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
+import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
@@ -29,7 +30,15 @@ const routes: Routes = [
     // Character data pages.
     {path: 'dashboard', component: DashboardComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'scopes', component: ScopesComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
-    {path: 'industry', component: IndustryComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
+    {
+        // tslint:disable-next-line:object-literal-sort-keys
+        path: 'industry', component: IndustryComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard],
+        children: [
+            {path: '', redirectTo: 'jobs', pathMatch: 'full'},
+            {path: 'jobs', component: IndustryJobsComponent},
+            // {path: '', component: 'jobs'},
+        ],
+    },
     {path: 'skills', component: SkillsComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'wallet', component: WalletComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'assets', component: AssetsComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},

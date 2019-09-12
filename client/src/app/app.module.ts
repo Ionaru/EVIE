@@ -46,6 +46,7 @@ import { DataPageComponent } from './pages/data-page/data-page.component';
 import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
+import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
@@ -75,6 +76,7 @@ if (environment.production) {
         SkillsComponent,
         LogoutModalComponent,
         IndustryComponent,
+        IndustryJobsComponent,
         UsersComponent,
         OreComponent,
         SorTableComponent,
