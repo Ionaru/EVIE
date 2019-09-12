@@ -35,9 +35,9 @@ export class QueryLogger implements Logger {
     }
 
     public logQueryError(error: string, query: string, parameters?: any[], _queryRunner?: QueryRunner): void {
-        Sentry.captureException(error);
         process.stderr.write(error + '\n');
         process.stderr.write(QueryLogger.getQueryText(query, parameters) + '\n');
+        Sentry.captureException(error);
     }
 
     public logQuerySlow(_time: number, _query: string, _parameters?: any[], _queryRunner?: QueryRunner): void {
