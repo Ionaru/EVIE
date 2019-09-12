@@ -69,9 +69,10 @@
 
         <p class="percentage-container">
             <span>
-                <ng-container *ngIf="job.activity_id === IndustryActivity.invention">
-                    {{ job.successful_runs || 0 }} / {{ job.runs }} successful -
-                </ng-container>
+<!--                TODO: figure out if successful_runs can work with invention. -->
+<!--                <ng-container *ngIf="job.activity_id === IndustryActivity.invention">-->
+<!--                    {{ job.successful_runs || 0 }} / {{ job.runs }} successful - -->
+<!--                </ng-container>-->
                 {{ job.percentageDone | number:'1.0-0' }}%
                 <fa-icon *ngIf="job.timeCountdown.value > 0" [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon>
                 <fa-icon *ngIf="job.timeCountdown.value <= 0" [icon]="jobFinishedIcon"></fa-icon>
