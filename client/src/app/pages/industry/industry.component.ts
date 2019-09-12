@@ -77,13 +77,15 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
             '|s|m|h|d',
             '|s|m|h|d',
             ', ');
-        this.requiredScopes = [ScopesComponent.scopeCodes.JOBS];
+        this.requiredScopes = [
+            ScopesComponent.scopeCodes.JOBS,
+            ScopesComponent.scopeCodes.BLUEPRINTS,
+        ];
     }
 
     public ngOnInit() {
         super.ngOnInit();
         this.getIndustryJobs().then();
-        this.getBlueprints().then();
     }
 
     public ngOnDestroy() {
@@ -109,14 +111,12 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
         }
     }
 
-    public async getBlueprints() {
+    public async getIndustryJobs() {
         if (CharacterService.selectedCharacter && IndustryComponent.hasBlueprintScope) {
             const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
             this.blueprints = objectsArrayToObject(blueprintData, 'item_id');
         }
-    }
 
-    public async getIndustryJobs() {
         if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScope) {
             this.industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
         }
@@ -125,6 +125,22 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
 
             // Get ME / TE for BP
 
+            this.processIndustryJobs();
+
+            this.runningJobsTimer = setInterval(() => {
+                this.processIndustryJobs();
+            }, Calc.second);
+
+            sortArrayByObjectProperty(this.industryJobs, 'job_id', true);
+            sortArrayByObjectProperty(this.industryJobs, 'timeLeft');
+
+            this.setProductNames(this.industryJobs).then();
+            this.getLocationNames(this.industryJobs).then();
+        }
+    }
+
+    public processIndustryJobs() {
+        if (this.industryJobs) {
             for (const job of this.industryJobs) {
                 const start = new Date(job.start_date).getTime();
                 const duration = Calc.secondsToMilliseconds(job.duration);
@@ -132,17 +148,11 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                 const now = Date.now();
 
                 const timeElapsed = now - start;
-                job.percentageDone = Math.min(Calc.partPercentage((timeElapsed), duration), 100);
+                job.percentageDone = Math.min(Math.floor(Calc.partPercentage((timeElapsed), duration)), 100);
 
                 job.timeLeft = end - now;
                 job.timeCountdown = countdown(undefined, end, this.countdownUnits);
             }
-
-            sortArrayByObjectProperty(this.industryJobs, 'job_id');
-            sortArrayByObjectProperty(this.industryJobs, 'timeLeft');
-
-            this.setProductNames(this.industryJobs).then();
-            this.getLocationNames(this.industryJobs).then();
         }
     }
 
@@ -173,7 +183,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                         job.locationName = structure.name;
                     }
                 } else {
-                    job.locationName = 'An unknown citadel';
+                    job.locationName = 'An unknown Upwell structure';
                 }
             } else {
                 await this.namesService.getNames(job.output_location_id);
