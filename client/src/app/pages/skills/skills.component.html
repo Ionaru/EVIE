@@ -124,7 +124,7 @@
             </div>
         </div>
         <div class="skill-list" *ngIf="skills">
-            <ngb-accordion *ngIf="skills">
+            <ngb-accordion>
                 <ng-container *ngFor="let group of skillGroups">
                     <ngb-panel *ngIf="trainedSkillsGrouped[group.group_id]?.length || showUntrainedSkills">
                         <ng-template ngbPanelTitle>
