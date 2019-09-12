@@ -29,7 +29,7 @@
         <h3>You have no active industry jobs.</h3>
     </div>
 
-    <div class="industry-job-container" *ngFor="let job of industryJobs" [ngSwitch]="job.activity_id">
+    <div class="industry-job-container" *ngFor="let job of industryJobs">
         <h4 class="icon-container">
             <fa-icon [ngbTooltip]="getIndustryActivityName(job.activity_id)" placement="right"
                      [icon]="getIconForIndustryActivity(job.activity_id)"></fa-icon>
