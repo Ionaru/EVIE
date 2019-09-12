@@ -47,7 +47,7 @@ export class NamesService extends BaseService {
 
     private static names: INames;
     private static namesExpiry: number;
-    private static namesMaxAge = 604_800_000; // 7 days
+    private static namesMaxAge = 7 * Calc.day;
     private static namesStoreTag = 'names';
 
     private static resetNames(): void {

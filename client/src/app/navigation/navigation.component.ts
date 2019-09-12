@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 
 import { environment } from '../../environments/environment';
+import { Calc } from '../../shared/calc.helper';
 import { StatusService } from '../data-services/status.service';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
@@ -80,7 +81,7 @@ export class NavigationComponent implements OnInit {
 
         window.setTimeout(() => {
             this.getStatus().then();
-        }, 45000);
+        }, 45 * Calc.second);
     }
 
     public nextCharacter(): void {
@@ -117,11 +118,11 @@ export class NavigationComponent implements OnInit {
         this.tickTime();
         const eveTime = window.setInterval(() => {
             this.tickTime();
-        }, 60000);
+        }, Calc.minute);
         window.setTimeout(() => {
             window.clearInterval(eveTime);
             this.syncClock();
-        }, 180000);
+        }, 3 * Calc.minute);
     }
 
     private tickTime(newTime?: Date): void {

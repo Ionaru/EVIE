@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 import { EVE, ICharacterData } from '@ionaru/eve-utils';
 import { Subject } from 'rxjs';
 
+import { Calc } from '../../../shared/calc.helper';
 import { Character, IApiCharacterData, IDeleteCharacterResponse, ITokenRefreshResponse } from './character.model';
 
-const tokenRefreshInterval = 15 * 60 * 1000; // 15 minutes
+const tokenRefreshInterval = 15 * Calc.minute;
 
 @Injectable()
 export class CharacterService {

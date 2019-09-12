@@ -155,7 +155,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     // tslint:disable-next-line:no-non-null-assertion
     public getSkillGroup = (skillId: number) => this.skillGroups.find((group) => group.types.includes(skillId))!.name;
 
-    public skillQueueLow = () => !this.skillTrainingPaused && this.skillQueueTimeLeft < (24 * 60 * 60 * 1000);
+    public skillQueueLow = () => !this.skillTrainingPaused && this.skillQueueTimeLeft < Calc.day;
 
     public get hasSkillsScope() {
         return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.SKILLS);
@@ -368,7 +368,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
                         if (typeof skillInQueue.countdown !== 'number') {
                             SkillsComponent.adjustCountDownForDST(skillInQueue.countdown, skillFinishDate.getTime() - Date.now());
                         }
-                    }, 1000);
+                    }, Calc.second);
 
                     // Update the list when a skill finishes training.
                     if (timeLeftInSkill < Calc.maxIntegerValue) {
@@ -422,7 +422,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         if (this.skillQueueCount) {
             this.totalQueueTimer = window.setInterval(() => {
                 this.updateQueueCountdown();
-            }, 1000);
+            }, Calc.second);
         }
     }
 }
