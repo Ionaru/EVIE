@@ -7,7 +7,7 @@ export class Character {
     public characterId: number;
     public uuid: string;
     public name: string;
-    public accessToken?: string;
+    public _accessToken?: string;
     public scopes: string[];
     public tokenExpiry: Date;
     public ownerHash: string;
@@ -58,6 +58,20 @@ export class Character {
         this.ownerHash = tokenData.owner;
         this.name = tokenData.name;
         this.characterId = Number(tokenData.sub.split(':')[2]);
+    }
+
+    public set accessToken(token: string | undefined) {
+        if (!token) {
+            return;
+        }
+
+        const tokenData = jwt<IJWTToken>(token);
+        this._accessToken = token;
+        this.tokenExpiry = new Date(Calc.secondsToMilliseconds(tokenData.exp));
+    }
+
+    public get accessToken(): string | undefined {
+        return this._accessToken;
     }
 
     public updateAuth(data: IApiCharacterData): void {
