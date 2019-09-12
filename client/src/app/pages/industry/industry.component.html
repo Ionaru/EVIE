@@ -78,7 +78,10 @@
                 <fa-icon *ngIf="job.timeCountdown.value <= 0" [icon]="jobFinishedIcon"></fa-icon>
             </span>
             <span> {{ job.timeCountdown.value > 0 ? job.timeCountdown : 'Ready for delivery' }}</span>
-            <span>{{ job.locationName }}</span>
+            <span>
+                <fa-icon [icon]="locationIcon"></fa-icon>
+                {{ job.locationName }}
+            </span>
         </p>
     </div>
 

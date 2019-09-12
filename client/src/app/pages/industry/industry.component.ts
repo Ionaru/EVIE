@@ -1,5 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { faArrowRight, faCog, faCopy, faDice, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
+import {
+    faArrowRight,
+    faCog,
+    faCopy,
+    faDice,
+    faGem,
+    faHourglass,
+    faLocation,
+    faMicroscope,
+    faRepeat
+} from '@fortawesome/pro-regular-svg-icons';
 import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { ICharacterBlueprintsDataUnit, ICharacterIndustryJobsDataUnit, IndustryActivity } from '@ionaru/eve-utils';
@@ -45,6 +55,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public arrowRight = faArrowRight;
     public jobRunsIcon = faRepeat;
     public inventionChanceIcon = faDice;
+    public locationIcon = faLocation;
 
     public runningJobsTimer?: number;
 
