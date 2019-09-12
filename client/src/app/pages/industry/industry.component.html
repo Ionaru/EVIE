@@ -46,6 +46,12 @@
             <h4 *ngIf="![IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)">
                 <fa-icon [icon]="jobRunsIcon"></fa-icon>
                 {{ job.runs }}
+                <ng-container *ngIf="job.activity_id === IndustryActivity.invention">
+                    (
+                    <fa-icon [icon]="inventionChanceIcon" size="sm"></fa-icon>
+                    {{ job.probability * 100 | number:'1.0-0' }}%
+                    )
+                </ng-container>
             </h4>
 
             <h4 *ngIf="job.activity_id === IndustryActivity.research_material_efficiency">
@@ -62,11 +68,16 @@
         </div>
 
         <p class="percentage-container">
-            <span>{{ job.percentageDone | number:'1.0-0' }}%
+            <span>
+                <ng-container *ngIf="job.activity_id === IndustryActivity.invention">
+                    {{ job.successful_runs || 0 }} / {{ job.runs }} successful -
+                </ng-container>
+                {{ job.percentageDone | number:'1.0-0' }}%
                 <fa-icon *ngIf="job.timeCountdown.value > 0" [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon>
                 <fa-icon *ngIf="job.timeCountdown.value <= 0" [icon]="jobFinishedIcon"></fa-icon>
             </span>
-            <span> {{ job.timeCountdown.value > 0 ? job.timeCountdown : 'Ready for delivery.' }}</span>
+            <span> {{ job.timeCountdown.value > 0 ? job.timeCountdown : 'Ready for delivery' }}</span>
+            <span>{{ job.locationName }}</span>
         </p>
     </div>
 

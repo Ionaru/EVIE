@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { faArrowRight, faCog, faCopy, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
+import { faArrowRight, faCog, faCopy, faDice, faGem, faHourglass, faMicroscope, faRepeat } from '@fortawesome/pro-regular-svg-icons';
 import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { ICharacterBlueprintsDataUnit, ICharacterIndustryJobsDataUnit, IndustryActivity } from '@ionaru/eve-utils';
@@ -44,6 +44,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
     public inventionIcon = faMicroscope;
     public arrowRight = faArrowRight;
     public jobRunsIcon = faRepeat;
+    public inventionChanceIcon = faDice;
 
     public runningJobsTimer?: number;
 
@@ -160,6 +161,8 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                     if (structure) {
                         job.locationName = structure.name;
                     }
+                } else {
+                    job.locationName = 'An unknown citadel';
                 }
             } else {
                 await this.namesService.getNames(job.output_location_id);
