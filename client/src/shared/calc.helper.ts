@@ -3,14 +3,20 @@
  */
 export class Calc {
 
-    public static maxIntegerValue = 0x7FFFFFFF;
+    public static readonly maxIntegerValue = 0x7FFFFFFF;
 
-    public static partPercentage = (part: number, total: number) => (part / total) * 100;
-    public static profitPercentage = (old: number, newAmount: number) => ((newAmount - old) / old) * 100;
+    public static readonly second = 1000;
+    public static readonly minute = 60000;
+    public static readonly hour = 3600000;
+    public static readonly day = 86400000;
+    public static readonly week = 604800000;
 
-    public static wholeSeconds = (duration: number) => Math.floor(duration / 1000);
-    public static wholeMinutes = (duration: number) => Math.floor(duration / 60000);
-    public static wholeHours = (duration: number) => Math.floor(duration / 3600000);
-    public static wholeDays = (duration: number) => Math.floor(duration / 86400000);
-    public static wholeWeeks = (duration: number) => Math.floor(duration / 604800000);
+    public static readonly partPercentage = (part: number, total: number) => (part / total) * 100;
+    public static readonly profitPercentage = (old: number, newAmount: number) => ((newAmount - old) / old) * 100;
+
+    public static readonly wholeSeconds = (duration: number) => Math.floor(duration / Calc.second);
+    public static readonly wholeMinutes = (duration: number) => Math.floor(duration / Calc.minute);
+    public static readonly wholeHours = (duration: number) => Math.floor(duration / Calc.hour);
+    public static readonly wholeDays = (duration: number) => Math.floor(duration / Calc.day);
+    public static readonly wholeWeeks = (duration: number) => Math.floor(duration / Calc.week);
 }
