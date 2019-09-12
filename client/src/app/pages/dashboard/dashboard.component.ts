@@ -83,7 +83,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
                     DashboardComponent.adjustCountDownForDST(character.totalTrainingFinish, character.totalTrainingCountdown);
                 }
             }
-        }, 1000);
+        }, Calc.second);
 
         let earliestSkillComplete = Infinity;
         for (const character of this.characters) {
