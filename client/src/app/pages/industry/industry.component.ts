@@ -17,7 +17,8 @@ import { ScopesComponent } from '../scopes/scopes.component';
 
 interface IExtendedIndustryJobsData extends ICharacterIndustryJobsDataUnit {
     percentageDone?: number;
-    timeLeft?: number | countdown.Timespan;
+    timeCountdown?: number | countdown.Timespan;
+    timeLeft?: number;
     productName?: string;
     locationName?: string;
 }
@@ -82,6 +83,10 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
         return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.JOBS);
     }
 
+    public static get hasStructuresScope() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.STRUCTURES);
+    }
+
     public static get hasBlueprintScope() {
         return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.BLUEPRINTS);
     }
@@ -117,7 +122,8 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
                 const timeElapsed = now - start;
                 job.percentageDone = Math.min(Calc.partPercentage((timeElapsed), duration), 100);
 
-                job.timeLeft = countdown(undefined, end, this.countdownUnits);
+                job.timeLeft = end - now;
+                job.timeCountdown = countdown(undefined, end, this.countdownUnits);
             }
 
             sortArrayByObjectProperty(this.industryJobs, 'job_id');
@@ -148,7 +154,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
 
         for (const job of industryJobs) {
             if (job.output_location_id > Calc.maxIntegerValue) {
-                if (CharacterService.selectedCharacter && IndustryComponent.hasIndustryJobsScope) {
+                if (CharacterService.selectedCharacter && IndustryComponent.hasStructuresScope) {
                     const structure = await this.structuresService.getStructureInfo(
                         CharacterService.selectedCharacter, job.output_location_id);
                     if (structure) {

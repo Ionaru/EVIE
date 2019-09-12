@@ -1,5 +1,5 @@
 <app-no-scopes-message *ngIf="missingAllRequiredScopes">
-    To display the industry page, you need to grant the "Read industry jobs" scope.
+    To display the industry page, you need to grant the "Read industry jobs" and "Read blueprints" scopes.
 </app-no-scopes-message>
 
 <div class="container industry-page-container" *ngIf="missingAllRequiredScopes === false">
@@ -48,19 +48,25 @@
                 {{ job.runs }}
             </h4>
 
-            <h4 *ngIf="[IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)">
+            <h4 *ngIf="job.activity_id === IndustryActivity.research_material_efficiency">
                 {{ blueprints[job.blueprint_id].material_efficiency }}%
                 <fa-icon [icon]="arrowRight"></fa-icon>
-                {{ blueprints[job.blueprint_id].material_efficiency + (job.activity_id === IndustryActivity.research_time_efficiency ? job.runs * 2 : job.runs) }}%
+                {{ blueprints[job.blueprint_id].material_efficiency + job.runs }}%
+            </h4>
+
+            <h4 *ngIf="job.activity_id === IndustryActivity.research_time_efficiency">
+                {{ blueprints[job.blueprint_id].time_efficiency }}%
+                <fa-icon [icon]="arrowRight"></fa-icon>
+                {{ blueprints[job.blueprint_id].time_efficiency + job.runs * 2 }}%
             </h4>
         </div>
 
         <p class="percentage-container">
             <span>{{ job.percentageDone | number:'1.0-0' }}%
-                <fa-icon *ngIf="job.timeLeft.value > 0" [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon>
-                <fa-icon *ngIf="job.timeLeft.value <= 0" [icon]="jobFinishedIcon"></fa-icon>
+                <fa-icon *ngIf="job.timeCountdown.value > 0" [icon]="jobInProgressIcon" [spin]="!(!!job.pause_date)"></fa-icon>
+                <fa-icon *ngIf="job.timeCountdown.value <= 0" [icon]="jobFinishedIcon"></fa-icon>
             </span>
-            <span> {{ job.timeLeft.value > 0 ? job.timeLeft : 'Ready for delivery.' }}</span>
+            <span> {{ job.timeCountdown.value > 0 ? job.timeCountdown : 'Ready for delivery.' }}</span>
         </p>
     </div>
 
