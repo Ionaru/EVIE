@@ -7,7 +7,7 @@ export class Character {
     public characterId: number;
     public uuid: string;
     public name: string;
-    public accessToken: string;
+    public accessToken?: string;
     public scopes: string[];
     public tokenExpiry: Date;
     public ownerHash: string;
@@ -46,14 +46,13 @@ export class Character {
         type?: string | null;
     } = {};
     public refreshTimer?: number;
-    public refreshRetryTimeout?: number;
 
     public constructor(data: IApiCharacterData) {
         this.accessToken = data.accessToken;
         this.uuid = data.uuid;
 
         // Decode access token for information
-        const tokenData = jwt<IJWTToken>(this.accessToken);
+        const tokenData = jwt<IJWTToken>(data.accessToken);
         this.tokenExpiry = new Date(Calc.secondsToMilliseconds(tokenData.exp));
         this.scopes = typeof tokenData.scp === 'string' ? [tokenData.scp] : tokenData.scp;
         this.ownerHash = tokenData.owner;
@@ -71,12 +70,21 @@ export class Character {
         this.tokenExpiry = new Date(data.tokenExpiry);
     }
 
+    public get hasValidAuth() {
+        return this.accessToken && this.tokenExpiry >= new Date();
+    }
+
     public hasScope(scope: string) {
-        return this.scopes.includes(scope);
+        return this.hasValidAuth && this.scopes.includes(scope);
     }
 
     public getAuthorizationHeader() {
         return 'Bearer ' + this.accessToken;
+    }
+
+    public invalidateAuth() {
+        this.accessToken = undefined;
+        window.clearInterval(this.refreshTimer);
     }
 }
 

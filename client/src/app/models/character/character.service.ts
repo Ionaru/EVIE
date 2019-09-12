@@ -33,6 +33,7 @@ export class CharacterService {
     public async registerCharacter(data: IApiCharacterData): Promise<Character> {
 
         const character = new Character(data);
+        this.getPublicCharacterData(character).then();
         if (data.isActive) {
             this.setActiveCharacter(character, true).then();
         }
@@ -40,16 +41,23 @@ export class CharacterService {
         const tokenExpiryTime = character.tokenExpiry.getTime();
         const currentTime = Date.now();
 
-        const timeLeft = (tokenExpiryTime - currentTime) - tokenRefreshInterval;
+        const tokenExpiry = tokenExpiryTime - currentTime;
+        if (tokenExpiry < -(3 * Calc.week)) {
+            // Refresh token is too old.
+            character.invalidateAuth();
+            return character;
+        }
+
+        const timeLeft = tokenExpiry - tokenRefreshInterval;
         if (timeLeft <= 0) {
             await this.refreshToken(character);
         }
 
-        character.refreshTimer = window.setInterval(() => {
-            this.refreshToken(character).then();
-        }, tokenRefreshInterval);
-
-        this.getPublicCharacterData(character).then();
+        if (character.hasValidAuth) {
+            character.refreshTimer = window.setInterval(() => {
+                this.refreshToken(character).then();
+            }, tokenRefreshInterval);
+        }
 
         return character;
     }
@@ -60,9 +68,7 @@ export class CharacterService {
         const response = await this.http.get<any>(url).toPromise<IServerResponse<ITokenRefreshResponse>>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
-            character.refreshRetryTimeout = window.setTimeout(() => {
-                this.refreshToken(character).then();
-            }, 5 * 1000);
+            character.invalidateAuth();
             return;
         }
         character.accessToken = response.data.token;
@@ -92,13 +98,7 @@ export class CharacterService {
         }
 
         if (response.state === 'success') {
-            if (character.refreshTimer) {
-                window.clearInterval(character.refreshTimer);
-            }
-
-            if (character.refreshRetryTimeout) {
-                window.clearTimeout(character.refreshRetryTimeout);
-            }
+            character.invalidateAuth();
 
             if (CharacterService.selectedCharacter && CharacterService.selectedCharacter.uuid === character.uuid) {
                 this.setActiveCharacter().then();

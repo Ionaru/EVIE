@@ -28,6 +28,13 @@
                 <p>
                     <strong>{{ character.name }}</strong>
                 </p>
+                <p *ngIf="!character.hasValidAuth" class="text-danger">
+                    <strong>Invalid API authorization</strong>
+                    <br>
+                    Please use the
+                    <fa-icon class="text-info" [icon]="faSync"></fa-icon>
+                    icon to refresh the authorization for this character.
+                </p>
                 <p *ngIf="hasShipTypeScope(character)">
                     <ng-container *ngIf="character.currentShip.name && character.currentShip.type;else loading_message">
                         {{ character.currentShip.name }} ({{ character.currentShip.type }})

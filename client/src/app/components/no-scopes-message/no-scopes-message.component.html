@@ -1,12 +1,12 @@
 <div class="container">
     <ngb-alert class="scopes-alert" [dismissible]="false" type="danger">
         <fa-icon [icon]="noScopesIcon"></fa-icon>
-        <strong>EVIE does not have the required data scopes to display this page</strong>
+        <strong>EVIE does not have the required API authorization to display this page</strong>
         <div class="scopes-alert-content">
             <hr>
             <ng-content></ng-content>
             <br>
-            Click <a routerLink="/scopes">here</a> to edit the scopes.
+            Click <a routerLink="/scopes">here</a> to edit of refresh the API authorization.
         </div>
     </ngb-alert>
 </div>
