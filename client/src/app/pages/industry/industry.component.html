@@ -34,7 +34,7 @@
             <fa-icon [ngbTooltip]="getIndustryActivityName(job.activity_id)" placement="right"
                      [icon]="getIconForIndustryActivity(job.activity_id)"></fa-icon>
         </h4>
-        <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id].runs !== -1}"
+        <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1}"
             src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_64.png" alt="bp">
         <h4 class="icon-container">
             <fa-icon [icon]="arrowRight"></fa-icon>
@@ -55,15 +55,15 @@
             </h4>
 
             <h4 *ngIf="job.activity_id === IndustryActivity.research_material_efficiency">
-                {{ blueprints[job.blueprint_id].material_efficiency }}%
+                {{ blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.material_efficiency }}%
                 <fa-icon [icon]="arrowRight"></fa-icon>
-                {{ blueprints[job.blueprint_id].material_efficiency + job.runs }}%
+                {{ blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.material_efficiency + job.runs }}%
             </h4>
 
             <h4 *ngIf="job.activity_id === IndustryActivity.research_time_efficiency">
-                {{ blueprints[job.blueprint_id].time_efficiency }}%
+                {{ blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.time_efficiency }}%
                 <fa-icon [icon]="arrowRight"></fa-icon>
-                {{ blueprints[job.blueprint_id].time_efficiency + job.runs * 2 }}%
+                {{ blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.time_efficiency + job.runs * 2 }}%
             </h4>
         </div>
 

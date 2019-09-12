@@ -24,7 +24,7 @@ interface IExtendedIndustryJobsData extends ICharacterIndustryJobsDataUnit {
 }
 
 interface IBlueprints {
-    [index: number]: ICharacterBlueprintsDataUnit;
+    [index: number]: ICharacterBlueprintsDataUnit | undefined;
 }
 
 @Component({
