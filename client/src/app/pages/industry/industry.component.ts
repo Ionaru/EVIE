@@ -8,7 +8,7 @@ import {
     faHourglass,
     faLocation,
     faMicroscope,
-    faRepeat
+    faRepeat,
 } from '@fortawesome/pro-regular-svg-icons';
 import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
