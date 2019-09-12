@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 
 import { Character } from '../models/character/character.model';
 
-export interface IServerResponse<T> {
+export interface IServerResponse<T = undefined> {
     state: string;
     message: string;
-    data?: T;
+    data: T;
 }
 
 @Injectable()

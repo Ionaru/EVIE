@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { Subject } from 'rxjs';
 
+import { IServerResponse } from '../../data-services/base.service';
 import { BaseGuard } from '../../guards/base.guard';
 import { SocketService } from '../../socket/socket.service';
 import { Character, IApiCharacterData } from '../character/character.model';
 import { CharacterService } from '../character/character.service';
-import { ISSOAuthResponse, ISSOLoginResponse, IUserApiData, User } from './user.model';
+import { ISSOAuthResponseData, IUserApiData, User } from './user.model';
 
 @Injectable()
 export class UserService {
@@ -91,7 +92,7 @@ export class UserService {
         }
 
         if (UserService.authWindow) {
-            SocketService.socket.once('SSO_LOGON_END', async (response: ISSOLoginResponse) => {
+            SocketService.socket.once('SSO_LOGON_END', async (response: IServerResponse<IUserApiData>) => {
                 if (UserService.authWindow && !UserService.authWindow.closed) {
                     UserService.authWindow.close();
                     if (response.state === 'success') {
@@ -119,7 +120,7 @@ export class UserService {
         }
 
         if (UserService.authWindow) {
-            SocketService.socket.once('SSO_AUTH_END', async (response: ISSOAuthResponse) => {
+            SocketService.socket.once('SSO_AUTH_END', async (response: IServerResponse<ISSOAuthResponseData>) => {
                 if (UserService.authWindow && !UserService.authWindow.closed) {
                     UserService.authWindow.close();
                     if (response.state === 'success') {

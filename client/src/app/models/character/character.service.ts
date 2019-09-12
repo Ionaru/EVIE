@@ -4,7 +4,8 @@ import { EVE, ICharacterData } from '@ionaru/eve-utils';
 import { Subject } from 'rxjs';
 
 import { Calc } from '../../../shared/calc.helper';
-import { Character, IApiCharacterData, IDeleteCharacterResponse, ITokenRefreshResponse } from './character.model';
+import { IServerResponse } from '../../data-services/base.service';
+import { Character, IApiCharacterData, ITokenRefreshResponse } from './character.model';
 
 const tokenRefreshInterval = 15 * Calc.minute;
 
@@ -56,7 +57,7 @@ export class CharacterService {
     public async refreshToken(character: Character): Promise<void> {
         const uuid = character.uuid;
         const url = `/sso/refresh?uuid=${uuid}`;
-        const response = await this.http.get<any>(url).toPromise<ITokenRefreshResponse>()
+        const response = await this.http.get<any>(url).toPromise<IServerResponse<ITokenRefreshResponse>>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             character.refreshRetryTimeout = window.setTimeout(() => {
@@ -84,7 +85,7 @@ export class CharacterService {
         const url = '/sso/delete';
         const characterUUID = character.uuid;
 
-        const response = await this.http.post<any>(url, {characterUUID}).toPromise<IDeleteCharacterResponse>()
+        const response = await this.http.post<any>(url, {characterUUID}).toPromise<IServerResponse>()
             .catch((e: HttpErrorResponse) => e);
         if (response instanceof HttpErrorResponse) {
             throw response.error;

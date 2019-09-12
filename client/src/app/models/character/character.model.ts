@@ -91,23 +91,8 @@ export interface IApiCharacterData {
     isActive: boolean;
 }
 
-export interface ISSOSocketResponse {
-    state: string;
-    message: string;
-    data: IApiCharacterData;
-}
-
 export interface ITokenRefreshResponse {
-    state: string;
-    message: string;
-    data: {
-        token: string;
-    };
-}
-
-export interface IDeleteCharacterResponse {
-    state: string;
-    message: string;
+    token: string;
 }
 
 export interface ISkillQueueDataWithName extends ICharacterSkillQueueDataUnit {

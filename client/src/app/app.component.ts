@@ -3,19 +3,13 @@ import { Component } from '@angular/core';
 
 import { environment } from '../environments/environment';
 import { AppReadyEventService } from './app-ready-event.service';
-import { BaseService } from './data-services/base.service';
+import { BaseService, IServerResponse } from './data-services/base.service';
 import { NamesService } from './data-services/names.service';
 import { BaseGuard } from './guards/base.guard';
 import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
 import { SocketService } from './socket/socket.service';
-
-interface IHandshakeResponse {
-    state: string;
-    message: string;
-    data?: IUserApiData;
-}
 
 @Component({
     selector: 'app-root',
@@ -46,7 +40,7 @@ export class AppComponent {
     private async shakeHands(): Promise<any> {
         const url = 'api/handshake';
 
-        const response = await this.http.get<any>(url, {observe: 'response'}).toPromise<HttpResponse<IHandshakeResponse>>();
+        const response = await this.http.get<any>(url, {observe: 'response'}).toPromise<HttpResponse<IServerResponse<IUserApiData>>>();
 
         BaseService.serverToken = response.headers.get('x-evie-token') || '';
 
