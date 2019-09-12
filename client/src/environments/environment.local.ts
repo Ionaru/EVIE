@@ -7,6 +7,7 @@ import { version } from '../../package.json';
 export const environment = {
     VERSION: version,
     production: false,
+    sentryEnvironment: 'local',
     socketHost: 'http://localhost:4200/',
 };
 
