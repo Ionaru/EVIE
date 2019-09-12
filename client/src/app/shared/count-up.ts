@@ -1,3 +1,5 @@
+import { Calc } from '../../shared/calc.helper';
+
 export interface ICountUpOptions {
     // All options are optional
     useEasing?: boolean;      // Whether to use easing or not, default: true
@@ -82,7 +84,7 @@ export class CountUp {
         this.frameVal = startVal;
         this.decimals = Math.max(0, decimals || 0);
         this.dec = Math.pow(10, decimals);
-        this.duration = Number(duration) * 1000 || 2000;
+        this.duration = Calc.secondsToMilliseconds(duration) || 2000;
         this.easingFn = this.options.easingFn ? this.options.easingFn : CountUp.easeOutExpo;
         this.formattingFn = this.options.formattingFn ? this.options.formattingFn : this.formatNumber;
 

@@ -321,10 +321,11 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
                     const startTrainingToFinishSP = skillInQueue.level_end_sp - skillInQueue.training_start_sp;
 
-                    this.spPerSec = startTrainingToFinishSP / (startTrainingToFinishTime / 1000);
+                    this.spPerSec = startTrainingToFinishSP / Calc.millisecondsToSeconds(startTrainingToFinishTime);
 
                     const timeSpentSinceStartTraining = nowTime - skillStartDate.getTime();
-                    const currentSPInSkill = skillInQueue.training_start_sp + (this.spPerSec * (timeSpentSinceStartTraining / 1000));
+                    const skillPointsTrained = this.spPerSec * Calc.millisecondsToSeconds(timeSpentSinceStartTraining);
+                    const currentSPInSkill = skillInQueue.training_start_sp + skillPointsTrained;
 
                     const currentSPInSkillLevel = currentSPInSkill - skillInQueue.level_start_sp;
                     const skillLevelSP = skillInQueue.level_end_sp - skillInQueue.level_start_sp;

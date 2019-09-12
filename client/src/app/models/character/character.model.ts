@@ -1,6 +1,8 @@
 import { ICharacterSkillQueueDataUnit } from '@ionaru/eve-utils';
 import * as jwt from 'jwt-decode';
 
+import { Calc } from '../../../shared/calc.helper';
+
 export class Character {
     public characterId: number;
     public uuid: string;
@@ -52,7 +54,7 @@ export class Character {
 
         // Decode access token for information
         const tokenData = jwt<IJWTToken>(this.accessToken);
-        this.tokenExpiry = new Date(tokenData.exp * 1000);
+        this.tokenExpiry = new Date(Calc.secondsToMilliseconds(tokenData.exp));
         this.scopes = typeof tokenData.scp === 'string' ? [tokenData.scp] : tokenData.scp;
         this.ownerHash = tokenData.owner;
         this.name = tokenData.name;

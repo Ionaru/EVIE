@@ -111,7 +111,7 @@ export class NavigationComponent implements OnInit {
         const tickTimeout = 60 - time.getUTCSeconds();
         window.setTimeout(() => {
             this.startClock();
-        }, tickTimeout * 1000);
+        }, Calc.secondsToMilliseconds(tickTimeout));
     }
 
     private startClock(): void {

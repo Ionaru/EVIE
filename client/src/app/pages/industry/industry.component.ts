@@ -110,7 +110,7 @@ export class IndustryComponent extends DataPageComponent implements OnInit, OnDe
 
             for (const job of this.industryJobs) {
                 const start = new Date(job.start_date).getTime();
-                const duration = job.duration * 1000;
+                const duration = Calc.secondsToMilliseconds(job.duration);
                 const end = start + duration;
                 const now = Date.now();
 
