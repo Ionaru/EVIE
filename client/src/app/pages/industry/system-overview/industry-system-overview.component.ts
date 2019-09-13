@@ -1,13 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { objectsArrayToObject } from '@ionaru/array-utils';
+import { faChevronDown } from '@fortawesome/pro-regular-svg-icons';
+import { objectsArrayToObject, uniquifyArray } from '@ionaru/array-utils';
 import { IUniverseSystemData } from '@ionaru/eve-utils';
 import * as countdown from 'countdown';
-import { Calc } from '../../../../shared/calc.helper';
 
+import { Calc } from '../../../../shared/calc.helper';
 import { BlueprintsService } from '../../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../../data-services/industry-jobs.service';
 import { StationsService } from '../../../data-services/stations.service';
 import { StructuresService } from '../../../data-services/structures.service';
+import { SystemsService } from '../../../data-services/systems.service';
 import { CharacterService } from '../../../models/character/character.service';
 import { IBlueprints, IExtendedIndustryJobsData, IndustryComponent } from '../industry.component';
 
@@ -28,9 +30,11 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
 
     public industryJobs?: IExtendedIndustryJobsData[];
     public blueprints: IBlueprints = {};
-    public systems?: IUniverseSystemData[];
+    public systems: IUniverseSystemData[] = [];
 
     public jobsByLocation?: IJobsBySystem;
+
+    public openAccordionIcon = faChevronDown;
 
     constructor(
         private industryJobsService: IndustryJobsService,
@@ -38,7 +42,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         // private namesService: NamesService,
         private stationsService: StationsService,
         private structuresService: StructuresService,
-        // private systemService: SystemsService,
+        private systemService: SystemsService,
     ) {
         super();
         countdown.setLabels(
@@ -89,9 +93,20 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         return this.jobsByLocation ? Object.keys(this.jobsByLocation) : [];
     }
 
+    public systemInfo = (systemId: string) => this.systems.find((system) => system.system_id === Number(systemId));
+
     public getLocationsForSystem = (systemId: string) => this.jobsByLocation ? Object.keys(this.jobsByLocation[systemId]) : [];
 
     public getJobsForLocation = (systemId: string, location: string) => this.jobsByLocation ? this.jobsByLocation[systemId][location] : [];
+
+    public getJobCountForLocation(systemId: string) {
+        if (!this.jobsByLocation) {
+            return 0;
+        }
+
+        const locationsInSystem = Object.values(this.jobsByLocation[systemId]);
+        return locationsInSystem.reduce((location) => Object.values(location)).length;
+    }
 
     public async getIndustryJobs() {
         if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasBlueprintScope) {
@@ -130,6 +145,15 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
             }
 
             this.jobsByLocation = jobsOverview;
+
+            this.getJobCountForLocation('30003915');
+
+            Promise.all([uniquifyArray(systems).map(async (system) => {
+                const systemInfo = await this.systemService.getSystemInfo(system);
+                if (systemInfo) {
+                    this.systems.push(systemInfo);
+                }
+            })]).then();
 
             // const locations = this.industryJobs.map((job) => job.output_location_id);
 

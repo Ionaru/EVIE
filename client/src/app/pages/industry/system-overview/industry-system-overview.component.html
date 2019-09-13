@@ -1,18 +1,34 @@
-<ngb-accordion>
-    <ngb-panel *ngFor="let locationKey of jobsByLocationKeys">
-        <ng-template ngbPanelTitle>
-            {{locationKey}}
-        </ng-template>
-        <ng-template ngbPanelContent>
-            <ng-container *ngFor="let station of getLocationsForSystem(locationKey)">
-                <h3>{{station}}</h3>
-                <div *ngFor="let job of getJobsForLocation(locationKey, station)">
-                    <p>{{job.blueprint_id}}</p>
+<div class="skill-list">
+    <ngb-accordion>
+        <ngb-panel *ngFor="let locationKey of jobsByLocationKeys">
+            <ng-template ngbPanelTitle>
+                <div class="d-flex justify-content-between">
+                        <span>
+                            <fa-icon [icon]="openAccordionIcon"></fa-icon>
+                            <strong> {{ systemInfo(locationKey).name }}</strong>
+                            ( {{ systemInfo(locationKey).security_status | number:'1.1-1' }} )
+                        </span>
+                    <span>
+
+                        </span>
                 </div>
-            </ng-container>
-        </ng-template>
-    </ngb-panel>
-</ngb-accordion>
+                <!--            <p class="d-flex justify-content-between">-->
+                <!--                {{systemInfo(locationKey).name}}-->
+                <!--                {{systemInfo(locationKey).name}}-->
+                <!--            </p>-->
+            </ng-template>
+            <ng-template ngbPanelContent>
+                <ng-container *ngFor="let station of getLocationsForSystem(locationKey)">
+                    <h3>{{station}}</h3>
+                    <div *ngFor="let job of getJobsForLocation(locationKey, station)">
+                        <p>{{job.blueprint_id}}</p>
+                    </div>
+                </ng-container>
+            </ng-template>
+        </ngb-panel>
+    </ngb-accordion>
+</div>
+
 
 <!--<div class="skill-list" *ngIf="skills">-->
 <!--    <ngb-accordion *ngIf="skills">-->
@@ -70,7 +86,7 @@
     <h3>Debug data</h3>
     <p>Industry data</p>
     <pre>{{ jobsByLocation | json }}</pre>
-<!--    <hr>-->
-<!--    <p>Blueprint data</p>-->
-<!--    <pre>{{ blueprints | json }}</pre>-->
+    <!--    <hr>-->
+    <!--    <p>Blueprint data</p>-->
+    <!--    <pre>{{ blueprints | json }}</pre>-->
 </ng-container>

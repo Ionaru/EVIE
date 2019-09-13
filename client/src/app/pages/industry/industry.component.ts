@@ -26,7 +26,7 @@ export interface IBlueprints {
 })
 export class IndustryComponent extends DataPageComponent {
 
-    protected debugMode = !environment.production;
+    public debugMode = !environment.production;
 
     constructor() {
         super();

@@ -1,0 +1,21 @@
+@import '../../../../variables';
+
+.skill-list {
+
+    padding-top: 20px;
+
+    .accordion ::ng-deep .card {
+        background-color: $body-secondary;
+
+        .card-header {
+            background-color: transparent;
+            padding: 0;
+
+            .btn.btn-link {
+                color: $body-color;
+                width: 100%;
+                text-align: left;
+            }
+        }
+    }
+}
