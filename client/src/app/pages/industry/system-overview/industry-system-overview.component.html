@@ -1,0 +1,76 @@
+<ngb-accordion>
+    <ngb-panel *ngFor="let locationKey of jobsByLocationKeys">
+        <ng-template ngbPanelTitle>
+            {{locationKey}}
+        </ng-template>
+        <ng-template ngbPanelContent>
+            <ng-container *ngFor="let station of getLocationsForSystem(locationKey)">
+                <h3>{{station}}</h3>
+                <div *ngFor="let job of getJobsForLocation(locationKey, station)">
+                    <p>{{job.blueprint_id}}</p>
+                </div>
+            </ng-container>
+        </ng-template>
+    </ngb-panel>
+</ngb-accordion>
+
+<!--<div class="skill-list" *ngIf="skills">-->
+<!--    <ngb-accordion *ngIf="skills">-->
+<!--        <ng-container *ngFor="let group of skillGroups">-->
+<!--            <ngb-panel *ngIf="trainedSkillsGrouped[group.group_id]?.length || showUntrainedSkills">-->
+<!--                <ng-template ngbPanelTitle>-->
+<!--                    <div class="d-flex justify-content-between">-->
+<!--                                <span>-->
+<!--                                    <fa-icon [icon]="faChevronDown"></fa-icon>-->
+<!--                                    <strong> {{ group.name }}</strong>-->
+<!--                                    (-->
+<!--                                    {{ trainedSkillsGrouped[group.group_id]?.length }}-->
+<!--                                    <ng-container *ngIf="showUntrainedSkills">-->
+<!--                                         / {{ skillsGrouped[group.group_id]?.length }}-->
+<!--                                    </ng-container>-->
+<!--                                    )-->
+<!--                                </span>-->
+<!--                        <span>-->
+<!--                                    {{ getSPInGroup(group.group_id) | number:'1.0-0' }} SP-->
+<!--                                </span>-->
+<!--                    </div>-->
+<!--                </ng-template>-->
+<!--                <ng-template ngbPanelContent>-->
+<!--                    <p class="skill-name d-flex justify-content-between"-->
+<!--                       [ngClass]="{'text-muted': !trainedSkills[skill.type_id]}"-->
+<!--                       *ngFor="let skill of (showUntrainedSkills ? skillsGrouped[group.group_id] : trainedSkillsGrouped[group.group_id])">-->
+<!--                                <span-->
+<!--                                    [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id]?.skill_id}">-->
+<!--                                    {{ skill.name }}-->
+<!--                                    <span *ngIf="trainedSkills[skill.type_id]" class="text-info">-->
+<!--                                        {{ romanize(trainedSkills[skill.type_id].trained_skill_level) || 'Injected' }}-->
+<!--                                        <span *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">-->
+<!--                                            <span class="text-primary">-->
+<!--                                            <fa-icon [icon]="faArrowAltRight"></fa-icon>-->
+<!--                                            </span>-->
+<!--                                            {{ romanize(trainedSkills[skill.type_id].trained_skill_level + 1) }}-->
+<!--                                        </span>-->
+<!--                                    </span>-->
+<!--                                </span>-->
+<!--                        <span *ngIf="trainedSkills[skill.type_id]"-->
+<!--                              [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id].skill_id}">-->
+<!--                                    {{ (currentTrainingSkill === trainedSkills[skill.type_id].skill_id ? trainedSkills[skill.type_id].skillpoints_in_skill + (currentTrainingSPGain || 0) : trainedSkills[skill.type_id].skillpoints_in_skill) || 0 | number:'1.0-0' }}-->
+<!--                            <ng-container *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">/ {{ currentTrainingSPEnd | number:'1.0-0' }}</ng-container>-->
+<!--                                    SP-->
+<!--                                </span>-->
+<!--                    </p>-->
+<!--                </ng-template>-->
+<!--            </ngb-panel>-->
+<!--        </ng-container>-->
+<!--    </ngb-accordion>-->
+<!--</div>-->
+
+<ng-container *ngIf="debugMode">
+    <hr>
+    <h3>Debug data</h3>
+    <p>Industry data</p>
+    <pre>{{ jobsByLocation | json }}</pre>
+<!--    <hr>-->
+<!--    <p>Blueprint data</p>-->
+<!--    <pre>{{ blueprints | json }}</pre>-->
+</ng-container>

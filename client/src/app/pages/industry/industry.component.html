@@ -4,21 +4,18 @@
 
 <div class="container industry-page-container" *ngIf="missingAllRequiredScopes === false">
 
-    <!-- Add multiple character to merge industry list? -->
+    <div class="text-center">
+        <div class="btn-group" role="group" aria-label="Basic example">
+            <button routerLink="jobs" routerLinkActive="active" type="button" class="btn btn-outline-primary">
+                Industry jobs
+            </button>
+            <button routerLink="system-overview" routerLinkActive="active" type="button" class="btn btn-outline-primary">
+                System overview
+            </button>
+        </div>
+    </div>
 
-    <!-- Toggle to show/hide different activities -->
-<!--    <div class="text-center">-->
-<!--        <div class="btn-group" role="group" aria-label="Basic example">-->
-<!--            <button routerLink="jobs" routerLinkActive="active" type="button" class="btn btn-outline-primary">-->
-<!--                Industry jobs-->
-<!--            </button>-->
-<!--            <button routerLink="system-overview" routerLinkActive="active" type="button" class="btn btn-outline-primary">-->
-<!--                System overview-->
-<!--            </button>-->
-<!--        </div>-->
-<!--    </div>-->
-
-<!--    <hr>-->
+    <hr>
 
     <router-outlet></router-outlet>
 </div>

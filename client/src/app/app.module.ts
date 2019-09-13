@@ -25,8 +25,10 @@ import { ShipService } from './data-services/ship.service';
 import { SkillGroupsService } from './data-services/skill-groups.service';
 import { SkillQueueService } from './data-services/skillqueue.service';
 import { SkillsService } from './data-services/skills.service';
+import { StationsService } from './data-services/stations.service';
 import { StatusService } from './data-services/status.service';
 import { StructuresService } from './data-services/structures.service';
+import { SystemsService } from './data-services/systems.service';
 import { TypesService } from './data-services/types.service';
 import { UsersService } from './data-services/users.service';
 import { WalletJournalService } from './data-services/wallet-journal.service';
@@ -47,6 +49,7 @@ import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
+import { IndustrySystemOverviewComponent } from './pages/industry/system-overview/industry-system-overview.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
@@ -77,6 +80,7 @@ if (environment.production) {
         LogoutModalComponent,
         IndustryComponent,
         IndustryJobsComponent,
+        IndustrySystemOverviewComponent,
         UsersComponent,
         OreComponent,
         SorTableComponent,
@@ -124,6 +128,8 @@ if (environment.production) {
         BlueprintsService,
         IndustryService,
         StructuresService,
+        StationsService,
+        SystemsService,
         MarketService,
         SocketService,
         AssetsService,

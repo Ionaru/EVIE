@@ -2,6 +2,8 @@
     <h3>You have no active industry jobs.</h3>
 </div>
 
+<!-- Add multiple character to merge industry list? -->
+
 <div class="industry-job-container" *ngFor="let job of industryJobs">
     <h4 class="icon-container">
         <fa-icon [ngbTooltip]="getIndustryActivityName(job.activity_id)" placement="right"

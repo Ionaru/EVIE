@@ -8,7 +8,7 @@ export const environment = {
     VERSION: version,
     production: false,
     sentryEnvironment: 'local',
-    socketHost: 'http://localhost:4200/',
+    socketHost: 'http://192.168.2.11:4200/',
 };
 
 /*
