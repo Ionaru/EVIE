@@ -1,0 +1,5 @@
+@import '../../../variables';
+
+.copy {
+    filter: grayscale(0.1) sepia(0.4) hue-rotate(340deg) brightness(110%);
+}

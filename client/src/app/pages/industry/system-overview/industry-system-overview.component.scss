@@ -1,8 +1,67 @@
-@import '../../../../variables';
+@import '../industry.component';
 
-.skill-list {
+.system-overview {
 
-    padding-top: 20px;
+    .sec-00 {
+        color: $eve-sec-00;
+    }
+
+    .sec-01 {
+        color: $eve-sec-01;
+    }
+
+    .sec-02 {
+        color: $eve-sec-02;
+    }
+
+    .sec-03 {
+        color: $eve-sec-03;
+    }
+
+    .sec-04 {
+        color: $eve-sec-04;
+    }
+
+    .sec-05 {
+        color: $eve-sec-05;
+    }
+
+    .sec-06 {
+        color: $eve-sec-06;
+    }
+
+    .sec-07 {
+        color: $eve-sec-07;
+    }
+
+    .sec-08 {
+        color: $eve-sec-08;
+    }
+
+    .sec-09 {
+        color: $eve-sec-09;
+    }
+
+    .sec-10 {
+        color: $eve-sec-10;
+    }
+
+    .job-info {
+        img {
+            padding: 0 5px;
+        }
+    }
+
+    .job-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+        //grid-template-rows: auto;
+
+        .job-grid-row {
+            width: 100%;
+        }
+    }
 
     .accordion ::ng-deep .card {
         background-color: $body-secondary;

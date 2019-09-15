@@ -1,3 +1,5 @@
+@import '../industry.component';
+
 .industry-job-container {
     display: grid;
     grid-template-columns: 40px 64px 40px 64px auto auto;
@@ -20,10 +22,6 @@
             justify-self: right;
         }
     }
-}
-
-.copy {
-    filter: grayscale(0.1) sepia(0.4) hue-rotate(340deg) brightness(110%);
 }
 
 .blink {

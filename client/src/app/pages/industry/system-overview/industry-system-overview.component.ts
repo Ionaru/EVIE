@@ -1,24 +1,32 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faChevronDown } from '@fortawesome/pro-regular-svg-icons';
-import { objectsArrayToObject, uniquifyArray } from '@ionaru/array-utils';
-import { IUniverseSystemData } from '@ionaru/eve-utils';
+import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import * as countdown from 'countdown';
 
 import { Calc } from '../../../../shared/calc.helper';
 import { BlueprintsService } from '../../../data-services/blueprints.service';
 import { IndustryJobsService } from '../../../data-services/industry-jobs.service';
+import { NamesService } from '../../../data-services/names.service';
 import { StationsService } from '../../../data-services/stations.service';
 import { StructuresService } from '../../../data-services/structures.service';
 import { SystemsService } from '../../../data-services/systems.service';
 import { CharacterService } from '../../../models/character/character.service';
+import { ScopesComponent } from '../../scopes/scopes.component';
 import { IBlueprints, IExtendedIndustryJobsData, IndustryComponent } from '../industry.component';
 
-interface IJobsBySystem {
-    [key: string]: IJobsByLocation;
+interface ISystemOverviewSystem {
+    readyJobs: number;
+    totalJobs: number;
+    securityClass: string;
+    securityStatus: number;
+    name: string;
+    id: number;
+    locations: ISystemOverviewLocation[];
 }
 
-interface IJobsByLocation {
-    [key: string]: IExtendedIndustryJobsData[];
+interface ISystemOverviewLocation {
+    name: string;
+    jobs: IExtendedIndustryJobsData[];
 }
 
 @Component({
@@ -28,18 +36,19 @@ interface IJobsByLocation {
 })
 export class IndustrySystemOverviewComponent extends IndustryComponent implements OnInit, OnDestroy {
 
-    public industryJobs?: IExtendedIndustryJobsData[];
+    // public industryJobs?: IExtendedIndustryJobsData[];
     public blueprints: IBlueprints = {};
-    public systems: IUniverseSystemData[] = [];
 
-    public jobsByLocation?: IJobsBySystem;
+    public overview?: ISystemOverviewSystem[];
 
     public openAccordionIcon = faChevronDown;
+
+    public runningJobsTimer?: number;
 
     constructor(
         private industryJobsService: IndustryJobsService,
         private blueprintsService: BlueprintsService,
-        // private namesService: NamesService,
+        private namesService: NamesService,
         private stationsService: StationsService,
         private structuresService: StructuresService,
         private systemService: SystemsService,
@@ -49,17 +58,26 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
             '|s|m|h|d',
             '|s|m|h|d',
             ', ');
+        this.requiredScopes = [
+            ScopesComponent.scopeCodes.STRUCTURES,
+        ];
+    }
+
+    public resetTimers() {
+        if (this.runningJobsTimer) {
+            clearInterval(this.runningJobsTimer);
+        }
     }
 
     public ngOnInit() {
         super.ngOnInit();
-        // this.resetTimers();
+        this.resetTimers();
         this.getIndustryJobs().then();
     }
 
     public ngOnDestroy() {
         super.ngOnDestroy();
-        // this.resetTimers();
+        this.resetTimers();
     }
 
     public async getLocation(job: IExtendedIndustryJobsData) {
@@ -89,125 +107,128 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         return;
     }
 
-    public get jobsByLocationKeys() {
-        return this.jobsByLocation ? Object.keys(this.jobsByLocation) : [];
-    }
+    public roundSecStatus = (secStatus: number) => Number(secStatus.toPrecision(1));
 
-    public systemInfo = (systemId: string) => this.systems.find((system) => system.system_id === Number(systemId));
-
-    public getLocationsForSystem = (systemId: string) => this.jobsByLocation ? Object.keys(this.jobsByLocation[systemId]) : [];
-
-    public getJobsForLocation = (systemId: string, location: string) => this.jobsByLocation ? this.jobsByLocation[systemId][location] : [];
-
-    public getJobCountForLocation(systemId: string) {
-        if (!this.jobsByLocation) {
-            return 0;
+    public getSecurityClass(secStatus: number) {
+        const roundedSecStatus = this.roundSecStatus(secStatus);
+        switch (true) {
+            case secStatus < 0.05:
+                return '00';
+            case roundedSecStatus === 0.1:
+                return '01';
+            case roundedSecStatus === 0.2:
+                return '02';
+            case roundedSecStatus === 0.3:
+                return '03';
+            case roundedSecStatus === 0.4:
+                return '04';
+            case roundedSecStatus === 0.5:
+                return '05';
+            case roundedSecStatus === 0.6:
+                return '06';
+            case roundedSecStatus === 0.7:
+                return '07';
+            case roundedSecStatus === 0.8:
+                return '08';
+            case roundedSecStatus === 0.9:
+                return '09';
+            case roundedSecStatus >= 1:
+                return '10';
+            default:
+                return '10';
         }
-
-        const locationsInSystem = Object.values(this.jobsByLocation[systemId]);
-        return locationsInSystem.reduce((location) => Object.values(location)).length;
     }
 
     public async getIndustryJobs() {
+
+        const overviewData: ISystemOverviewSystem[] = [];
+        let industryJobs: IExtendedIndustryJobsData[] = [];
+
         if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasBlueprintScope) {
             const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
             this.blueprints = objectsArrayToObject(blueprintData, 'item_id');
         }
 
         if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasIndustryJobsScope) {
-            this.industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
+            industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
         }
 
-        if (this.industryJobs) {
+        if (industryJobs.length) {
 
-            const systems: number[] = [];
+            const productIds = industryJobs.map((job) => job.product_type_id);
+            const productIdsNotUndefined = productIds.filter((id) => id !== undefined) as number[];
+            await this.namesService.getNames(...productIdsNotUndefined);
 
-            const jobsOverview: IJobsBySystem = {};
+            this.processIndustryJobsTimers(industryJobs);
 
-            for (const job of this.industryJobs) {
+            setInterval(() => {
+                this.processIndustryJobsTimers(industryJobs);
+            }, Calc.second);
+
+            for (const job of industryJobs) {
+
+                if (job.product_type_id) {
+                    job.productName = NamesService.getNameFromData(job.product_type_id);
+                }
+
+                job.activityIcon = this.getIconForIndustryActivity(job.activity_id);
+
                 const location = await this.getLocation(job);
-
                 if (!location) {
                     continue;
                 }
 
-                if (!jobsOverview[location.system]) {
-                    jobsOverview[location.system] = {};
+                const systemInfo = await this.systemService.getSystemInfo(location.system);
+                if (!systemInfo) {
+                    continue;
                 }
 
-                if (!jobsOverview[location.system][job.output_location_id]) {
-                    jobsOverview[location.system][job.output_location_id] = [];
+                let systemOverview: ISystemOverviewSystem | undefined = overviewData.find((s) => {
+                    return s.id === location.system;
+                });
+
+                if (!systemOverview) {
+                    systemOverview = {
+                        id: location.system,
+                        locations: [],
+                        name: systemInfo.name as any,
+                        readyJobs: 0,
+                        securityClass: this.getSecurityClass(systemInfo.security_status),
+                        securityStatus: systemInfo.security_status,
+                        totalJobs: 0,
+                    };
+                    overviewData.push(systemOverview);
                 }
 
-                jobsOverview[location.system][job.output_location_id].push(job);
+                let locationInfo: ISystemOverviewLocation | undefined = systemOverview.locations.find(
+                    (overviewLocation) => {
+                        return overviewLocation.name === location.stationName;
+                    });
 
-                systems.push(location.system);
+                if (!locationInfo) {
+                    locationInfo = {
+                        jobs: [],
+                        name: location.stationName,
+                    };
+                    systemOverview.locations.push(locationInfo);
+                }
+
+                sortArrayByObjectProperty(systemOverview.locations, 'name');
+
+                systemOverview.totalJobs++;
+                if (job.timeLeft !== undefined && job.timeLeft <= 0) {
+                    systemOverview.readyJobs++;
+                }
+
+                locationInfo.jobs.push(job);
+
+                sortArrayByObjectProperty(locationInfo.jobs, 'job_id', true);
+                sortArrayByObjectProperty(locationInfo.jobs, 'timeLeft');
             }
 
-            this.jobsByLocation = jobsOverview;
+            sortArrayByObjectProperty(overviewData, 'name');
 
-            this.getJobCountForLocation('30003915');
-
-            Promise.all([uniquifyArray(systems).map(async (system) => {
-                const systemInfo = await this.systemService.getSystemInfo(system);
-                if (systemInfo) {
-                    this.systems.push(systemInfo);
-                }
-            })]).then();
-
-            // const locations = this.industryJobs.map((job) => job.output_location_id);
-
-            // Get ME / TE for BP
-
-            // this.processIndustryJobs().then();
-
-            // this.runningJobsTimer = setInterval(() => {
-            //     this.processIndustryJobs();
-            // }, Calc.second);
-
-            // sortArrayByObjectProperty(this.industryJobs, 'job_id', true);
-            // sortArrayByObjectProperty(this.industryJobs, 'timeLeft');
-
-            // this.setProductNames(this.industryJobs).then();
-            // this.getLocationNames(this.industryJobs).then();
+            this.overview = overviewData;
         }
     }
-
-    // public async processIndustryJobs() {
-    //     if (this.industryJobs) {
-    //         for (const job of this.industryJobs) {
-    //             const start = new Date(job.start_date).getTime();
-    //             const duration = Calc.secondsToMilliseconds(job.duration);
-    //             const end = start + duration;
-    //             const now = Date.now();
-    //
-    //             const timeElapsed = now - start;
-    //             job.percentageDone = Math.min(Math.floor(Calc.partPercentage((timeElapsed), duration)), 100);
-    //
-    //             job.timeLeft = end - now;
-    //             // job.timeCountdown = countdown(undefined, end, this.countdownUnits);
-    //         }
-    //     }
-    //
-    //     for (const job of industryJobs) {
-    //         if (job.output_location_id > Calc.maxIntegerValue) {
-    //             if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasStructuresScope) {
-    //                 const structure = await this.structuresService.getStructureInfo(
-    //                     CharacterService.selectedCharacter, job.output_location_id);
-    //                 if (structure) {
-    //                     job.locationName = structure.name;
-    //                     job.locationSystem = structure.solar_system_id;
-    //                 }
-    //             } else {
-    //                 job.locationName = 'An unknown Upwell structure';
-    //             }
-    //         } else {
-    //             const station = await this.stationsService.getStationInfo(job.output_location_id);
-    //             if (station) {
-    //                 job.locationName = station.name;
-    //                 job.locationSystem = station.system_id;
-    //             }
-    //         }
-    //     }
-    // }
 }

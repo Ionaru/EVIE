@@ -17,4 +17,13 @@ export class SystemsService extends BaseService {
         }
         return response;
     }
+
+    public async getSystems(): Promise<number[] | void> {
+        const url = EVE.getUniverseSystemsUrl();
+        const response = await this.http.get<any>(url).toPromise<number[]>().catch(this.catchHandler);
+        if (response instanceof HttpErrorResponse) {
+            return;
+        }
+        return response;
+    }
 }

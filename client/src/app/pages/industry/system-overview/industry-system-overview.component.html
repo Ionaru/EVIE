@@ -1,27 +1,60 @@
-<div class="skill-list">
+<app-no-scopes-message *ngIf="missingAllRequiredScopes">
+    To display the industry system overview page, you need to grant the "Read structures" scopes.
+</app-no-scopes-message>
+
+<div class="system-overview" *ngIf="!missingAllRequiredScopes">
     <ngb-accordion>
-        <ngb-panel *ngFor="let locationKey of jobsByLocationKeys">
+        <ngb-panel *ngFor="let system of overview">
             <ng-template ngbPanelTitle>
                 <div class="d-flex justify-content-between">
-                        <span>
-                            <fa-icon [icon]="openAccordionIcon"></fa-icon>
-                            <strong> {{ systemInfo(locationKey).name }}</strong>
-                            ( {{ systemInfo(locationKey).security_status | number:'1.1-1' }} )
-                        </span>
                     <span>
-
-                        </span>
+                        <fa-icon [icon]="openAccordionIcon"></fa-icon>
+                        <strong> {{ system.name }}</strong>
+                        <small class="sec-{{ system.securityClass }}">
+                            {{ system.securityStatus | number:'1.1-1' }}
+                        </small>
+                    </span>
+                    <span>
+                        {{system.readyJobs}} / {{system.totalJobs}}
+                    </span>
                 </div>
-                <!--            <p class="d-flex justify-content-between">-->
-                <!--                {{systemInfo(locationKey).name}}-->
-                <!--                {{systemInfo(locationKey).name}}-->
-                <!--            </p>-->
             </ng-template>
             <ng-template ngbPanelContent>
-                <ng-container *ngFor="let station of getLocationsForSystem(locationKey)">
-                    <h3>{{station}}</h3>
-                    <div *ngFor="let job of getJobsForLocation(locationKey, station)">
-                        <p>{{job.blueprint_id}}</p>
+                <ng-container *ngFor="let location of system.locations">
+                    <h5>{{location.name}}</h5>
+                    <div class="job-grid">
+                        <div class="job-grid-row" *ngFor="let job of location.jobs">
+                            <p>Mooo</p>
+                            <p>Mooo2</p>
+                        </div>
+                    </div>
+                    <div *ngFor="let job of location.jobs" class="d-flex justify-content-between job-info">
+                        <span class="d-flex align-items-center">
+                            <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1}"
+                                 src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
+                            <fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon>
+                            <fa-icon [fixedWidth]="true" [icon]="job.activityIcon"></fa-icon>
+
+                            <span *ngIf="job.activity_id === IndustryActivity.manufacturing">{{ job.runs }}</span>
+                            <span *ngIf="job.activity_id === IndustryActivity.research_material_efficiency">+{{ job.runs }}%</span>
+                            <span *ngIf="job.activity_id === IndustryActivity.research_time_efficiency">+{{ job.runs * 2 }}%</span>
+                            <span *ngIf="job.activity_id === IndustryActivity.invention">~{{ job.probability * 100 | number:'1.0-0' }}%</span>
+
+                            <span *ngIf="![IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)">
+                                ( <fa-icon [icon]="jobRunsIcon"></fa-icon> {{job.runs}} )
+                            </span>
+
+                            <fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon>
+                            <img [ngClass]="{copy: [IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)}"
+                                src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
+                            {{job.productName}}
+                        </span>
+                        <span class="d-flex align-items-center">
+                            <ng-container *ngIf="job.timeCountdown.value > 0">
+                                {{job.timeCountdown}} -
+                            </ng-container>
+                             {{job.percentageDone}} %
+                        </span>
                     </div>
                 </ng-container>
             </ng-template>
@@ -29,63 +62,11 @@
     </ngb-accordion>
 </div>
 
-
-<!--<div class="skill-list" *ngIf="skills">-->
-<!--    <ngb-accordion *ngIf="skills">-->
-<!--        <ng-container *ngFor="let group of skillGroups">-->
-<!--            <ngb-panel *ngIf="trainedSkillsGrouped[group.group_id]?.length || showUntrainedSkills">-->
-<!--                <ng-template ngbPanelTitle>-->
-<!--                    <div class="d-flex justify-content-between">-->
-<!--                                <span>-->
-<!--                                    <fa-icon [icon]="faChevronDown"></fa-icon>-->
-<!--                                    <strong> {{ group.name }}</strong>-->
-<!--                                    (-->
-<!--                                    {{ trainedSkillsGrouped[group.group_id]?.length }}-->
-<!--                                    <ng-container *ngIf="showUntrainedSkills">-->
-<!--                                         / {{ skillsGrouped[group.group_id]?.length }}-->
-<!--                                    </ng-container>-->
-<!--                                    )-->
-<!--                                </span>-->
-<!--                        <span>-->
-<!--                                    {{ getSPInGroup(group.group_id) | number:'1.0-0' }} SP-->
-<!--                                </span>-->
-<!--                    </div>-->
-<!--                </ng-template>-->
-<!--                <ng-template ngbPanelContent>-->
-<!--                    <p class="skill-name d-flex justify-content-between"-->
-<!--                       [ngClass]="{'text-muted': !trainedSkills[skill.type_id]}"-->
-<!--                       *ngFor="let skill of (showUntrainedSkills ? skillsGrouped[group.group_id] : trainedSkillsGrouped[group.group_id])">-->
-<!--                                <span-->
-<!--                                    [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id]?.skill_id}">-->
-<!--                                    {{ skill.name }}-->
-<!--                                    <span *ngIf="trainedSkills[skill.type_id]" class="text-info">-->
-<!--                                        {{ romanize(trainedSkills[skill.type_id].trained_skill_level) || 'Injected' }}-->
-<!--                                        <span *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">-->
-<!--                                            <span class="text-primary">-->
-<!--                                            <fa-icon [icon]="faArrowAltRight"></fa-icon>-->
-<!--                                            </span>-->
-<!--                                            {{ romanize(trainedSkills[skill.type_id].trained_skill_level + 1) }}-->
-<!--                                        </span>-->
-<!--                                    </span>-->
-<!--                                </span>-->
-<!--                        <span *ngIf="trainedSkills[skill.type_id]"-->
-<!--                              [ngClass]="{'text-primary': currentTrainingSkill === trainedSkills[skill.type_id].skill_id}">-->
-<!--                                    {{ (currentTrainingSkill === trainedSkills[skill.type_id].skill_id ? trainedSkills[skill.type_id].skillpoints_in_skill + (currentTrainingSPGain || 0) : trainedSkills[skill.type_id].skillpoints_in_skill) || 0 | number:'1.0-0' }}-->
-<!--                            <ng-container *ngIf="currentTrainingSkill === trainedSkills[skill.type_id].skill_id">/ {{ currentTrainingSPEnd | number:'1.0-0' }}</ng-container>-->
-<!--                                    SP-->
-<!--                                </span>-->
-<!--                    </p>-->
-<!--                </ng-template>-->
-<!--            </ngb-panel>-->
-<!--        </ng-container>-->
-<!--    </ngb-accordion>-->
-<!--</div>-->
-
 <ng-container *ngIf="debugMode">
     <hr>
     <h3>Debug data</h3>
     <p>Industry data</p>
-    <pre>{{ jobsByLocation | json }}</pre>
+    <pre>{{ overview | json }}</pre>
     <!--    <hr>-->
     <!--    <p>Blueprint data</p>-->
     <!--    <pre>{{ blueprints | json }}</pre>-->
