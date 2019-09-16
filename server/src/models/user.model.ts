@@ -62,7 +62,7 @@ export class User extends BaseModel {
             .execute();
 
         // Copy relevant information from the old User to the new User.
-        User.doQuery()
+        await User.doQuery()
             .update()
             .set({
                 email: userToMerge.email || this.email,
