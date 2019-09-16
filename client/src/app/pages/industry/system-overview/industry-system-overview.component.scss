@@ -1,5 +1,12 @@
 @import '../industry.component';
 
+.character-adder {
+    .character-adder-name, .character-adder-buttons {
+        display: flex;
+        align-items: center;
+    }
+}
+
 .system-overview {
 
     .sec-00 {

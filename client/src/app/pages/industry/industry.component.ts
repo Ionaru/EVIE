@@ -2,12 +2,15 @@ import { Component } from '@angular/core';
 import {
     faArrowRight,
     faCog,
-    faCopy, faDice,
+    faCopy,
+    faDice,
     faGem,
     faHourglass,
     faMicroscope,
-    faRepeat,
+    faRepeat, faSpinnerThird,
+    faTrash,
     faUser,
+    faUserPlus,
     IconDefinition,
 } from '@fortawesome/pro-regular-svg-icons';
 import { ICharacterBlueprintsDataUnit, ICharacterIndustryJobsDataUnit, IndustryActivity } from '@ionaru/eve-utils';
@@ -51,6 +54,10 @@ export class IndustryComponent extends DataPageComponent {
     public jobRunsIcon = faRepeat;
     public inventionChanceIcon = faDice;
     public installerIcon = faUser;
+
+    public addIcon = faUserPlus;
+    public removeIcon = faTrash;
+    public busyIcon = faSpinnerThird;
 
     public debugMode = !environment.production;
 

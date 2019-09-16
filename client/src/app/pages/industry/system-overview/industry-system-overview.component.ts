@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faChevronDown } from '@fortawesome/pro-regular-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { IUniverseSystemData } from '@ionaru/eve-utils';
@@ -13,6 +14,7 @@ import { StructuresService } from '../../../data-services/structures.service';
 import { SystemsService } from '../../../data-services/systems.service';
 import { Character } from '../../../models/character/character.model';
 import { CharacterService } from '../../../models/character/character.service';
+import { UserService } from '../../../models/user/user.service';
 import { ScopesComponent } from '../../scopes/scopes.component';
 import { IBlueprints, IExtendedIndustryJobsData, IndustryComponent } from '../industry.component';
 
@@ -32,6 +34,14 @@ interface ISystemOverviewLocation {
     jobs: IExtendedIndustryJobsData[];
 }
 
+interface ICharacterJobCounts {
+    [index: string]: {
+        readyJobs: number;
+        totalJobs: number;
+        inProgressJobs: number;
+    };
+}
+
 @Component({
     selector: 'app-industry-system-overview',
     styleUrls: ['./industry-system-overview.component.scss'],
@@ -49,6 +59,10 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
     public runningJobsTimer?: number;
 
     public selectedCharacters: Character[] = [];
+
+    public allCharacters: Character[] = UserService.user.characters;
+
+    public characterJobs: ICharacterJobCounts = {};
 
     constructor(
         private industryJobsService: IndustryJobsService,
@@ -78,26 +92,94 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         super.ngOnInit();
         this.resetTimers();
 
-        if (CharacterService.selectedCharacter) {
+        if (!this.selectedCharacters.length && CharacterService.selectedCharacter) {
             this.selectedCharacters = [CharacterService.selectedCharacter];
         }
 
         this.industryJobs = [];
         this.blueprints = {};
 
-        await Promise.all(this.selectedCharacters.map((character) => {
+        this.getAndProcessData();
+    }
+
+    public async getAndProcessData() {
+        await Promise.all(this.selectedCharacters.map(async (character) => {
             return Promise.all([
                 this.getBlueprints(character),
                 this.getIndustryJobs(character),
             ]);
         }));
 
+        await this.processIndustryJobs();
+
+        for (const character of this.selectedCharacters) {
+            this.countJobsForCharacter(character);
+        }
+    }
+
+    public async addCharacterToOverview(character: Character, icon?: FaIconComponent) {
+        if (icon) {
+            icon.icon = this.busyIcon;
+            icon.spin = true;
+            icon.render();
+        }
+
+        await Promise.all([
+            this.getBlueprints(character),
+            this.getIndustryJobs(character),
+        ]);
+        this.selectedCharacters.push(character);
+        await this.processIndustryJobs();
+        this.countJobsForCharacter(character);
+
+        if (icon) {
+            icon.icon = this.addIcon;
+            icon.spin = false;
+            icon.render();
+        }
+    }
+
+    public countJobsForCharacter(character: Character) {
+        let jobCounter = this.characterJobs[character.characterId];
+
+        if (!jobCounter) {
+            jobCounter = {
+                inProgressJobs: 0,
+                readyJobs: 0,
+                totalJobs: 0,
+            };
+        }
+
+        const jobsForCharacter = this.industryJobs.filter((job) => job.installer_id === character.characterId);
+        jobCounter.totalJobs = jobsForCharacter.length;
+
+        jobCounter.readyJobs = jobsForCharacter.filter((job) => {
+            return job.timeLeft !== undefined && job.timeLeft <= 0;
+        }).length;
+
+        jobCounter.inProgressJobs = jobCounter.totalJobs - jobCounter.readyJobs;
+
+        this.characterJobs[character.characterId] = jobCounter;
+    }
+
+    public async removeCharacterFromOverview(character: Character) {
+        this.resetTimers();
+        this.industryJobs = this.industryJobs.filter((job) => job.installer_id !== character.characterId);
+        this.selectedCharacters = this.selectedCharacters.filter((selectedCharacter) => selectedCharacter !== character);
         this.processIndustryJobs().then();
     }
 
     public ngOnDestroy() {
         super.ngOnDestroy();
         this.resetTimers();
+    }
+
+    public hasRequiredScopes(character: Character) {
+        return character.hasScope(
+            ScopesComponent.scopeCodes.STRUCTURES,
+            ScopesComponent.scopeCodes.BLUEPRINTS,
+            ScopesComponent.scopeCodes.JOBS,
+        );
     }
 
     public async getLocation(job: IExtendedIndustryJobsData) {
@@ -228,13 +310,15 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
             }
 
             sortArrayByObjectProperty(overviewData, 'name');
-
-            this.overview = overviewData;
         }
+
+        this.overview = overviewData;
     }
 
     public setJobCounts(systemOverview: ISystemOverviewSystem, job: IExtendedIndustryJobsData) {
+
         systemOverview.totalJobs++;
+
         if (job.timeLeft !== undefined && job.timeLeft <= 0) {
             systemOverview.readyJobs++;
         } else {

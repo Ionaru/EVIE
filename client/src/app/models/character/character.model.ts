@@ -88,8 +88,8 @@ export class Character {
         return this.accessToken && this.tokenExpiry >= new Date();
     }
 
-    public hasScope(scope: string) {
-        return this.hasValidAuth && this.scopes.includes(scope);
+    public hasScope(...scopes: string[]) {
+        return this.hasValidAuth && scopes.every((scope) => this.scopes.includes(scope));
     }
 
     public getAuthorizationHeader() {

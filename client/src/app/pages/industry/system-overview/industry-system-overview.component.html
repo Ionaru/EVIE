@@ -2,8 +2,51 @@
     To display the industry system overview page, you need to grant the "Read structures" scopes.
 </app-no-scopes-message>
 
+<ng-container *ngIf="!missingAllRequiredScopes">
+    <div *ngFor="let character of allCharacters" class="d-flex justify-content-between character-adder">
+        <div class="character-adder-name">
+            <img src="https://imageserver.eveonline.com/Character/{{ character.characterId }}_32.jpg"
+                 alt="{{ character.name }}-avatar">
+            &nbsp;
+            <strong>{{ character.name }}</strong>
+        </div>
+        <div class="character-adder-buttons">
+            <strong *ngIf="overview && characterJobs[character.characterId] && selectedCharacters.includes(character)">
+                <ng-container *ngIf="!characterJobs[character.characterId].totalJobs">
+                    No industry jobs found
+                </ng-container>
+
+                <ng-container *ngIf="characterJobs[character.characterId].inProgressJobs">
+                    {{characterJobs[character.characterId].inProgressJobs}} in progress
+                </ng-container>
+                <ng-container *ngIf="characterJobs[character.characterId].inProgressJobs && characterJobs[character.characterId].readyJobs">
+                    /
+                </ng-container>
+                <ng-container *ngIf="characterJobs[character.characterId].readyJobs">
+                    {{characterJobs[character.characterId].readyJobs}} ready for delivery
+                </ng-container>
+            </strong>
+            <strong *ngIf="!hasRequiredScopes(character)" class="text-danger">
+                This character does not have the required scopes to be added
+            </strong>
+            &nbsp;
+            <button *ngIf="!selectedCharacters.includes(character)" class="btn btn-outline-primary btn-sm"
+                    [disabled]="!hasRequiredScopes(character)"
+                    (click)="addCharacterToOverview(character, icon)">
+                <fa-icon #icon [icon]="addIcon" [fixedWidth]="true"></fa-icon>
+            </button>
+            <button *ngIf="selectedCharacters.includes(character)" class="btn btn-outline-danger btn-sm"
+                    (click)="removeCharacterFromOverview(character)">
+                <fa-icon [icon]="removeIcon" [fixedWidth]="true"></fa-icon>
+            </button>
+        </div>
+    </div>
+</ng-container>
+
+<hr>
+
 <div class="system-overview" *ngIf="!missingAllRequiredScopes">
-    <ngb-accordion>
+    <ngb-accordion *ngIf="overview && overview.length">
         <ngb-panel *ngFor="let system of overview">
             <ng-template ngbPanelTitle>
                 <div class="d-flex justify-content-between">
@@ -14,7 +57,7 @@
                             {{ system.securityStatus | number:'1.1-1' }}
                         </small>
                     </span>
-                    <span>
+                    <strong>
                         <ng-container *ngIf="system.inProgressJobs">
                             {{system.inProgressJobs}} in progress
                         </ng-container>
@@ -22,9 +65,9 @@
                             /
                         </ng-container>
                         <ng-container *ngIf="system.readyJobs">
-                            {{system.readyJobs}} ready for delivery.
+                            {{system.readyJobs}} ready for delivery
                         </ng-container>
-                    </span>
+                    </strong>
                 </div>
             </ng-template>
             <ng-template ngbPanelContent>
@@ -76,6 +119,8 @@
             </ng-template>
         </ngb-panel>
     </ngb-accordion>
+
+    <h4 *ngIf="overview && !overview.length">No industry jobs found</h4>
 </div>
 
 <ng-container *ngIf="debugMode">
