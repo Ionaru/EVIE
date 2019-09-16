@@ -15,47 +15,50 @@
                         </small>
                     </span>
                     <span>
-                        {{system.readyJobs}} / {{system.totalJobs}}
+                        {{system.totalJobs - system.readyJobs}} in progress / {{system.readyJobs}} ready for delivery.
                     </span>
                 </div>
             </ng-template>
             <ng-template ngbPanelContent>
                 <ng-container *ngFor="let location of system.locations">
                     <h5>{{location.name}}</h5>
-                    <div class="job-grid">
-                        <div class="job-grid-row" *ngFor="let job of location.jobs">
-                            <p>Mooo</p>
-                            <p>Mooo2</p>
-                        </div>
-                    </div>
-                    <div *ngFor="let job of location.jobs" class="d-flex justify-content-between job-info">
-                        <span class="d-flex align-items-center">
-                            <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1}"
-                                 src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
-                            <fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon>
-                            <fa-icon [fixedWidth]="true" [icon]="job.activityIcon"></fa-icon>
+                    <table class="job-info">
+                        <tr *ngFor="let job of location.jobs" class="job-row">
+                            <td class="text-center">
+                                <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1}"
+                                     src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
+                            </td>
+                            <td class="text-center"><fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon></td>
+                            <td class="text-center"><fa-icon [fixedWidth]="true" [icon]="job.activityIcon"></fa-icon></td>
 
-                            <span *ngIf="job.activity_id === IndustryActivity.manufacturing">{{ job.runs }}</span>
-                            <span *ngIf="job.activity_id === IndustryActivity.research_material_efficiency">+{{ job.runs }}%</span>
-                            <span *ngIf="job.activity_id === IndustryActivity.research_time_efficiency">+{{ job.runs * 2 }}%</span>
-                            <span *ngIf="job.activity_id === IndustryActivity.invention">~{{ job.probability * 100 | number:'1.0-0' }}%</span>
+                            <td class="text-center">
+                                <ng-container *ngIf="![IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)">
+                                    <fa-icon [icon]="jobRunsIcon"></fa-icon> {{job.runs}}
+                                </ng-container>
 
-                            <span *ngIf="![IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)">
-                                ( <fa-icon [icon]="jobRunsIcon"></fa-icon> {{job.runs}} )
-                            </span>
+                                <ng-container [ngSwitch]="job.activity_id">
+                                    <ng-container *ngSwitchCase="IndustryActivity.research_material_efficiency">+{{ job.runs }}%</ng-container>
+                                    <ng-container *ngSwitchCase="IndustryActivity.research_time_efficiency">+{{ job.runs * 2 }}%</ng-container>
+                                    <ng-container *ngSwitchCase="IndustryActivity.invention">( ~{{ job.probability * 100 | number:'1.0-0' }}% )</ng-container>
+                                </ng-container>
+                            </td>
 
-                            <fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon>
-                            <img [ngClass]="{copy: [IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)}"
-                                src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
-                            {{job.productName}}
-                        </span>
-                        <span class="d-flex align-items-center">
-                            <ng-container *ngIf="job.timeCountdown.value > 0">
-                                {{job.timeCountdown}} -
-                            </ng-container>
-                             {{job.percentageDone}} %
-                        </span>
-                    </div>
+                            <td class="text-center"><fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon></td>
+
+                            <td class="text-center">
+                                <img [ngClass]="{copy: [IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)}"
+                                     src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
+                            </td>
+
+                            <td>{{job.productName}}</td>
+                            <td class="job-time">
+                                <ng-container *ngIf="job.timeCountdown.value > 0">
+                                    {{job.timeCountdown}} -
+                                </ng-container>
+                                {{job.percentageDone}} %
+                            </td>
+                        </tr>
+                    </table>
                 </ng-container>
             </ng-template>
         </ngb-panel>
@@ -67,7 +70,4 @@
     <h3>Debug data</h3>
     <p>Industry data</p>
     <pre>{{ overview | json }}</pre>
-    <!--    <hr>-->
-    <!--    <p>Blueprint data</p>-->
-    <!--    <pre>{{ blueprints | json }}</pre>-->
 </ng-container>

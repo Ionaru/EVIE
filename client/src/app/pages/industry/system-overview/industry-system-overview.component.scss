@@ -47,19 +47,14 @@
     }
 
     .job-info {
+        width: 100%;
+
         img {
             padding: 0 5px;
         }
-    }
 
-    .job-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;
-        //grid-template-rows: auto;
-
-        .job-grid-row {
-            width: 100%;
+        .job-time {
+            text-align: right;
         }
     }
 
