@@ -107,6 +107,14 @@ export class IndustryComponent extends DataPageComponent {
         }
     }
 
+    public startIndustryJobsTimers(industryJobs: IExtendedIndustryJobsData[]) {
+        this.processIndustryJobsTimers(industryJobs);
+
+        setInterval(() => {
+            this.processIndustryJobsTimers(industryJobs);
+        }, Calc.second);
+    }
+
     public processIndustryJobsTimers(industryJobs: IExtendedIndustryJobsData[]) {
         const now = Date.now();
         for (const job of industryJobs) {

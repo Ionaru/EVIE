@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { faChevronDown } from '@fortawesome/pro-regular-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
+import { IUniverseSystemData } from '@ionaru/eve-utils';
 import * as countdown from 'countdown';
 
 import { Calc } from '../../../../shared/calc.helper';
@@ -36,7 +37,7 @@ interface ISystemOverviewLocation {
 })
 export class IndustrySystemOverviewComponent extends IndustryComponent implements OnInit, OnDestroy {
 
-    // public industryJobs?: IExtendedIndustryJobsData[];
+    public industryJobs: IExtendedIndustryJobsData[] = [];
     public blueprints: IBlueprints = {};
 
     public overview?: ISystemOverviewSystem[];
@@ -69,10 +70,16 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         }
     }
 
-    public ngOnInit() {
+    public async ngOnInit() {
         super.ngOnInit();
         this.resetTimers();
-        this.getIndustryJobs().then();
+
+        await Promise.all([
+            this.getBlueprints(),
+            this.getIndustryJobs(),
+        ]);
+
+        this.processIndustryJobs().then();
     }
 
     public ngOnDestroy() {
@@ -139,39 +146,35 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         }
     }
 
-    public async getIndustryJobs() {
-
-        const overviewData: ISystemOverviewSystem[] = [];
-        let industryJobs: IExtendedIndustryJobsData[] = [];
-
+    public async getBlueprints() {
         if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasBlueprintScope) {
             const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
             this.blueprints = objectsArrayToObject(blueprintData, 'item_id');
         }
+    }
 
+    public async getIndustryJobs() {
         if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasIndustryJobsScope) {
-            industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
+            this.industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
         }
+    }
 
-        if (industryJobs.length) {
+    public async getProductNames() {
+        const productIds = this.industryJobs.map((job) => job.product_type_id);
+        const productIdsNotUndefined = productIds.filter((id) => id !== undefined) as number[];
+        await this.namesService.getNames(...productIdsNotUndefined);
+    }
 
-            const productIds = industryJobs.map((job) => job.product_type_id);
-            const productIdsNotUndefined = productIds.filter((id) => id !== undefined) as number[];
-            await this.namesService.getNames(...productIdsNotUndefined);
+    public async processIndustryJobs() {
 
-            this.processIndustryJobsTimers(industryJobs);
+        const overviewData: ISystemOverviewSystem[] = [];
 
-            setInterval(() => {
-                this.processIndustryJobsTimers(industryJobs);
-            }, Calc.second);
+        if (this.industryJobs.length) {
 
-            for (const job of industryJobs) {
+            await this.getProductNames();
+            this.startIndustryJobsTimers(this.industryJobs);
 
-                if (job.product_type_id) {
-                    job.productName = NamesService.getNameFromData(job.product_type_id);
-                }
-
-                job.activityIcon = this.getIconForIndustryActivity(job.activity_id);
+            for (const job of this.industryJobs) {
 
                 const location = await this.getLocation(job);
                 if (!location) {
@@ -183,22 +186,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
                     continue;
                 }
 
-                let systemOverview: ISystemOverviewSystem | undefined = overviewData.find((s) => {
-                    return s.id === location.system;
-                });
-
-                if (!systemOverview) {
-                    systemOverview = {
-                        id: location.system,
-                        locations: [],
-                        name: systemInfo.name as any,
-                        readyJobs: 0,
-                        securityClass: this.getSecurityClass(systemInfo.security_status),
-                        securityStatus: systemInfo.security_status,
-                        totalJobs: 0,
-                    };
-                    overviewData.push(systemOverview);
-                }
+                const systemOverview = this.processSystemInfo(overviewData, systemInfo);
 
                 let locationInfo: ISystemOverviewLocation | undefined = systemOverview.locations.find(
                     (overviewLocation) => {
@@ -213,15 +201,12 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
                     systemOverview.locations.push(locationInfo);
                 }
 
-                sortArrayByObjectProperty(systemOverview.locations, 'name');
-
-                systemOverview.totalJobs++;
-                if (job.timeLeft !== undefined && job.timeLeft <= 0) {
-                    systemOverview.readyJobs++;
-                }
+                this.setMiscJobData(job);
+                this.setJobCounts(systemOverview, job);
 
                 locationInfo.jobs.push(job);
 
+                sortArrayByObjectProperty(systemOverview.locations, 'name');
                 sortArrayByObjectProperty(locationInfo.jobs, 'job_id', true);
                 sortArrayByObjectProperty(locationInfo.jobs, 'timeLeft');
             }
@@ -230,5 +215,41 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
 
             this.overview = overviewData;
         }
+    }
+
+    public setJobCounts(systemOverview: ISystemOverviewSystem, job: IExtendedIndustryJobsData) {
+        systemOverview.totalJobs++;
+        if (job.timeLeft !== undefined && job.timeLeft <= 0) {
+            systemOverview.readyJobs++;
+        }
+    }
+
+    public setMiscJobData(job: IExtendedIndustryJobsData) {
+        if (job.product_type_id) {
+            job.productName = NamesService.getNameFromData(job.product_type_id);
+        }
+
+        job.activityIcon = this.getIconForIndustryActivity(job.activity_id);
+    }
+
+    public processSystemInfo(overviewData: ISystemOverviewSystem[], systemInfo: IUniverseSystemData): ISystemOverviewSystem {
+        let systemOverview: ISystemOverviewSystem | undefined = overviewData.find((s) => {
+            return s.id === systemInfo.system_id;
+        });
+
+        if (!systemOverview) {
+            systemOverview = {
+                id: systemInfo.system_id,
+                locations: [],
+                name: systemInfo.name as any,
+                readyJobs: 0,
+                securityClass: this.getSecurityClass(systemInfo.security_status),
+                securityStatus: systemInfo.security_status,
+                totalJobs: 0,
+            };
+            overviewData.push(systemOverview);
+        }
+
+        return systemOverview;
     }
 }

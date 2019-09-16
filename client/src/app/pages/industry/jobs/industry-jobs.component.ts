@@ -71,13 +71,7 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
 
             // Get ME / TE for BP
 
-            this.processIndustryJobsTimers(this.industryJobs);
-
-            setInterval(() => {
-                if (this.industryJobs) {
-                    this.processIndustryJobsTimers(this.industryJobs);
-                }
-            }, Calc.second);
+            this.startIndustryJobsTimers(this.industryJobs);
 
             sortArrayByObjectProperty(this.industryJobs, 'job_id', true);
             sortArrayByObjectProperty(this.industryJobs, 'timeLeft');
