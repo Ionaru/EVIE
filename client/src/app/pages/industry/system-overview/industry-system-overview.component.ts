@@ -11,6 +11,7 @@ import { NamesService } from '../../../data-services/names.service';
 import { StationsService } from '../../../data-services/stations.service';
 import { StructuresService } from '../../../data-services/structures.service';
 import { SystemsService } from '../../../data-services/systems.service';
+import { Character } from '../../../models/character/character.model';
 import { CharacterService } from '../../../models/character/character.service';
 import { ScopesComponent } from '../../scopes/scopes.component';
 import { IBlueprints, IExtendedIndustryJobsData, IndustryComponent } from '../industry.component';
@@ -18,6 +19,7 @@ import { IBlueprints, IExtendedIndustryJobsData, IndustryComponent } from '../in
 interface ISystemOverviewSystem {
     readyJobs: number;
     totalJobs: number;
+    inProgressJobs: number;
     securityClass: string;
     securityStatus: number;
     name: string;
@@ -45,6 +47,8 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
     public openAccordionIcon = faChevronDown;
 
     public runningJobsTimer?: number;
+
+    public selectedCharacters: Character[] = [];
 
     constructor(
         private industryJobsService: IndustryJobsService,
@@ -74,10 +78,19 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         super.ngOnInit();
         this.resetTimers();
 
-        await Promise.all([
-            this.getBlueprints(),
-            this.getIndustryJobs(),
-        ]);
+        if (CharacterService.selectedCharacter) {
+            this.selectedCharacters = [CharacterService.selectedCharacter];
+        }
+
+        this.industryJobs = [];
+        this.blueprints = {};
+
+        await Promise.all(this.selectedCharacters.map((character) => {
+            return Promise.all([
+                this.getBlueprints(character),
+                this.getIndustryJobs(character),
+            ]);
+        }));
 
         this.processIndustryJobs().then();
     }
@@ -90,9 +103,10 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
     public async getLocation(job: IExtendedIndustryJobsData) {
 
         if (job.output_location_id > Calc.maxIntegerValue) {
-            if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasStructuresScope) {
+            const jobOwner = this.selectedCharacters.find((character) => character.characterId === job.installer_id);
+            if (jobOwner && jobOwner.hasScope(ScopesComponent.scopeCodes.STRUCTURES)) {
                 const structure = await this.structuresService.getStructureInfo(
-                    CharacterService.selectedCharacter, job.output_location_id);
+                    jobOwner, job.output_location_id);
                 if (structure) {
                     return {
                         stationName: structure.name,
@@ -146,16 +160,18 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         }
     }
 
-    public async getBlueprints() {
-        if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasBlueprintScope) {
-            const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
-            this.blueprints = objectsArrayToObject(blueprintData, 'item_id');
+    public async getBlueprints(character: Character) {
+        if (character.hasScope(ScopesComponent.scopeCodes.BLUEPRINTS)) {
+            const blueprintData = await this.blueprintsService.getBlueprints(character);
+            const blueprints = objectsArrayToObject(blueprintData, 'item_id');
+            this.blueprints = {...this.blueprints, ...blueprints};
         }
     }
 
-    public async getIndustryJobs() {
-        if (CharacterService.selectedCharacter && IndustrySystemOverviewComponent.hasIndustryJobsScope) {
-            this.industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
+    public async getIndustryJobs(character: Character) {
+        if (character.hasScope(ScopesComponent.scopeCodes.JOBS)) {
+            const industryJobs = await this.industryJobsService.getIndustryJobs(character);
+            this.industryJobs.push(...industryJobs);
         }
     }
 
@@ -221,6 +237,8 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         systemOverview.totalJobs++;
         if (job.timeLeft !== undefined && job.timeLeft <= 0) {
             systemOverview.readyJobs++;
+        } else {
+            systemOverview.inProgressJobs++;
         }
     }
 
@@ -230,6 +248,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         }
 
         job.activityIcon = this.getIconForIndustryActivity(job.activity_id);
+        job.installerName = this.getInstallerName(job.installer_id);
     }
 
     public processSystemInfo(overviewData: ISystemOverviewSystem[], systemInfo: IUniverseSystemData): ISystemOverviewSystem {
@@ -240,6 +259,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         if (!systemOverview) {
             systemOverview = {
                 id: systemInfo.system_id,
+                inProgressJobs: 0,
                 locations: [],
                 name: systemInfo.name as any,
                 readyJobs: 0,

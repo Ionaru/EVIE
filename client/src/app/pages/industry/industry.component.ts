@@ -7,14 +7,16 @@ import {
     faHourglass,
     faMicroscope,
     faRepeat,
+    faUser,
     IconDefinition,
 } from '@fortawesome/pro-regular-svg-icons';
 import { ICharacterBlueprintsDataUnit, ICharacterIndustryJobsDataUnit, IndustryActivity } from '@ionaru/eve-utils';
 import * as countdown from 'countdown';
+
 import { environment } from '../../../environments/environment';
 import { Calc } from '../../../shared/calc.helper';
-
 import { CharacterService } from '../../models/character/character.service';
+import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
 
@@ -26,6 +28,7 @@ export interface IExtendedIndustryJobsData extends ICharacterIndustryJobsDataUni
     productName?: string;
     locationName?: string;
     locationSystem?: number;
+    installerName?: string;
 }
 
 export interface IBlueprints {
@@ -47,6 +50,7 @@ export class IndustryComponent extends DataPageComponent {
     public arrowRight = faArrowRight;
     public jobRunsIcon = faRepeat;
     public inventionChanceIcon = faDice;
+    public installerIcon = faUser;
 
     public debugMode = !environment.production;
 
@@ -128,5 +132,13 @@ export class IndustryComponent extends DataPageComponent {
             job.timeLeft = end - now;
             job.timeCountdown = countdown(undefined, end, this.countdownUnits);
         }
+    }
+
+    public getInstallerName(installerId: number) {
+        const installer = UserService.user.characters.find((character) => character.characterId === installerId);
+        if (installer) {
+            return installer.name;
+        }
+        return 'Unknown character';
     }
 }

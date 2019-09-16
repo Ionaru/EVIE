@@ -15,7 +15,15 @@
                         </small>
                     </span>
                     <span>
-                        {{system.totalJobs - system.readyJobs}} in progress / {{system.readyJobs}} ready for delivery.
+                        <ng-container *ngIf="system.inProgressJobs">
+                            {{system.inProgressJobs}} in progress
+                        </ng-container>
+                        <ng-container *ngIf="system.inProgressJobs && system.readyJobs">
+                            /
+                        </ng-container>
+                        <ng-container *ngIf="system.readyJobs">
+                            {{system.readyJobs}} ready for delivery.
+                        </ng-container>
                     </span>
                 </div>
             </ng-template>
@@ -23,7 +31,12 @@
                 <ng-container *ngFor="let location of system.locations">
                     <h5>{{location.name}}</h5>
                     <table class="job-info">
-                        <tr *ngFor="let job of location.jobs" class="job-row">
+                        <!-- TODO: Highlight finished jobs -->
+                        <tr *ngFor="let job of location.jobs">
+                            <td class="text-center" *ngIf="selectedCharacters > 1">
+                                ( <fa-icon [icon]="installerIcon"></fa-icon> {{ job.installerName }} )
+                            </td>
+
                             <td class="text-center">
                                 <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1}"
                                      src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
