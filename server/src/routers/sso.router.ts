@@ -396,7 +396,7 @@ export class SSORouter extends BaseRouter {
         return true;
     }
 
-    private static doAuthRequest(auth: string, code: string, refresh = false) {
+    private static async doAuthRequest(auth: string, code: string, refresh = false) {
         const requestOptions: AxiosRequestConfig = {
             headers: {
                 'Authorization': 'Basic ' + auth,
@@ -417,7 +417,7 @@ export class SSORouter extends BaseRouter {
         });
     }
 
-    private static revokeKey(key: string, keyType: 'access_token' | 'refresh_token') {
+    private static async revokeKey(key: string, keyType: 'access_token' | 'refresh_token') {
         const requestOptions: AxiosRequestConfig = {
             headers: {
                 'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),

@@ -90,11 +90,11 @@ export class DataController {
         return;
     }
 
-    public static getUniverseCategory(categoryId: number) {
+    public static async getUniverseCategory(categoryId: number) {
         return esiService.fetchESIData<IUniverseCategoryData>(EVE.getUniverseCategoryUrl(categoryId));
     }
 
-    public static getUniverseGroup(groupId: number) {
+    public static async getUniverseGroup(groupId: number) {
         return esiService.fetchESIData<IUniverseGroupData>(EVE.getUniverseGroupUrl(groupId));
     }
 
