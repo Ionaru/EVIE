@@ -9,6 +9,8 @@
             true,
             140
         ],
+        "promise-function-async": true,
+        "await-promise": true,
         "no-null-keyword": true,
         "no-unused-expression": [
             true,
