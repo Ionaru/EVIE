@@ -30,6 +30,7 @@ export interface IExtendedIndustryJobsData extends ICharacterIndustryJobsDataUni
     timeLeft?: number;
     productName?: string;
     locationName?: string;
+    locationType?: string;
     locationSystem?: number;
     installerName?: string;
 }

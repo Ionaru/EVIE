@@ -55,7 +55,7 @@
         <span> {{ job.timeCountdown.value > 0 ? job.timeCountdown : 'Ready for delivery' }}</span>
         <span>
             <fa-icon [icon]="locationIcon"></fa-icon>
-            {{ job.locationName }}
+            {{ job.locationName }}<ng-container *ngIf="job.locationType"> ( {{job.locationType}} )</ng-container>
         </span>
     </p>
 </div>

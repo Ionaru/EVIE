@@ -104,8 +104,10 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
                 if (CharacterService.selectedCharacter && IndustryJobsComponent.hasStructuresScope) {
                     const structure = await this.structuresService.getStructureInfo(
                         CharacterService.selectedCharacter, job.output_location_id);
-                    if (structure) {
+                    if (structure && structure.type_id) {
                         job.locationName = structure.name;
+                        await this.namesService.getNames(structure.type_id);
+                        job.locationType = NamesService.getNameFromData(structure.type_id);
                     }
                 } else {
                     job.locationName = 'An unknown Upwell structure';
