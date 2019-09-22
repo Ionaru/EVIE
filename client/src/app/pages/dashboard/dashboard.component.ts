@@ -45,8 +45,8 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     public skillQueueTimer?: number;
 
     public sortOptions: sortOption[] = ['name', 'skillqueue', 'ISK'];
-    public selectedSortOption: sortOption = this.sortOptions[0];
     public sortInverted = false;
+    public selectedSortOption: sortOption;
 
     // tslint:disable-next-line:no-bitwise
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
@@ -55,6 +55,8 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
                 private namesService: NamesService, private skillQueueService: SkillQueueService, private router: Router,
                 private walletService: WalletService) {
         super();
+
+        this.selectedSortOption = localStorage.getItem('DashboardSorting') as sortOption || this.sortOptions[0];
 
         countdown.setLabels(
             '|s|m|h|d',
@@ -157,6 +159,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         }
 
         sortArrayByObjectProperty(this.characters, property, this.sortInverted ? !inverse : inverse);
+        localStorage.setItem('selectedSortOption', selectedSortOption);
         this.selectedSortOption = selectedSortOption;
     }
 
