@@ -30,8 +30,9 @@ interface ISystemOverviewSystem {
 }
 
 interface ISystemOverviewLocation {
-    name: string;
     jobs: IExtendedIndustryJobsData[];
+    name: string;
+    type: string;
 }
 
 interface ICharacterJobCounts {
@@ -40,6 +41,12 @@ interface ICharacterJobCounts {
         totalJobs: number;
         inProgressJobs: number;
     };
+}
+
+interface ILocationInfo {
+    stationName: string;
+    system: number;
+    type: string;
 }
 
 @Component({
@@ -182,7 +189,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         );
     }
 
-    public async getLocation(job: IExtendedIndustryJobsData) {
+    public async getLocation(job: IExtendedIndustryJobsData): Promise<ILocationInfo | undefined> {
 
         if (job.output_location_id > Calc.maxIntegerValue) {
             const jobOwner = this.selectedCharacters.find((character) => character.characterId === job.installer_id);
@@ -190,20 +197,31 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
                 const structure = await this.structuresService.getStructureInfo(
                     jobOwner, job.output_location_id);
                 if (structure) {
+
+                    let type = 'Upwell structure';
+                    if (structure.type_id) {
+                        await this.namesService.getNames(structure.type_id);
+                        type = NamesService.getNameFromData(structure.type_id);
+                    }
+
                     return {
                         stationName: structure.name,
                         system: structure.solar_system_id,
+                        type,
                     };
                 }
-            } else {
-                job.locationName = 'An unknown Upwell structure';
             }
         } else {
             const station = await this.stationsService.getStationInfo(job.output_location_id);
             if (station) {
+
+                await this.namesService.getNames(station.type_id);
+                const type = NamesService.getNameFromData(station.type_id);
+
                 return {
                     stationName: station.name,
                     system: station.system_id,
+                    type,
                 };
             }
         }
@@ -295,6 +313,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
                     locationInfo = {
                         jobs: [],
                         name: location.stationName,
+                        type: location.type,
                     };
                     systemOverview.locations.push(locationInfo);
                 }

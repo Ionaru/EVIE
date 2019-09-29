@@ -72,7 +72,7 @@
             </ng-template>
             <ng-template ngbPanelContent>
                 <ng-container *ngFor="let location of system.locations">
-                    <h5>{{location.name}}</h5>
+                    <h5>{{ location.name  }} ( {{ location.type }} )</h5>
                     <table class="job-info">
                         <!-- TODO: Highlight finished jobs -->
                         <tr *ngFor="let job of location.jobs">
