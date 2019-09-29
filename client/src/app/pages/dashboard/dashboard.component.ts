@@ -57,6 +57,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         super();
 
         this.selectedSortOption = localStorage.getItem('DashboardSorting') as sortOption || this.sortOptions[0];
+        this.sortInverted = Boolean(localStorage.getItem('DashboardSortingInverted')) || false;
 
         countdown.setLabels(
             '|s|m|h|d',
@@ -159,12 +160,13 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         }
 
         sortArrayByObjectProperty(this.characters, property, this.sortInverted ? !inverse : inverse);
-        localStorage.setItem('selectedSortOption', selectedSortOption);
         this.selectedSortOption = selectedSortOption;
+        localStorage.setItem('DashboardSorting', selectedSortOption);
     }
 
     public invertSort() {
         this.sortInverted = !this.sortInverted;
+        localStorage.setItem('DashboardSortingInverted', this.sortInverted.toString());
         this.setSortOption(this.selectedSortOption);
     }
 
