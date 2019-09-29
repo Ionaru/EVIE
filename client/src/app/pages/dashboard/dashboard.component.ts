@@ -17,7 +17,7 @@ import { DataPageComponent } from '../data-page/data-page.component';
 import { ScopesComponent } from '../scopes/scopes.component';
 import { SkillsComponent } from '../skills/skills.component';
 
-type sortOption = 'name' | 'skillqueue' | 'ISK';
+type sortOption = 'name' | 'birthday' | 'skillqueue' | 'ISK';
 
 @Component({
     selector: 'app-dashboard',
@@ -44,7 +44,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     public skillQueueInterval?: number;
     public skillQueueTimer?: number;
 
-    public sortOptions: sortOption[] = ['name', 'skillqueue', 'ISK'];
+    public sortOptions: sortOption[] = ['name', 'birthday', 'skillqueue', 'ISK'];
     public sortInverted = false;
     public selectedSortOption: sortOption;
 
@@ -150,10 +150,14 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
                 break;
 
             case this.sortOptions[1]:
-                property = 'totalTrainingFinish';
+                property = 'birthday';
                 break;
 
             case this.sortOptions[2]:
+                property = 'totalTrainingFinish';
+                break;
+
+            case this.sortOptions[3]:
                 property = 'balance';
                 inverse = true;
                 break;
