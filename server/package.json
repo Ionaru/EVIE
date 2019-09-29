@@ -22,7 +22,7 @@
     "dependencies": {
         "@ionaru/configurator": "^2.0.0",
         "@ionaru/esi-service": "^3.2.2",
-        "@ionaru/eve-utils": "^4.1.3",
+        "@ionaru/eve-utils": "^4.3.0",
         "@ionaru/random-string": "^1.1.0",
         "@ionaru/web-server": "^3.0.0",
         "@sentry/node": "^5.6.2",
@@ -43,10 +43,10 @@
         "mysql": "^2.17.1",
         "on-finished": "^2.3.0",
         "reflect-metadata": "^0.1.13",
-        "socket.io": "^2.2.0",
+        "socket.io": "^2.3.0",
         "socket.io-express-session": "^0.1.3",
         "source-map-support": "^0.5.13",
-        "typeorm": "^0.2.18"
+        "typeorm": "^0.2.19"
     },
     "devDependencies": {
         "@types/app-root-path": "^1.2.4",
@@ -60,16 +60,16 @@
         "@types/express-mysql-session": "^1.2.2",
         "@types/express-serve-static-core": "^4.16.9",
         "@types/express-session": "^1.15.14",
-        "@types/jsonwebtoken": "^8.3.3",
+        "@types/jsonwebtoken": "^8.3.4",
         "@types/mysql": "^2.15.7",
-        "@types/node": "^12.7.4",
+        "@types/node": "^12.7.8",
         "@types/on-finished": "^2.3.1",
-        "@types/socket.io": "^2.1.0",
+        "@types/socket.io": "^2.1.3",
         "@types/source-map-support": "^0.5.0",
-        "ts-node": "^8.3.0",
+        "ts-node": "^8.4.1",
         "tslint": "^5.20.0",
         "tslint-sonarts": "^1.9.0",
-        "typescript": "^3.5.3"
+        "typescript": "~3.5.3"
     },
     "license": "MIT"
 }
