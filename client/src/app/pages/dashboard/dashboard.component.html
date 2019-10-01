@@ -16,10 +16,13 @@
                 <button ngbDropdownItem (click)="invertSort()">Invert sort</button>
             </div>
         </div>
+        <div class="d-inline-block">
+            <input type="text" class="form-control" [(ngModel)]="characterSearch" [ngbTypeahead]="characterNames" (ngModelChange)="filterCharacters()"/>
+        </div>
     </div>
 
     <div class="row justify-content-around">
-        <div *ngFor="let character of characters" [ngClass]="{'selected' : isCharacterSelected(character)}"
+        <div *ngFor="let character of charactersFiltered" [ngClass]="{'selected' : isCharacterSelected(character)}"
              class="character-container2">
             <div class="character-portrait">
                 <img src="https://imageserver.eveonline.com/Character/{{ character.characterId }}_256.jpg" alt="Character image">

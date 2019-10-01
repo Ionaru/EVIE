@@ -4,6 +4,8 @@ import { faCheck, faSync, faTrash, faUserPlus } from '@fortawesome/pro-regular-s
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { romanize } from '@ionaru/romanize';
 import * as countdown from 'countdown';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { Calc } from '../../../shared/calc.helper';
 import { NamesService } from '../../data-services/names.service';
@@ -39,6 +41,9 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     public faTrash = faTrash;
 
     public characters: Character[] = [];
+    public charactersFiltered: Character[] = [];
+    public characterNames?: (text: Observable<string>) => Observable<string[]>;
+    public characterSearch?: string;
     public deleteInProgress = false;
 
     public skillQueueInterval?: number;
@@ -68,7 +73,18 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     // tslint:disable-next-line:cognitive-complexity
     public async ngOnInit() {
         super.ngOnInit();
-        this.characters = UserService.user.characters;
+        this.characters = this.charactersFiltered = UserService.user.characters;
+        const names = this.characters.map((character) => character.name);
+
+        this.characterNames = (text$: Observable<string>) => {
+            return text$.pipe(
+                debounceTime(200),
+                distinctUntilChanged(),
+                // When more than 2 letters are types
+                map((term: string) => term.length < 2 ? [] : names.filter(
+                    // Returns max 10 names
+                    (name) => name.toLowerCase().includes(term.toLowerCase())).slice(0, 10)));
+        };
 
         await Promise.all(this.characters.map(async (character) => this.getCharacterInfo(character)));
 
@@ -106,6 +122,15 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         }
 
         this.setSortOption(this.selectedSortOption);
+    }
+
+    public filterCharacters() {
+        if (!this.characterSearch || this.characterSearch.length === 0) {
+            this.charactersFiltered = this.characters;
+        } else {
+            const search: string = this.characterSearch.toLowerCase();
+            this.charactersFiltered = this.characters.filter((character) => character.name.toLowerCase().includes(search));
+        }
     }
 
     public ngOnDestroy() {
