@@ -16,10 +16,10 @@ import { Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Calc } from '../../shared/calc.helper';
 import { StatusService } from '../data-services/status.service';
+import { LogoutModalComponent } from '../modals/logout/logout-modal.component';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
 import { CountUp } from '../shared/count-up';
-import { LogoutModalComponent } from './logout-modal.component';
 
 @Component({
     selector: 'app-navigation',
