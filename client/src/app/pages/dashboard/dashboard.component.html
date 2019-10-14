@@ -13,7 +13,11 @@
             <div ngbDropdownMenu aria-labelledby="sortChoice">
                 <button ngbDropdownItem *ngFor="let sort of sortOptions" (click)="setSortOption(sort)">{{ sort | titlecase }}</button>
                 <div class="dropdown-divider"></div>
-                <button ngbDropdownItem (click)="invertSort()">Invert sort</button>
+                <button ngbDropdownItem (click)="invertSort()">
+                    <span *ngIf="!sortInverted">Invert</span>
+                    <span *ngIf="sortInverted">Restore</span>
+                    sort order
+                </button>
             </div>
         </div>
         <div class="d-inline-block btn character-search">

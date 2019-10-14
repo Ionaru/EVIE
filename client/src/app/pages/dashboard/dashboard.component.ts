@@ -20,6 +20,7 @@ import { ScopesComponent } from '../scopes/scopes.component';
 import { SkillsComponent } from '../skills/skills.component';
 
 type sortOption = 'name' | 'birthday' | 'skillqueue' | 'ISK';
+type sortProperties = 'name' | 'birthday' | 'totalTrainingFinish' | 'balance';
 
 @Component({
     selector: 'app-dashboard',
@@ -166,7 +167,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
 
     public setSortOption(selectedSortOption: sortOption) {
 
-        let property = '';
+        let property: sortProperties;
         let inverse = false;
 
         switch (selectedSortOption) {
@@ -186,9 +187,18 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
                 property = 'balance';
                 inverse = true;
                 break;
+
+            default:
+                property = 'name';
+                break;
         }
 
-        sortArrayByObjectProperty(this.characters, property, this.sortInverted ? !inverse : inverse);
+        const sortableCharacters = this.characters.filter((character) => character[property]);
+        const unSortableCharacters = this.characters.filter((character) => !character[property]);
+
+        sortArrayByObjectProperty(sortableCharacters, property, this.sortInverted ? !inverse : inverse);
+        this.characters = [...sortableCharacters, ...unSortableCharacters];
+        this.filterCharacters();
         this.selectedSortOption = selectedSortOption;
         localStorage.setItem('DashboardSorting', selectedSortOption);
     }
