@@ -8,7 +8,7 @@
             <fa-icon [icon]="faUserPlus"></fa-icon>
             Add a new character
         </button>
-        <div ngbDropdown class="d-inline-block">
+        <div ngbDropdown class="d-inline-block btn">
             <button class="btn btn-outline-primary" id="sortChoice" ngbDropdownToggle>Sort by {{ selectedSortOption }}</button>
             <div ngbDropdownMenu aria-labelledby="sortChoice">
                 <button ngbDropdownItem *ngFor="let sort of sortOptions" (click)="setSortOption(sort)">{{ sort | titlecase }}</button>
@@ -16,8 +16,11 @@
                 <button ngbDropdownItem (click)="invertSort()">Invert sort</button>
             </div>
         </div>
-        <div class="d-inline-block">
-            <input type="text" class="form-control" [(ngModel)]="characterSearch" [ngbTypeahead]="characterNames" (ngModelChange)="filterCharacters()"/>
+        <div class="d-inline-block btn character-search">
+            <!--suppress HtmlFormInputWithoutLabel -->
+            <input type="text" class="form-control" placeholder="Character search"
+                   [(ngModel)]="characterSearch" [ngbTypeahead]="characterNames" (ngModelChange)="filterCharacters()"
+            />
         </div>
     </div>
 

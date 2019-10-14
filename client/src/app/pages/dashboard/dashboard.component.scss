@@ -1,13 +1,21 @@
 @import '../../../variables';
 
 .character-dashboard {
+    .character-search {
+        input {
+            background: transparent;
+            border-color: $primary;
+            color: $primary;
+        }
+    }
+
     .character-container2 {
         display: flex;
         flex-direction: column;
         border: $primary 1px solid;
         margin-bottom: 5px;
         margin-top: 5px;
-        background-color: #251910;
+        background-color: darken($primary, 40%);
         max-width: 258px;
 
         .character-info {
