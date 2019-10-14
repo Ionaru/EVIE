@@ -37,10 +37,11 @@ import { AdminGuard } from './guards/admin.guard';
 import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { httpInterceptorProviders } from './http-interceptors';
+import { LogoutModalComponent } from './modals/logout/logout-modal.component';
 import { CharacterService } from './models/character/character.service';
 import { UserService } from './models/user/user.service';
-import { LogoutModalComponent } from './navigation/logout-modal.component';
 import { NavigationComponent } from './navigation/navigation.component';
+import { AboutComponent } from './pages/about/about.component';
 import { AssetsComponent } from './pages/assets/assets.component';
 import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -62,7 +63,7 @@ import { SocketService } from './socket/socket.service';
 
 const errorHandlers = [];
 if (environment.production) {
-    errorHandlers.push({ provide: ErrorHandler, useClass: SentryErrorHandler });
+    errorHandlers.push({provide: ErrorHandler, useClass: SentryErrorHandler});
 }
 
 @NgModule({
@@ -92,6 +93,7 @@ if (environment.production) {
         GasChartComponent,
         LoadingMessageComponent,
         AssetsComponent,
+        AboutComponent,
     ],
     entryComponents: [
         LogoutModalComponent,

@@ -1,15 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { faAbacus, faChevronDown, faColumns, faDollarSign, faHome, faPlug, faSignOut, faUsers } from '@fortawesome/pro-solid-svg-icons';
+import {
+    faAbacus,
+    faChevronDown,
+    faColumns,
+    faDollarSign,
+    faHome,
+    faPlug,
+    faQuestion,
+    faSignOut,
+    faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { Calc } from '../../shared/calc.helper';
 import { StatusService } from '../data-services/status.service';
+import { LogoutModalComponent } from '../modals/logout/logout-modal.component';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
 import { CountUp } from '../shared/count-up';
-import { LogoutModalComponent } from './logout-modal.component';
 
 @Component({
     selector: 'app-navigation',
@@ -30,6 +40,7 @@ export class NavigationComponent implements OnInit {
     public userAdminIcon = faUsers;
     public connectionIcon = faPlug;
     public logoutIcon = faSignOut;
+    public aboutIcon = faQuestion;
     public orePricesIcon = faDollarSign;
 
     public hours = '00';

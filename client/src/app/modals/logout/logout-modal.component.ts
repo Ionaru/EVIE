@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { faTimes } from '@fortawesome/pro-solid-svg-icons';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { UserService } from '../models/user/user.service';
+import { UserService } from '../../models/user/user.service';
 
 @Component({
     styleUrls: ['./logout-modal.component.scss'],
