@@ -1,5 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { faAbacus, faChevronDown, faColumns, faDollarSign, faHome, faPlug, faSignOut, faUsers } from '@fortawesome/pro-solid-svg-icons';
+import {
+    faAbacus,
+    faChevronDown,
+    faColumns,
+    faDollarSign,
+    faHome,
+    faPlug,
+    faQuestion,
+    faSignOut,
+    faUsers,
+} from '@fortawesome/pro-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 
@@ -30,6 +40,7 @@ export class NavigationComponent implements OnInit {
     public userAdminIcon = faUsers;
     public connectionIcon = faPlug;
     public logoutIcon = faSignOut;
+    public aboutIcon = faQuestion;
     public orePricesIcon = faDollarSign;
 
     public hours = '00';

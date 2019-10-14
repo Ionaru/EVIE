@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminGuard } from './guards/admin.guard';
 import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
+import { AboutComponent } from './pages/about/about.component';
 import { AssetsComponent } from './pages/assets/assets.component';
 import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -20,7 +21,9 @@ import { UsersComponent } from './pages/users/users.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
 
 const routes: Routes = [
+    // Public pages
     {path: '', component: HomeComponent, resolve: [AppReadyGuard]},
+    {path: 'about', component: AboutComponent, resolve: [AppReadyGuard]},
 
     // EVE data pages.
     {path: 'ore', component: OreComponent, resolve: [AppReadyGuard]},
