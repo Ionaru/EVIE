@@ -25,6 +25,8 @@ jobs:
 
             - name: Audit
               working-directory: client
+              env:
+                  FA_TOKEN: ${{ secrets.FA_TOKEN }}
               run: npm audit
 
             - name: Install packages
