@@ -20,7 +20,7 @@ export let esiService: PublicESIService;
 export let esiCache: CacheController;
 export let axiosInstance: AxiosInstance;
 
-(function start() {
+function start() {
     sourceMapSupport.install();
 
     debug(`Initializing Sentry (enabled: ${process.env.NODE_ENV === 'production'})`);
@@ -87,4 +87,8 @@ export let axiosInstance: AxiosInstance;
     });
 
     application.start().then().catch((error: Error) => application.stop(error));
-})();
+}
+
+if (require.main === module) {
+    start();
+}
