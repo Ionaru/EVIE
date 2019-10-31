@@ -1,6 +1,6 @@
 {
     "name": "evie-client",
-    "version": "0.7.9",
+    "version": "0.7.13",
     "scripts": {
         "ng": "ng",
         "ts": "tsc -v",
