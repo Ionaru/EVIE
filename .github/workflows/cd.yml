@@ -4,11 +4,11 @@ on:
     push:
         branches:
             - master
+        tags:
+            - '*'
     pull_request:
         branches:
             - master
-    release:
-        types: [created]
 
 jobs:
     client-test:
@@ -77,9 +77,9 @@ jobs:
                   node-version: '12.x'
 
             - name: Deploy to dev.spaceships.app
-              if: github.event_name == 'push'
+              if: startsWith(github.ref, 'refs/heads/')
               run: npx -q @ionaru/teamcity-deploy teamcity.saturnserver.org Evie_BuildDev ${{ secrets.API_TOKEN }}
 
             - name: Deploy to spaceships.app
-              if: github.event_name == 'release'
+              if: startsWith(github.ref, 'refs/tags/')
               run: npx -q @ionaru/teamcity-deploy teamcity.saturnserver.org Evie_BuildProd ${{ secrets.API_TOKEN }}
