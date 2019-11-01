@@ -32,7 +32,7 @@
         <div *ngFor="let character of charactersFiltered" [ngClass]="{'selected' : isCharacterSelected(character)}"
              class="character-container2">
             <div class="character-portrait">
-                <img src="https://imageserver.eveonline.com/Character/{{ character.characterId }}_256.jpg" alt="Character image">
+                <img src="https://images.evetech.net/characters/{{ character.characterId }}/portrait?size=256" alt="Character image">
             </div>
             <div class="character-info">
                 <p>
