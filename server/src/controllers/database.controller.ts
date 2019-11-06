@@ -1,33 +1,11 @@
 import * as fs from 'fs';
-import { createPool, Pool } from 'mysql';
-import * as path from 'path';
-import { Connection, createConnection, Logger } from 'typeorm';
+import { createPool, Pool, PoolConfig } from 'mysql';
+import { Connection, createConnection, getConnectionOptions } from 'typeorm';
 
-import { config, configPath, debug } from '../index';
+import { debug } from '../index';
 import { QueryLogger } from '../loggers/query.logger';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
-
-interface IDBOptions {
-    database: string;
-    dialect: 'mysql';
-    host: string;
-    password: string;
-    port: number;
-    user: string;
-    ssl?: {
-        ca: string;
-        cert: string;
-        key: string;
-        rejectUnauthorized: boolean;
-    };
-    type: 'mysql';
-    username: string;
-    synchronize: boolean;
-    logging: ['query', 'error'];
-    logger: Logger;
-    entities: any[];
-}
 
 export let db: DatabaseConnection;
 
@@ -38,36 +16,31 @@ export class DatabaseConnection {
     public pool?: Pool;
     public orm?: Connection;
 
-    private readonly dbOptions: IDBOptions;
+    private readonly dbOptions: PoolConfig;
 
     constructor() {
+        const database = process.env.EVIE_DB_NAME;
+        const host = process.env.EVIE_DB_HOST;
+        const password = process.env.EVIE_DB_PASS;
+        const port = Number(process.env.EVIE_DB_PORT);
+        const user = process.env.EVIE_DB_USER;
+
         this.dbOptions = {
-            database: config.getProperty('db_name') as string,
-            dialect: 'mysql',
-            entities: [
-                User,
-                Character,
-            ],
-            host: config.getProperty('db_host') as string,
-            logger: new QueryLogger(),
-            logging: ['query', 'error'],
-            password: config.getProperty('db_pass') as string,
-            port: Number(config.getProperty('db_port')) || 3306,
-            synchronize: config.getProperty('db_synchronize') as boolean,
-            type: 'mysql',
-            user: config.getProperty('db_user') as string,
-            username: config.getProperty('db_user') as string,
+            database,
+            host,
+            password,
+            port,
+            user,
         };
 
-        const sslCA = config.getProperty('db_ca_f') as string;
-        const sslCert = config.getProperty('db_cc_f') as string;
-        const sslKey = config.getProperty('db_ck_f') as string;
-        if (sslCA && sslCert && sslKey) {
+        const rejectUnauthorized = process.env.EVIE_DB_SSL_REJECT ? process.env.EVIE_DB_SSL_REJECT.toLowerCase() === 'true' : true;
+
+        if (process.env.EVIE_DB_SSL_CA && process.env.EVIE_DB_SSL_CERT && process.env.EVIE_DB_SSL_KEY) {
             this.dbOptions.ssl = {
-                ca: fs.readFileSync(path.join(configPath, sslCA)).toString(),
-                cert: fs.readFileSync(path.join(configPath, sslCert)).toString(),
-                key: fs.readFileSync(path.join(configPath, sslKey)).toString(),
-                rejectUnauthorized: config.getProperty('db_reject') as boolean,
+                ca: fs.readFileSync(process.env.EVIE_DB_SSL_CA),
+                cert: fs.readFileSync(process.env.EVIE_DB_SSL_CERT),
+                key: fs.readFileSync(process.env.EVIE_DB_SSL_KEY),
+                rejectUnauthorized,
             };
         }
 
@@ -75,14 +48,7 @@ export class DatabaseConnection {
     }
 
     public async connect(): Promise<void> {
-        DatabaseConnection.debug(`Connecting to ${this.dbOptions.host}:${this.dbOptions.port}/${this.dbOptions.database}`);
-
-        if (this.dbOptions.ssl && !this.dbOptions.ssl.rejectUnauthorized) {
-            process.emitWarning('SSL connection to Database is not secure, \'db_reject\' should be true');
-
-        } else if (!this.dbOptions.ssl && ['localhost', '0.0.0.0', '127.0.0.1'].indexOf(config.getProperty('db_host') as string) === -1) {
-            process.emitWarning('Connection to Database is not secure, always use SSL to connect to external databases!');
-        }
+        DatabaseConnection.debug(`Connecting to ${process.env.EVIE_DB_HOST}:${process.env.EVIE_DB_PORT}/${process.env.EVIE_DB_NAME}`);
 
         await new Promise<void>((resolve) => {
             this.pool = createPool(this.dbOptions);
@@ -102,11 +68,18 @@ export class DatabaseConnection {
             });
         });
 
-        if (this.dbOptions.synchronize) {
-            process.emitWarning('Database synchronize is enabled, this may cause unexpected changed to the database structure');
-        }
+        const connectionOptions = await getConnectionOptions();
 
-        this.orm = await createConnection(this.dbOptions);
+        Object.assign(connectionOptions, {
+            entities: [
+                User,
+                Character,
+            ],
+            logger: new QueryLogger(),
+            logging: ['query', 'error'],
+        });
+
+        this.orm = await createConnection(connectionOptions);
 
         DatabaseConnection.debug('Database connected');
     }

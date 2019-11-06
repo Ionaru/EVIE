@@ -18,7 +18,6 @@ COPY ./src ./src
 # Build server for production
 ENV NODE_ENV production
 RUN npm run build
-RUN npm ci
 RUN npm cache clean --force
 
 # Add volumes

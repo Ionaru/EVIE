@@ -33,7 +33,7 @@ function start() {
 
     debug('Loading configuration');
     config = new Configurator(configPath);
-    config.addConfigFiles('main', 'database', 'sso');
+    config.addConfigFiles('main', 'sso');
 
     debug('Creating axios instance');
     axiosInstance = axios.create({
