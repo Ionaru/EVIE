@@ -26,6 +26,7 @@ services:
             - EVIE_DB_SSL_CERT
             - EVIE_DB_SSL_KEY
             - EVIE_DB_SSL_REJECT
+            - EVIE_CONFIG_VOLUME
         ports:
             - "${EVIE_SERVER_PORT:-3731}"
         restart: unless-stopped
