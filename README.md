@@ -50,6 +50,8 @@ Right now the features are limited, but new pages are being built and I have a l
 * ~~Create routes so client can fetch industry info in small portions~~
 * Do cost calculations on resources, recursively
 
+---
+
 ### Configuration
 EVIE requires some set-up to work.
 
