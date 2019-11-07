@@ -24,7 +24,6 @@
 /server/dist/
 /server/config/
 /server/node_modules/
-/server/logs
 /server/.nyc_output/
 
 # System files
