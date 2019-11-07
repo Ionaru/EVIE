@@ -86,7 +86,7 @@ EVIE requires some set-up to work.
 - `EVIE_DB_USER`: Username to use in the database connection.
 - `EVIE_DB_PASS`: Password to use in the database connection
 
-- `EVIE_DB_SSL_CA` (optional): Location of the CA certificate to use for a secure database connection.
-- `EVIE_DB_SSL_CERT` (optional): Location of the client certificate to use for a secure database connection.
-- `EVIE_DB_SSL_KEY` (optional): Location of the client key to use for a secure database connection.
+- `EVIE_DB_SSL_CA` (optional): Location of the CA certificate **in the container** to use for a secure database connection.
+- `EVIE_DB_SSL_CERT` (optional): Location of the client certificate **in the container** to use for a secure database connection.
+- `EVIE_DB_SSL_KEY` (optional): Location of the client key **in the container** to use for a secure database connection.
 - `EVIE_DB_SSL_REJECT` (boolean): Whether to reject an insecure connection to the database.
