@@ -7,13 +7,14 @@ WORKDIR /app
 
 # Copy needed build files
 COPY ./config ./config
-COPY ./package.json ./package-lock.json ./tsconfig.json ./
+COPY ./package.json ./package-lock.json ./tsconfig.json ./ormconfig.js ./
 
 # Install dependencies
 RUN npm install
 
 # Copy source files
 COPY ./src ./src
+COPY ./migrations ./migrations
 
 # Build server for production
 ENV NODE_ENV production
