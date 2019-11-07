@@ -21,6 +21,7 @@ const password = process.env.EVIE_DB_PASS;
 const connectionOptions = {
     database,
     type: 'mysql',
+    timezone: 'Z',
     host,
     port,
     username,
