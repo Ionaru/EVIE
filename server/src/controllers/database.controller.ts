@@ -4,8 +4,6 @@ import { Connection, createConnection, getConnectionOptions } from 'typeorm';
 
 import { debug } from '../index';
 import { QueryLogger } from '../loggers/query.logger';
-import { Character } from '../models/character.model';
-import { User } from '../models/user.model';
 
 export let db: DatabaseConnection;
 
@@ -71,10 +69,6 @@ export class DatabaseConnection {
         const connectionOptions = await getConnectionOptions();
 
         Object.assign(connectionOptions, {
-            entities: [
-                User,
-                Character,
-            ],
             logger: new QueryLogger(),
             logging: ['query', 'error'],
         });

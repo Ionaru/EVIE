@@ -50,7 +50,7 @@ if (!connectionOptions.ssl && !['localhost', '0.0.0.0', '127.0.0.1'].includes(co
 if (runningMigration || runningTSMain) {
     connectionOptions.entities = models.map((model) => `src/models/${model}.ts`);
 } else {
-    connectionOptions.entities = models.map((model) => `dist/models/${model}.js`);
+    connectionOptions.entities = models.map((model) => `dist/src/models/${model}.js`);
 }
 
 if (runningMigration) {
