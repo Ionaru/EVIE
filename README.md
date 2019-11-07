@@ -78,7 +78,6 @@ EVIE requires some set-up to work.
 - `EVIE_SERVER_PORT`: The port the server should run on.
 - `EVIE_CONFIG_VOLUME`: Docker volume for the configuration folder.
 - `EVIE_DATA_VOLUME`: Docker volume for the data folder.`
-- `EVIE_LOG_VOLUME`: Docker volume for the logs folder.
 - `EVIE_DB_NAME`: Name of the database to connect to.
 - `EVIE_DB_HOST`: Host of the database to connect to.
 - `EVIE_DB_PORT`: Port of the database to connect to.

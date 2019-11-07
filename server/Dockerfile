@@ -2,7 +2,7 @@ FROM node:12-alpine
 
 ## INSTALL SERVER
 
-RUN mkdir -p /app/logs /app/data /app/config
+RUN mkdir -p /app/data /app/config
 WORKDIR /app
 
 # Copy needed build files
@@ -21,7 +21,7 @@ RUN npm run build
 RUN npm cache clean --force
 
 # Add volumes
-VOLUME /app/logs /app/data /app/config
+VOLUME /app/data /app/config
 
 ## RUN
 
