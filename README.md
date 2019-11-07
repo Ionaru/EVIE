@@ -69,23 +69,19 @@ EVIE requires some set-up to work.
     - `redirect_uri` (string): EVE Online SSO redirect URI to use for character auth and data fetching.
 
 #### Environment variables
-
 - `EVIE_FA_TOKEN`: FontAwesome 5 token.
 - `EVIE_CLIENT_PORT`: The port the client should run on.
 - `EVIE_SERVER_PORT`: The port the server should run on.
 - `EVIE_ENV`: Configuration to pass to Angular for building.
 - `DEBUG`: Parameters for the debug package. See <https://www.npmjs.com/package/debug> for more information.
-
 - `EVIE_CONFIG_VOLUME`: Docker volume for the configuration folder.
 - `EVIE_DATA_VOLUME`: Docker volume for the data folder.`
 - `EVIE_LOG_VOLUME`: Docker volume for the logs folder.
-
 - `EVIE_DB_NAME`: Name of the database to connect to.
 - `EVIE_DB_HOST`: Host of the database to connect to.
 - `EVIE_DB_PORT`: Port of the database to connect to.
 - `EVIE_DB_USER`: Username to use in the database connection.
-- `EVIE_DB_PASS`: Password to use in the database connection
-
+- `EVIE_DB_PASS`: Password to use in the database connection.
 - `EVIE_DB_SSL_CA` (optional): Location of the CA certificate **in the container** to use for a secure database connection.
 - `EVIE_DB_SSL_CERT` (optional): Location of the client certificate **in the container** to use for a secure database connection.
 - `EVIE_DB_SSL_KEY` (optional): Location of the client key **in the container** to use for a secure database connection.
