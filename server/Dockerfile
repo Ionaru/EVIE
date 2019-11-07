@@ -6,7 +6,6 @@ RUN mkdir -p /app/logs /app/data /app/config
 WORKDIR /app
 
 # Copy needed build files
-COPY ./config ./config
 COPY ./package.json ./package-lock.json ./tsconfig.json ./ormconfig.js ./
 
 # Install dependencies
