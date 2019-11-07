@@ -26,19 +26,19 @@ jobs:
             - name: Audit
               working-directory: client
               env:
-                  FA_TOKEN: ${{ secrets.FA_TOKEN }}
+                  EVIE_FA_TOKEN: ${{ secrets.FA_TOKEN }}
               run: npm audit
 
             - name: Install packages
               working-directory: client
               env:
-                  FA_TOKEN: ${{ secrets.FA_TOKEN }}
+                  EVIE_FA_TOKEN: ${{ secrets.FA_TOKEN }}
               run: npm install
 
             - name: Run tests
               working-directory: client
               env:
-                  FA_TOKEN: ${{ secrets.FA_TOKEN }}
+                  EVIE_FA_TOKEN: ${{ secrets.FA_TOKEN }}
               run: npm test
 
     server-test:

@@ -9,7 +9,7 @@ WORKDIR /app
 COPY ./browserslist ./.npmrc ./package.json ./package-lock.json ./angular.json ./tsconfig.json ./
 
 # Install dependencies
-ARG FA_TOKEN
+ARG EVIE_FA_TOKEN
 RUN npm install
 
 # Copy source files
