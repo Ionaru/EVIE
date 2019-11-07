@@ -48,8 +48,5 @@
 </ng-container>
 
 <ng-template #ore_loading_message>
-    <span>
-        Calculating profit...
-        <span class="m-progress m-progress-small"></span>
-    </span>
+    <app-loading-message [small]="true">Calculating profit...</app-loading-message>
 </ng-template>

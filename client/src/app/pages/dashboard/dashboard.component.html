@@ -98,7 +98,5 @@
 </div>
 
 <ng-template #loading_message>
-    <span>Loading...
-        <span class="m-progress m-progress-small"></span>
-    </span>
+    <app-loading-message [small]="true" class="d-flex justify-content-center">Loading...</app-loading-message>
 </ng-template>

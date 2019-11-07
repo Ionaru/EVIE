@@ -72,28 +72,28 @@
 <div id="pre-bootstrap-container">
 
     <script type="text/javascript">
-        document.addEventListener('StartupSuccess', function () {
+        document.addEventListener('StartupSuccess', () => {
 
-            var preBootstrapContainer = document.getElementById('pre-bootstrap-container');
-            var preBootstrapContainerStyle = document.getElementById('pre-bootstrap-container-style');
+            const preBootstrapContainer = document.getElementById('pre-bootstrap-container');
+            const preBootstrapContainerStyle = document.getElementById('pre-bootstrap-container-style');
 
             // Add the class-name to initiate the transitions.
             preBootstrapContainer.className = 'loaded';
 
             // Delete the bootstrap container after the transition has completed (based on the known transition time).
-            var transitionTime = 300;
+            const transitionTime = 300;
             window.setTimeout(
-                function () {
-                    var body = document.getElementsByTagName('body')[0];
-                    var head = document.getElementsByTagName('head')[0];
+                () => {
+                    const body = document.getElementsByTagName('body')[0];
+                    const head = document.getElementsByTagName('head')[0];
                     body.removeChild(preBootstrapContainer);
                     head.removeChild(preBootstrapContainerStyle);
                 }, transitionTime);
         });
 
-        document.addEventListener('StartupFailed', function () {
-            var info = document.getElementById('info');
-            info.classList.remove('m-progress');
+        document.addEventListener('StartupFailed', () => {
+            const info = document.getElementById('info');
+            info.className = '';
             info.innerHTML = 'Something went wrong while loading, please try again later.' +
                 '<br><br>' +
                 '<button class="btn btn-primary" onclick="window.location.reload()">Click to retry</button>' +
@@ -110,7 +110,7 @@
     <div id="pre-bootstrap">
         <div class="loading-message">
             <h1><strong>EVIE</strong></h1>
-            <span class="m-progress" id="info"></span>
+            <span id="info" class="loading-spinner spinner-border text-primary" role="status"></span>
         </div>
     </div>
 </div>
