@@ -8,7 +8,7 @@ import { NamesService } from '../../data-services/names.service';
 import { StructuresService } from '../../data-services/structures.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
-import { ScopesComponent } from '../scopes/scopes.component';
+import { Scope } from '../scopes/scopes.component';
 
 interface IExtendedCharacterBlueprintsDataUnit extends ICharacterBlueprintsDataUnit {
     location_name?: string;
@@ -30,7 +30,7 @@ export class AssetsComponent extends DataPageComponent implements OnInit, OnDest
         private structuresService: StructuresService,
     ) {
         super();
-        this.requiredScopes = [ScopesComponent.scopeCodes.ASSETS, ScopesComponent.scopeCodes.STRUCTURES];
+        this.requiredScopes = [Scope.ASSETS, Scope.STRUCTURES];
     }
 
     public ngOnInit() {

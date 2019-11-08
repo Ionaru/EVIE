@@ -4,14 +4,14 @@ import { generateNumbersArray } from '@ionaru/array-utils';
 import { EVE, ICharacterBlueprintsData } from '@ionaru/eve-utils';
 
 import { Character } from '../models/character/character.model';
-import { ScopesComponent } from '../pages/scopes/scopes.component';
+import { Scope } from '../pages/scopes/scopes.component';
 import { BaseService } from './base.service';
 
 @Injectable()
 export class BlueprintsService extends BaseService {
 
     public async getBlueprints(character: Character): Promise<ICharacterBlueprintsData> {
-        BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.BLUEPRINTS, 'getBlueprints');
+        BaseService.confirmRequiredScope(character, Scope.BLUEPRINTS, 'getBlueprints');
 
         const response = await this.getBlueprintsPage(character, 1);
 

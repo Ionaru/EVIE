@@ -7,25 +7,25 @@ import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 
+export enum Scope {
+    ASSETS = 'esi-assets.read_assets.v1',
+    BLUEPRINTS = 'esi-characters.read_blueprints.v1',
+    JOBS = 'esi-industry.read_character_jobs.v1',
+    LOCATION = 'esi-location.read_location.v1',
+    ORDERS = 'esi-markets.read_character_orders.v1',
+    SHIP_TYPE = 'esi-location.read_ship_type.v1',
+    SKILLQUEUE = 'esi-skills.read_skillqueue.v1',
+    SKILLS = 'esi-skills.read_skills.v1',
+    STRUCTURES = 'esi-universe.read_structures.v1',
+    WALLET = 'esi-wallet.read_character_wallet.v1',
+}
+
 @Component({
     selector: 'app-scopes',
     styleUrls: ['./scopes.component.scss'],
     templateUrl: './scopes.component.html',
 })
 export class ScopesComponent extends DataPageComponent implements OnInit {
-
-    public static readonly scopeCodes = {
-        ASSETS: 'esi-assets.read_assets.v1',
-        BLUEPRINTS: 'esi-characters.read_blueprints.v1',
-        JOBS: 'esi-industry.read_character_jobs.v1',
-        LOCATION: 'esi-location.read_location.v1',
-        ORDERS: 'esi-markets.read_character_orders.v1',
-        SHIP_TYPE: 'esi-location.read_ship_type.v1',
-        SKILLQUEUE: 'esi-skills.read_skillqueue.v1',
-        SKILLS: 'esi-skills.read_skills.v1',
-        STRUCTURES: 'esi-universe.read_structures.v1',
-        WALLET: 'esi-wallet.read_character_wallet.v1',
-    };
 
     // Icons
     public addCharacterIcon = faUserPlus;
@@ -36,7 +36,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
 
     public scopes = [
         {
-            code: ScopesComponent.scopeCodes.SKILLS,
+            code: Scope.SKILLS,
             enabled: false,
             eveDescription: 'Allows reading of a character\'s currently known skills.',
             infoVisible: false,
@@ -45,7 +45,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: ['skills'],
         },
         {
-            code: ScopesComponent.scopeCodes.SKILLQUEUE,
+            code: Scope.SKILLQUEUE,
             enabled: false,
             eveDescription: 'Allows reading of a character\'s currently training skill queue.',
             infoVisible: false,
@@ -54,7 +54,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: ['skills'],
         },
         {
-            code: ScopesComponent.scopeCodes.WALLET,
+            code: Scope.WALLET,
             enabled: false,
             eveDescription: 'Allows reading of a character\'s wallet, journal and transaction history.',
             infoVisible: false,
@@ -63,7 +63,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: ['wallet'],
         },
         {
-            code: ScopesComponent.scopeCodes.ORDERS,
+            code: Scope.ORDERS,
             enabled: false,
             eveDescription: 'Allows reading a character\'s market orders.',
             infoVisible: false,
@@ -72,7 +72,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: ['wallet'],
         },
         {
-            code: ScopesComponent.scopeCodes.ASSETS,
+            code: Scope.ASSETS,
             enabled: false,
             eveDescription: 'Allows reading of a character\'s assets.',
             infoVisible: false,
@@ -81,7 +81,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: ['assets'],
         },
         {
-            code: ScopesComponent.scopeCodes.BLUEPRINTS,
+            code: Scope.BLUEPRINTS,
             enabled: false,
             eveDescription: 'Allows reading a character\'s blueprints.',
             infoVisible: false,
@@ -90,7 +90,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: ['industry'],
         },
         {
-            code: ScopesComponent.scopeCodes.JOBS,
+            code: Scope.JOBS,
             enabled: false,
             eveDescription: 'Allows reading a character\'s industry jobs.',
             infoVisible: false,
@@ -99,7 +99,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: ['industry'],
         },
         {
-            code: ScopesComponent.scopeCodes.STRUCTURES,
+            code: Scope.STRUCTURES,
             enabled: false,
             eveDescription: 'Allows querying the location and type of structures that the character has docking access at.',
             infoVisible: false,
@@ -108,7 +108,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: ['industry'],
         },
         {
-            code: ScopesComponent.scopeCodes.SHIP_TYPE,
+            code: Scope.SHIP_TYPE,
             enabled: false,
             eveDescription: 'Allows reading of a character\'s active ship class.',
             infoVisible: false,
@@ -117,7 +117,7 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
             usagePages: [],
         },
         // {
-        //     code: ScopesComponent.scopeCodes.LOCATION,
+        //     code: Scope.LOCATION,
         //     enabled: false,
         //     eveDescription: 'Allows reading of a character\'s active ship location.',
         //     infoVisible: false,

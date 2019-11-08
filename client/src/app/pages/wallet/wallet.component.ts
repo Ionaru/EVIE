@@ -7,7 +7,7 @@ import { WalletService } from '../../data-services/wallet.service';
 import { CharacterService } from '../../models/character/character.service';
 import { CountUp } from '../../shared/count-up';
 import { DataPageComponent } from '../data-page/data-page.component';
-import { ScopesComponent } from '../scopes/scopes.component';
+import { Scope } from '../scopes/scopes.component';
 
 @Component({
     selector: 'app-wallet',
@@ -44,7 +44,7 @@ export class WalletComponent extends DataPageComponent implements OnInit {
 
     constructor(private walletService: WalletService, private journalService: WalletJournalService) {
         super();
-        this.requiredScopes = [ScopesComponent.scopeCodes.WALLET];
+        this.requiredScopes = [Scope.WALLET];
     }
 
     public ngOnInit() {
@@ -57,7 +57,7 @@ export class WalletComponent extends DataPageComponent implements OnInit {
     }
 
     public static get hasWalletScope() {
-        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.WALLET);
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.WALLET);
     }
 
     public async getBalanceData() {

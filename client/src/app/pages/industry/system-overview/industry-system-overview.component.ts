@@ -15,7 +15,7 @@ import { SystemsService } from '../../../data-services/systems.service';
 import { Character } from '../../../models/character/character.model';
 import { CharacterService } from '../../../models/character/character.service';
 import { UserService } from '../../../models/user/user.service';
-import { ScopesComponent } from '../../scopes/scopes.component';
+import { Scope } from '../../scopes/scopes.component';
 import { IBlueprints, IExtendedIndustryJobsData, IndustryComponent } from '../industry.component';
 
 interface ISystemOverviewSystem {
@@ -85,7 +85,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
             '|s|m|h|d',
             ', ');
         this.requiredScopes = [
-            ScopesComponent.scopeCodes.STRUCTURES,
+            Scope.STRUCTURES,
         ];
     }
 
@@ -183,9 +183,9 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
 
     public hasRequiredScopes(character: Character) {
         return character.hasScope(
-            ScopesComponent.scopeCodes.STRUCTURES,
-            ScopesComponent.scopeCodes.BLUEPRINTS,
-            ScopesComponent.scopeCodes.JOBS,
+            Scope.STRUCTURES,
+            Scope.BLUEPRINTS,
+            Scope.JOBS,
         );
     }
 
@@ -193,7 +193,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
 
         if (job.output_location_id > Calc.maxIntegerValue) {
             const jobOwner = this.selectedCharacters.find((character) => character.characterId === job.installer_id);
-            if (jobOwner && jobOwner.hasScope(ScopesComponent.scopeCodes.STRUCTURES)) {
+            if (jobOwner && jobOwner.hasScope(Scope.STRUCTURES)) {
                 const structure = await this.structuresService.getStructureInfo(
                     jobOwner, job.output_location_id);
                 if (structure) {
@@ -261,7 +261,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
     }
 
     public async getBlueprints(character: Character) {
-        if (character.hasScope(ScopesComponent.scopeCodes.BLUEPRINTS)) {
+        if (character.hasScope(Scope.BLUEPRINTS)) {
             const blueprintData = await this.blueprintsService.getBlueprints(character);
             const blueprints = objectsArrayToObject(blueprintData, 'item_id');
             this.blueprints = {...this.blueprints, ...blueprints};
@@ -269,7 +269,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
     }
 
     public async getIndustryJobs(character: Character) {
-        if (character.hasScope(ScopesComponent.scopeCodes.JOBS)) {
+        if (character.hasScope(Scope.JOBS)) {
             const industryJobs = await this.industryJobsService.getIndustryJobs(character);
             this.industryJobs.push(...industryJobs);
         }
