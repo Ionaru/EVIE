@@ -63,7 +63,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         super();
 
         this.selectedSortOption = localStorage.getItem('DashboardSorting') as sortOption || this.sortOptions[0];
-        this.sortInverted = Boolean(localStorage.getItem('DashboardSortingInverted')) || false;
+        this.sortInverted = localStorage.getItem('DashboardSortingInverted') === 'true';
 
         countdown.setLabels(
             '|s|m|h|d',
