@@ -4,6 +4,7 @@ import { EVE } from '@ionaru/eve-utils';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+import { environment } from '../../environments/environment';
 import { ESIRequestCache } from '../shared/esi-request-cache';
 
 @Injectable()
@@ -13,6 +14,12 @@ export class ESICachingInterceptor implements HttpInterceptor {
 
     // tslint:disable-next-line:cognitive-complexity
     public intercept(request: HttpRequest<any>, next: HttpHandler) {
+
+        if (request.url.includes(EVE.ESIURL)) {
+            request = request.clone({
+                setHeaders: {'X-User-Agent': `EVIE ${environment.VERSION}, by #Ionaru`},
+            });
+        }
 
         // We only want to cache GET ESI calls.
         if (request.method !== 'GET' || !request.url.includes(EVE.ESIURL)) {
