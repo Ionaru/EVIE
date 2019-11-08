@@ -19,6 +19,7 @@ import { AttributesService } from './data-services/attributes.service';
 import { BlueprintsService } from './data-services/blueprints.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
+import { MailService } from './data-services/mail.service';
 import { MarketService } from './data-services/market.service';
 import { NamesService } from './data-services/names.service';
 import { ShipService } from './data-services/ship.service';
@@ -51,6 +52,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
 import { IndustrySystemOverviewComponent } from './pages/industry/system-overview/industry-system-overview.component';
+import { MailComponent } from './pages/mail/mail.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
@@ -94,6 +96,7 @@ if (environment.production) {
         LoadingMessageComponent,
         AssetsComponent,
         AboutComponent,
+        MailComponent,
     ],
     entryComponents: [
         LogoutModalComponent,
@@ -120,6 +123,7 @@ if (environment.production) {
         StatusService,
         TypesService,
         ShipService,
+        MailService,
         WalletService,
         WalletJournalService,
         AttributesService,

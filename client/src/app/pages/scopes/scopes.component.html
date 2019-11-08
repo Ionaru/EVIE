@@ -31,13 +31,15 @@
                     <span class="button-label-text">{{ scope.name }}</span>
                     <span class="button-page-icons">
                         <ng-container *ngFor="let usagePage of scope.usagePages">
-                            <img class="page-image" src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/{{ usagePage }}.svg" alt="Market icon">
+                            <img class="page-image"
+                                 src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/{{ usagePage }}.svg"
+                                 alt="{{ usagePage }} icon">
                         </ng-container>
                     </span>
                 </label>
             </div>
             <button class="btn btn-secondary" (click)="scope.infoVisible = !scope.infoVisible">
-                <fa-icon [icon]="scope.infoVisible ? caretUp: caretDown"></fa-icon>
+                <fa-icon [icon]="scope.infoVisible ? caretUp : caretDown"></fa-icon>
             </button>
             <div class="info-container" *ngIf="scope.infoVisible">
                 <pre>{{ scope.code }}</pre>

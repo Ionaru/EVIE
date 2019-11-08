@@ -85,7 +85,7 @@ export class Character {
     }
 
     public get hasValidAuth() {
-        return this.accessToken && this.tokenExpiry >= new Date();
+        return Boolean(this.accessToken && this.tokenExpiry >= new Date());
     }
 
     public hasScope(...scopes: string[]) {

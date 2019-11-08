@@ -13,6 +13,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
 import { IndustrySystemOverviewComponent } from './pages/industry/system-overview/industry-system-overview.component';
+import { MailComponent } from './pages/mail/mail.component';
 import { OreComponent } from './pages/ore/ore.component';
 import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
@@ -46,6 +47,7 @@ const routes: Routes = [
     {path: 'skills', component: SkillsComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'wallet', component: WalletComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'assets', component: AssetsComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
+    {path: 'mail', component: MailComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
 
     // Admin pages
     {path: 'users', component: UsersComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},

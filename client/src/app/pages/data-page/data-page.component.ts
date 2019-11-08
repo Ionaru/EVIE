@@ -12,7 +12,15 @@ import { NavigationComponent } from '../../navigation/navigation.component';
 })
 export class DataPageComponent implements OnInit, OnDestroy {
 
+    private static hasScope(scope: string): boolean {
+        if (CharacterService.selectedCharacter) {
+            return CharacterService.selectedCharacter.hasScope(scope);
+        }
+        return false;
+    }
+
     public missingAllRequiredScopes?: boolean;
+    public missingRequiredScopes?: boolean;
 
     protected requiredScopes: string[] = [];
 
@@ -51,11 +59,7 @@ export class DataPageComponent implements OnInit, OnDestroy {
     }
 
     private checkScopes() {
-        this.missingAllRequiredScopes = !this.requiredScopes.some((scope) => {
-            if (CharacterService.selectedCharacter) {
-                return CharacterService.selectedCharacter.hasScope(scope);
-            }
-            return false;
-        });
+        this.missingAllRequiredScopes = !this.requiredScopes.some(DataPageComponent.hasScope);
+        this.missingRequiredScopes = !this.requiredScopes.every(DataPageComponent.hasScope);
     }
 }
