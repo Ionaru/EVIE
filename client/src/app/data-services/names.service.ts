@@ -64,22 +64,23 @@ export class NamesService extends BaseService {
 
     public async getNames(...ids: Array<string | number>): Promise<void> {
 
-        ids = uniquifyArray(ids);
+        const uniqueIds = uniquifyArray(ids.map((id) => id.toString()));
 
-        for (const element of ids) {
-            if (element > Calc.maxIntegerValue) {
+        for (const element of uniqueIds) {
+            const elementNumber = Number(element);
+            if (isNaN(elementNumber) || elementNumber > Calc.maxIntegerValue) {
                 throw new Error(`${element} is not a value that can get resolved to a name.`);
             }
         }
 
         // Check if all values in 'ids' are -1, if so then there's no point in calling the Names Endpoint
-        if (ids.every((element) => element === -1)) {
+        if (uniqueIds.every((element) => Number(element) === -1)) {
             return;
         }
 
-        const namesToGet: Array<string | number> = [];
+        const namesToGet: string[] = [];
 
-        for (const id of ids) {
+        for (const id of uniqueIds) {
             if (!NamesService.names[id]) {
                 namesToGet.push(id);
             }
@@ -105,7 +106,7 @@ export class NamesService extends BaseService {
         NamesService.setNames();
     }
 
-    private async getNamesFromAPI(ids: Array<string | number>): Promise<void> {
+    private async getNamesFromAPI(ids: string[]): Promise<void> {
         const url = EVE.getUniverseNamesUrl();
         const response = await this.http.post<any>(url, ids).toPromise<IUniverseNamesData>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
