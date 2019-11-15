@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { Logger, QueryRunner } from 'typeorm';
 
 import { debug } from '../index';
