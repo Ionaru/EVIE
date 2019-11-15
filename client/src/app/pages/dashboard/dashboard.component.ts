@@ -16,7 +16,7 @@ import { Character } from '../../models/character/character.model';
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
-import { ScopesComponent } from '../scopes/scopes.component';
+import { Scope } from '../scopes/scopes.component';
 import { SkillsComponent } from '../skills/skills.component';
 
 type sortOption = 'name' | 'birthday' | 'skillqueue' | 'ISK';
@@ -63,7 +63,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         super();
 
         this.selectedSortOption = localStorage.getItem('DashboardSorting') as sortOption || this.sortOptions[0];
-        this.sortInverted = Boolean(localStorage.getItem('DashboardSortingInverted')) || false;
+        this.sortInverted = localStorage.getItem('DashboardSortingInverted') === 'true';
 
         countdown.setLabels(
             '|s|m|h|d',
@@ -227,9 +227,9 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         character.balance = await this.walletService.getWalletBalance(character);
     }
 
-    public hasWalletScope = (character: Character) => character.hasScope(ScopesComponent.scopeCodes.WALLET);
-    public hasShipTypeScope = (character: Character) => character.hasScope(ScopesComponent.scopeCodes.SHIP_TYPE);
-    public hasSkillQueueScope = (character: Character) => character.hasScope(ScopesComponent.scopeCodes.SKILLQUEUE);
+    public hasWalletScope = (character: Character) => character.hasScope(Scope.WALLET);
+    public hasShipTypeScope = (character: Character) => character.hasScope(Scope.SHIP_TYPE);
+    public hasSkillQueueScope = (character: Character) => character.hasScope(Scope.SKILLQUEUE);
 
     public async getShipData(character: Character): Promise<void> {
         const shipData: { id: number, name: string } = await this.shipService.getCurrentShip(character);

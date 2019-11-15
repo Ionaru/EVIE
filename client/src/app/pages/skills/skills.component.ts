@@ -29,7 +29,7 @@ import { SkillQueueService } from '../../data-services/skillqueue.service';
 import { SkillsService } from '../../data-services/skills.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
-import { ScopesComponent } from '../scopes/scopes.component';
+import { Scope } from '../scopes/scopes.component';
 
 type skillStatus = 'training' | 'finished' | 'scheduled' | 'inactive';
 
@@ -126,7 +126,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService,
                 private skillGroupsService: SkillGroupsService, private attributesService: AttributesService) {
         super();
-        this.requiredScopes = [ScopesComponent.scopeCodes.SKILLS];
+        this.requiredScopes = [Scope.SKILLS];
     }
 
     public ngOnInit() {
@@ -158,11 +158,11 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public skillQueueLow = () => !this.skillTrainingPaused && this.skillQueueTimeLeft < Calc.day;
 
     public get hasSkillsScope() {
-        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.SKILLS);
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.SKILLS);
     }
 
     public get hasSkillQueueScope() {
-        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.SKILLQUEUE);
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.SKILLQUEUE);
     }
 
     public async getAttributes() {

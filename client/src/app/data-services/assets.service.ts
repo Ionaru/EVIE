@@ -4,14 +4,14 @@ import { generateNumbersArray } from '@ionaru/array-utils';
 import { EVE, ICharacterAssetsData, ICharacterAssetsLocationsData, ICharacterAssetsNamesData } from '@ionaru/eve-utils';
 
 import { Character } from '../models/character/character.model';
-import { ScopesComponent } from '../pages/scopes/scopes.component';
+import { Scope } from '../pages/scopes/scopes.component';
 import { BaseService } from './base.service';
 
 @Injectable()
 export class AssetsService extends BaseService {
 
     public async getAssets(character: Character): Promise<ICharacterAssetsData> {
-        BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.ASSETS, 'getAssets');
+        BaseService.confirmRequiredScope(character, Scope.ASSETS, 'getAssets');
 
         const response = await this.getAssetsPage(character, 1);
 
@@ -39,7 +39,7 @@ export class AssetsService extends BaseService {
     }
 
     public async getAssetsLocations(character: Character, items: number[]): Promise<ICharacterAssetsLocationsData> {
-        BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.ASSETS, 'getAssets');
+        BaseService.confirmRequiredScope(character, Scope.ASSETS, 'getAssets');
 
         const url = EVE.getCharacterAssetsLocationsUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});
@@ -55,7 +55,7 @@ export class AssetsService extends BaseService {
     }
 
     public async getAssetsNames(character: Character, items: number[]): Promise<ICharacterAssetsNamesData> {
-        BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.ASSETS, 'getAssets');
+        BaseService.confirmRequiredScope(character, Scope.ASSETS, 'getAssets');
 
         const url = EVE.getCharacterAssetsNamesUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});

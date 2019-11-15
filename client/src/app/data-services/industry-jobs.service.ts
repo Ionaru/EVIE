@@ -3,14 +3,14 @@ import { Injectable } from '@angular/core';
 import { EVE, ICharacterIndustryJobsData } from '@ionaru/eve-utils';
 
 import { Character } from '../models/character/character.model';
-import { ScopesComponent } from '../pages/scopes/scopes.component';
+import { Scope } from '../pages/scopes/scopes.component';
 import { BaseService } from './base.service';
 
 @Injectable()
 export class IndustryJobsService extends BaseService {
 
     public async getIndustryJobs(character: Character): Promise<ICharacterIndustryJobsData> {
-        BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.JOBS, 'getIndustryJobs');
+        BaseService.confirmRequiredScope(character, Scope.JOBS, 'getIndustryJobs');
 
         const url = EVE.getCharacterIndustryJobsUrl(character.characterId);
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});

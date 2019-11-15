@@ -21,7 +21,7 @@ import { Calc } from '../../../shared/calc.helper';
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
-import { ScopesComponent } from '../scopes/scopes.component';
+import { Scope } from '../scopes/scopes.component';
 
 export interface IExtendedIndustryJobsData extends ICharacterIndustryJobsDataUnit {
     activityIcon?: IconDefinition;
@@ -70,21 +70,21 @@ export class IndustryComponent extends DataPageComponent {
     constructor() {
         super();
         this.requiredScopes = [
-            ScopesComponent.scopeCodes.JOBS,
-            ScopesComponent.scopeCodes.BLUEPRINTS,
+            Scope.JOBS,
+            Scope.BLUEPRINTS,
         ];
     }
 
     protected static get hasIndustryJobsScope() {
-        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.JOBS);
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.JOBS);
     }
 
     protected static get hasStructuresScope() {
-        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.STRUCTURES);
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.STRUCTURES);
     }
 
     protected static get hasBlueprintScope() {
-        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(ScopesComponent.scopeCodes.BLUEPRINTS);
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.BLUEPRINTS);
     }
 
     public getIndustryActivityName(activity: number) {

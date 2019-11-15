@@ -3,14 +3,14 @@ import { Injectable } from '@angular/core';
 import { EVE, IUniverseStructureData } from '@ionaru/eve-utils';
 
 import { Character } from '../models/character/character.model';
-import { ScopesComponent } from '../pages/scopes/scopes.component';
+import { Scope } from '../pages/scopes/scopes.component';
 import { BaseService } from './base.service';
 
 @Injectable()
 export class StructuresService extends BaseService {
 
     public async getStructureInfo(character: Character, structureId: number): Promise<IUniverseStructureData | void> {
-        BaseService.confirmRequiredScope(character, ScopesComponent.scopeCodes.STRUCTURES, 'getStructureInfo');
+        BaseService.confirmRequiredScope(character, Scope.STRUCTURES, 'getStructureInfo');
 
         const url = EVE.getUniverseStructureUrl(structureId);
         const headers = new HttpHeaders({Authorization: character.getAuthorizationHeader()});

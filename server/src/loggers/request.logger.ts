@@ -1,4 +1,4 @@
-import chalk, { Chalk, ColorSupport } from 'chalk';
+import * as chalk from 'chalk';
 import { NextFunction, Request, Response } from 'express';
 import * as onFinished from 'on-finished';
 
@@ -63,7 +63,7 @@ export class RequestLogger {
         };
     }
 
-    public static getStatusColor(statusCode: number): Chalk & { supportsColor: ColorSupport } {
+    public static getStatusColor(statusCode: number): chalk.Chalk {
         if (statusCode >= 500) {
             return chalk.red;
         } else if (statusCode >= 400) {
