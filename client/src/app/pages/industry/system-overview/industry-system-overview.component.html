@@ -5,7 +5,7 @@
 <ng-container *ngIf="!missingAllRequiredScopes">
     <div *ngFor="let character of allCharacters" class="d-flex justify-content-between character-adder">
         <div class="character-adder-name">
-            <img src="https://imageserver.eveonline.com/Character/{{ character.characterId }}_32.jpg"
+            <img src="https://images.evetech.net/characters/{{ character.characterId }}/portrait?size=32"
                  alt="{{ character.name }}-avatar">
             &nbsp;
             <strong>{{ character.name }}</strong>
@@ -82,7 +82,7 @@
 
                             <td class="text-center">
                                 <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1}"
-                                     src="https://imageserver.eveonline.com/Type/{{ job.blueprint_type_id }}_32.png" alt="bp">
+                                     src="https://images.evetech.net/types/{{ job.blueprint_type_id }}/icon?size=32" alt="bp">
                             </td>
                             <td class="text-center"><fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon></td>
                             <td class="text-center"><fa-icon [fixedWidth]="true" [icon]="job.activityIcon"></fa-icon></td>
@@ -103,7 +103,7 @@
 
                             <td class="text-center">
                                 <img [ngClass]="{copy: [IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)}"
-                                     src="https://imageserver.eveonline.com/Type/{{ job.product_type_id }}_32.png" alt="bp">
+                                     src="https://images.evetech.net/types/{{ job.product_type_id }}/icon?size=32" alt="bp">
                             </td>
 
                             <td>{{job.productName}}</td>

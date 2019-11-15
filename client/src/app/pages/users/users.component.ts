@@ -18,7 +18,7 @@ export class UsersComponent implements OnInit {
         title: 'User ID',
     }, {
         attribute: 'name',
-        prefixFunction: (data) => `<img src="https://imageserver.eveonline.com/Character/${data.characterId}_32.jpg" alt="${data.name}"> `,
+        prefixFunction: (data) => `<img src="https://images.evetech.net/characters/${data.characterId}/portrait?size=32" alt="${data.name}"> `,
         sort: true,
     }, {
         attribute: 'characterId',
