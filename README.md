@@ -53,7 +53,16 @@ Right now the features are limited, but new pages are being built and I have a l
 ---
 
 ### Configuration
-EVIE requires some set-up to work.
+EVIE requires some set-up to work, this information is for developers.
+
+#### EVE Online developer applications
+<https://developers.eveonline.com/applications>
+EVIE works with two EVE Online developer applications, one for logging in, and one for character auth.
+This is done so users can decide what scopes to grant for each of their characters.
+
+- SSO Login (Authentication Only)
+- SSO Auth (Authentication & API Access)
+    - Give this all available scopes, only a subset will be used for EVIE.
 
 #### Config files
 - `server/config/main.ini`
@@ -61,14 +70,6 @@ EVIE requires some set-up to work.
     - `session_key` (string): Session key used for encryption.
     - `session_secret` (string): Session secret used for encryption.
     - `server_port` (integer): The port the server should run on.
-
-- `server/config/sso.ini`
-    - `SSO_login_client_ID` (string): EVE Online SSO ID to use for login.
-    - `SSO_login_secret` (string): EVE Online SSO secret to use for login.
-    - `SSO_login_redirect_uri` (string): EVE Online SSO redirect URI to use for login.
-    - `client_ID` (string): EVE Online SSO ID to use for character auth and data fetching.
-    - `secret_key` (string): EVE Online SSO secret to use for character auth and data fetching.
-    - `redirect_uri` (string): EVE Online SSO redirect URI to use for character auth and data fetching.
 
 #### Environment variables
 - `DEBUG`: Parameters for the debug package. See <https://www.npmjs.com/package/debug> for more information.
@@ -87,3 +88,9 @@ EVIE requires some set-up to work.
 - `EVIE_DB_SSL_CERT` (optional): Location of the client certificate **in the container** to use for a secure database connection.
 - `EVIE_DB_SSL_KEY` (optional): Location of the client key **in the container** to use for a secure database connection.
 - `EVIE_DB_SSL_REJECT` (boolean): Whether to reject an insecure connection to the database.
+- `EVIE_SSO_LOGIN_CLIENT`: Client ID of the SSO application that handles login.
+- `EVIE_SSO_LOGIN_SECRET`: Secret Key of the SSO application that handles login.
+- `EVIE_SSO_LOGIN_CALLBACK`: Callback URL of the SSO application that handles login.
+- `EVIE_SSO_AUTH_CLIENT`: Client ID of the SSO application that handles character auth.
+- `EVIE_SSO_AUTH_SECRET`: Secret Key of the SSO application that handles character auth.
+- `EVIE_SSO_AUTH_CALLBACK`: Callback URL of the SSO application that handles character auth.

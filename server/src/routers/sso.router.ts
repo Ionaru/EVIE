@@ -8,7 +8,7 @@ import * as jwt from 'jsonwebtoken';
 import { URLSearchParams } from 'url';
 
 import { SocketServer } from '../controllers/socket.controller';
-import { axiosInstance, config, esiService } from '../index';
+import { axiosInstance, esiService } from '../index';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
 import { BaseRouter } from './base.router';
@@ -30,9 +30,8 @@ export class SSORouter extends BaseRouter {
         request.session!.state = generateRandomString(15);
         const args = [
             'response_type=code',
-            'redirect_uri=' + config.getProperty('SSO_login_redirect_uri'),
-            'client_id=' + config.getProperty('SSO_login_client_ID'),
-            'scope=', // TODO: Remove when https://github.com/ccpgames/sso-issues/issues/40 is solved.
+            'redirect_uri=' + process.env.EVIE_SSO_LOGIN_CALLBACK,
+            'client_id=' + process.env.EVIE_SSO_LOGIN_CLIENT,
             'state=' + request.session!.state,
         ];
         const authorizeURL = protocol + oauthHost + authorizePath + args.join('&');
@@ -128,8 +127,8 @@ export class SSORouter extends BaseRouter {
 
         const args = [
             'response_type=code',
-            'redirect_uri=' + config.getProperty('redirect_uri'),
-            'client_id=' + config.getProperty('client_ID'),
+            'redirect_uri=' + process.env.EVIE_SSO_AUTH_CALLBACK,
+            'client_id=' + process.env.EVIE_SSO_AUTH_CLIENT,
             'scope=' + request.query.scopes,
             'state=' + request.session!.state,
         ];
@@ -353,14 +352,14 @@ export class SSORouter extends BaseRouter {
      * Get a base64 string containing the client ID and secret key for SSO login.
      */
     private static getSSOLoginString() {
-        return Buffer.from(`${config.getProperty('SSO_login_client_ID')}:${config.getProperty('SSO_login_secret')}`).toString('base64');
+        return Buffer.from(`${process.env.EVIE_SSO_LOGIN_CLIENT}:${process.env.EVIE_SSO_LOGIN_SECRET}`).toString('base64');
     }
 
     /**
      * Get a base64 string containing the client ID and secret key for SSO auth.
      */
     private static getSSOAuthString() {
-        return Buffer.from(`${config.getProperty('client_ID')}:${config.getProperty('secret_key')}`).toString('base64');
+        return Buffer.from(`${process.env.EVIE_SSO_AUTH_CLIENT}:${process.env.EVIE_SSO_AUTH_SECRET}`).toString('base64');
     }
 
     private static extractJWTValues(token: IJWTToken):
@@ -374,7 +373,7 @@ export class SSORouter extends BaseRouter {
     }
 
     private static isJWTValid(token: IJWTToken): boolean {
-        const clientIds = [config.getProperty('SSO_login_client_ID'), config.getProperty('client_ID')];
+        const clientIds = [process.env.EVIE_SSO_LOGIN_CLIENT, process.env.EVIE_SSO_AUTH_CLIENT];
         if (!clientIds.includes(token.azp)) {
             // Authorized party is not correct.
             process.emitWarning('Authorized party is not correct.', `Expected: ${clientIds}, got: ${token.azp}`);
