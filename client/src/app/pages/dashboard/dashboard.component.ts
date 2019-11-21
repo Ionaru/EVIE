@@ -221,6 +221,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         this.deleteInProgress = true;
         await this.userService.deleteCharacter(character);
         this.deleteInProgress = false;
+        this.softReload();
     }
 
     public async getCharacterWalletBalance(character: Character) {
