@@ -209,7 +209,7 @@ export class SSORouter extends BaseRouter {
         character.tokenExpiry = new Date(Date.now() + (authResponse.data.expires_in * 1000));
         character.name = characterName;
         character.characterId = characterID;
-        character.scopes = characterScopes.join(' ');
+        character.scopes = characterScopes ? characterScopes.join(' ') : '';
         character.ownerHash = characterOwnerHash;
         character.user = user;
 

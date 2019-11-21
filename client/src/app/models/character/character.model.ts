@@ -54,7 +54,7 @@ export class Character {
         // Decode access token for information
         const tokenData = jwt<IJWTToken>(data.accessToken);
         this.tokenExpiry = new Date(Calc.secondsToMilliseconds(tokenData.exp));
-        this.scopes = typeof tokenData.scp === 'string' ? [tokenData.scp] : tokenData.scp;
+        this.scopes = (typeof tokenData.scp === 'string' ? [tokenData.scp] : tokenData.scp) || [];
         this.ownerHash = tokenData.owner;
         this.name = tokenData.name;
         this.characterId = Number(tokenData.sub.split(':')[2]);
