@@ -66,28 +66,26 @@ This is done so users can decide what scopes to grant for each of their characte
 
 #### Environment variables
 - `DEBUG`: Parameters for the debug package. See <https://www.npmjs.com/package/debug> for more information.
-- `EVIE_FA_TOKEN`: FontAwesome 5 token.
-- `EVIE_ENV`: Configuration to pass to Angular for building.
 - `EVIE_CLIENT_PORT`: The port the client should run on.
-- `EVIE_SERVER_PORT`: The port the server should run on.
-- `EVIE_CONFIG_VOLUME`: Docker volume for the configuration folder.
 - `EVIE_DATA_VOLUME`: Docker volume for the data folder.`
-- `EVIE_DB_NAME`: Name of the database to connect to.
 - `EVIE_DB_HOST`: Host of the database to connect to.
-- `EVIE_DB_PORT`: Port of the database to connect to.
-- `EVIE_DB_USER`: Username to use in the database connection.
+- `EVIE_DB_NAME`: Name of the database to connect to.
 - `EVIE_DB_PASS`: Password to use in the database connection.
+- `EVIE_DB_PORT`: Port of the database to connect to.
 - `EVIE_DB_SSL_CA` (optional): Location of the CA certificate **in the container** to use for a secure database connection.
 - `EVIE_DB_SSL_CERT` (optional): Location of the client certificate **in the container** to use for a secure database connection.
 - `EVIE_DB_SSL_KEY` (optional): Location of the client key **in the container** to use for a secure database connection.
 - `EVIE_DB_SSL_REJECT` (boolean): Whether to reject an insecure connection to the database.
-- `EVIE_SSO_LOGIN_CLIENT`: Client ID of the SSO application that handles login.
-- `EVIE_SSO_LOGIN_SECRET`: Secret Key of the SSO application that handles login.
-- `EVIE_SSO_LOGIN_CALLBACK`: Callback URL of the SSO application that handles login.
-- `EVIE_SSO_AUTH_CLIENT`: Client ID of the SSO application that handles character auth.
-- `EVIE_SSO_AUTH_SECRET`: Secret Key of the SSO application that handles character auth.
-- `EVIE_SSO_AUTH_CALLBACK`: Callback URL of the SSO application that handles character auth.
-- `EVIE_SESSION_SECURE` (boolean): Serve cookies over a secure connection only? Disable for local development.
+- `EVIE_DB_USER`: Username to use in the database connection.
+- `EVIE_ENV`: Configuration to pass to Angular for building.
+- `EVIE_FA_TOKEN`: FontAwesome 5 token.
+- `EVIE_SERVER_PORT`: The port the server should run on.
 - `EVIE_SESSION_KEY`: Name of the session ID cookie.
 - `EVIE_SESSION_SECRET`: Secret used to sign the session ID cookie.
-- `EVIE_SERVER_PORT`: The port the server should run on.
+- `EVIE_SESSION_SECURE` (boolean): Serve cookies over a secure connection only? Disable for local development.
+- `EVIE_SSO_AUTH_CALLBACK`: Callback URL of the SSO application that handles character auth.
+- `EVIE_SSO_AUTH_CLIENT`: Client ID of the SSO application that handles character auth.
+- `EVIE_SSO_AUTH_SECRET`: Secret Key of the SSO application that handles character auth.
+- `EVIE_SSO_LOGIN_CALLBACK`: Callback URL of the SSO application that handles login.
+- `EVIE_SSO_LOGIN_CLIENT`: Client ID of the SSO application that handles login.
+- `EVIE_SSO_LOGIN_SECRET`: Secret Key of the SSO application that handles login.

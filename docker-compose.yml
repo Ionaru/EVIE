@@ -5,8 +5,8 @@ services:
         build:
             context: ./client
             args:
-                - EVIE_FA_TOKEN
                 - EVIE_ENV
+                - EVIE_FA_TOKEN
         restart: unless-stopped
         ports:
             - "${EVIE_CLIENT_PORT:-80}:80"
@@ -17,32 +17,30 @@ services:
         build: ./server
         environment:
             - DEBUG
-            - EVIE_DB_NAME
             - EVIE_DB_HOST
-            - EVIE_DB_PORT
-            - EVIE_DB_USER
+            - EVIE_DB_NAME
             - EVIE_DB_PASS
+            - EVIE_DB_PORT
             - EVIE_DB_SSL_CA
             - EVIE_DB_SSL_CERT
             - EVIE_DB_SSL_KEY
             - EVIE_DB_SSL_REJECT
-            - EVIE_SSO_LOGIN_CLIENT
-            - EVIE_SSO_LOGIN_SECRET
-            - EVIE_SSO_LOGIN_CALLBACK
-            - EVIE_SSO_AUTH_CLIENT
-            - EVIE_SSO_AUTH_SECRET
-            - EVIE_SSO_AUTH_CALLBACK
-            - EVIE_SESSION_SECURE
+            - EVIE_DB_USER
+            - EVIE_SERVER_PORT
             - EVIE_SESSION_KEY
             - EVIE_SESSION_SECRET
-            - EVIE_SERVER_PORT
+            - EVIE_SESSION_SECURE
+            - EVIE_SSO_AUTH_CALLBACK
+            - EVIE_SSO_AUTH_CLIENT
+            - EVIE_SSO_AUTH_SECRET
+            - EVIE_SSO_LOGIN_CALLBACK
+            - EVIE_SSO_LOGIN_CLIENT
+            - EVIE_SSO_LOGIN_SECRET
         ports:
             - "${EVIE_SERVER_PORT:-3731}"
         restart: unless-stopped
         volumes:
-            - ${EVIE_CONFIG_VOLUME:-config-volume}:/app/config
             - ${EVIE_DATA_VOLUME:-data-volume}:/app/data
 
 volumes:
-    config-volume:
     data-volume:
