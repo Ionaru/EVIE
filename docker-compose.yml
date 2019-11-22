@@ -35,6 +35,7 @@ services:
             - EVIE_SESSION_SECURE
             - EVIE_SESSION_KEY
             - EVIE_SESSION_SECRET
+            - EVIE_SERVER_PORT
         ports:
             - "${EVIE_SERVER_PORT:-3731}"
         restart: unless-stopped
