@@ -26,6 +26,15 @@ services:
             - EVIE_DB_SSL_CERT
             - EVIE_DB_SSL_KEY
             - EVIE_DB_SSL_REJECT
+            - EVIE_SSO_LOGIN_CLIENT
+            - EVIE_SSO_LOGIN_SECRET
+            - EVIE_SSO_LOGIN_CALLBACK
+            - EVIE_SSO_AUTH_CLIENT
+            - EVIE_SSO_AUTH_SECRET
+            - EVIE_SSO_AUTH_CALLBACK
+            - EVIE_SESSION_SECURE
+            - EVIE_SESSION_KEY
+            - EVIE_SESSION_SECRET
         ports:
             - "${EVIE_SERVER_PORT:-3731}"
         restart: unless-stopped
