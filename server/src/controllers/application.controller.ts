@@ -9,7 +9,7 @@ import * as MySQLStore from 'express-mysql-session';
 import * as es from 'express-session';
 import * as path from 'path';
 
-import { config, debug, esiCache } from '../index';
+import { debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
 import { APIRouter } from '../routers/api.router';
 import { DataRouter } from '../routers/data.router';
@@ -74,17 +74,18 @@ export class Application {
         }, db.pool) as any;
 
         // Configure Session Parser
+        const secureCookies = process.env.EVIE_SESSION_SECURE ? process.env.EVIE_SESSION_SECURE.toLowerCase() === 'true' : true;
         this.sessionParser = es({
             cookie: {
                 httpOnly: true,
                 maxAge: 6 * 60 * 60 * 1000, // 6 hours
-                secure: config.getProperty('secure_only_cookies', true) as boolean,
+                secure: secureCookies,
             },
-            name: config.getProperty('session_key') as string,
+            name: process.env.EVIE_SESSION_KEY,
             resave: false,
             rolling: true,
             saveUninitialized: true,
-            secret: config.getProperty('session_secret') as string,
+            secret: process.env.EVIE_SESSION_SECRET as string,
             store: process.env.NODE_ENV === 'production' ? this.sessionStore : undefined,
         });
 
@@ -112,7 +113,7 @@ export class Application {
         debug('Express configuration set');
         debug('App startup done');
 
-        const serverPort = config.getProperty('server_port');
+        const serverPort = process.env.EVIE_SERVER_PORT;
         this.webServer = new WebServer(expressApplication, Number(serverPort));
 
         this.socketServer = new SocketServer(this.webServer, this.sessionParser);

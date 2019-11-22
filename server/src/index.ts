@@ -2,7 +2,6 @@
 import Debug from 'debug';
 export let debug = Debug('evie');
 
-import { Configurator } from '@ionaru/configurator';
 import { CacheController, IDefaultExpireTimes, PublicESIService } from '@ionaru/esi-service';
 import { EVE } from '@ionaru/eve-utils';
 import * as Sentry from '@sentry/node';
@@ -14,8 +13,6 @@ import * as sourceMapSupport from 'source-map-support';
 import { version } from '../package.json';
 import { Application } from './controllers/application.controller';
 
-export let configPath = 'config';
-export let config: Configurator;
 export let esiService: PublicESIService;
 export let esiCache: CacheController;
 export let axiosInstance: AxiosInstance;
@@ -30,10 +27,6 @@ function start() {
         enabled: process.env.NODE_ENV === 'production',
         release: `evie-server@${version}`,
     });
-
-    debug('Loading configuration');
-    config = new Configurator(configPath);
-    config.addConfigFiles('main');
 
     debug('Creating axios instance');
     axiosInstance = axios.create({

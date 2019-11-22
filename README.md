@@ -64,13 +64,6 @@ This is done so users can decide what scopes to grant for each of their characte
 - SSO Auth (Authentication & API Access)
     - Give this all available scopes, only a subset will be used for EVIE.
 
-#### Config files
-- `server/config/main.ini`
-    - `secure_only_cookies` (boolean): Should we use cookies over a secure connection only? Disable for local development.
-    - `session_key` (string): Session key used for encryption.
-    - `session_secret` (string): Session secret used for encryption.
-    - `server_port` (integer): The port the server should run on.
-
 #### Environment variables
 - `DEBUG`: Parameters for the debug package. See <https://www.npmjs.com/package/debug> for more information.
 - `EVIE_FA_TOKEN`: FontAwesome 5 token.
@@ -94,3 +87,7 @@ This is done so users can decide what scopes to grant for each of their characte
 - `EVIE_SSO_AUTH_CLIENT`: Client ID of the SSO application that handles character auth.
 - `EVIE_SSO_AUTH_SECRET`: Secret Key of the SSO application that handles character auth.
 - `EVIE_SSO_AUTH_CALLBACK`: Callback URL of the SSO application that handles character auth.
+- `EVIE_SESSION_SECURE` (boolean): Serve cookies over a secure connection only? Disable for local development.
+- `EVIE_SESSION_KEY`: Name of the session ID cookie.
+- `EVIE_SESSION_SECRET`: Secret used to sign the session ID cookie.
+- `EVIE_SERVER_PORT`: The port the server should run on.

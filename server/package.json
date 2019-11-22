@@ -22,7 +22,6 @@
         "preversion": "npm run test"
     },
     "dependencies": {
-        "@ionaru/configurator": "^2.0.0",
         "@ionaru/esi-service": "^3.2.2",
         "@ionaru/eve-utils": "^4.4.0",
         "@ionaru/random-string": "^1.1.1",
