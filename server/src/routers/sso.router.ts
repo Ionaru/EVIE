@@ -375,19 +375,16 @@ export class SSORouter extends BaseRouter {
     private static isJWTValid(token: IJWTToken): boolean {
         const clientIds = [process.env.EVIE_SSO_LOGIN_CLIENT, process.env.EVIE_SSO_AUTH_CLIENT];
         if (!clientIds.includes(token.azp)) {
-            // Authorized party is not correct.
             process.emitWarning('Authorized party is not correct.', `Expected: ${clientIds}, got: ${token.azp}`);
             return false;
         }
 
         if (![oauthHost, protocol + oauthHost].includes(token.iss)) {
-            // Token issuer is incorrect.
             process.emitWarning('Unknown token issuer.', `Expected: '${oauthHost}' or '${protocol + oauthHost}', got: '${token.iss}'`);
             return false;
         }
 
         if (Date.now() > (token.exp * 1000)) {
-            // Check if token is still valid.
             process.emitWarning('Token is expired.', `Expiry was ${((token.exp * 1000) - Date.now()) / 1000}s ago.`);
             return false;
         }

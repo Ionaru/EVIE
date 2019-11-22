@@ -46,7 +46,7 @@ export class BaseRouter {
     }
 
     @BaseRouter.requestDecorator(BaseRouter.checkLogin)
-    public static async checkAdmin(request: Request, response: Response, nextFunction: any) {
+    public static async checkAdmin(request: Request, response: Response, nextFunction: NextFunction) {
         if (process.env.NODE_ENV !== 'production') {
             return nextFunction;
         }
@@ -62,7 +62,7 @@ export class BaseRouter {
         return nextFunction;
     }
 
-    public static checkAuthorizedClient(request: Request, response: Response, nextFunction: any) {
+    public static checkAuthorizedClient(request: Request, response: Response, nextFunction: NextFunction) {
 
         if (process.env.NODE_ENV !== 'production') {
             // Allow all clients when running in debug mode, useful for working with Postman to test the API.
@@ -99,22 +99,22 @@ export class BaseRouter {
         return nextFunction;
     }
 
-    public static checkBodyParameters(request: Request, response: Response, _nextFunction: any, _params: string[]) {
-        const missingParameters = _params.filter((param) => !Object.keys(request.body).includes(param));
+    public static checkBodyParameters(request: Request, response: Response, nextFunction: NextFunction, params: string[]) {
+        const missingParameters = params.filter((param) => !Object.keys(request.body).includes(param));
         if (missingParameters.length) {
             BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters', missingParameters);
             return;
         }
-        return _nextFunction;
+        return nextFunction;
     }
 
-    public static checkQueryParameters(request: Request, response: Response, _nextFunction: any, _params: string[]) {
-        const missingParameters = _params.filter((param) => !Object.keys(request.query).includes(param));
+    public static checkQueryParameters(request: Request, response: Response, nextFunction: NextFunction, params: string[]) {
+        const missingParameters = params.filter((param) => !Object.keys(request.query).includes(param));
         if (missingParameters.length) {
             BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters', missingParameters);
             return;
         }
-        return _nextFunction;
+        return nextFunction;
     }
 
     public static requestDecorator(func: (x: Request, y: Response, z: any, a?: any) => any, ...extraArgs: any[]) {
