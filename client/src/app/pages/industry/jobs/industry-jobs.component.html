@@ -9,14 +9,11 @@
         <fa-icon [ngbTooltip]="getIndustryActivityName(job.activity_id)" placement="right"
                  [icon]="getIconForIndustryActivity(job.activity_id)"></fa-icon>
     </h4>
-    <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1}"
-         src="https://images.evetech.net/types/{{ job.blueprint_type_id }}/icon?size=64" alt="bp">
-    "https://images.evetech.net/types/{{ job.blueprint_type_id }}/icon?size=64"
+    <img src="https://images.evetech.net/types/{{ job.blueprint_type_id }}/{{job.inputImageType}}?size=64" alt="bp">
     <h4 class="icon-container">
         <fa-icon [icon]="arrowRight"></fa-icon>
     </h4>
-    <img [ngClass]="{copy: [IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)}"
-         src="https://images.evetech.net/types/{{ job.product_type_id }}/icon?size=64" alt="bp">
+    <img src="https://images.evetech.net/types/{{ job.product_type_id }}/{{job.outputImageType}}?size=64" alt="bp">
 
     <div class="icon-container">
         <h4 *ngIf="![IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)">

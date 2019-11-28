@@ -292,6 +292,8 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
 
             for (const job of this.industryJobs) {
 
+                this.setImageTypes(this.blueprints, job);
+
                 const location = await this.getLocation(job);
                 if (!location) {
                     continue;

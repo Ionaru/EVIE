@@ -81,8 +81,7 @@
                             </td>
 
                             <td class="text-center">
-                                <img [ngClass]="{copy: blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1}"
-                                     src="https://images.evetech.net/types/{{ job.blueprint_type_id }}/icon?size=32" alt="bp">
+                                <img src="https://images.evetech.net/types/{{ job.blueprint_type_id }}/{{job.inputImageType}}?size=32" alt="bp">
                             </td>
                             <td class="text-center"><fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon></td>
                             <td class="text-center"><fa-icon [fixedWidth]="true" [icon]="job.activityIcon"></fa-icon></td>
@@ -102,8 +101,7 @@
                             <td class="text-center"><fa-icon [fixedWidth]="true" [icon]="arrowRight"></fa-icon></td>
 
                             <td class="text-center">
-                                <img [ngClass]="{copy: [IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)}"
-                                     src="https://images.evetech.net/types/{{ job.product_type_id }}/icon?size=32" alt="bp">
+                                <img src="https://images.evetech.net/types/{{ job.product_type_id }}/{{job.outputImageType}}?size=32" alt="bp">
                             </td>
 
                             <td>{{job.productName}}</td>

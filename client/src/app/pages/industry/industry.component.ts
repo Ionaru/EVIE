@@ -7,7 +7,8 @@ import {
     faGem,
     faHourglass,
     faMicroscope,
-    faRepeat, faSpinnerThird,
+    faRepeat,
+    faSpinnerThird,
     faTrash,
     faUser,
     faUserPlus,
@@ -33,6 +34,8 @@ export interface IExtendedIndustryJobsData extends ICharacterIndustryJobsDataUni
     locationType?: string;
     locationSystem?: number;
     installerName?: string;
+    inputImageType?: 'bp' | 'bpc';
+    outputImageType?: 'bp' | 'bpc' | 'icon';
 }
 
 export interface IBlueprints {
@@ -148,5 +151,18 @@ export class IndustryComponent extends DataPageComponent {
             return installer.name;
         }
         return 'Unknown character';
+    }
+
+    public setImageTypes(blueprints: IBlueprints, job: IExtendedIndustryJobsData) {
+        // tslint:disable-next-line:no-non-null-assertion
+        job.inputImageType = blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1 ? 'bpc' : 'bp';
+
+        if ([IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)) {
+            job.outputImageType = 'bpc';
+        } else if ([IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)) {
+            job.outputImageType = 'bp';
+        } else {
+            job.outputImageType = 'icon';
+        }
     }
 }

@@ -78,6 +78,7 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
 
             this.setProductNames(this.industryJobs).then();
             this.getLocationNames(this.industryJobs).then();
+            this.industryJobs.forEach((job) => this.setImageTypes(this.blueprints, job));
         }
     }
 
