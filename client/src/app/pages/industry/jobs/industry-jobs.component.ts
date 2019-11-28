@@ -58,28 +58,32 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
     }
 
     public async getIndustryJobs() {
+        let industryJobs: IExtendedIndustryJobsData[] = [];
+
         if (CharacterService.selectedCharacter && IndustryJobsComponent.hasBlueprintScope) {
             const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
             this.blueprints = objectsArrayToObject(blueprintData, 'item_id');
         }
 
         if (CharacterService.selectedCharacter && IndustryJobsComponent.hasIndustryJobsScope) {
-            this.industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
+            industryJobs = await this.industryJobsService.getIndustryJobs(CharacterService.selectedCharacter);
         }
 
-        if (this.industryJobs) {
+        if (industryJobs) {
 
             // Get ME / TE for BP
 
-            this.startIndustryJobsTimers(this.industryJobs);
+            this.startIndustryJobsTimers(industryJobs);
 
-            sortArrayByObjectProperty(this.industryJobs, 'job_id', true);
-            sortArrayByObjectProperty(this.industryJobs, 'timeLeft');
+            sortArrayByObjectProperty(industryJobs, 'job_id', true);
+            sortArrayByObjectProperty(industryJobs, 'timeLeft');
 
-            this.setProductNames(this.industryJobs).then();
-            this.getLocationNames(this.industryJobs).then();
-            this.industryJobs.forEach((job) => this.setImageTypes(this.blueprints, job));
+            this.setProductNames(industryJobs).then();
+            this.getLocationNames(industryJobs).then();
+            industryJobs.forEach((job) => this.setImageTypes(this.blueprints, job));
         }
+
+        this.industryJobs = industryJobs;
     }
 
     public async setProductNames(industryJobs: IExtendedIndustryJobsData[]) {
