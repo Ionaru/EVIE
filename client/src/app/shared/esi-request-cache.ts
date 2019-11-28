@@ -1,4 +1,5 @@
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 interface ICacheData {
     data: any;
@@ -6,6 +7,7 @@ interface ICacheData {
     pages?: string;
 }
 
+@Injectable()
 export class ESIRequestCache {
 
     public static get(identifier: string): HttpResponse<any> | void {

@@ -15,14 +15,15 @@
     },
     "private": true,
     "dependencies": {
-        "@angular/animations": "^8.2.14",
-        "@angular/common": "^8.2.14",
-        "@angular/compiler": "^8.2.14",
-        "@angular/core": "^8.2.14",
-        "@angular/forms": "^8.2.14",
-        "@angular/platform-browser": "^8.2.14",
-        "@angular/platform-browser-dynamic": "^8.2.14",
-        "@angular/router": "^8.2.14",
+        "@angular/animations": "^9.0.0-rc.4",
+        "@angular/common": "^9.0.0-rc.4",
+        "@angular/compiler": "^9.0.0-rc.4",
+        "@angular/core": "^9.0.0-rc.4",
+        "@angular/forms": "^9.0.0-rc.4",
+        "@angular/localize": "^9.0.0-rc.4",
+        "@angular/platform-browser": "^9.0.0-rc.4",
+        "@angular/platform-browser-dynamic": "^9.0.0-rc.4",
+        "@angular/router": "^9.0.0-rc.4",
         "@fortawesome/angular-fontawesome": "^0.5.0",
         "@fortawesome/fontawesome-svg-core": "^1.2.25",
         "@fortawesome/pro-regular-svg-icons": "^5.11.2",
@@ -38,21 +39,22 @@
         "jwt-decode": "^2.2.0",
         "rxjs": "^6.5.3",
         "socket.io-client": "^2.3.0",
-        "zone.js": "^0.10.2"
+        "tslib": "^1.10.0",
+        "zone.js": "~0.10.2"
     },
     "devDependencies": {
-        "@angular-devkit/build-angular": "^0.803.19",
-        "@angular/cli": "^8.3.19",
-        "@angular/compiler-cli": "^8.2.14",
-        "@angular/language-service": "^8.2.14",
+        "@angular-devkit/build-angular": "^0.900.0-rc.4",
+        "@angular/cli": "^9.0.0-rc.4",
+        "@angular/compiler-cli": "^9.0.0-rc.4",
+        "@angular/language-service": "^9.0.0-rc.4",
         "@types/countdown": "0.0.7",
         "@types/jwt-decode": "^2.2.1",
         "@types/socket.io-client": "^1.4.32",
-        "codelyzer": "^5.2.0",
+        "codelyzer": "^5.1.2",
         "ts-node": "^8.5.2",
         "tslint": "^5.20.1",
         "tslint-angular": "^3.0.2",
         "tslint-sonarts": "^1.9.0",
-        "typescript": "~3.5.3"
+        "typescript": "^3.7.2"
     }
 }
