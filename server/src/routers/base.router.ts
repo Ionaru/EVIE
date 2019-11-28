@@ -154,7 +154,7 @@ export class BaseRouter {
             if (!response.route) {
                 response.route = [];
             }
-            response.route.push(this.constructor.name);
+            response.route.push(`${this.constructor.name}:${routeFunction.name}`);
             Promise.resolve(routeFunction(request, response, next)).catch(next);
         };
     }

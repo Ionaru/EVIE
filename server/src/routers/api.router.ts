@@ -21,7 +21,7 @@ export class APIRouter extends BaseRouter {
         response.setHeader('x-evie-token', request.session!.token);
 
         if (!request.session!.user.id) {
-            return BaseRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
+            return APIRouter.sendSuccessResponse(response);
         }
 
         const user: User | undefined = await User.doQuery()
@@ -32,7 +32,7 @@ export class APIRouter extends BaseRouter {
         if (!user) {
             // No user found that matches the ID in the session.
             delete request.session!.user.id;
-            return APIRouter.sendResponse(response, httpStatus.OK, 'NotLoggedIn');
+            return APIRouter.sendSuccessResponse(response);
         }
 
         user.timesLogin++;

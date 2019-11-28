@@ -41,7 +41,7 @@ export class SSORouter extends BaseRouter {
     }
 
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
-    @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'state')
+    @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
     private static async SSOLoginCallback(request: Request, response: Response): Promise<Response> {
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
@@ -104,7 +104,7 @@ export class SSORouter extends BaseRouter {
      * Params:
      *  scopes <optional>: A space-separated list of scope codes.
      */
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @SSORouter.requestDecorator(SSORouter.checkLogin)
     private static async SSOAuth(request: Request, response: Response): Promise<Response> {
 
         if (request.query.uuid) {
@@ -144,9 +144,9 @@ export class SSORouter extends BaseRouter {
      *  code <required>: The authorization token that will be used to get a Character's access code later in the process.
      *  state <required>: The random string that was generated and sent with the request.
      */
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @SSORouter.requestDecorator(SSORouter.checkLogin)
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
-    @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'state')
+    @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
     private static async SSOAuthCallback(request: Request, response: Response): Promise<Response> {
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
@@ -238,8 +238,8 @@ export class SSORouter extends BaseRouter {
      * Params:
      *  uuid <required>: The UUID of the Character who's token to refresh
      */
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
-    @BaseRouter.requestDecorator(BaseRouter.checkQueryParameters, 'uuid')
+    @SSORouter.requestDecorator(SSORouter.checkLogin)
+    @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'uuid')
     private static async refreshToken(request: Request, response: Response): Promise<Response> {
 
         // Fetch the Character who's accessToken we will refresh.
@@ -263,7 +263,7 @@ export class SSORouter extends BaseRouter {
         character.tokenExpiry = new Date(Date.now() + (refreshResponse.data.expires_in * 1000));
         await character.save();
 
-        return SSORouter.sendResponse(response, httpStatus.OK, 'TokenRefreshed', {
+        return SSORouter.sendSuccessResponse(response, {
             token: refreshResponse.data.access_token,
         });
     }
@@ -273,8 +273,8 @@ export class SSORouter extends BaseRouter {
      * Params:
      *  characterUUID <required>: The UUID of the Character to delete
      */
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
-    @BaseRouter.requestDecorator(BaseRouter.checkBodyParameters, 'characterUUID')
+    @SSORouter.requestDecorator(SSORouter.checkLogin)
+    @SSORouter.requestDecorator(SSORouter.checkBodyParameters, 'characterUUID')
     private static async deleteCharacter(request: Request, response: Response): Promise<Response> {
 
         const user: User | undefined = await User.doQuery()
@@ -301,7 +301,7 @@ export class SSORouter extends BaseRouter {
         }
 
         await characterToDelete.remove();
-        return SSORouter.sendResponse(response, httpStatus.OK, 'CharacterDeleted');
+        return SSORouter.sendSuccessResponse(response);
     }
 
     /**
@@ -309,7 +309,7 @@ export class SSORouter extends BaseRouter {
      * Params:
      *  characterUUID <required>: The UUID of the Character to set as active
      */
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @SSORouter.requestDecorator(SSORouter.checkLogin)
     private static async activateCharacter(request: Request, response: Response): Promise<Response> {
 
         await Character.doQuery()
@@ -321,7 +321,7 @@ export class SSORouter extends BaseRouter {
         const characterUUID = request.body.characterUUID;
 
         if (!characterUUID) {
-            return SSORouter.sendResponse(response, httpStatus.OK, 'AllCharactersDeactivated');
+            return SSORouter.sendSuccessResponse(response);
         }
 
         const character = await Character.doQuery()
@@ -336,7 +336,7 @@ export class SSORouter extends BaseRouter {
 
         character.isActive = true;
         await character.save();
-        return SSORouter.sendResponse(response, httpStatus.OK, 'CharacterActivated');
+        return SSORouter.sendSuccessResponse(response);
     }
 
     private static async logDeprecation(request: Request, response: Response): Promise<Response> {
@@ -345,7 +345,7 @@ export class SSORouter extends BaseRouter {
         const text = request.body.text as string;
         esiService.logWarning(route, text);
 
-        return SSORouter.sendResponse(response, httpStatus.OK, 'Logged');
+        return SSORouter.sendSuccessResponse(response);
     }
 
     /**

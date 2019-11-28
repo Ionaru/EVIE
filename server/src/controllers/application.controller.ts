@@ -12,6 +12,7 @@ import * as path from 'path';
 import { debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
 import { APIRouter } from '../routers/api.router';
+import { BaseRouter } from '../routers/base.router';
 import { DataRouter } from '../routers/data.router';
 import { ErrorRouter } from '../routers/error.router';
 import { GlobalRouter } from '../routers/global.router';
@@ -104,6 +105,7 @@ export class Application {
         expressApplication.use(/\/api\/users?/, new UserRouter().router);
         expressApplication.use('/sso', new SSORouter().router);
         expressApplication.use('/data', new DataRouter().router);
+        expressApplication.use('*', (_request: express.Request, response: express.Response) => BaseRouter.send404(response));
 
         expressApplication.use(Sentry.Handlers.errorHandler());
 

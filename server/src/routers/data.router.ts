@@ -14,7 +14,7 @@ export class DataRouter extends BaseRouter {
         return Number(request.params.typeId);
     }
 
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @DataRouter.requestDecorator(DataRouter.checkLogin)
     private static async getManufacturingInfo(request: Request, response: Response): Promise<Response> {
         const typeId = DataRouter.getTypeId(request);
 
@@ -35,7 +35,7 @@ export class DataRouter extends BaseRouter {
         return DataRouter.sendSuccessResponse(response, data);
     }
 
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @DataRouter.requestDecorator(DataRouter.checkLogin)
     private static async getRefiningProducts(request: Request, response: Response): Promise<Response> {
         const typeId = DataRouter.getTypeId(request);
 
@@ -57,7 +57,7 @@ export class DataRouter extends BaseRouter {
     }
 
     // noinspection JSUnusedLocalSymbols
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @DataRouter.requestDecorator(DataRouter.checkLogin)
     private static async getSkillTypes(_request: Request, response: Response): Promise<Response> {
 
         const skills = await DataController.getSkillTypes();
@@ -65,7 +65,7 @@ export class DataRouter extends BaseRouter {
     }
 
     // noinspection JSUnusedLocalSymbols
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @DataRouter.requestDecorator(DataRouter.checkLogin)
     private static async getSkillIds(_request: Request, response: Response): Promise<Response> {
 
         const skills = await DataController.getSkillIds();
@@ -73,7 +73,7 @@ export class DataRouter extends BaseRouter {
     }
 
     // noinspection JSUnusedLocalSymbols
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @DataRouter.requestDecorator(DataRouter.checkLogin)
     private static async getMarketIds(_request: Request, response: Response): Promise<Response> {
 
         const marketIds = await DataController.getMarketIds();
@@ -81,14 +81,14 @@ export class DataRouter extends BaseRouter {
     }
 
     // noinspection JSUnusedLocalSymbols
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    @DataRouter.requestDecorator(DataRouter.checkLogin)
     private static async getMarketTypes(_request: Request, response: Response): Promise<Response> {
 
         const marketTypes = await DataController.getMarketTypes();
         return DataRouter.sendSuccessResponse(response, marketTypes);
     }
 
-    @BaseRouter.requestDecorator(BaseRouter.checkAuthorizedClient)
+    @DataRouter.requestDecorator(DataRouter.checkAuthorizedClient)
     private static async getTypes(request: Request, response: Response): Promise<Response> {
 
         const typeIds = request.body;
