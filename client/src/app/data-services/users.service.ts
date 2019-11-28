@@ -17,7 +17,6 @@ export interface IUsersResponseCharacters {
 }
 
 export interface IUsersResponse {
-    email: string;
     id: number;
     isAdmin: boolean;
     lastLogin: Date;

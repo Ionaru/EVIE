@@ -19,11 +19,6 @@ export class User extends BaseModel {
     }
 
     @Column({
-        nullable: true,
-    })
-    public email?: string;
-
-    @Column({
         default: false,
     })
     public isAdmin: boolean = false;
@@ -65,7 +60,6 @@ export class User extends BaseModel {
         await User.doQuery()
             .update()
             .set({
-                email: userToMerge.email || this.email,
                 isAdmin: userToMerge.isAdmin || this.isAdmin,
                 timesLogin: userToMerge.timesLogin + this.timesLogin,
             })

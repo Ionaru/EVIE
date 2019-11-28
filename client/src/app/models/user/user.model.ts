@@ -19,7 +19,6 @@ export interface ISSOAuthResponseData {
 export interface IUserApiData {
     username?: string;
     uuid: string;
-    email?: string;
     isAdmin: boolean;
     characters: IApiCharacterData[];
 }
