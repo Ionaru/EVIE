@@ -71,27 +71,27 @@ export class BlueprintCalculatorComponent implements OnInit {
         // this.recFun(item).then();
         // this.recFun2(item).then();
 
-        this.plotlyData = [{
-            type: "sankey",
-            orientation: "h",
-            node: {
-                pad: 15,
-                thickness: 30,
-                line: {
-                    color: "#EFF0F1",
-                    width: 0.5
-                },
-                label: ["A1", "A2", "B1", "B2", "Final Product"],
-                color: ["#171B23", "#171B23", "#171B23", "#171B23", "#171B23", "#171B23"]
-            },
-
-            link: {
-                source: [0, 1, 0, 2, 3],
-                target: [2, 3, 3, 4, 4],
-                value: [8, 4, 2, 8, 6],
-                // color: ['#ff0000', '#00ff00', '#ff00ff', 'inherit', '#ff0000', '#0000ff']
-            }
-        }];
+        // this.plotlyData = [{
+        //     type: "sankey",
+        //     orientation: "h",
+        //     node: {
+        //         // pad: 500,
+        //         // thickness: 300,
+        //         // line: {
+        //             // color: "#EFF0F1",
+        //         //     width: 0
+        //         // },
+        //         label: ["A", "B", "C", "D"],
+        //         // color: ["#171B23", "#171B23", "#171B23", "#171B23", "#171B23", "#171B23"]
+        //     },
+        //
+        //     link: {
+        //         source: [0,2,0,2],
+        //         target: [1,3,3,1],
+        //         value: [9,9,9,9],
+        //         // color: []
+        //     }
+        // }];
 
         const diagram = new SankeyDiagram({
             // title: "Basic Sankey",
@@ -101,9 +101,18 @@ export class BlueprintCalculatorComponent implements OnInit {
             },
             plot_bgcolor: '#101010',
             paper_bgcolor: '#101010',
+        }, {
+            orientation: 'h',
         });
 
+        diagram.addLink('A', 'B', 9);
+        diagram.addLink('C', 'D', 9);
+        diagram.addLink('A', 'D', 9);
+        diagram.addLink('C', 'B', 9);
+
         this.plotlyLayout = diagram.layout;
+        this.plotlyData = [diagram.data];
+        // this.plotlyData = diagra
     }
 
     public getName = (id: number | string) => NamesService.getNameFromData(Number(id));
