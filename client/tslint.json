@@ -11,8 +11,9 @@
             true,
             "rxjs",
             "@angular",
-            "zone.js",
-            "core-js"
+            "core-js",
+            "plotly.js",
+            "zone.js"
         ]
     }
 }

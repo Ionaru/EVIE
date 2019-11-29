@@ -5,6 +5,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { PlotlyModule } from 'angular-plotly.js';
+// @ts-ignore
+import * as PlotlyJS from 'plotly.js-dist';
 
 import { environment } from '../environments/environment';
 import { AppReadyEventService } from './app-ready-event.service';
@@ -61,6 +64,8 @@ import { SentryErrorHandler } from './sentry.error-handler';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
 
+PlotlyModule.plotlyjs = PlotlyJS;
+
 const errorHandlers = [];
 if (environment.production) {
     errorHandlers.push({provide: ErrorHandler, useClass: SentryErrorHandler});
@@ -107,6 +112,7 @@ if (environment.production) {
         NgbModule,
         NgbTooltipModule,
         FontAwesomeModule,
+        PlotlyModule,
     ],
     providers: [
         ...errorHandlers,

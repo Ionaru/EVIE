@@ -10,6 +10,7 @@ import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
+import { SankeyDiagram } from './sankey-diagram';
 
 class ShoppingList {
 
@@ -44,6 +45,9 @@ export class BlueprintCalculatorComponent implements OnInit {
     public baseMats: string[] = [];
     public bups: yyy = {};
 
+    public plotlyData: any;
+    public plotlyLayout: any;
+
     public readonly shoppingList = new ShoppingList();
 
     constructor(
@@ -61,11 +65,45 @@ export class BlueprintCalculatorComponent implements OnInit {
         // const item = 11393; // Retribution
         // const item = 40340; // Keepstar
         // const item = 12003; // Zealot
-        const item = 11365; // Vengeance
+        // const item = 11365; // Vengeance
         // const item = 11184; // Crusader
 
-        this.recFun(item).then();
-        this.recFun2(item).then();
+        // this.recFun(item).then();
+        // this.recFun2(item).then();
+
+        this.plotlyData = [{
+            type: "sankey",
+            orientation: "h",
+            node: {
+                pad: 15,
+                thickness: 30,
+                line: {
+                    color: "#EFF0F1",
+                    width: 0.5
+                },
+                label: ["A1", "A2", "B1", "B2", "Final Product"],
+                color: ["#171B23", "#171B23", "#171B23", "#171B23", "#171B23", "#171B23"]
+            },
+
+            link: {
+                source: [0, 1, 0, 2, 3],
+                target: [2, 3, 3, 4, 4],
+                value: [8, 4, 2, 8, 6],
+                // color: ['#ff0000', '#00ff00', '#ff00ff', 'inherit', '#ff0000', '#0000ff']
+            }
+        }];
+
+        const diagram = new SankeyDiagram({
+            // title: "Basic Sankey",
+            font: {
+                size: 10,
+                color: 'white'
+            },
+            plot_bgcolor: '#101010',
+            paper_bgcolor: '#101010',
+        });
+
+        this.plotlyLayout = diagram.layout;
     }
 
     public getName = (id: number | string) => NamesService.getNameFromData(Number(id));

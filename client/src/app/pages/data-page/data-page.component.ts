@@ -46,8 +46,8 @@ export class DataPageComponent implements OnInit, OnDestroy {
     }
 
     public softReload() {
-        this.ngOnInit();
         this.ngOnDestroy();
+        this.ngOnInit();
     }
 
     private checkScopes() {

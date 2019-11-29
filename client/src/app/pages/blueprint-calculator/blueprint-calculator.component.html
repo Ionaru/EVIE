@@ -12,3 +12,9 @@
     </ul>
     <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
 </div>
+
+<hr>
+
+<div id="sankey-diagram">
+    <plotly-plot [data]="plotlyData" [layout]="plotlyLayout" [debug]="true" [config]="{displayModeBar: false}"></plotly-plot>
+</div>
