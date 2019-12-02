@@ -41,9 +41,12 @@ export class SankeyDiagram {
                 target: [],
                 value: [],
             },
+            valuesuffix: ' ISK',
             node: {
-                // color: [],
                 label: [],
+                // color: [],
+                pad: 15,
+                thickness: 30,
             },
             orientation: 'h',
             type: 'sankey',

@@ -66,53 +66,10 @@ export class BlueprintCalculatorComponent implements OnInit {
         // const item = 40340; // Keepstar
         // const item = 12003; // Zealot
         // const item = 11365; // Vengeance
-        // const item = 11184; // Crusader
+        const item = 11184; // Crusader
 
         // this.recFun(item).then();
-        // this.recFun2(item).then();
-
-        // this.plotlyData = [{
-        //     type: "sankey",
-        //     orientation: "h",
-        //     node: {
-        //         // pad: 500,
-        //         // thickness: 300,
-        //         // line: {
-        //             // color: "#EFF0F1",
-        //         //     width: 0
-        //         // },
-        //         label: ["A", "B", "C", "D"],
-        //         // color: ["#171B23", "#171B23", "#171B23", "#171B23", "#171B23", "#171B23"]
-        //     },
-        //
-        //     link: {
-        //         source: [0,2,0,2],
-        //         target: [1,3,3,1],
-        //         value: [9,9,9,9],
-        //         // color: []
-        //     }
-        // }];
-
-        const diagram = new SankeyDiagram({
-            // title: "Basic Sankey",
-            font: {
-                size: 10,
-                color: 'white'
-            },
-            plot_bgcolor: '#101010',
-            paper_bgcolor: '#101010',
-        }, {
-            orientation: 'h',
-        });
-
-        diagram.addLink('A', 'B', 9);
-        diagram.addLink('C', 'D', 9);
-        diagram.addLink('A', 'D', 9);
-        diagram.addLink('C', 'B', 9);
-
-        this.plotlyLayout = diagram.layout;
-        this.plotlyData = [diagram.data];
-        // this.plotlyData = diagra
+        this.recFun2(item).then();
     }
 
     public getName = (id: number | string) => NamesService.getNameFromData(Number(id));
@@ -140,7 +97,18 @@ export class BlueprintCalculatorComponent implements OnInit {
     }
 
     public async recFun2(m = 11184) {
-    // public async recFun2(m = 12003) {
+
+        const diagram = new SankeyDiagram({
+            // title: "Basic Sankey",
+            font: {
+                size: 10,
+                color: 'white'
+            },
+            plot_bgcolor: '#101010',
+            paper_bgcolor: '#101010',
+        }, {
+            orientation: 'h',
+        });
 
         // const marketRegion = 10000002; // The Forge
         const marketRegion = 10000043; // Domain
@@ -169,6 +137,7 @@ export class BlueprintCalculatorComponent implements OnInit {
             if (!subMatData) {
                 // Can't be produced.
                 totalPrice += price;
+                diagram.addLink(material.id.toString(), m.toString(), price);
                 this.shoppingList.add(material.id, material.quantity);
             } else {
 
@@ -192,11 +161,19 @@ export class BlueprintCalculatorComponent implements OnInit {
                 if (materialPrices && (materialPrices * material.quantity) < price) {
                     // Cheaper to produce.
                     totalPrice += (materialPrices * material.quantity);
+                    for (const id in subMatShoppingList.list) {
+                        if (subMatShoppingList.list.hasOwnProperty(id)) {
+                            const xPrice = await this.marketService.getPriceForAmount(marketRegion, Number(id), subMatShoppingList.list[id], 'buy');
+                            diagram.addLink(id.toString(), material.id.toString(), xPrice || 0);
+                        }
+                    }
+                    diagram.addLink(material.id.toString(), m.toString(), materialPrices * material.quantity);
                     this.shoppingList.merge(subMatShoppingList, material.quantity);
 
                 } else {
                     // Cheaper to buy
                     totalPrice += price;
+                    diagram.addLink(material.id.toString(), m.toString(), price);
                     this.shoppingList.add(material.id, material.quantity);
                 }
             }
@@ -220,6 +197,9 @@ export class BlueprintCalculatorComponent implements OnInit {
             console.log(totalPrice, itemPrice);
             console.log((totalPrice < itemPrice ? '' : 'NOT ') + 'WORTH TO PRODUCE');
             console.log(Calc.profitPercentage(totalPrice, itemPrice) + ' % profit');
+
+            this.plotlyLayout = diagram.layout;
+            this.plotlyData = [diagram.data];
         }
     }
 
