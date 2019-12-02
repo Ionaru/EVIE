@@ -35,6 +35,32 @@ class ShoppingList {
     }
 }
 
+class SupplyChain {
+    product: number;
+    readonly links: SupplyChainLink[] = [];
+
+    constructor(product: number) {
+        this.product = product;
+    }
+}
+
+class SupplyChainLink {
+    product: number;
+    acquireMethod: AcquireMethod;
+    price?: number;
+    supplyChain?: SupplyChain;
+
+    constructor(product: number, acquireMethod: AcquireMethod) {
+        this.product = product;
+        this.acquireMethod = acquireMethod;
+    }
+}
+
+enum AcquireMethod {
+    PURCHASE,
+    PRODUCE,
+}
+
 @Component({
     selector: 'app-blueprint-calculator',
     styleUrls: ['./blueprint-calculator.component.scss'],
@@ -47,6 +73,8 @@ export class BlueprintCalculatorComponent implements OnInit {
 
     public plotlyData: any;
     public plotlyLayout: any;
+
+    public currentMaterial?: string;
 
     public readonly shoppingList = new ShoppingList();
 
@@ -63,14 +91,17 @@ export class BlueprintCalculatorComponent implements OnInit {
         this.baseMats = [];
 
         // const item = 11393; // Retribution
+        // const item = 25898; // Large Nanobot Accelerator I
         // const item = 40340; // Keepstar
-        // const item = 12003; // Zealot
+        const item = 12003; // Zealot
         // const item = 11365; // Vengeance
-        const item = 11184; // Crusader
-
+        // const item = 11184; // Crusader
+        //
         // this.recFun(item).then();
         this.recFun2(item).then();
     }
+
+    public setPlotlyBackground = () => 'transparent';
 
     public getName = (id: number | string) => NamesService.getNameFromData(Number(id));
 
@@ -93,27 +124,63 @@ export class BlueprintCalculatorComponent implements OnInit {
             });
 
         }
-        return manufacturingData.materials;
+        return manufacturingData;
+    }
+
+    public async createSupplyChain2(material: number, quantity = 1) {
+        const marketRegion = 10000043; // Domain
+        const supplyChain = new SupplyChain(material);
+        const materialPrice = await this.marketService.getPriceForAmount(marketRegion, material, quantity, 'buy');
+        const materialManufacturingData = await this.industryService.getManufacturingData(material);
+        const materialInfo = await this.typesService.getType(material);
+
+        if (!materialManufacturingData && (!materialPrice || materialPrice === Infinity)) {
+            throw new Error(`Material ${material} can neither be bought or build.`)
+        }
+
+        if (!materialInfo || !materialPrice) {
+            throw new Error('Unable to get material info');
+        }
+
+        if (!materialManufacturingData) {
+            // Item can not be produced.
+            const chainLink = new SupplyChainLink(material, AcquireMethod.PURCHASE);
+            chainLink.price = materialPrice;
+            supplyChain.links.push(chainLink);
+            return supplyChain;
+        }
+
+        for (const subMaterial of materialManufacturingData.materials) {
+            const s = new SupplyChainLink(material, AcquireMethod.PRODUCE);
+            s.supplyChain = await this.createSupplyChain2(subMaterial.id, subMaterial.quantity * quantity);
+            supplyChain.links.push(s);
+        }
+
+        return supplyChain;
     }
 
     public async recFun2(m = 11184) {
 
-        const diagram = new SankeyDiagram({
-            // title: "Basic Sankey",
-            font: {
-                size: 10,
-                color: 'white'
-            },
-            plot_bgcolor: '#101010',
-            paper_bgcolor: '#101010',
-        }, {
-            orientation: 'h',
-        });
-
         // const marketRegion = 10000002; // The Forge
         const marketRegion = 10000043; // Domain
 
-        // public async recFun2(m = 25898) {
+        // NEW
+        const productInfo = await this.typesService.getTypes(m);
+        const productPrice = await this.marketService.getPriceForAmount(marketRegion, m, 1, 'sell');
+
+        if (!productInfo || !productInfo[0] || !productPrice) {
+            throw new Error('Unable to determine info');
+        }
+
+        await this.createSupplyChain2(m);
+
+        // Legacy
+        const diagram = new SankeyDiagram({}, {
+            orientation: 'h',
+        });
+
+        const extraTypesToGet = [m];
+
         const manufacturingData = await this.industryService.getManufacturingData(m);
         if (!manufacturingData) {
             return;
@@ -121,9 +188,12 @@ export class BlueprintCalculatorComponent implements OnInit {
 
         const materials = await this.adjustMaterialsNeededByBlueprintMaterialEfficiency(manufacturingData);
 
+        await this.namesService.getNames(...materials.materials.map((material) => material.id));
+
         let totalPrice = 0;
 
-        for (const material of materials) {
+        for (const material of materials.materials) {
+            this.currentMaterial = NamesService.getNameFromData(material.id);
             const price = await this.marketService.getPriceForAmount(marketRegion, material.id, material.quantity, 'buy');
 
             if (!price) {
@@ -145,7 +215,7 @@ export class BlueprintCalculatorComponent implements OnInit {
 
                 const subMatShoppingList = new ShoppingList();
 
-                for (const subMat of subMaterials) {
+                for (const subMat of subMaterials.materials) {
                     const subPrice = await this.marketService.getPriceForAmount(marketRegion, subMat.id, subMat.quantity, 'buy');
 
                     subMatShoppingList.add(subMat.id, subMat.quantity);
@@ -163,10 +233,11 @@ export class BlueprintCalculatorComponent implements OnInit {
                     totalPrice += (materialPrices * material.quantity);
                     for (const id in subMatShoppingList.list) {
                         if (subMatShoppingList.list.hasOwnProperty(id)) {
-                            const xPrice = await this.marketService.getPriceForAmount(marketRegion, Number(id), subMatShoppingList.list[id], 'buy');
+                            const xPrice = await this.marketService.getPriceForAmount(marketRegion, Number(id), subMatShoppingList.list[id] * material.quantity, 'buy');
                             diagram.addLink(id.toString(), material.id.toString(), xPrice || 0);
                         }
                     }
+                    extraTypesToGet.push(material.id);
                     diagram.addLink(material.id.toString(), m.toString(), materialPrices * material.quantity);
                     this.shoppingList.merge(subMatShoppingList, material.quantity);
 
@@ -187,11 +258,17 @@ export class BlueprintCalculatorComponent implements OnInit {
 
             const typeInfo = (await Promise.all([
                 this.typesService.getTypes(...types),
-                this.namesService.getNames(...types),
+                this.namesService.getNames(...types, ...extraTypesToGet),
             ]))[0];
 
             if (typeInfo) {
                 this.shoppingList.volume = typeInfo.reduce((accumulator, type) => accumulator + (type.volume! * this.shoppingList.list[type.type_id]), 0)
+            }
+
+            const labels = diagram.data.node.label;
+            for (const label of labels) {
+                const index = diagram.data.node.label.indexOf(label);
+                diagram.data.node.label[index] = NamesService.getNameFromData(label);
             }
 
             console.log(totalPrice, itemPrice);
@@ -203,9 +280,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         }
     }
 
-    // public async recFun(m = 12003) {
-        public async recFun(m = 11184) {
-        // public async recFun(m = 25898) {
+    public async recFun(m = 11184) {
         const i = await this.industryService.getManufacturingData(m);
         if (!i) {
             return;

@@ -1,31 +1,9 @@
 // @ts-ignore
 import * as PlotlyJS from 'plotly.js';
 
-// interface ISankeyDiagramNode {
-//     node: {
-//         pad?: number;
-//         thickness?: number;
-//         line?: {
-//             color?: string;
-//             width?: number;
-//         };
-//         label: string[];
-//         color?: string[];
-//     };
-// }
-
 interface ISankeyDiagramSetup {
-    orientation: 'h' | 'w';
+    orientation: 'h' | 'v';
 }
-//
-// interface ISankeyDiagramData extends ISankeyDiagramSetup {
-//     link: {
-//         source: number[];
-//         target: number[];
-//         value: number[];
-//         color?: number[];
-//     };
-// }
 
 export class SankeyDiagram {
 
@@ -33,15 +11,20 @@ export class SankeyDiagram {
     private readonly _data: any;
 
     constructor(layout: Partial<PlotlyJS.Layout>, data: ISankeyDiagramSetup) {
-        this._layout = layout;
+        this._layout = {
+            font: {
+                color: 'white',
+                size: 10,
+            },
+            ...layout,
+        };
         this._data = {
             link: {
-                // color: [],
+                color: [],
                 source: [],
                 target: [],
                 value: [],
             },
-            valuesuffix: ' ISK',
             node: {
                 label: [],
                 // color: [],
@@ -50,6 +33,7 @@ export class SankeyDiagram {
             },
             orientation: 'h',
             type: 'sankey',
+            valuesuffix: ' ISK',
             ...data,
         };
     }
@@ -62,32 +46,24 @@ export class SankeyDiagram {
         return this._data;
     }
 
-    public addLink(source: string, target: string, value: number, color = '#EFF0F1') {
-        let sourceIndex: number;
-        let targetIndex: number;
-
-        if (!this._data.node.label.includes(source)) {
-            sourceIndex = this._data.node.label.push(source) - 1;
-            // this._data.node.color.push(color);
-        } else {
-            sourceIndex = this._data.node.label.indexOf(source);
-        }
-
-        if (!this._data.node.label.includes(target)) {
-            targetIndex = this._data.node.label.push(target) - 1;
-            // this._data.node.color.push(color);
-        } else {
-            targetIndex = this._data.node.label.indexOf(target);
-        }
-
-        console.log(sourceIndex, targetIndex, value, color);
+    /**
+     * Add a link from one Node to another with a desired strength, new Nodes will be created if they do not exist.
+     */
+    public addLink(source: string, target: string, strength: number) {
+        const sourceIndex = this.getLinkIndex(source);
+        const targetIndex = this.getLinkIndex(target);
 
         this._data.link.source.push(sourceIndex);
         this._data.link.target.push(targetIndex);
-        this._data.link.value.push(value);
-        // this._data.link.color.push(color);
-        console.log(this._data);
+        this._data.link.value.push(strength);
+        this._data.link.color.push('#C2C4C5');
     }
 
-    // public addNode(label: string, color?: string){}
+    /**
+     * This will get or create a Node and return its index in the diagram data.
+     */
+    private getLinkIndex(linkName: string): number {
+        const label = this._data.node.label;
+        return !label.includes(linkName) ? (label.push(linkName) - 1) : label.indexOf(linkName);
+    }
 }

@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EVE, IUniverseTypeData } from '@ionaru/eve-utils';
+import { IUniverseTypeData } from '@ionaru/eve-utils';
 
 import { BaseService, IServerResponse } from './base.service';
 
@@ -37,11 +37,10 @@ export class TypesService extends BaseService {
     }
 
     public async getType(typeId: number): Promise<IUniverseTypeData | undefined> {
-        const url = EVE.getUniverseTypeUrl(typeId);
-        const response = await this.http.get<any>(url).toPromise<IUniverseTypeData>().catch(this.catchHandler);
-        if (response instanceof HttpErrorResponse) {
+        const types = await this.getTypes(typeId);
+        if (!types || !types.length) {
             return undefined;
         }
-        return response;
+        return types[0];
     }
 }

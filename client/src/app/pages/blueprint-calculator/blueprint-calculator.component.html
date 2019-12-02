@@ -3,18 +3,32 @@
     <hr>
 </div>
 
-<div id="shopping-list">
-    <h2>Shopping list</h2>
-    <ul>
-        <li *ngFor="let item of shoppingList.list | keyvalue">
-            <p><img src="https://images.evetech.net/types/{{item.key}}/icon?size=32"> {{ getName(item.key) }} x {{ item.value }}</p>
-        </li>
-    </ul>
-    <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
-</div>
+<ng-container *ngIf="shoppingList.list && plotlyData && plotlyLayout; else gas_loading_message">
 
-<hr>
+    <div id="shopping-list">
+        <h2>Shopping list</h2>
+        <ul>
+            <li *ngFor="let item of shoppingList.list | keyvalue">
+                <p><img src="https://images.evetech.net/types/{{item.key}}/icon?size=32"> {{ getName(item.key) }} x {{ item.value }}</p>
+            </li>
+        </ul>
+        <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
+    </div>
 
-<div id="sankey-diagram">
-    <plotly-plot [data]="plotlyData" [layout]="plotlyLayout" [debug]="true" [config]="{displayModeBar: false}"></plotly-plot>
-</div>
+    <hr>
+
+    <div id="sankey-diagram">
+        <plotly-plot [data]="plotlyData" [layout]="plotlyLayout" [config]="{
+        setBackground: setPlotlyBackground,
+        displayModeBar: false,
+        responsive: true
+        }"></plotly-plot>
+    </div>
+</ng-container>
+
+<ng-template #gas_loading_message>
+    <app-loading-message>
+        Running calculation...
+        <span *ngIf="currentMaterial">({{ currentMaterial }})</span>
+    </app-loading-message>
+</ng-template>

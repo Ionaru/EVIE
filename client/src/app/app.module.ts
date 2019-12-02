@@ -64,6 +64,7 @@ import { SentryErrorHandler } from './sentry.error-handler';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
 
+PlotlyJS.setPlotConfig({logging: 0});
 PlotlyModule.plotlyjs = PlotlyJS;
 
 const errorHandlers = [];
