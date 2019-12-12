@@ -79,6 +79,7 @@ This is done so users can decide what scopes to grant for each of their characte
 - `EVIE_DB_USER`: Username to use in the database connection.
 - `EVIE_ENV`: Configuration to pass to Angular for building.
 - `EVIE_FA_TOKEN`: FontAwesome 5 token.
+- `EVIE_PROXY_SETTING`: The setting Express' trust proxy should be set to. (Default: 1)
 - `EVIE_SERVER_PORT`: The port the server should run on.
 - `EVIE_SESSION_KEY`: Name of the session ID cookie.
 - `EVIE_SESSION_SECRET`: Secret used to sign the session ID cookie.
