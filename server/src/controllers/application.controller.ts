@@ -54,7 +54,8 @@ export class Application {
             credentials: true,
             origin: 'http://192.168.2.11:8100',
         }));
-        expressApplication.set('trust proxy', 1);
+        const trustProxySetting = process.env.EVIE_PROXY_SETTING !== undefined ? process.env.EVIE_PROXY_SETTING : 1;
+        expressApplication.set('trust proxy', trustProxySetting);
 
         // Setup bodyParser
         expressApplication.use(bodyParser.json() as any);
@@ -83,6 +84,7 @@ export class Application {
                 secure: secureCookies,
             },
             name: process.env.EVIE_SESSION_KEY,
+            proxy: true,
             resave: false,
             rolling: true,
             saveUninitialized: true,

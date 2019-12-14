@@ -408,6 +408,9 @@ export class SSORouter extends BaseRouter {
         SSORouter.debug(`Requesting authorization: ${code} (refresh: ${refresh})`);
         return axiosInstance.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             process.stderr.write(`Request failed: ${authUrl}\n${error.message}\n`);
+            if (error.response) {
+                process.stderr.write(`${JSON.stringify(error.response.data)}\n`);
+            }
             Sentry.captureException(error);
             return;
         });
