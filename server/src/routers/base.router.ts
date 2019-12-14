@@ -82,7 +82,7 @@ export class BaseRouter {
         const clientToken = request.headers['x-evie-token'] as unknown;
 
         // Only allow requests from a logged-in user, or with a valid and matching token.
-        if (!request.session!.user.id && (!serverToken || !clientToken || serverToken !== clientToken)) {
+        if (!serverToken || !clientToken || serverToken !== clientToken) {
             process.emitWarning(`Unauthorized client: ${clientToken}, expected: ${serverToken}`);
             BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadClient');
             return;
@@ -91,6 +91,7 @@ export class BaseRouter {
         return nextFunction;
     }
 
+    @BaseRouter.requestDecorator(BaseRouter.checkAuthorizedClient)
     public static checkLogin(request: Request, response: Response, nextFunction: any) {
         if (!request.session!.user.id) {
             BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
