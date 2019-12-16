@@ -2,6 +2,7 @@ import * as clone from 'clone';
 import { Column, Entity, OneToMany, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
+import { Blueprint } from './blueprint.model';
 import { Character } from './character.model';
 
 @Entity()
@@ -35,6 +36,9 @@ export class User extends BaseModel {
 
     @OneToMany(() => Character, (character) => character.user)
     public characters!: Character[];
+
+    @OneToMany(() => Blueprint, (blueprint) => blueprint.user)
+    public blueprints!: Blueprint[];
 
     public get sanitizedCopy() {
         // Delete data that should not be sent to the client.

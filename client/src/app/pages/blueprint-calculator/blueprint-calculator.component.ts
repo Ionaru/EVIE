@@ -93,9 +93,10 @@ export class BlueprintCalculatorComponent implements OnInit {
         // const item = 11393; // Retribution
         // const item = 25898; // Large Nanobot Accelerator I
         // const item = 40340; // Keepstar
-        const item = 12003; // Zealot
+        // const item = 12003; // Zealot
         // const item = 11365; // Vengeance
         // const item = 11184; // Crusader
+        const item = 578; // adaptive invul field I
         //
         // this.recFun(item).then();
         this.recFun2(item).then();
