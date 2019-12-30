@@ -24,6 +24,7 @@ import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
 import { MarketService } from './data-services/market.service';
 import { NamesService } from './data-services/names.service';
+import { SearchService } from './data-services/search.service';
 import { ShipService } from './data-services/ship.service';
 import { SkillGroupsService } from './data-services/skill-groups.service';
 import { SkillQueueService } from './data-services/skillqueue.service';
@@ -126,6 +127,7 @@ if (environment.production) {
         NamesService,
         StatusService,
         TypesService,
+        SearchService,
         ShipService,
         WalletService,
         WalletJournalService,

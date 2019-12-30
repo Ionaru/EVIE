@@ -11,6 +11,16 @@ import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
 import { SankeyDiagram } from './sankey-diagram';
+import { Observable } from 'rxjs';
+// @ts-ignore
+import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { SearchService } from '../../data-services/search.service';
+import { IUniverseNamesDataUnit } from '@ionaru/eve-utils';
+
+interface IUsedBlueprints {
+    0: number;
+    1: number;
+}
 
 class ShoppingList {
 
@@ -74,15 +84,36 @@ export class BlueprintCalculatorComponent implements OnInit {
     public plotlyData: any;
     public plotlyLayout: any;
 
-    public currentMaterial?: string;
+    public calculating?: boolean;
 
-    public readonly shoppingList = new ShoppingList();
+    public currentMaterial?: string;
+    public worthToProduce = false;
+
+    public selectedItem?: IUniverseNamesDataUnit;
+    public profit = 0;
+
+    public shoppingList = new ShoppingList();
+
+    public usedBlueprints: IUsedBlueprints[] = [];
+
+    public characterNames = (text$: Observable<string>) => {
+        return text$.pipe(
+            debounceTime(200),
+            distinctUntilChanged(),
+            // map((q) => ['1', '2', q])
+            switchMap((searchText) =>  this.searchService.searchType(searchText)),
+            catchError(() => ['Not found']),
+            map((res) => [typeof res === 'string' ? res : res.data])
+        );
+    };
 
     constructor(
         private blueprintsService: BlueprintsService,
         private industryService: IndustryService,
         private marketService: MarketService,
         private namesService: NamesService,
+        // @ts-ignore
+        private searchService: SearchService,
         private typesService: TypesService,
     ) { }
 
@@ -96,10 +127,20 @@ export class BlueprintCalculatorComponent implements OnInit {
         // const item = 12003; // Zealot
         // const item = 11365; // Vengeance
         // const item = 11184; // Crusader
-        const item = 578; // adaptive invul field I
+        // const item = 578; // adaptive invul field I
         //
         // this.recFun(item).then();
-        this.recFun2(item).then();
+        // this.recFun2(item).then();
+    }
+
+    public resultFormatBandListValue(value: IUniverseNamesDataUnit | string) {
+        return typeof value === 'string' ? value : value?.name;
+    }
+
+    public inputFormatBandListValue(value: IUniverseNamesDataUnit | undefined)   {
+        if(value?.name)
+            return value.name;
+        return value;
     }
 
     public setPlotlyBackground = () => 'transparent';
@@ -113,6 +154,8 @@ export class BlueprintCalculatorComponent implements OnInit {
         const subBlueprint = blueprints.find((blueprint) => blueprint.type_id === manufacturingData.blueprintId);
 
         if (subBlueprint) {
+            this.usedBlueprints.push([subBlueprint.type_id, subBlueprint.material_efficiency]);
+
             manufacturingData.materials = manufacturingData.materials.map((material) => {
 
                 const materialMultiplier = subBlueprint.material_efficiency / 100;
@@ -160,20 +203,30 @@ export class BlueprintCalculatorComponent implements OnInit {
         return supplyChain;
     }
 
-    public async recFun2(m = 11184) {
+    public async recFun2() {
+
+        const m = this.selectedItem?.id;
+
+        if (!m) {
+            return;
+        }
+
+        this.calculating = true;
+        this.shoppingList = new ShoppingList();
+        this.currentMaterial = 'Initializing';
 
         // const marketRegion = 10000002; // The Forge
         const marketRegion = 10000043; // Domain
 
         // NEW
         const productInfo = await this.typesService.getTypes(m);
-        const productPrice = await this.marketService.getPriceForAmount(marketRegion, m, 1, 'sell');
+        const productPrice = await this.marketService.getPriceForAmount(marketRegion, m, 1, 'buy');
 
         if (!productInfo || !productInfo[0] || !productPrice) {
             throw new Error('Unable to determine info');
         }
 
-        await this.createSupplyChain2(m);
+        // await this.createSupplyChain2(m);
 
         // Legacy
         const diagram = new SankeyDiagram({}, {
@@ -195,7 +248,8 @@ export class BlueprintCalculatorComponent implements OnInit {
 
         for (const material of materials.materials) {
             this.currentMaterial = NamesService.getNameFromData(material.id);
-            const price = await this.marketService.getPriceForAmount(marketRegion, material.id, material.quantity, 'buy');
+            console.log(this.currentMaterial);
+            const price = await this.marketService.getPriceForAmount(marketRegion, material.id, material.quantity, 'sell');
 
             if (!price) {
                 throw new Error(`Price not found for ${material.id}`);
@@ -234,7 +288,7 @@ export class BlueprintCalculatorComponent implements OnInit {
                     totalPrice += (materialPrices * material.quantity);
                     for (const id in subMatShoppingList.list) {
                         if (subMatShoppingList.list.hasOwnProperty(id)) {
-                            const xPrice = await this.marketService.getPriceForAmount(marketRegion, Number(id), subMatShoppingList.list[id] * material.quantity, 'buy');
+                            const xPrice = await this.marketService.getPriceForAmount(marketRegion, Number(id), subMatShoppingList.list[id] * material.quantity, 'sell');
                             diagram.addLink(id.toString(), material.id.toString(), xPrice || 0);
                         }
                     }
@@ -251,9 +305,9 @@ export class BlueprintCalculatorComponent implements OnInit {
             }
         }
 
-        const itemPrice = await this.marketService.getPriceForAmount(marketRegion, m, 1, 'sell');
+        this.currentMaterial = 'Finishing up';
 
-        if (itemPrice) {
+        if (productPrice) {
 
             const types = Object.keys(this.shoppingList.list).map((key) => Number(key));
 
@@ -272,13 +326,19 @@ export class BlueprintCalculatorComponent implements OnInit {
                 diagram.data.node.label[index] = NamesService.getNameFromData(label);
             }
 
-            console.log(totalPrice, itemPrice);
-            console.log((totalPrice < itemPrice ? '' : 'NOT ') + 'WORTH TO PRODUCE');
-            console.log(Calc.profitPercentage(totalPrice, itemPrice) + ' % profit');
+            console.log(totalPrice, productPrice);
+
+            this.worthToProduce = totalPrice < productPrice;
+            this.profit = Calc.profitPercentage(totalPrice, productPrice);
+
+            console.log((totalPrice < productPrice ? '' : 'NOT ') + 'WORTH TO PRODUCE');
+            console.log(Calc.profitPercentage(totalPrice, productPrice) + ' % profit');
 
             this.plotlyLayout = diagram.layout;
             this.plotlyData = [diagram.data];
         }
+
+        this.calculating = false;
     }
 
     public async recFun(m = 11184) {

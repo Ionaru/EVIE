@@ -8,6 +8,7 @@ const runningMigration = process.argv.length >= 3 && process.argv[2].includes('m
 const runningTSMain = process.argv[1].includes('index.ts');
 
 const models = [
+    'blueprint.model',
     'character.model',
     'user.model',
 ];

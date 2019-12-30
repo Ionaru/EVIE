@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
+
 import { BaseModel } from './base.model';
-import { User } from './user.model';
+import { Character } from './character.model';
 
 @Entity()
 export class Blueprint extends BaseModel {
@@ -23,10 +24,10 @@ export class Blueprint extends BaseModel {
     })
     public isCopy: boolean = false;
 
-    @ManyToOne(() => User, (user) => user.blueprints, {
+    @ManyToOne(() => Character, (character) => character.blueprints, {
         onDelete: 'CASCADE',
     })
-    public user!: User;
+    public character!: Character;
 
     constructor(id: number, typeId: number) {
         super();

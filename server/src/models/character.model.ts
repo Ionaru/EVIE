@@ -1,7 +1,8 @@
 import * as clone from 'clone';
-import { Column, Entity, ManyToOne, SelectQueryBuilder } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
+import { Blueprint } from './blueprint.model';
 import { User } from './user.model';
 
 @Entity()
@@ -59,6 +60,9 @@ export class Character extends BaseModel {
         default: false,
     })
     public isActive: boolean = false;
+
+    @OneToMany(() => Blueprint, (blueprint) => blueprint.character)
+    public blueprints!: Blueprint[];
 
     @ManyToOne(() => User, (user) => user.characters, {
         onDelete: 'CASCADE',

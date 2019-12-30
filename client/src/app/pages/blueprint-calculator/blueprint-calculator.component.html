@@ -2,7 +2,15 @@
     <p>Item to produce</p>
     <p>Buy/Sell</p>
 
-    <button class="btn">Import blueprints from all characters</button>
+    <input type="text" class="form-control" placeholder="Choose an item"
+           [(ngModel)]="selectedItem"
+           [ngbTypeahead]="characterNames"
+           [resultFormatter]="resultFormatBandListValue"
+           [inputFormatter]="inputFormatBandListValue"
+           (ngModelChange)="recFun2()"
+    />
+
+    <button class="btn btn-outline-primary">Import blueprints from all characters</button>
 </div>
 
 <hr>
@@ -12,32 +20,56 @@
     <hr>
 </div>
 
-<ng-container *ngIf="shoppingList.list && plotlyData && plotlyLayout; else gas_loading_message">
+<ng-container *ngIf="calculating !== undefined; else start_message">
+    <ng-container *ngIf="shoppingList.list && plotlyData && plotlyLayout && !calculating; else calculating_message">
 
-    <div id="shopping-list">
-        <h2>Shopping list</h2>
-        <ul>
-            <li *ngFor="let item of shoppingList.list | keyvalue">
-                <p><img src="https://images.evetech.net/types/{{item.key}}/icon?size=32"> {{ getName(item.key) }} x {{ item.value }}</p>
-            </li>
-        </ul>
-        <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
-    </div>
+        <div id="blueprints">
+            <h2>Used blueprints</h2>
+            <ul>
+                <li *ngFor="let item of usedBlueprints">
+                    <p>
+                        <img src="https://images.evetech.net/types/{{item[0]}}/bp?size=32">
+                        {{ getName(item[0]) }} ( -{{ item[1] }}% )
+                    </p>
+                </li>
+            </ul>
+        </div>
 
-    <hr>
+        <div id="shopping-list">
+            <h2>Shopping list</h2>
+            <ul>
+                <li *ngFor="let item of shoppingList.list | keyvalue">
+                    <p>
+                        <img src="https://images.evetech.net/types/{{item.key}}/icon?size=32">
+                        {{ getName(item.key) }} x {{ item.value }}
+                    </p>
+                </li>
+            </ul>
+            <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
+        </div>
 
-    <div id="sankey-diagram">
-        <plotly-plot [data]="plotlyData" [layout]="plotlyLayout" [config]="{
+        <p *ngIf="worthToProduce">YES</p>
+        <p *ngIf="!worthToProduce">NO</p>
+        <p>~{{ profit | number : '1.0-0' }} %</p>
+
+        <hr>
+
+        <div id="sankey-diagram">
+            <plotly-plot [data]="plotlyData" [layout]="plotlyLayout" [config]="{
         setBackground: setPlotlyBackground,
         displayModeBar: false,
         responsive: true
         }"></plotly-plot>
-    </div>
-</ng-container>
+        </div>
+    </ng-container>
 
-<ng-template #gas_loading_message>
-    <app-loading-message>
-        Running calculation...
-        <span *ngIf="currentMaterial">({{ currentMaterial }})</span>
-    </app-loading-message>
+    <ng-template #calculating_message>
+        <app-loading-message>
+            Running calculation...
+            <span *ngIf="currentMaterial">({{ currentMaterial }})</span>
+        </app-loading-message>
+    </ng-template>
+</ng-container>
+<ng-template #start_message>
+    <p>Choose an item</p>
 </ng-template>
