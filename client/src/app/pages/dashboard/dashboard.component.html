@@ -59,7 +59,9 @@
                 </a>
                 <a class="character-link" (click)="goToCharacterSkillPage(character).then()" *ngIf="hasSkillQueueScope(character)">
                     <p>
-                        <ng-template #noSkillInTraining>No skill in training</ng-template>
+                        <ng-template #noSkillInTraining>
+                            <span class="text-warning">No skill in training</span>
+                        </ng-template>
                         <ng-container *ngIf="character.currentTrainingSkill; else noSkillInTraining">
 
                             {{ character.currentTrainingSkill.name }}
@@ -67,9 +69,6 @@
                                 {{ romanize(character.currentTrainingSkill?.finished_level) }}
                             </span>
                             <br>
-
-                        </ng-container>
-                        <ng-container>
 
                             <span *ngIf="character.totalTrainingCountdown" [ngClass]="{'text-warning': skillQueueLow(character)}">
                                 {{ character.currentTrainingCountdown }}
