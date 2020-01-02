@@ -21,7 +21,7 @@
 </div>
 
 <ng-container *ngIf="calculating !== undefined; else start_message">
-    <ng-container *ngIf="shoppingList.list && plotlyData && plotlyLayout && !calculating; else calculating_message">
+    <ng-container *ngIf="!calculating; else calculating_message">
 
         <div id="blueprints">
             <h2>Used blueprints</h2>
@@ -29,7 +29,7 @@
                 <li *ngFor="let item of usedBlueprints">
                     <p>
                         <img src="https://images.evetech.net/types/{{item[0]}}/bp?size=32">
-                        {{ getName(item[0]) }} ( -{{ item[1] }}% )
+                        {{ item[0] }} ( -{{ item[1] }}% )
                     </p>
                 </li>
             </ul>
@@ -50,7 +50,7 @@
 
         <p *ngIf="worthToProduce">YES</p>
         <p *ngIf="!worthToProduce">NO</p>
-        <p>~{{ profit | number : '1.0-0' }} %</p>
+        <p>{{ profit | number : '1.0-0' }} %</p>
 
         <hr>
 

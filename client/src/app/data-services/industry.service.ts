@@ -26,11 +26,11 @@ export interface IRefiningProducts {
 }
 
 interface IManufacturingCache {
-    [index: string]: IManufacturingData | undefined;
+    [index: string]: string | undefined;
 }
 
 interface IRefiningCache {
-    [index: string]: IRefiningProducts[];
+    [index: string]: string;
 }
 
 @Injectable()
@@ -42,8 +42,9 @@ export class IndustryService extends BaseService {
     public async getManufacturingData(typeId: number): Promise<IManufacturingData | undefined> {
         const url = `data/manufacturing/${typeId}`;
 
-        if (this.manufacturingCache.hasOwnProperty(url)) {
-            return this.manufacturingCache[url];
+        if (url in this.manufacturingCache) {
+            // tslint:disable-next-line:no-non-null-assertion
+            return this.manufacturingCache[url] ? JSON.parse(this.manufacturingCache[url]!) as IManufacturingData : undefined;
         }
 
         const response = await this.http.get<any>(url).toPromise<IServerResponse<IManufacturingData>>().catch(this.catchHandler);
@@ -52,15 +53,15 @@ export class IndustryService extends BaseService {
         }
 
         const data = response ? response.data : undefined;
-        this.manufacturingCache[url] = data;
+        this.manufacturingCache[url] = response ? JSON.stringify(response.data) : undefined;
         return data;
     }
 
     public async getRefiningProducts(typeId: number): Promise<IRefiningProducts[]> {
         const url = `data/refining/${typeId}`;
 
-        if (this.refiningCache.hasOwnProperty(url)) {
-            return this.refiningCache[url];
+        if (url in this.refiningCache) {
+            return JSON.parse(this.refiningCache[url]) as IRefiningProducts[];
         }
 
         const response = await this.http.get<any>(url).toPromise<IServerResponse<IRefiningProducts[]>>().catch(this.catchHandler);
@@ -69,7 +70,7 @@ export class IndustryService extends BaseService {
         }
 
         const data = response && response.data ? response.data : [];
-        this.refiningCache[url] = data;
+        this.refiningCache[url] = JSON.stringify(data);
         return data;
     }
 }
