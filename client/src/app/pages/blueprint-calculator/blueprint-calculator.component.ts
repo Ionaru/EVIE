@@ -11,10 +11,9 @@ import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
 // import { SankeyDiagram } from './sankey-diagram';
-import { Observable } from 'rxjs';
-// @ts-ignore
+import { Observable, of } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
-import { SearchService } from '../../data-services/search.service';
+import { SearchService, SearchType } from '../../data-services/search.service';
 import { IUniverseNamesDataUnit } from '@ionaru/eve-utils';
 
 interface IUsedBlueprints {
@@ -78,29 +77,43 @@ export class BlueprintCalculatorComponent implements OnInit {
     public worthToProduce = false;
 
     public selectedItem?: IUniverseNamesDataUnit;
+    public chosenSellSystem?: IUniverseNamesDataUnit;
+    public chosenBuySystem?: IUniverseNamesDataUnit;
+
     public profit = 0;
 
     public shoppingList = new ShoppingList();
 
     public usedBlueprints: IUsedBlueprints[] = [];
 
-    public characterNames = (text$: Observable<string>) => {
-        return text$.pipe(
+    public message?: string;
+
+    public typeSearch = (text$: Observable<string>) => {
+        return this.searcher(text$, 'type');
+    };
+
+    public regionSearch = (text$: Observable<string>) => {
+        return this.searcher(text$, 'system');
+    };
+
+    public searcher(text$: Observable<string>, searchType: SearchType) {
+        return text$?.pipe(
             debounceTime(200),
             distinctUntilChanged(),
-            // map((q) => ['1', '2', q])
-            switchMap((searchText) =>  this.searchService.searchType(searchText)),
-            catchError(() => ['Not found']),
-            map((res) => [typeof res === 'string' ? res : res.data])
+            switchMap((searchText) =>
+                this.searchService.search(searchText, searchType).pipe(
+                    catchError(() => of(['Nothing found']))
+                )
+            ),
+            map((res) => [Array.isArray(res) ? res[0] : res.data])
         );
-    };
+    }
 
     constructor(
         private blueprintsService: BlueprintsService,
         private industryService: IndustryService,
         private marketService: MarketService,
         private namesService: NamesService,
-        // @ts-ignore
         private searchService: SearchService,
         private typesService: TypesService,
     ) { }
@@ -121,14 +134,12 @@ export class BlueprintCalculatorComponent implements OnInit {
         // this.recFun2(item).then();
     }
 
-    public resultFormatBandListValue(value: IUniverseNamesDataUnit | string) {
+    public resultFormatNameData(value: any): string {
         return typeof value === 'string' ? value : value?.name;
     }
 
-    public inputFormatBandListValue(value: IUniverseNamesDataUnit | undefined)   {
-        if(value?.name)
-            return value.name;
-        return value;
+    public inputFormatNameData(value: any): string {
+        return value.name ? value.name : value;
     }
 
     public setPlotlyBackground = () => 'transparent';
@@ -160,8 +171,12 @@ export class BlueprintCalculatorComponent implements OnInit {
     }
 
     public async createSupplyChain3(material: number, quantity = 1, initialPrice?: number) {
-        this.currentMaterial = material.toString();
-        const marketRegion = 10000043; // Domain
+        const info = await this.typesService.getType(material);
+        if (!info) {
+            throw new Error('Unable to get material info');
+        }
+
+        this.currentMaterial = info.name;
         const node = new IndustryNode();
         node.product = material;
         node.quantity = quantity;
@@ -170,21 +185,16 @@ export class BlueprintCalculatorComponent implements OnInit {
         if (initialPrice) {
             price = initialPrice;
         } else {
-            price = await this.marketService.getPriceForAmount(marketRegion, material, quantity, 'buy');
+            price = await this.marketService.getPriceForAmountInSystem(this.chosenBuySystem!.id, material, quantity, 'buy');
         }
 
         const manufacturingData = await this.industryService.getManufacturingData(material);
-        const info = await this.typesService.getType(material);
 
         if (!manufacturingData && (!price || price === Infinity)) {
-            throw new Error(`Material ${material} can neither be bought or build.`)
+            throw new Error(`Material ${info.name} can neither be bought nor built.`)
         }
 
-        if (!info || !price) {
-            throw new Error('Unable to get material info');
-        }
-
-        node.price = price;
+        node.price = price || Infinity;
 
         if (!manufacturingData) {
             // Item can not be produced.
@@ -203,7 +213,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         }
 
         node.producePrice = materialPrices;
-        if (materialPrices < price) {
+        if (materialPrices < node.price) {
             node.acquireMethod = AcquireMethod.PRODUCE;
         } else {
             node.acquireMethod = AcquireMethod.PURCHASE;
@@ -215,32 +225,38 @@ export class BlueprintCalculatorComponent implements OnInit {
 
     public async recFun2() {
 
-        const m = this.selectedItem?.id;
-
-        if (!m) {
+        if (!this.selectedItem?.id || !this.chosenSellSystem?.id || !this.chosenBuySystem?.id) {
             return;
         }
 
+        this.message = undefined;
         this.calculating = true;
         this.shoppingList = new ShoppingList();
         this.usedBlueprints = [];
         this.currentMaterial = 'Initializing';
 
         // const marketRegion = 10000002; // The Forge
-        const marketRegion = 10000043; // Domain
+        // const marketRegion = 10000043; // Domain
 
         // NEW
-        const productInfo = await this.typesService.getTypes(m);
-        const productPrice = await this.marketService.getPriceForAmount(marketRegion, m, 1, 'sell');
+        const productPrice = await this.marketService.getPriceForAmountInSystem(this.chosenSellSystem.id, this.selectedItem.id, 1, 'sell');
 
-        if (!productInfo || !productInfo[0] || !productPrice) {
-            throw new Error('Unable to determine info');
+        if (!productPrice) {
+            this.message = 'Unable to determine price for final product.';
+            this.calculating = false;
+            return;
         }
 
-        // const chain = await this.createSupplyChain2(m);
-
-        const chain = await this.createSupplyChain3(m, 1, productPrice);
+        const chain = await this.createSupplyChain3(this.selectedItem.id, 1, productPrice).catch((error: Error) => {
+            this.message = `Cannot complete calculation, reason: ${error.message}`;
+        });
         console.dir(chain);
+
+        if (chain) {
+            this.calculating = false;
+        }
+
+        // this.worthToProduce = chain
 
         // Legacy
         // const diagram = new SankeyDiagram({}, {

@@ -1,3 +1,13 @@
-* {
-    line-height: 1;
+@import '../../../variables';
+
+.input-container {
+    label {
+        width: 30%;
+
+        input {
+            background: transparent;
+            border-color: $primary;
+            color: $primary;
+        }
+    }
 }

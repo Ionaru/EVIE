@@ -1,23 +1,16 @@
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { generateNumbersArray, sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { EVE, IMarketOrdersData } from '@ionaru/eve-utils';
 
 import { BaseService } from './base.service';
+import { ConstellationsService } from './constellations.service';
+import { SystemsService } from './systems.service';
 
 @Injectable()
 export class MarketService extends BaseService {
 
-    public async getPriceForAmount(regionId: number, typeId: number, amount: number, type: 'buy' | 'sell' = 'sell'):
-        Promise<number | undefined> {
-        const orders = await this.getMarketOrders(regionId, typeId, type);
-
-        if (!orders) {
-            return;
-        }
-
-        sortArrayByObjectProperty(orders, 'price', type === 'buy');
-
+    private static getPriceForOrderAmount(orders: IMarketOrdersData, amount: number) {
         let price = 0;
         let unitsLeft = amount;
 
@@ -39,11 +32,54 @@ export class MarketService extends BaseService {
         return price;
     }
 
+    constructor(
+        protected http: HttpClient,
+        private systemsService: SystemsService,
+        private constellationsService: ConstellationsService,
+    ) {
+        super(http);
+    }
+
+    public async getPriceForAmountInSystem(systemId: number, typeId: number, amount: number, type: 'buy' | 'sell' = 'sell'):
+        Promise<number | undefined> {
+
+        const systemInfo = await this.systemsService.getSystemInfo(systemId);
+        if (!systemInfo) {
+            return;
+        }
+
+        const constellationInfo = await this.constellationsService.getConstellation(systemInfo.constellation_id);
+        if (!constellationInfo) {
+            return;
+        }
+
+        const orders = await this.getMarketOrders(constellationInfo.region_id, typeId, type);
+        if (!orders) {
+            return;
+        }
+
+        const systemOrders = orders.filter((order) => order.system_id === systemId);
+
+        sortArrayByObjectProperty(systemOrders, 'price', type === 'buy');
+        return MarketService.getPriceForOrderAmount(systemOrders, amount);
+    }
+
+    public async getPriceForAmount(regionId: number, typeId: number, amount: number, type: 'buy' | 'sell' = 'sell'):
+        Promise<number | undefined> {
+
+        const orders = await this.getMarketOrders(regionId, typeId, type);
+        if (!orders) {
+            return;
+        }
+
+        sortArrayByObjectProperty(orders, 'price', type === 'buy');
+        return MarketService.getPriceForOrderAmount(orders, amount);
+    }
+
     public async getMarketOrders(regionId: number, typeId: number, type: 'buy' | 'sell' | 'all' = 'all'):
         Promise<IMarketOrdersData | undefined> {
 
         const response = await this.getMarketOrdersPage(regionId, typeId, 1, type);
-
         if (!response) {
             return;
         }

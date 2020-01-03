@@ -1,75 +1,119 @@
-<div class="input-fields">
-    <p>Item to produce</p>
-    <p>Buy/Sell</p>
+<div class="input-fields container">
 
-    <input type="text" class="form-control" placeholder="Choose an item"
-           [(ngModel)]="selectedItem"
-           [ngbTypeahead]="characterNames"
-           [resultFormatter]="resultFormatBandListValue"
-           [inputFormatter]="inputFormatBandListValue"
-           (ngModelChange)="recFun2()"
-    />
+    <form (ngSubmit)="recFun2()" [ngFormOptions]="{updateOn: 'blur'}">
 
-    <button class="btn btn-outline-primary">Import blueprints from all characters</button>
+        <div class="input-container d-flex flex-row justify-content-evenly">
+            <label>
+                Buying system
+                <input type="text" class="form-control" placeholder="Choose a system to buy material from"
+                       [(ngModel)]="chosenBuySystem"
+                       [editable]="false"
+                       [ngbTypeahead]="regionSearch"
+                       [resultFormatter]="resultFormatNameData"
+                       [inputFormatter]="inputFormatNameData"
+                       name="buy-region"
+                       [required]="true"
+                />
+            </label>
+
+            <label>
+                Item
+                <input type="text" class="form-control" placeholder="Choose an item to produce"
+                       [(ngModel)]="selectedItem"
+                       [editable]="false"
+                       [ngbTypeahead]="typeSearch"
+                       [resultFormatter]="resultFormatNameData"
+                       [inputFormatter]="inputFormatNameData"
+                       [ngModelOptions]="{standalone: true}"
+                       [required]="true"
+                />
+            </label>
+
+            <label>
+                Selling system
+                <input type="text" class="form-control" placeholder="Choose a system to sell the item in"
+                       [(ngModel)]="chosenSellSystem"
+                       [editable]="false"
+                       [ngbTypeahead]="regionSearch"
+                       [resultFormatter]="resultFormatNameData"
+                       [inputFormatter]="inputFormatNameData"
+                       [ngModelOptions]="{standalone: true}"
+                       [required]="true"
+                />
+            </label>
+        </div>
+
+        <br>
+
+        <div class="input-button-container d-flex flex-row justify-content-evenly">
+            <button class="btn btn-outline-info">Calculate</button>
+        </div>
+
+    </form>
+
 </div>
 
 <hr>
 
-<div *ngFor="let key of bupKeys()">
-    <img *ngFor="let bp of bups[key]" src="https://images.evetech.net/types/{{bp}}/icon?size=64">
-    <hr>
+<div class="container">
+    <ng-container *ngIf="calculating !== undefined; else start_message">
+        <ng-container *ngIf="!calculating; else calculating_message">
+            <ng-container *ngIf="!message; else error_message">
+
+                <div id="blueprints">
+                    <h2>Used blueprints</h2>
+                    <ul>
+                        <li *ngFor="let item of usedBlueprints">
+                            <p>
+                                <img src="https://images.evetech.net/types/{{item[0]}}/bp?size=32" alt="blueprint image">
+                                {{ item[0] }} ( -{{ item[1] }}% )
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div id="shopping-list">
+                    <h2>Shopping list</h2>
+                    <ul>
+                        <li *ngFor="let item of shoppingList.list | keyvalue">
+                            <p>
+                                <img src="https://images.evetech.net/types/{{item.key}}/icon?size=32" alt="material image">
+                                {{ getName(item.key) }} x {{ item.value }}
+                            </p>
+                        </li>
+                    </ul>
+                    <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
+                </div>
+
+                <p *ngIf="worthToProduce">YES</p>
+                <p *ngIf="!worthToProduce">NO</p>
+                <p>{{ profit | number : '1.0-0' }} %</p>
+
+<!--                <hr>-->
+
+<!--                <div id="sankey-diagram">-->
+<!--                    <plotly-plot [data]="plotlyData" [layout]="plotlyLayout" [config]="{-->
+<!--            setBackground: setPlotlyBackground,-->
+<!--            displayModeBar: false,-->
+<!--            responsive: true-->
+<!--            }"></plotly-plot>-->
+<!--                </div>-->
+            </ng-container>
+        </ng-container>
+    </ng-container>
 </div>
 
-<ng-container *ngIf="calculating !== undefined; else start_message">
-    <ng-container *ngIf="!calculating; else calculating_message">
-
-        <div id="blueprints">
-            <h2>Used blueprints</h2>
-            <ul>
-                <li *ngFor="let item of usedBlueprints">
-                    <p>
-                        <img src="https://images.evetech.net/types/{{item[0]}}/bp?size=32">
-                        {{ item[0] }} ( -{{ item[1] }}% )
-                    </p>
-                </li>
-            </ul>
-        </div>
-
-        <div id="shopping-list">
-            <h2>Shopping list</h2>
-            <ul>
-                <li *ngFor="let item of shoppingList.list | keyvalue">
-                    <p>
-                        <img src="https://images.evetech.net/types/{{item.key}}/icon?size=32">
-                        {{ getName(item.key) }} x {{ item.value }}
-                    </p>
-                </li>
-            </ul>
-            <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
-        </div>
-
-        <p *ngIf="worthToProduce">YES</p>
-        <p *ngIf="!worthToProduce">NO</p>
-        <p>{{ profit | number : '1.0-0' }} %</p>
-
-        <hr>
-
-        <div id="sankey-diagram">
-            <plotly-plot [data]="plotlyData" [layout]="plotlyLayout" [config]="{
-        setBackground: setPlotlyBackground,
-        displayModeBar: false,
-        responsive: true
-        }"></plotly-plot>
-        </div>
-    </ng-container>
-
-    <ng-template #calculating_message>
-        <app-loading-message>
-            Running calculation...
-            <span *ngIf="currentMaterial">({{ currentMaterial }})</span>
-        </app-loading-message>
-    </ng-template>
-</ng-container>
 <ng-template #start_message>
-    <p>Choose an item</p>
+    <p class="text-center">Choose an item</p>
+</ng-template>
+
+<ng-template #error_message>
+    <p class="text-center text-danger">{{ message }}</p>
+</ng-template>
+
+<ng-template #calculating_message>
+    <app-loading-message>
+        Running calculation...
+        <span *ngIf="currentMaterial">({{ currentMaterial }})</span>
+    </app-loading-message>
 </ng-template>

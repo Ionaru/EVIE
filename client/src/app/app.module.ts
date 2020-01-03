@@ -20,6 +20,7 @@ import { SorTableComponent } from './components/sor-table/sor-table.component';
 import { AssetsService } from './data-services/assets.service';
 import { AttributesService } from './data-services/attributes.service';
 import { BlueprintsService } from './data-services/blueprints.service';
+import { ConstellationsService } from './data-services/constellations.service';
 import { IndustryJobsService } from './data-services/industry-jobs.service';
 import { IndustryService } from './data-services/industry.service';
 import { MarketService } from './data-services/market.service';
@@ -141,6 +142,7 @@ if (environment.production) {
         StructuresService,
         StationsService,
         SystemsService,
+        ConstellationsService,
         MarketService,
         SocketService,
         AssetsService,
