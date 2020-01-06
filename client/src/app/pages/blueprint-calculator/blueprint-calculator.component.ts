@@ -1,61 +1,55 @@
 // TODO: Remove line below.
 // tslint:disable
 
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { IUniverseNamesDataUnit, IUniverseTypeData } from '@ionaru/eve-utils';
+import { map } from 'rxjs/operators';
+// import { Observable, of } from 'rxjs';
+// import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
-// import { Calc } from '../../../shared/calc.helper';
+import { Calc } from '../../../shared/calc.helper';
 import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IManufacturingData, IndustryService } from '../../data-services/industry.service';
 import { MarketService } from '../../data-services/market.service';
-import { NamesService } from '../../data-services/names.service';
+// import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
 // import { SankeyDiagram } from './sankey-diagram';
-import { Observable, of } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { SearchService, SearchType } from '../../data-services/search.service';
-import { IUniverseNamesDataUnit } from '@ionaru/eve-utils';
 
 interface IUsedBlueprints {
     0: number;
     1: number;
 }
 
-class ShoppingList {
-
-    public readonly list: xxx = {};
-
-    public volume = 0;
-
-    public add(id: number, quantity: number) {
-        if (this.list[id]) {
-            this.list[id] += quantity;
-        } else {
-            this.list[id] = quantity;
-        }
-    }
-
-    public merge(shoppingList: ShoppingList, amount = 1) {
-        for (const id in shoppingList.list) {
-            if (shoppingList.list.hasOwnProperty(id)) {
-                this.add(Number(id), shoppingList.list[id] * amount);
-            }
-        }
-    }
+class ShoppingList2 {
+    public readonly list: IndustryNode[] = [];
 }
 
 class IndustryNode {
-    price = 0;
-    quantity?: number;
+    price = Infinity;
+    quantity: number;
     acquireMethod?: AcquireMethod;
-    product?: number;
-    producePrice?: number;
+    product: IUniverseTypeData;
+    producePrice = Infinity;
     children: IndustryNode[] = [];
+
+
+    constructor(product: IUniverseTypeData, quantity: number) {
+        this.product = product;
+        this.quantity = quantity;
+    }
 }
 
 enum AcquireMethod {
     PURCHASE,
     PRODUCE,
+}
+
+interface IInput {
+    data?: IUniverseNamesDataUnit;
+    input?: string;
 }
 
 @Component({
@@ -65,73 +59,73 @@ enum AcquireMethod {
 })
 export class BlueprintCalculatorComponent implements OnInit {
 
-    public baseMats: string[] = [];
-    public bups: yyy = {};
-
     public plotlyData: any;
     public plotlyLayout: any;
 
     public calculating?: boolean;
 
     public currentMaterial?: string;
-    public worthToProduce = false;
 
-    public selectedItem?: IUniverseNamesDataUnit;
-    public chosenSellSystem?: IUniverseNamesDataUnit;
-    public chosenBuySystem?: IUniverseNamesDataUnit;
+    public item: IInput = {};
+    @ViewChild('input_item') inputItemElement!: ElementRef<HTMLInputElement>;
 
+    public sellSystem: IInput = {};
+    @ViewChild('input_sell_system') inputSellSystemElement!: ElementRef<HTMLInputElement>;
+
+    public buySystem: IInput = {};
+    @ViewChild('input_buy_system') inputBuySystemElement!: ElementRef<HTMLInputElement>;
+
+    public profitPercentage = 0;
     public profit = 0;
+    public chain?: IndustryNode;
 
-    public shoppingList = new ShoppingList();
+    public shoppingList = new ShoppingList2();
+    public shoppingVolume = 0;
 
     public usedBlueprints: IUsedBlueprints[] = [];
 
     public message?: string;
 
-    public typeSearch = (text$: Observable<string>) => {
-        return this.searcher(text$, 'type');
-    };
+    // public typeSearch = (text$: Observable<string>) => {
+    //     return this.searcher(text$, 'type');
+    // };
+    //
+    // public regionSearch = (text$: Observable<string>) => {
+    //     return this.searcher(text$, 'system');
+    // };
 
-    public regionSearch = (text$: Observable<string>) => {
-        return this.searcher(text$, 'system');
-    };
-
-    public searcher(text$: Observable<string>, searchType: SearchType) {
-        return text$?.pipe(
-            debounceTime(200),
-            distinctUntilChanged(),
-            switchMap((searchText) =>
-                this.searchService.search(searchText, searchType).pipe(
-                    catchError(() => of(['Nothing found']))
-                )
-            ),
-            map((res) => [Array.isArray(res) ? res[0] : res.data])
-        );
-    }
+    // public searcher(text$: Observable<string>, searchType: SearchType) {
+    //     return text$?.pipe(
+    //         debounceTime(200),
+    //         distinctUntilChanged(),
+    //         switchMap((searchText) =>
+    //             this.searchService.search(searchText, searchType).pipe(
+    //                 catchError(() => of(['Nothing found']))
+    //             )
+    //         ),
+    //         map((res) => [Array.isArray(res) ? res[0] : res.data])
+    //     );
+    // }
 
     constructor(
         private blueprintsService: BlueprintsService,
         private industryService: IndustryService,
         private marketService: MarketService,
-        private namesService: NamesService,
+        // private namesService: NamesService,
         private searchService: SearchService,
         private typesService: TypesService,
+        private route: ActivatedRoute,
+        private router: Router,
     ) { }
 
-    public ngOnInit() {
-        this.bups = {};
-        this.baseMats = [];
-
-        // const item = 11393; // Retribution
-        // const item = 25898; // Large Nanobot Accelerator I
-        // const item = 40340; // Keepstar
-        // const item = 12003; // Zealot
-        // const item = 11365; // Vengeance
-        // const item = 11184; // Crusader
-        // const item = 578; // adaptive invul field I
-        //
-        // this.recFun(item).then();
-        // this.recFun2(item).then();
+    public async ngOnInit() {
+        this.route.queryParamMap.pipe(map(
+            (params) => {
+                this.sellSystem.input = params.get('sellSystem') || 'Jita';
+                this.buySystem.input = params.get('buySystem') || 'Jita';
+                this.item.input = params.get('item') || '';
+            })
+        ).toPromise().then();
     }
 
     public resultFormatNameData(value: any): string {
@@ -144,12 +138,14 @@ export class BlueprintCalculatorComponent implements OnInit {
 
     public setPlotlyBackground = () => 'transparent';
 
-    public getName = (id: number | string) => NamesService.getNameFromData(Number(id));
-
-    public bupKeys = () => Object.keys(this.bups);
+    public loggedIn = !!CharacterService.selectedCharacter;
 
     public async adjustMaterialsNeededByBlueprintMaterialEfficiency(manufacturingData: IManufacturingData) {
-        const blueprints = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter!);
+        if (!CharacterService.selectedCharacter) {
+            return;
+        }
+
+        const blueprints = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
         const subBlueprint = blueprints.find((blueprint) => blueprint.type_id === manufacturingData.blueprintId);
 
         if (subBlueprint) {
@@ -170,6 +166,17 @@ export class BlueprintCalculatorComponent implements OnInit {
         return manufacturingData;
     }
 
+    public flatten<T>(array: T[], childSelector: (element: T) => T[]): T[] {
+        return array.reduce((accumulator: T[], currentValue) => {
+            accumulator = accumulator.concat(currentValue);
+            const children = childSelector(currentValue);
+            if (children) {
+                accumulator = accumulator.concat(this.flatten(children, childSelector));
+            }
+            return accumulator;
+        }, []);
+    }
+
     public async createSupplyChain3(material: number, quantity = 1, initialPrice?: number) {
         const info = await this.typesService.getType(material);
         if (!info) {
@@ -177,15 +184,13 @@ export class BlueprintCalculatorComponent implements OnInit {
         }
 
         this.currentMaterial = info.name;
-        const node = new IndustryNode();
-        node.product = material;
-        node.quantity = quantity;
+        const node = new IndustryNode(info, quantity);
 
         let price;
         if (initialPrice) {
             price = initialPrice;
         } else {
-            price = await this.marketService.getPriceForAmountInSystem(this.chosenBuySystem!.id, material, quantity, 'buy');
+            price = await this.marketService.getPriceForAmountInSystem(this.buySystem.data!.id, material, quantity, 'buy');
         }
 
         const manufacturingData = await this.industryService.getManufacturingData(material);
@@ -223,23 +228,88 @@ export class BlueprintCalculatorComponent implements OnInit {
         return node;
     }
 
-    public async recFun2() {
+    public async processInput() {
 
-        if (!this.selectedItem?.id || !this.chosenSellSystem?.id || !this.chosenBuySystem?.id) {
+        const results = await Promise.all([
+            await this.processInputElement(this.inputItemElement, this.item, 'type'),
+            await this.processInputElement(this.inputSellSystemElement, this.sellSystem, 'system'),
+            await this.processInputElement(this.inputBuySystemElement, this.buySystem, 'system'),
+        ]);
+
+        if (results.every((result) => result)) {
+            this.recFun2();
+        }
+    }
+
+    public async processInputElement(element: ElementRef<HTMLInputElement>, thing: IInput, searchType: SearchType) {
+
+        if (thing.data && thing.data.name === thing.input) {
+            return true;
+        }
+
+        this.setValidity(element);
+        thing.data = undefined;
+
+        if (!thing.input || !thing.input.length) {
             return;
         }
 
+        const result = await this.searchService.search(thing.input, searchType);
+        if (!result || !result.id) {
+            this.setValidity(element, false);
+            return;
+        }
+
+        thing.data = result;
+        thing.input = result.name;
+        this.setValidity(element, true);
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+                item: this.item.input,
+                sellSystem: this.sellSystem.input,
+                buySystem: this.buySystem.input,
+            },
+            queryParamsHandling: 'merge'
+        }).then();
+        return true;
+    }
+
+    public setValidity(element: ElementRef<HTMLInputElement>, valid?: boolean) {
+
+        const invalidClass = 'is-invalid';
+        const validClass = 'is-valid';
+
+        // Reset
+        element.nativeElement.classList.remove(invalidClass);
+        element.nativeElement.classList.remove(validClass);
+
+        if (valid === true) {
+            element.nativeElement.classList.add(validClass);
+            return;
+        }
+
+        if (valid === false) {
+            element.nativeElement.classList.add(invalidClass);
+        }
+    }
+
+    public async recFun2() {
+
+        if (!this.item.data?.id || !this.sellSystem.data?.id || !this.buySystem.data?.id) {
+            return;
+        }
+
+        this.chain = undefined;
         this.message = undefined;
         this.calculating = true;
-        this.shoppingList = new ShoppingList();
+        this.shoppingList = new ShoppingList2();
+        this.shoppingVolume = 0;
         this.usedBlueprints = [];
         this.currentMaterial = 'Initializing';
 
-        // const marketRegion = 10000002; // The Forge
-        // const marketRegion = 10000043; // Domain
-
         // NEW
-        const productPrice = await this.marketService.getPriceForAmountInSystem(this.chosenSellSystem.id, this.selectedItem.id, 1, 'sell');
+        const productPrice = await this.marketService.getPriceForAmountInSystem(this.sellSystem.data.id, this.item.data.id, 1, 'sell');
 
         if (!productPrice) {
             this.message = 'Unable to determine price for final product.';
@@ -247,13 +317,28 @@ export class BlueprintCalculatorComponent implements OnInit {
             return;
         }
 
-        const chain = await this.createSupplyChain3(this.selectedItem.id, 1, productPrice).catch((error: Error) => {
+        const chain = await this.createSupplyChain3(this.item.data.id, 1, productPrice).catch((error: Error) => {
             this.message = `Cannot complete calculation, reason: ${error.message}`;
         });
-        console.dir(chain);
 
         if (chain) {
             this.calculating = false;
+
+            this.chain = chain;
+
+            this.profit = chain.price - chain.producePrice;
+            this.profitPercentage = Calc.profitPercentage(chain.producePrice, chain.price);
+
+            const flatChain = this.flatten([chain], (industryNode) => industryNode.children);
+
+            for (const node of flatChain) {
+                if (node.acquireMethod === AcquireMethod.PURCHASE) {
+                    this.shoppingList.list.push(node);
+                }
+            }
+            this.shoppingVolume = this.shoppingList.list.reduce(
+                (accumulator, node) => accumulator + ((node.product.volume || 0) * node.quantity), 0);
+
         }
 
         // this.worthToProduce = chain
@@ -370,72 +455,4 @@ export class BlueprintCalculatorComponent implements OnInit {
 
         this.calculating = false;
     }
-
-    public async recFun(m = 11184) {
-        const i = await this.industryService.getManufacturingData(m);
-        if (!i) {
-            return;
-        }
-
-        this.bups[0] = [m];
-
-        let bupcCount = 1;
-
-        const matob: xxx = {};
-
-        // this.bpMats = i.materials.map((h) => h.id);
-
-        const materials = i.materials;
-
-        this.bups[bupcCount] = i.materials.map((b) => b.id);
-
-        for (const mat of materials) {
-            matob[mat.id] = mat.quantity;
-        }
-
-        const bp = [];
-
-        let matsLeft = true;
-
-        while (matsLeft) {
-
-            matsLeft = false;
-
-            for (const [id, quantity] of Object.entries(matob)) {
-                const j = await this.industryService.getManufacturingData(Number(id));
-                if (j) {
-                    for (const mat of j.materials) {
-                        const q = mat.quantity * quantity;
-                        matob[mat.id] = matob[mat.id] ? matob[mat.id] + q : q;
-                    }
-                    matsLeft = true;
-                    bp.push(j.blueprintId.toString());
-                    delete matob[id];
-                }
-            }
-
-            if (matsLeft) {
-                bupcCount++;
-                this.bups[bupcCount] = Object.keys(matob).map((z) => Number(z));
-            }
-        }
-
-        this.baseMats.push(...Object.keys(matob));
-        this.baseMats.push(...bp);
-
-        await this.namesService.getNames(...Object.keys(matob));
-
-        const matob2: xxx = {};
-        for (const id of Object.keys(matob)) {
-            matob2[NamesService.getNameFromData(Number(id))] = matob[id];
-        }
-    }
-}
-
-interface xxx {
-    [index: string]: number;
-}
-
-interface yyy {
-    [index: string]: number[];
 }

@@ -1,66 +1,68 @@
 <div class="input-fields container">
 
-    <form (ngSubmit)="recFun2()" [ngFormOptions]="{updateOn: 'blur'}">
+    <div class="input-container d-flex flex-row justify-content-evenly">
+        <label>
+            Buying system
+            <input type="text" class="form-control" placeholder="Choose a system to buy material from"
+                   [(ngModel)]="buySystem.input"
+                   (ngModelChange)="setValidity(inputBuySystemElement)"
+                   #input_buy_system
+                   [required]="true"
+            />
+        </label>
 
-        <div class="input-container d-flex flex-row justify-content-evenly">
-            <label>
-                Buying system
-                <input type="text" class="form-control" placeholder="Choose a system to buy material from"
-                       [(ngModel)]="chosenBuySystem"
-                       [editable]="false"
-                       [ngbTypeahead]="regionSearch"
-                       [resultFormatter]="resultFormatNameData"
-                       [inputFormatter]="inputFormatNameData"
-                       name="buy-region"
-                       [required]="true"
-                />
-            </label>
+        <label>
+            Item
+            <input type="text" class="form-control" placeholder="Choose an item to produce"
+                   [(ngModel)]="item.input"
+                   (ngModelChange)="setValidity(inputItemElement)"
+                   #input_item
+                   [required]="true"
+            />
+        </label>
 
-            <label>
-                Item
-                <input type="text" class="form-control" placeholder="Choose an item to produce"
-                       [(ngModel)]="selectedItem"
-                       [editable]="false"
-                       [ngbTypeahead]="typeSearch"
-                       [resultFormatter]="resultFormatNameData"
-                       [inputFormatter]="inputFormatNameData"
-                       [ngModelOptions]="{standalone: true}"
-                       [required]="true"
-                />
-            </label>
+        <label>
+            Selling system
+            <input type="text" class="form-control" placeholder="Choose a system to sell the item in"
+                   [(ngModel)]="sellSystem.input"
+                   (ngModelChange)="setValidity(inputSellSystemElement)"
+                   #input_sell_system
+                   [required]="true"
+            />
+        </label>
+    </div>
 
-            <label>
-                Selling system
-                <input type="text" class="form-control" placeholder="Choose a system to sell the item in"
-                       [(ngModel)]="chosenSellSystem"
-                       [editable]="false"
-                       [ngbTypeahead]="regionSearch"
-                       [resultFormatter]="resultFormatNameData"
-                       [inputFormatter]="inputFormatNameData"
-                       [ngModelOptions]="{standalone: true}"
-                       [required]="true"
-                />
-            </label>
-        </div>
-
+    <ng-container *ngIf="!loggedIn">
         <br>
+        <p class="text-center">Tip: Log in and provide the 'read blueprints' scope to use your blueprints in the calculations.</p>
+    </ng-container>
+    <br>
 
-        <div class="input-button-container d-flex flex-row justify-content-evenly">
-            <button class="btn btn-outline-info">Calculate</button>
-        </div>
-
-    </form>
+    <div class="input-button-container d-flex flex-row justify-content-evenly">
+        <button class="btn btn-outline-success" (click)="processInput()">Calculate</button>
+    </div>
 
 </div>
 
 <hr>
 
-<div class="container">
+<div class="container text-center">
     <ng-container *ngIf="calculating !== undefined; else start_message">
         <ng-container *ngIf="!calculating; else calculating_message">
             <ng-container *ngIf="!message; else error_message">
 
-                <div id="blueprints">
+                <p>Producing this item will yield {{ profit | number: '1.2-2' }} ISK ({{ profitPercentage | number : '1.0-0' }} %) profits.</p>
+                <p>Suggestion: <b><span *ngIf="profit <= 0">do not</span> produce this item!</b></p>
+
+                <br>
+
+                <p>Material buy price: {{ chain.producePrice | number: '1.2-2' }} ISK</p>
+                <p>Production price: <span class="text-warning">unknown, coming soon.</span></p>
+                <p>Item sell price: {{ chain.price | number: '1.2-2' }} ISK</p>
+
+                <br>
+
+                <div id="blueprints" *ngIf="usedBlueprints.length">
                     <h2>Used blueprints</h2>
                     <ul>
                         <li *ngFor="let item of usedBlueprints">
@@ -75,19 +77,15 @@
                 <div id="shopping-list">
                     <h2>Shopping list</h2>
                     <ul>
-                        <li *ngFor="let item of shoppingList.list | keyvalue">
+                        <li *ngFor="let item of shoppingList.list">
                             <p>
-                                <img src="https://images.evetech.net/types/{{item.key}}/icon?size=32" alt="material image">
-                                {{ getName(item.key) }} x {{ item.value }}
+                                <img src="https://images.evetech.net/types/{{item.product.type_id}}/icon?size=32" alt="material image">
+                                {{ item.product.name }} x {{ item.quantity }}
                             </p>
                         </li>
                     </ul>
-                    <p>{{shoppingList.volume | number : '1.0-0'}}m³</p>
+                    <p>{{shoppingVolume | number : '1.0-0'}}m³</p>
                 </div>
-
-                <p *ngIf="worthToProduce">YES</p>
-                <p *ngIf="!worthToProduce">NO</p>
-                <p>{{ profit | number : '1.0-0' }} %</p>
 
 <!--                <hr>-->
 
@@ -112,7 +110,7 @@
 </ng-template>
 
 <ng-template #calculating_message>
-    <app-loading-message>
+    <app-loading-message class="text-center">
         Running calculation...
         <span *ngIf="currentMaterial">({{ currentMaterial }})</span>
     </app-loading-message>
