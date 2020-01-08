@@ -3,7 +3,7 @@
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IUniverseNamesDataUnit, IUniverseTypeData } from '@ionaru/eve-utils';
+import { ICharacterBlueprintsDataUnit, IUniverseNamesDataUnit, IUniverseTypeData } from '@ionaru/eve-utils';
 import { map } from 'rxjs/operators';
 // import { Observable, of } from 'rxjs';
 // import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
@@ -18,13 +18,18 @@ import { CharacterService } from '../../models/character/character.service';
 // import { SankeyDiagram } from './sankey-diagram';
 import { SearchService, SearchType } from '../../data-services/search.service';
 
-interface IUsedBlueprints {
-    0: number;
-    1: number;
-}
-
 class ShoppingList2 {
     public readonly list: IndustryNode[] = [];
+
+    public add(nodeToAdd: IndustryNode) {
+        const existingNode = this.list.find((node) => node.product.type_id === nodeToAdd.product.type_id);
+        if (existingNode) {
+            existingNode.quantity += nodeToAdd.quantity;
+            existingNode.price += nodeToAdd.price;
+        } else {
+            this.list.push(nodeToAdd);
+        }
+    }
 }
 
 class IndustryNode {
@@ -69,6 +74,15 @@ export class BlueprintCalculatorComponent implements OnInit {
     public item: IInput = {};
     @ViewChild('input_item') inputItemElement!: ElementRef<HTMLInputElement>;
 
+    public tax: number = 0;
+    @ViewChild('input_tax') inputTaxElement!: ElementRef<HTMLInputElement>;
+
+    public quantity: number = 1;
+    @ViewChild('input_quantity') inputQuantityElement!: ElementRef<HTMLInputElement>;
+
+    public productionSystem: IInput = {};
+    @ViewChild('input_production_system') inputProductionSystem!: ElementRef<HTMLInputElement>;
+
     public sellSystem: IInput = {};
     @ViewChild('input_sell_system') inputSellSystemElement!: ElementRef<HTMLInputElement>;
 
@@ -82,7 +96,7 @@ export class BlueprintCalculatorComponent implements OnInit {
     public shoppingList = new ShoppingList2();
     public shoppingVolume = 0;
 
-    public usedBlueprints: IUsedBlueprints[] = [];
+    public usedBlueprints: ICharacterBlueprintsDataUnit[] = [];
 
     public message?: string;
 
@@ -149,7 +163,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         const subBlueprint = blueprints.find((blueprint) => blueprint.type_id === manufacturingData.blueprintId);
 
         if (subBlueprint) {
-            this.usedBlueprints.push([subBlueprint.type_id, subBlueprint.material_efficiency]);
+            this.usedBlueprints.push(subBlueprint);
 
             manufacturingData.materials = manufacturingData.materials.map((material) => {
 
@@ -190,7 +204,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         if (initialPrice) {
             price = initialPrice;
         } else {
-            price = await this.marketService.getPriceForAmountInSystem(this.buySystem.data!.id, material, quantity, 'buy');
+            price = await this.marketService.getPriceForAmountInSystem(this.buySystem.data!.id, material, quantity, 'sell');
         }
 
         const manufacturingData = await this.industryService.getManufacturingData(material);
@@ -309,7 +323,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         this.currentMaterial = 'Initializing';
 
         // NEW
-        const productPrice = await this.marketService.getPriceForAmountInSystem(this.sellSystem.data.id, this.item.data.id, 1, 'sell');
+        const productPrice = await this.marketService.getPriceForAmountInSystem(this.sellSystem.data.id, this.item.data.id, this.quantity, 'buy');
 
         if (!productPrice) {
             this.message = 'Unable to determine price for final product.';
@@ -317,7 +331,7 @@ export class BlueprintCalculatorComponent implements OnInit {
             return;
         }
 
-        const chain = await this.createSupplyChain3(this.item.data.id, 1, productPrice).catch((error: Error) => {
+        const chain = await this.createSupplyChain3(this.item.data.id, this.quantity, productPrice).catch((error: Error) => {
             this.message = `Cannot complete calculation, reason: ${error.message}`;
         });
 
@@ -333,7 +347,7 @@ export class BlueprintCalculatorComponent implements OnInit {
 
             for (const node of flatChain) {
                 if (node.acquireMethod === AcquireMethod.PURCHASE) {
-                    this.shoppingList.list.push(node);
+                    this.shoppingList.add(node);
                 }
             }
             this.shoppingVolume = this.shoppingList.list.reduce(

@@ -1,7 +1,16 @@
 import {
     EVE,
-    IIndustryActivityData, IIndustryActivityMaterialsData, IIndustryActivityProductsData, IIndustryActivitySkillsData,
-    IInvTypeMaterialsData, IMarketGroupData, IndustryActivity, IUniverseCategoryData, IUniverseGroupData, IUniverseTypeData,
+    IIndustryActivityData,
+    IIndustryActivityMaterialsData,
+    IIndustryActivityProductsData,
+    IIndustryActivitySkillsData, IIndustrySystemsData,
+    IIndustrySystemsDataUnit,
+    IInvTypeMaterialsData,
+    IMarketGroupData,
+    IndustryActivity,
+    IUniverseCategoryData,
+    IUniverseGroupData,
+    IUniverseTypeData,
 } from '@ionaru/eve-utils';
 
 import { esiCache, esiService } from '../index';
@@ -24,6 +33,15 @@ interface IManufacturingData {
 }
 
 export class DataController {
+
+    public static async getIndustrySystem(systemId: number): Promise<IIndustrySystemsDataUnit | undefined> {
+        const industrySystems = await esiService.fetchESIData<IIndustrySystemsData>(EVE.getIndustrySystemsUrl());
+        if (!industrySystems) {
+            return;
+        }
+
+        return industrySystems.find((industrySystem) => industrySystem.solar_system_id === systemId);
+    }
 
     public static async getRefiningProducts(typeId: number): Promise<Array<{ id: number, quantity: number }>> {
         const materials = await esiService.fetchESIData<IInvTypeMaterialsData>(EVE.getInvTypeMaterialsUrl());

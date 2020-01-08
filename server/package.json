@@ -23,7 +23,7 @@
     },
     "dependencies": {
         "@ionaru/esi-service": "^3.2.2",
-        "@ionaru/eve-utils": "^4.4.0",
+        "@ionaru/eve-utils": "^5.0.1-68.0",
         "@ionaru/random-string": "^1.1.1",
         "@ionaru/web-server": "^3.0.0",
         "@sentry/node": "^5.10.2",

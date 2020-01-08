@@ -7,11 +7,11 @@ import { BaseRouter } from './base.router';
 export class DataRouter extends BaseRouter {
 
     private static getTypeId(request: Request) {
-        if (!request.params || Array.isArray(request.params) || !request.params.typeId) {
+        if (!request.params || Array.isArray(request.params) || !request.params.id) {
             return;
         }
 
-        return Number(request.params.typeId);
+        return Number(request.params.id);
     }
 
     @DataRouter.requestDecorator(DataRouter.checkAuthorizedClient)
@@ -88,6 +88,28 @@ export class DataRouter extends BaseRouter {
         return DataRouter.sendSuccessResponse(response, marketTypes);
     }
 
+    // noinspection JSUnusedLocalSymbols
+    @DataRouter.requestDecorator(DataRouter.checkAuthorizedClient)
+    private static async getIndustrySystem(request: Request, response: Response): Promise<Response> {
+        const systemId = DataRouter.getTypeId(request);
+
+        if (!systemId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
+        if (isNaN(systemId)) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+        }
+
+        const industrySystem = await DataController.getIndustrySystem(systemId);
+
+        if (!industrySystem) {
+            return DataRouter.send404(response);
+        }
+
+        return DataRouter.sendSuccessResponse(response, industrySystem);
+    }
+
     @DataRouter.requestDecorator(DataRouter.checkAuthorizedClient)
     private static async getTypes(request: Request, response: Response): Promise<Response> {
 
@@ -113,7 +135,8 @@ export class DataRouter extends BaseRouter {
         this.createRoute('get', '/skill-ids', DataRouter.getSkillIds);
         this.createRoute('get', '/market-types', DataRouter.getMarketTypes);
         this.createRoute('get', '/market-ids', DataRouter.getMarketIds);
-        this.createRoute('get', '/manufacturing/:typeId', DataRouter.getManufacturingInfo);
-        this.createRoute('get', '/refining/:typeId', DataRouter.getRefiningProducts);
+        this.createRoute('get', '/manufacturing/:id', DataRouter.getManufacturingInfo);
+        this.createRoute('get', '/refining/:id', DataRouter.getRefiningProducts);
+        this.createRoute('get', '/industry/system/:id', DataRouter.getIndustrySystem);
     }
 }

@@ -31,11 +31,45 @@
             />
         </label>
     </div>
+    <div class="input-container d-flex flex-row justify-content-evenly">
+        <label>
+            Production system
+            <input type="text" class="form-control" placeholder="Choose where to produce this item"
+                   [(ngModel)]="productionSystem.input"
+                   (ngModelChange)="setValidity(inputProductionSystem)"
+                   #input_production_system
+                   [required]="true"
+            />
+        </label>
+
+        <label>
+            Industry tax
+            <input type="text" class="form-control" placeholder="Set the facility tax"
+                   [(ngModel)]="tax"
+                   (ngModelChange)="setValidity(inputTaxElement)"
+                   #input_tax
+                   [required]="true"
+            />
+        </label>
+
+        <label>
+            Quantity
+            <input type="text" class="form-control" placeholder="Set the quantity of items to produce"
+                   [(ngModel)]="quantity"
+                   (ngModelChange)="setValidity(inputQuantityElement)"
+                   #input_quantity
+                   [required]="true"
+            />
+        </label>
+    </div>
 
     <ng-container *ngIf="!loggedIn">
         <br>
         <p class="text-center">Tip: Log in and provide the 'read blueprints' scope to use your blueprints in the calculations.</p>
     </ng-container>
+    <br>
+    <p class="text-center">Note: This calculator does not factor in Structure Rigs, or the Structure Role Bonus of Engineering Complexes because this data is not available to Third-Party applications.</p>
+    <p class="text-center">This means the actual profit of production can be a few percent higher than shown here.</p>
     <br>
 
     <div class="input-button-container d-flex flex-row justify-content-evenly">
@@ -67,8 +101,8 @@
                     <ul>
                         <li *ngFor="let item of usedBlueprints">
                             <p>
-                                <img src="https://images.evetech.net/types/{{item[0]}}/bp?size=32" alt="blueprint image">
-                                {{ item[0] }} ( -{{ item[1] }}% )
+                                <img src="https://images.evetech.net/types/{{ item.type_id }}/{{ item.runs === -1 ? 'bp' : 'bpc' }}?size=32" alt="blueprint image">
+                                {{ item.type_id }} ( -{{ item.material_efficiency }}% )
                             </p>
                         </li>
                     </ul>
@@ -80,7 +114,7 @@
                         <li *ngFor="let item of shoppingList.list">
                             <p>
                                 <img src="https://images.evetech.net/types/{{item.product.type_id}}/icon?size=32" alt="material image">
-                                {{ item.product.name }} x {{ item.quantity }}
+                                {{ item.product.name }} x {{ item.quantity }} ({{ item.price }})
                             </p>
                         </li>
                     </ul>

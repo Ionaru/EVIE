@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { IIndustrySystemsDataUnit } from '@ionaru/eve-utils';
 
 import { BaseService, IServerResponse } from './base.service';
 
@@ -72,5 +73,16 @@ export class IndustryService extends BaseService {
         const data = response && response.data ? response.data : [];
         this.refiningCache[url] = JSON.stringify(data);
         return data;
+    }
+
+    public async getSystem(systemId: number): Promise<IIndustrySystemsDataUnit | undefined> {
+        const url = `data/industry/system/${systemId}`;
+
+        const response = await this.http.get<any>(url).toPromise<IServerResponse<IIndustrySystemsDataUnit>>().catch(this.catchHandler);
+        if (response instanceof HttpErrorResponse) {
+            return;
+        }
+
+        return response.data;
     }
 }
