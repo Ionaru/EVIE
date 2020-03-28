@@ -12,7 +12,7 @@ export class UsersComponent implements OnInit {
 
     public users: IUsersResponse[] = [];
 
-    public tableSettings: Array<ITableHeader<IUsersResponseCharacters>> = [{
+    public tableSettings: ITableHeader<IUsersResponseCharacters>[] = [{
         attribute: 'user.id',
         sort: true,
         title: 'User ID',

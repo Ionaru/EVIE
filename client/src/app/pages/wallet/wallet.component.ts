@@ -19,7 +19,7 @@ export class WalletComponent extends DataPageComponent implements OnInit {
     public journalData: ICharacterWalletJournalData = [];
     public balanceCountUp?: CountUp;
 
-    public tableSettings: Array<ITableHeader<ICharacterWalletJournalDataUnit>> = [{
+    public tableSettings: ITableHeader<ICharacterWalletJournalDataUnit>[] = [{
         attribute: 'date',
         hint: 'In EVE-Time',
         pipe: 'date',

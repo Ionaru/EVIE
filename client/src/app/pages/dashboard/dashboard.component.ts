@@ -29,13 +29,6 @@ type sortProperties = 'name' | 'birthday' | 'totalTrainingFinish' | 'balance';
 })
 export class DashboardComponent extends DataPageComponent implements OnInit, OnDestroy {
 
-    private static adjustCountDownForDST(finish: Date, cd: number | countdown.Timespan) {
-        if (typeof cd !== 'number') {
-            const timeLeft = finish.getTime() - Date.now();
-            SkillsComponent.adjustCountDownForDST(cd, timeLeft);
-        }
-    }
-
     public faUserPlus = faUserPlus;
     public faCheck = faCheck;
     public faSync = faSync;
@@ -56,6 +49,13 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
 
     // tslint:disable-next-line:no-bitwise
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
+
+    private static adjustCountDownForDST(finish: Date, cd: number | countdown.Timespan) {
+        if (typeof cd !== 'number') {
+            const timeLeft = finish.getTime() - Date.now();
+            SkillsComponent.adjustCountDownForDST(cd, timeLeft);
+        }
+    }
 
     constructor(private userService: UserService, private characterService: CharacterService, private shipService: ShipService,
                 private namesService: NamesService, private skillQueueService: SkillQueueService, private router: Router,

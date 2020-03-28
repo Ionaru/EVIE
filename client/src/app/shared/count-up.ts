@@ -15,11 +15,6 @@ export interface ICountUpOptions {
 
 export class CountUp {
 
-    // Robert Penner's easeOutExpo
-    private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
-        return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
-    }
-
     private options: ICountUpOptions = {
         decimal: '.',
         easingFn: undefined,
@@ -47,6 +42,11 @@ export class CountUp {
     private readonly decimals: number;
     private readonly easingFn: (...args: any[]) => any;
     private readonly formattingFn: (...args: any[]) => any;
+
+    // Robert Penner's easeOutExpo
+    private static easeOutExpo(currentTime: number, startVal: number, remainingVal: number, totalTime: number): number {
+        return remainingVal * (-Math.pow(2, -10 * currentTime / totalTime) + 1) * 1024 / 1023 + startVal;
+    }
 
     /**
      * @param {string | HTMLElement} target - ID of a html element or variable of an HTML element

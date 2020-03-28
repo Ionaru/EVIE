@@ -61,7 +61,7 @@ export class OreComponent implements OnInit {
     public data: IOresData[] = [];
     public visibleData?: IOresData[];
 
-    public tableSettings: Array<ITableHeader<IOresData>> = [{
+    public tableSettings: ITableHeader<IOresData>[] = [{
         attribute: 'name',
         prefixFunction: (data) => `<img src="https://images.evetech.net/types/${data.id}/icon?size=32" alt="${data.name}"> `,
         sort: true,

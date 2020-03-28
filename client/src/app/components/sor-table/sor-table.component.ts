@@ -29,7 +29,7 @@ export interface ITableData {
 })
 export class SorTableComponent implements OnChanges {
 
-    @Input() public columns: Array<ITableHeader<ITableData>> = [];
+    @Input() public columns: ITableHeader<ITableData>[] = [];
     @Input() public data?: ITableData[];
 
     public currentSort?: ITableHeader<ITableData>;

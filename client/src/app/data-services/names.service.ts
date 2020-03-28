@@ -13,6 +13,11 @@ export interface INames {
 @Injectable()
 export class NamesService extends BaseService {
 
+    private static names: INames;
+    private static namesExpiry: number;
+    private static namesMaxAge = 7 * Calc.day;
+    private static namesStoreTag = 'names';
+
     public static getNameFromData(id: number, unknownMessage = 'Unknown'): string {
         if (!NamesService.names || !Object.entries(NamesService.names).length) {
             return unknownMessage;
@@ -45,11 +50,6 @@ export class NamesService extends BaseService {
         }
     }
 
-    private static names: INames;
-    private static namesExpiry: number;
-    private static namesMaxAge = 7 * Calc.day;
-    private static namesStoreTag = 'names';
-
     private static resetNames(): void {
         NamesService.namesExpiry = 0;
         NamesService.names = {};
@@ -62,7 +62,7 @@ export class NamesService extends BaseService {
         localStorage.setItem(NamesService.namesStoreTag, JSON.stringify({expiry: NamesService.namesExpiry, names: NamesService.names}));
     }
 
-    public async getNames(...ids: Array<string | number>): Promise<void> {
+    public async getNames(...ids: (string | number)[]): Promise<void> {
 
         const uniqueIds = uniquifyArray(ids.map((id) => id.toString()));
 

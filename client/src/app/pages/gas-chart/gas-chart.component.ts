@@ -50,7 +50,7 @@ export class GasChartComponent implements OnInit {
 
     public visibleData?: IGassesData[];
 
-    public tableSettings: Array<ITableHeader<IGassesData>> = [{
+    public tableSettings: ITableHeader<IGassesData>[] = [{
         attribute: 'name',
         prefixFunction: (data) => `<img src="https://images.evetech.net/types/${data.id}/icon?size=32" alt="${data.name}"> `,
         sort: true,
@@ -211,7 +211,7 @@ export class GasChartComponent implements OnInit {
     }
 
     private getGasName(gas: number) {
-        const keys = Object.keys as <T>(o: T) => Array<Extract<keyof T, string>>;
+        const keys = Object.keys as <T>(o: T) => Extract<keyof T, string>[];
         return keys(EVE.gas).find((name) => EVE.gas[name] === gas) || 'Unknown gas';
     }
 }

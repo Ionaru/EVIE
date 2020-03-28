@@ -28,7 +28,7 @@ export class Application {
         process.exit(exitCode);
     }
 
-    public sessionStore?: es.Store;
+    public sessionStore?: MySQLStore.MySQLStore;
     public sessionParser?: express.RequestHandler;
 
     private webServer?: WebServer;
@@ -64,7 +64,8 @@ export class Application {
         expressApplication.use(compression());
 
         // Setup MySQL Session Storage
-        this.sessionStore = new MySQLStore({
+        const store = MySQLStore(es);
+        this.sessionStore = new store({
             schema: {
                 columnNames: {
                     data: 'data',
@@ -73,7 +74,7 @@ export class Application {
                 },
                 tableName: 'session',
             },
-        }, db.pool) as any;
+        }, db.pool);
 
         // Configure Session Parser
         const secureCookies = process.env.EVIE_SESSION_SECURE ? process.env.EVIE_SESSION_SECURE.toLowerCase() === 'true' : true;

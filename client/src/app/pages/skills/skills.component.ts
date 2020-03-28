@@ -69,10 +69,6 @@ interface IGroupedSkillTypes {
 })
 export class SkillsComponent extends DataPageComponent implements OnInit, OnDestroy {
 
-    public static adjustCountDownForDST(cd: Timespan, timeLeft: number) {
-        cd.hours = Calc.wholeHours(timeLeft) - (Calc.wholeDays(timeLeft) * 24);
-    }
-
     public faChevronDown = faChevronDown;
     public faExclamationTriangle = faExclamationTriangle;
     public faCog = faCog;
@@ -122,6 +118,10 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
     // tslint:disable-next-line:no-bitwise
     private readonly countdownUnits = countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
+
+    public static adjustCountDownForDST(cd: Timespan, timeLeft: number) {
+        cd.hours = Calc.wholeHours(timeLeft) - (Calc.wholeDays(timeLeft) * 24);
+    }
 
     constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService,
                 private skillGroupsService: SkillGroupsService, private attributesService: AttributesService) {

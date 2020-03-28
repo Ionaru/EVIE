@@ -17,14 +17,14 @@ import { esiCache, esiService } from '../index';
 
 interface IManufacturingData {
     blueprintId: number;
-    materials: Array<{
+    materials: {
         id: number,
         quantity: number,
-    }>;
-    skills: Array<{
+    }[];
+    skills: {
         id: number,
         level: number,
-    }>;
+    }[];
     time: number;
     result: {
         id: number,
@@ -43,7 +43,7 @@ export class DataController {
         return industrySystems.find((industrySystem) => industrySystem.solar_system_id === systemId);
     }
 
-    public static async getRefiningProducts(typeId: number): Promise<Array<{ id: number, quantity: number }>> {
+    public static async getRefiningProducts(typeId: number): Promise<{ id: number, quantity: number }[]> {
         const materials = await esiService.fetchESIData<IInvTypeMaterialsData>(EVE.getInvTypeMaterialsUrl());
         if (!materials) {
             return [];
