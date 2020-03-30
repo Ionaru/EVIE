@@ -1,6 +1,12 @@
 {
     "name": "evie-client",
     "version": "0.7.13",
+    "author": "Jeroen Akkerman",
+    "description": "Server module for EVIE",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Ionaru/EVIE.git"
+    },
     "scripts": {
         "ng": "ng",
         "ts": "tsc -v",
@@ -61,7 +67,5 @@
         "tslint-sonarts": "^1.9.0",
         "typescript": "^3.8.3"
     },
-    "resolutions": {
-        "copy-webpack-plugin": "^5.1.1"
-    }
+    "license": "MIT"
 }

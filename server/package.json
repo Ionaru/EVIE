@@ -21,6 +21,7 @@
         "start": "npm run migrate && node ./dist/src/index.js",
         "preversion": "npm run test"
     },
+    "private": true,
     "dependencies": {
         "@ionaru/esi-service": "^3.2.2",
         "@ionaru/eve-utils": "^5.0.1-71.0",
