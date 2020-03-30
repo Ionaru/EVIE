@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { EVE, IUniverseSystemData } from '@ionaru/eve-utils';
+import { EVE, IIndustrySystemsData, IUniverseSystemData } from '@ionaru/eve-utils';
 
 import { BaseService } from './base.service';
 
@@ -25,5 +25,25 @@ export class SystemsService extends BaseService {
             return;
         }
         return response;
+    }
+
+    public async getSystemCostIndex(systemId: number): Promise<number | void> {
+        const url = EVE.getIndustrySystemsUrl();
+        const response = await this.http.get<any>(url).toPromise<IIndustrySystemsData>().catch(this.catchHandler);
+        if (response instanceof HttpErrorResponse) {
+            return;
+        }
+
+        const systemIndices = response.find((system) => system.solar_system_id === systemId);
+        if (!systemIndices) {
+            return;
+        }
+
+        const productionIndex = systemIndices.cost_indices.find((index) => index.activity === 'manufacturing');
+        if (!productionIndex) {
+            return;
+        }
+
+        return productionIndex.cost_index;
     }
 }
