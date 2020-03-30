@@ -12,6 +12,7 @@ import { IManufacturingData, IndustryService } from '../../data-services/industr
 import { MarketService } from '../../data-services/market.service';
 import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
+import { NamesService } from '../../data-services/names.service';
 import { SearchService, SearchType } from '../../data-services/search.service';
 
 class ShoppingList2 {
@@ -93,37 +94,20 @@ export class BlueprintCalculatorComponent implements OnInit {
 
     public message?: string;
 
-    // public typeSearch = (text$: Observable<string>) => {
-    //     return this.searcher(text$, 'type');
-    // };
-    //
-    // public regionSearch = (text$: Observable<string>) => {
-    //     return this.searcher(text$, 'system');
-    // };
-
-    // public searcher(text$: Observable<string>, searchType: SearchType) {
-    //     return text$?.pipe(
-    //         debounceTime(200),
-    //         distinctUntilChanged(),
-    //         switchMap((searchText) =>
-    //             this.searchService.search(searchText, searchType).pipe(
-    //                 catchError(() => of(['Nothing found']))
-    //             )
-    //         ),
-    //         map((res) => [Array.isArray(res) ? res[0] : res.data])
-    //     );
-    // }
-
     constructor(
         private blueprintsService: BlueprintsService,
         private industryService: IndustryService,
         private marketService: MarketService,
-        // private namesService: NamesService,
+        private namesService: NamesService,
         private searchService: SearchService,
         private typesService: TypesService,
         private route: ActivatedRoute,
         private router: Router,
     ) { }
+
+    public getName(id: number) {
+        return NamesService.getNameFromData(id);
+    }
 
     public async ngOnInit() {
         this.route.queryParamMap.pipe(map(
@@ -133,14 +117,6 @@ export class BlueprintCalculatorComponent implements OnInit {
                 this.item.input = params.get('item') || '';
             })
         ).toPromise().then();
-    }
-
-    public resultFormatNameData(value: any): string {
-        return typeof value === 'string' ? value : value?.name;
-    }
-
-    public inputFormatNameData(value: any): string {
-        return value.name ? value.name : value;
     }
 
     public loggedIn = !!CharacterService.selectedCharacter;
@@ -301,6 +277,12 @@ export class BlueprintCalculatorComponent implements OnInit {
 
     public async recFun2() {
 
+        if (this.quantity < 1 || !Number.isInteger(this.quantity)) {
+            this.message = 'Quantity must be a positive integer.';
+            this.calculating = false;
+            return;
+        }
+
         if (!this.item.data?.id || !this.sellSystem.data?.id || !this.buySystem.data?.id) {
             return;
         }
@@ -327,6 +309,8 @@ export class BlueprintCalculatorComponent implements OnInit {
         });
 
         if (chain) {
+            await this.namesService.getNames(...this.usedBlueprints.map((blueprint) => blueprint.type_id));
+
             this.calculating = false;
 
             this.chain = chain;
@@ -345,115 +329,6 @@ export class BlueprintCalculatorComponent implements OnInit {
                 (accumulator, node) => accumulator + ((node.product.volume || 0) * node.quantity), 0);
 
         }
-
-        // this.worthToProduce = chain
-
-        // Legacy
-        // const diagram = new SankeyDiagram({}, {
-        //     orientation: 'h',
-        // });
-        //
-        // const extraTypesToGet = [m];
-        //
-        // const manufacturingData = await this.industryService.getManufacturingData(m);
-        // if (!manufacturingData) {
-        //     return;
-        // }
-        //
-        // const materials = await this.adjustMaterialsNeededByBlueprintMaterialEfficiency(manufacturingData);
-        //
-        // await this.namesService.getNames(m, ...materials.materials.map((material) => material.id));
-        //
-        // let totalPrice = 0;
-        //
-        // for (const material of materials.materials) {
-        //     this.currentMaterial = NamesService.getNameFromData(material.id);
-        //     console.log(this.currentMaterial);
-        //     const price = await this.marketService.getPriceForAmount(marketRegion, material.id, material.quantity, 'sell');
-        //
-        //     if (!price) {
-        //         throw new Error(`Price not found for ${material.id}`);
-        //     }
-        //
-        //     const subMatData = await this.industryService.getManufacturingData(material.id);
-        //
-        //     let materialPrices = 0;
-        //
-        //     if (!subMatData) {
-        //         // Can't be produced.
-        //         totalPrice += price;
-        //         diagram.addLink(material.id.toString(), m.toString(), price);
-        //         this.shoppingList.add(material.id, material.quantity);
-        //     } else {
-        //
-        //         const subMaterials = await this.adjustMaterialsNeededByBlueprintMaterialEfficiency(subMatData);
-        //
-        //         const subMatShoppingList = new ShoppingList();
-        //
-        //         for (const subMat of subMaterials.materials) {
-        //             const subPrice = await this.marketService.getPriceForAmount(marketRegion, subMat.id, subMat.quantity, 'buy');
-        //
-        //             subMatShoppingList.add(subMat.id, subMat.quantity);
-        //
-        //             if (subPrice) {
-        //                 materialPrices += subPrice;
-        //             } else {
-        //                 materialPrices = Infinity;
-        //                 break;
-        //             }
-        //         }
-        //
-        //         if (materialPrices && (materialPrices * material.quantity) < price) {
-        //             // Cheaper to produce.
-        //             totalPrice += (materialPrices * material.quantity);
-        //             for (const id in subMatShoppingList.list) {
-        //                 if (subMatShoppingList.list.hasOwnProperty(id)) {
-        //                     const xPrice = await this.marketService.getPriceForAmount(marketRegion, Number(id), subMatShoppingList.list[id] * material.quantity, 'sell');
-        //                     diagram.addLink(id.toString(), material.id.toString(), xPrice || 0);
-        //                 }
-        //             }
-        //             extraTypesToGet.push(material.id);
-        //             diagram.addLink(material.id.toString(), m.toString(), materialPrices * material.quantity);
-        //             this.shoppingList.merge(subMatShoppingList, material.quantity);
-        //
-        //         } else {
-        //             // Cheaper to buy
-        //             totalPrice += price;
-        //             diagram.addLink(material.id.toString(), m.toString(), price);
-        //             this.shoppingList.add(material.id, material.quantity);
-        //         }
-        //     }
-        // }
-        //
-        // this.currentMaterial = 'Finishing up';
-        //
-        // if (productPrice) {
-        //
-        //     const types = Object.keys(this.shoppingList.list).map((key) => Number(key));
-        //
-        //     const typeInfo = (await Promise.all([
-        //         this.typesService.getTypes(...types),
-        //         this.namesService.getNames(...types, ...extraTypesToGet),
-        //     ]))[0];
-        //
-        //     if (typeInfo) {
-        //         this.shoppingList.volume = typeInfo.reduce((accumulator, type) => accumulator + (type.volume! * this.shoppingList.list[type.type_id]), 0)
-        //     }
-        //
-        //     const labels = diagram.data.node.label;
-        //     for (const label of labels) {
-        //         const index = diagram.data.node.label.indexOf(label);
-        //         diagram.data.node.label[index] = NamesService.getNameFromData(label);
-        //     }
-        //
-        //     console.log(totalPrice, productPrice);
-        //
-        //     this.worthToProduce = totalPrice < productPrice;
-        //     this.profit = Calc.profitPercentage(totalPrice, productPrice);
-        //
-        //     console.log((totalPrice < productPrice ? '' : 'NOT ') + 'WORTH TO PRODUCE');
-        //     console.log(Calc.profitPercentage(totalPrice, productPrice) + ' % profit');
-        // }
 
         this.calculating = false;
     }
