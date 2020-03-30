@@ -5,17 +5,13 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICharacterBlueprintsDataUnit, IUniverseNamesDataUnit, IUniverseTypeData } from '@ionaru/eve-utils';
 import { map } from 'rxjs/operators';
-// import { Observable, of } from 'rxjs';
-// import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
 import { Calc } from '../../../shared/calc.helper';
 import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IManufacturingData, IndustryService } from '../../data-services/industry.service';
 import { MarketService } from '../../data-services/market.service';
-// import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
-// import { SankeyDiagram } from './sankey-diagram';
 import { SearchService, SearchType } from '../../data-services/search.service';
 
 class ShoppingList2 {
@@ -63,9 +59,6 @@ interface IInput {
     templateUrl: './blueprint-calculator.component.html',
 })
 export class BlueprintCalculatorComponent implements OnInit {
-
-    public plotlyData: any;
-    public plotlyLayout: any;
 
     public calculating?: boolean;
 
@@ -149,8 +142,6 @@ export class BlueprintCalculatorComponent implements OnInit {
     public inputFormatNameData(value: any): string {
         return value.name ? value.name : value;
     }
-
-    public setPlotlyBackground = () => 'transparent';
 
     public loggedIn = !!CharacterService.selectedCharacter;
 
@@ -462,9 +453,6 @@ export class BlueprintCalculatorComponent implements OnInit {
         //
         //     console.log((totalPrice < productPrice ? '' : 'NOT ') + 'WORTH TO PRODUCE');
         //     console.log(Calc.profitPercentage(totalPrice, productPrice) + ' % profit');
-        //
-        //     this.plotlyLayout = diagram.layout;
-        //     this.plotlyData = [diagram.data];
         // }
 
         this.calculating = false;
