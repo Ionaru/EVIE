@@ -28,7 +28,7 @@ export class Application {
         process.exit(exitCode);
     }
 
-    public sessionStore?: MySQLStore.MySQLStore;
+    public sessionStore?: any;
     public sessionParser?: express.RequestHandler;
 
     private webServer?: WebServer;
