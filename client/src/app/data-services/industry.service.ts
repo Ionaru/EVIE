@@ -6,14 +6,14 @@ import { BaseService, IServerResponse } from './base.service';
 
 export interface IManufacturingData {
     blueprintId: number;
-    materials: Array<{
+    materials: {
         id: number,
         quantity: number,
-    }>;
-    skills: Array<{
+    }[];
+    skills: {
         id: number,
         level: number,
-    }>;
+    }[];
     time: number;
     result: {
         id: number,
@@ -95,7 +95,7 @@ export class IndustryService extends BaseService {
         }
 
         const productionIndex = response.data.cost_indices.find(
-            (index) => index.activity === IIndustrySystemsCostIndexActivity.MANUFACTURING
+            (index) => index.activity === IIndustrySystemsCostIndexActivity.MANUFACTURING,
         );
         if (!productionIndex) {
             return;
