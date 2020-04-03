@@ -36,7 +36,7 @@
             Production system
             <input type="text" class="form-control" placeholder="Choose where to produce this item"
                    [(ngModel)]="productionSystem.input"
-                   (ngModelChange)="setValidity(inputProductionSystem)"
+                   (ngModelChange)="setValidity(inputProductionSystemElement)"
                    #input_production_system
                    [required]="true"
             />
@@ -44,10 +44,12 @@
 
         <label>
             Industry tax
-            <input type="text" class="form-control" placeholder="Set the facility tax"
+            <input type="number" class="form-control" placeholder="Set the facility tax"
                    [(ngModel)]="tax"
                    (ngModelChange)="setValidity(inputTaxElement)"
                    #input_tax
+                   [min]="1"
+                   [step]="0.1"
                    [required]="true"
             />
         </label>
@@ -71,7 +73,7 @@
     </ng-container>
     <br>
     <p class="text-center">Note: This calculator does not factor in Structure Rigs, or the Structure Role Bonus of Engineering Complexes because this data is not available to Third-Party applications.</p>
-    <p class="text-center">This means the actual profit of production can differ a few percent higher than shown here.</p>
+    <p class="text-center">This means the actual profit of production can differ a few percent fomr the value shown here.</p>
     <br>
 
     <div class="input-button-container d-flex flex-row justify-content-evenly">
@@ -98,7 +100,8 @@
                 <br>
 
                 <p>Material buy price: {{ chain.producePrice | number: '1.2-2' }} ISK</p>
-<!--                <p>Production price: <span class="text-warning">unknown, coming soon.</span></p>-->
+                <p>Industry Cost: {{chain.totalIndustryCost | number: '1.2-2' }} ISK</p>
+                <p>-----</p>
                 <p>Item sell price: {{ chain.price | number: '1.2-2' }} ISK</p>
 
                 <br>

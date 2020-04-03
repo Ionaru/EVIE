@@ -86,7 +86,7 @@ export class RefiningProfitComponent implements OnInit {
 
         // Cache mineral prices ahead of calculations for better performance.
         await Promise.all(EVE.minerals.map(async (mineral) => {
-            return this.marketService.getMarketOrders(10000002, mineral, 'buy');
+            return this.marketService.getMarketOrders(10000043, mineral, 'buy');
         }));
 
         await this.namesService.getNames(...EVE.ores.all);

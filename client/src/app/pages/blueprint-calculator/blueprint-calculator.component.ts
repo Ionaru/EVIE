@@ -34,6 +34,7 @@ class IndustryNode {
     quantity: number;
     acquireMethod?: AcquireMethod;
     product: IUniverseTypeData;
+    totalIndustryCost = 0;
     producePrice = Infinity;
     children: IndustryNode[] = [];
 
@@ -75,7 +76,7 @@ export class BlueprintCalculatorComponent implements OnInit {
     @ViewChild('input_quantity') inputQuantityElement!: ElementRef<HTMLInputElement>;
 
     public productionSystem: IInput = {};
-    @ViewChild('input_production_system') inputProductionSystem!: ElementRef<HTMLInputElement>;
+    @ViewChild('input_production_system') inputProductionSystemElement!: ElementRef<HTMLInputElement>;
 
     public sellSystem: IInput = {};
     @ViewChild('input_sell_system') inputSellSystemElement!: ElementRef<HTMLInputElement>;
@@ -114,7 +115,10 @@ export class BlueprintCalculatorComponent implements OnInit {
             (params) => {
                 this.sellSystem.input = params.get('sellSystem') || 'Jita';
                 this.buySystem.input = params.get('buySystem') || 'Jita';
+                this.productionSystem.input = params.get('productionSystem') || 'Jita';
                 this.item.input = params.get('item') || '';
+                this.quantity = Number(params.get('quantity')) || 1;
+                this.tax = Number(params.get('tax')) || 0;
             })
         ).toPromise().then();
     }
@@ -198,8 +202,11 @@ export class BlueprintCalculatorComponent implements OnInit {
             node.children.push(subNode);
         }
 
+        const industryCost = await this.getIndustryCost(material);
+        node.totalIndustryCost += (industryCost * quantity);
+
         node.producePrice = materialPrices;
-        if (materialPrices < node.price) {
+        if ((materialPrices + industryCost) < node.price) {
             node.acquireMethod = AcquireMethod.PRODUCE;
         } else {
             node.acquireMethod = AcquireMethod.PURCHASE;
@@ -209,22 +216,79 @@ export class BlueprintCalculatorComponent implements OnInit {
         return node;
     }
 
+    public async getIndustryCost(material: number) {
+        // system cost index * EIV --> X + (X * tax)
+
+        if (this.productionSystem.data && this.productionSystem.data.id) {
+            const estimatedItemValue = await this.marketService.getEstimatedItemValue(material);
+            const systemCostIndex = await this.industryService.getSystemCostIndex(this.productionSystem.data.id);
+
+            if (estimatedItemValue && systemCostIndex) {
+                const grossCost = Math.round(Math.round(estimatedItemValue) * systemCostIndex);
+                return Math.round(grossCost + ((this.tax / 100) * grossCost));
+            }
+        }
+        return 0;
+    }
+
     public async processInput() {
 
         const results = await Promise.all([
             await this.processInputElement(this.inputItemElement, this.item, 'type'),
             await this.processInputElement(this.inputSellSystemElement, this.sellSystem, 'system'),
             await this.processInputElement(this.inputBuySystemElement, this.buySystem, 'system'),
+            await this.processInputElement(this.inputProductionSystemElement, this.productionSystem, 'system'),
+            this.checkQuantityInput(this.inputQuantityElement),
+            this.checkIndustryTaxInput(this.inputTaxElement),
         ]);
 
         if (results.every((result) => result)) {
+            this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: {
+                    item: this.item.input,
+                    sellSystem: this.sellSystem.input,
+                    buySystem: this.buySystem.input,
+                    productionSystem: this.productionSystem.input,
+                    quantity: this.quantity,
+                    tax: this.tax,
+                },
+                queryParamsHandling: 'merge'
+            }).then();
             this.recFun2();
         }
+    }
+
+    public checkQuantityInput(element: ElementRef<HTMLInputElement>) {
+
+        if (this.quantity < 1 || !Number.isInteger(this.quantity)) {
+            this.message = 'Quantity must be a whole number higher than 0';
+            this.calculating = false;
+            this.setValidity(element, false);
+            return;
+        }
+
+        this.setValidity(element, true);
+        return true;
+    }
+
+    public checkIndustryTaxInput(element: ElementRef<HTMLInputElement>) {
+
+        if (this.tax < 0) {
+            this.setValidity(element, false);
+            this.message = 'Industry tax must be 0 or higher';
+            this.calculating = false;
+            return;
+        }
+
+        this.setValidity(element, true);
+        return true;
     }
 
     public async processInputElement(element: ElementRef<HTMLInputElement>, thing: IInput, searchType: SearchType) {
 
         if (thing.data && thing.data.name === thing.input) {
+            this.setValidity(element, true);
             return true;
         }
 
@@ -244,15 +308,6 @@ export class BlueprintCalculatorComponent implements OnInit {
         thing.data = result;
         thing.input = result.name;
         this.setValidity(element, true);
-        this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: {
-                item: this.item.input,
-                sellSystem: this.sellSystem.input,
-                buySystem: this.buySystem.input,
-            },
-            queryParamsHandling: 'merge'
-        }).then();
         return true;
     }
 
@@ -315,7 +370,7 @@ export class BlueprintCalculatorComponent implements OnInit {
 
             this.chain = chain;
 
-            this.profit = chain.price - chain.producePrice;
+            this.profit = chain.price - (chain.producePrice + chain.totalIndustryCost);
             this.profitPercentage = Calc.profitPercentage(chain.producePrice, chain.price);
 
             const flatChain = this.flatten([chain], (industryNode) => industryNode.children);
