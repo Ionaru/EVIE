@@ -10,6 +10,16 @@ import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
 
+interface IMineralData {
+    id: number;
+    buy: number;
+    sell: number;
+    profitMoney: number;
+    profit: number;
+    accurateData: boolean;
+    name: string;
+}
+
 @Component({
     selector: 'app-refining-profit',
     styleUrls: ['./refining-profit.component.scss'],
@@ -32,12 +42,12 @@ export class RefiningProfitComponent implements OnInit {
     public oreTypes: any = {};
     public prices: any = {};
 
-    public data: any[] = [];
-    public visibleData?: any[];
+    public data: IMineralData[] = [];
+    public visibleData?: IMineralData[];
 
     public refiningYield = 71;
 
-    public tableSettings: ITableHeader<any>[] = [{
+    public tableSettings: ITableHeader<IMineralData>[] = [{
         attribute: 'name',
         prefixFunction: (data) => `<img src="https://images.evetech.net/types/${data.id}/icon?size=32" alt="${data.name}"> `,
         sort: true,

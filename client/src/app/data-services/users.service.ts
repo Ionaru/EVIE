@@ -14,6 +14,7 @@ export interface IUsersResponseCharacters {
     scopes: string;
     tokenExpiry: Date;
     uuid: string;
+    user: IUsersResponse;
 }
 
 export interface IUsersResponse {
@@ -23,15 +24,14 @@ export interface IUsersResponse {
     timesLogin: number;
     username: string;
     uuid: string;
-    characters: IUsersResponseCharacters[];
 }
 
 @Injectable()
 export class UsersService extends BaseService {
 
-    public async getUsers(): Promise<IUsersResponse[] | undefined> {
+    public async getUsers() {
         const url = 'api/users';
-        const response = await this.http.get<any>(url).toPromise<IServerResponse<IUsersResponse[]>>().catch(this.catchHandler);
+        const response = await this.http.get<any>(url).toPromise<IServerResponse<IUsersResponseCharacters[]>>().catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return undefined;
         }

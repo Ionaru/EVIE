@@ -40,7 +40,7 @@
     Refining yield
     <input type="number" [(ngModel)]="refiningYield">
 </label>
-<button (click)="ngOnInit().then()">Run calculation</button>
+<button (click)="ngOnInit()">Run calculation</button>
 <hr>
 <ng-container *ngIf="visibleData; else ore_loading_message">
     <p>Prices are based on 8.000m³ of ore and buying and selling in The Forge</p>

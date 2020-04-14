@@ -2,8 +2,12 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { faInfoCircle, faSort, faSortDown, faSortUp } from '@fortawesome/pro-solid-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 
-export interface ITableHeader<T> {
-    attribute: string;
+interface ITableHeaderData {
+    [key: string]: any;
+}
+
+export interface ITableHeader<T extends ITableHeaderData> {
+    attribute: keyof T;
     classFunction?: (value: T) => string;
     dataFunction?: (value: T) => any;
     hint?: string;
@@ -42,7 +46,7 @@ export class SorTableComponent implements OnChanges {
 
     public getData(column: ITableHeader<ITableData>, data: ITableData) {
         const attribute = column.attribute;
-        const dataValue = attribute.split('.').reduce((o, i) => o ? o[i] : o, data);
+        const dataValue = attribute.toString().split('.').reduce((o, i) => o ? o[i] : o, data);
         return column.dataFunction ? column.dataFunction(data) : dataValue;
     }
 
@@ -55,7 +59,7 @@ export class SorTableComponent implements OnChanges {
 
         this.invert = (this.currentSort && this.currentSort === column) ? !this.invert : false;
 
-        sortArrayByObjectProperty(this.data, sortAttribute, this.invert);
+        sortArrayByObjectProperty(this.data, sortAttribute.toString(), this.invert);
         this.currentSort = column;
     }
 

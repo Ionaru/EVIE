@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
-import { IUsersResponse, IUsersResponseCharacters, UsersService } from '../../data-services/users.service';
+import { UsersService } from '../../data-services/users.service';
+
+interface IUserData {
+    id: number;
+    name: string;
+    characterId: number;
+    timesLogin: number;
+    lastLogin: Date;
+}
 
 @Component({
     selector: 'app-users',
@@ -10,10 +18,10 @@ import { IUsersResponse, IUsersResponseCharacters, UsersService } from '../../da
 })
 export class UsersComponent implements OnInit {
 
-    public users: IUsersResponse[] = [];
+    public users: IUserData[] = [];
 
-    public tableSettings: ITableHeader<IUsersResponseCharacters>[] = [{
-        attribute: 'user.id',
+    public tableSettings: ITableHeader<IUserData>[] = [{
+        attribute: 'id',
         sort: true,
         title: 'User ID',
     }, {
@@ -25,11 +33,11 @@ export class UsersComponent implements OnInit {
         sort: true,
         title: 'Character ID',
     }, {
-        attribute: 'user.timesLogin',
+        attribute: 'timesLogin',
         sort: true,
         title: 'Times logged in',
     }, {
-        attribute: 'user.lastLogin',
+        attribute: 'lastLogin',
         pipe: 'date',
         pipeVar: 'yyyy-MM-dd HH:mm:ss',
         sort: true,
@@ -41,7 +49,15 @@ export class UsersComponent implements OnInit {
     public ngOnInit() {
         this.usersService.getUsers().then((users) => {
             if (users) {
-                this.users = users;
+                this.users = users.map((user) => {
+                    return {
+                        id: user.user.id,
+                        name: user.name,
+                        characterId: user.characterId,
+                        timesLogin: user.user.timesLogin,
+                        lastLogin: user.user.lastLogin,
+                    };
+                });
             }
         });
     }
