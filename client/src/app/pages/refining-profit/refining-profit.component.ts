@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
-import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { EVE } from '@ionaru/eve-utils';
 
 import { Calc } from '../../../shared/calc.helper';
@@ -16,7 +15,7 @@ interface IMineralData {
     sell: number;
     profitMoney: number;
     profit: number;
-    accurateData: boolean;
+    accurateData?: false;
     name: string;
 }
 
@@ -39,6 +38,10 @@ export class RefiningProfitComponent implements OnInit {
     public variantsVisibleIcon = faEye;
     public variantsHiddenIcon = faEyeSlash;
 
+    public buyRegion = 10000043;
+    public sellStation = 30002187;
+    public amount = 8000;
+
     public oreTypes: any = {};
     public prices: any = {};
 
@@ -55,7 +58,7 @@ export class RefiningProfitComponent implements OnInit {
         title: 'Type',
     }, {
         attribute: 'buy',
-        hint: 'Average for using sell orders to buy 8.000m³ of ore.',
+        hint: `Average for using sell orders to buy ${this.amount}m³ of ore.`,
         pipe: 'number',
         pipeVar: '0.2-2',
         sort: true,
@@ -94,11 +97,6 @@ export class RefiningProfitComponent implements OnInit {
 
         this.visibleData = undefined;
 
-        // Cache mineral prices ahead of calculations for better performance.
-        await Promise.all(EVE.minerals.map(async (mineral) => {
-            return this.marketService.getMarketOrders(10000043, mineral, 'buy');
-        }));
-
         await this.namesService.getNames(...EVE.ores.all);
 
         const types = await this.typesService.getTypes(...EVE.ores.all);
@@ -108,7 +106,7 @@ export class RefiningProfitComponent implements OnInit {
 
         await Promise.all(EVE.ores.all.map(async (ore) => {
             this.prices[ore] = {};
-            await this.getPrices(ore, 8000);
+            await this.getPrices(ore, this.amount);
         }));
 
         this.data = EVE.ores.all.map((ore, index) => {
@@ -130,70 +128,29 @@ export class RefiningProfitComponent implements OnInit {
     // tslint:disable-next-line:cognitive-complexity
     public async getPrices(ore: number, volume: number) {
 
-        const oreSellOrders = await this.marketService.getMarketOrders(10000002, ore, 'sell');
+        const oreAmount = volume / this.oreTypes[ore].volume;
+        const orePrice = await this.marketService.getPriceForAmount(this.buyRegion, ore, oreAmount, 'sell');
 
-        if (!oreSellOrders || !oreSellOrders.length) {
+        if (!orePrice) {
             this.prices[ore].buy = Infinity;
             this.prices[ore].sell = 0;
             this.prices[ore].accurateData = false;
             return;
         }
 
-        sortArrayByObjectProperty(oreSellOrders, 'price');
-
-        const type = this.oreTypes[ore];
-
-        if (!type) {
-            return;
-        }
-
-        const oreVolume = type.volume;
-        const cargoCap = volume;
-
-        let price = 0;
-        let unitsLeft = cargoCap / oreVolume;
-        for (const order of oreSellOrders) {
-            const amountFromThisOrder = Math.min(order.volume_remain, unitsLeft);
-
-            price += amountFromThisOrder * order.price;
-            unitsLeft -= amountFromThisOrder;
-
-            if (!unitsLeft) {
-                break;
-            }
-        }
-
-        if (unitsLeft) {
-            this.prices[ore].accurateData = false;
-        }
-
-        this.prices[ore].buy = price;
+        this.prices[ore].buy = orePrice;
 
         const oreMaterials = await this.industryService.getRefiningProducts(ore);
 
         let totalPrice = 0;
 
         await Promise.all(oreMaterials.map(async (material) => {
-            const materialBuyOrders = await this.marketService.getMarketOrders(10000002, material.id, 'buy');
-            if (!materialBuyOrders || !materialBuyOrders.length) {
-                return;
-            }
-            sortArrayByObjectProperty(materialBuyOrders, 'price', true);
-            let materialPrice = 0;
-            let materialUnitsLeft = (material.quantity * ((volume / oreVolume) - unitsLeft)) * (this.refiningYield / 100);
-            for (const order of materialBuyOrders) {
-                const amountFromThisOrder = Math.min(order.volume_remain, materialUnitsLeft);
 
-                materialPrice += amountFromThisOrder * order.price;
-                materialUnitsLeft -= amountFromThisOrder;
+            const amount = (material.quantity * (volume / this.oreTypes[ore].volume)) * (this.refiningYield / 100);
+            const materialPrice = await this.marketService.getPriceForAmountInSystem(this.sellStation, material.id, amount, 'buy');
 
-                if (!materialUnitsLeft) {
-                    break;
-                }
-            }
-
-            if (unitsLeft) {
-                this.prices[ore].accurateData = false;
+            if (!materialPrice) {
+                throw new Error('NOPE');
             }
 
             totalPrice += materialPrice;

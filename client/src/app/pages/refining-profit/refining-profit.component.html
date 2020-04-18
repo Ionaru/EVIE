@@ -43,7 +43,7 @@
 <button (click)="ngOnInit()">Run calculation</button>
 <hr>
 <ng-container *ngIf="visibleData; else ore_loading_message">
-    <p>Prices are based on 8.000m³ of ore and buying and selling in The Forge</p>
+    <p>Prices are based on 8.000m³ of ore and buying in Domain and selling in Amarr</p>
     <app-sor-table [data]="visibleData" [columns]="tableSettings"></app-sor-table>
 </ng-container>
 
