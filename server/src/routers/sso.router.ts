@@ -42,7 +42,13 @@ export class SSORouter extends BaseRouter {
 
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
-    private static async SSOLoginCallback(request: Request, response: Response): Promise<Response> {
+    private static async SSOLoginCallback(
+        request: Request<{}, any, any, {code?: string, state?: string}>, response: Response,
+    ): Promise<Response> {
+
+        if (typeof request.query.code !== 'string') {
+            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidCode');
+        }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
@@ -147,7 +153,13 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkLogin)
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
-    private static async SSOAuthCallback(request: Request, response: Response): Promise<Response> {
+    private static async SSOAuthCallback(
+        request: Request<{}, any, any, {code?: string, state?: string}>, response: Response,
+    ): Promise<Response> {
+
+        if (typeof request.query.code !== 'string') {
+            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidCode');
+        }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
