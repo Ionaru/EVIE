@@ -42,25 +42,22 @@ export class SSORouter extends BaseRouter {
 
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
+    @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
     private static async SSOLoginCallback(
         request: Request<{}, any, any, {code?: string, state?: string}>, response: Response,
     ): Promise<Response> {
-
-        if (typeof request.query.code !== 'string') {
-            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidCode');
-        }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
             process.emitWarning(
-                `Invalid state from /login-callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`,
+                `Invalid state from /login-callback request! Expected '${request.session!.state}' and got '${request.query.state!}'.`,
             );
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
         }
         delete request.session!.state;
 
-        const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOLoginString(), request.query.code);
+        const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOLoginString(), request.query.code!);
 
         if (!authResponse || authResponse.status !== httpStatus.OK) {
             return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
@@ -153,25 +150,22 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkLogin)
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
+    @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
     private static async SSOAuthCallback(
         request: Request<{}, any, any, {code?: string, state?: string}>, response: Response,
     ): Promise<Response> {
-
-        if (typeof request.query.code !== 'string') {
-            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidCode');
-        }
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
         if (request.session!.state !== request.query.state) {
             // State did not match the one we saved, possible XSRF.
             process.emitWarning(
-                `Invalid state from /auth-callback request! Expected '${request.session!.state}' and got '${request.query.state}'.`,
+                `Invalid state from /auth-callback request! Expected '${request.session!.state}' and got '${request.query.state!}'.`,
             );
             return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
         }
         delete request.session!.state;
 
-        const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOAuthString(), request.query.code);
+        const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOAuthString(), request.query.code!);
 
         if (!authResponse || authResponse.status !== httpStatus.OK) {
             return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
