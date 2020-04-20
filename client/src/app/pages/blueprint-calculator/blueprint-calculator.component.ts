@@ -127,7 +127,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         }, []);
     }
 
-    public async createSupplyChain3(material: number, quantity = 1, initialPrice?: number) {
+    public async createSupplyChain(material: number, quantity = 1, initialPrice?: number) {
         const info = await this.typesService.getType(material);
         if (!info) {
             throw new Error('Unable to get material info');
@@ -160,7 +160,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         await this.adjustMaterialsNeededByBlueprintMaterialEfficiency(manufacturingData);
 
         for (const subMaterial of manufacturingData.materials) {
-            const subNode = await this.createSupplyChain3(subMaterial.id, subMaterial.quantity * quantity);
+            const subNode = await this.createSupplyChain(subMaterial.id, subMaterial.quantity * quantity);
             materialPrices += subNode.price;
             node.children.push(subNode);
         }
@@ -323,14 +323,17 @@ export class BlueprintCalculatorComponent implements OnInit {
             return;
         }
 
-        const chain = await this.createSupplyChain3(this.item.data.id, this.quantity, productPrice).catch((error: Error) => {
+        const chain = await this.createSupplyChain(this.item.data.id, this.quantity, productPrice).catch((error: Error) => {
             this.message = `Cannot complete calculation, reason: ${error.message}`;
         });
 
-        if (chain) {
-            await this.namesService.getNames(...this.usedBlueprints.map((blueprint) => blueprint.type_id));
+        if (chain && chain.producePrice === Infinity) {
 
-            this.calculating = false;
+            this.message = 'There are not enough materials available in the chosen market to build this item.';
+
+        } else if (chain) {
+
+            await this.namesService.getNames(...this.usedBlueprints.map((blueprint) => blueprint.type_id));
 
             this.chain = chain;
 

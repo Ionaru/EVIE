@@ -73,7 +73,7 @@
     </ng-container>
     <br>
     <p class="text-center">Note: This calculator does not factor in Structure Rigs, or the Structure Role Bonus of Engineering Complexes because this data is not available to Third-Party applications.</p>
-    <p class="text-center">This means the actual profit of production can differ a few percent fomr the value shown here.</p>
+    <p class="text-center">This means the actual profit of production can differ a few percent from the value shown here.</p>
     <br>
 
     <div class="input-button-container d-flex flex-row justify-content-evenly">
@@ -119,12 +119,12 @@
                 </div>
 
                 <div id="shopping-list" *ngIf="profit > 0">
-                    <h2>Shopping list</h2>
+                    <h2>Materials required</h2>
                     <ul>
                         <li *ngFor="let item of shoppingList.list">
                             <p>
                                 <img src="https://images.evetech.net/types/{{item.product.type_id}}/icon?size=32" alt="material image">
-                                {{ item.product.name }} x {{ item.quantity }} ({{ item.price }})
+                                {{ item.product.name }} x {{ item.quantity }} ({{ item.price  | number : '0.2-2'}} ISK)
                             </p>
                         </li>
                     </ul>

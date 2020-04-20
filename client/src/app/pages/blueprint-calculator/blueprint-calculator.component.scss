@@ -8,6 +8,7 @@
             background: transparent;
             border-color: $primary;
             color: $primary;
+            padding: 0.375rem 0.75rem;
 
             &.is-invalid {
                 color: $danger;
