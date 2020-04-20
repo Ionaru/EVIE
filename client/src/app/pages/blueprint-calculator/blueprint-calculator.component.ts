@@ -1,9 +1,6 @@
-// TODO: Remove line below.
-// tslint:disable
-
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ICharacterBlueprintsDataUnit, IUniverseNamesDataUnit, IUniverseTypeData } from '@ionaru/eve-utils';
+import { ICharacterBlueprintsDataUnit, IUniverseNamesDataUnit } from '@ionaru/eve-utils';
 import { map } from 'rxjs/operators';
 
 import { Calc } from '../../../shared/calc.helper';
@@ -14,41 +11,9 @@ import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
 import { NamesService } from '../../data-services/names.service';
 import { SearchService, SearchType } from '../../data-services/search.service';
-
-class ShoppingList2 {
-    public readonly list: IndustryNode[] = [];
-
-    public add(nodeToAdd: IndustryNode) {
-        const existingNode = this.list.find((node) => node.product.type_id === nodeToAdd.product.type_id);
-        if (existingNode) {
-            existingNode.quantity += nodeToAdd.quantity;
-            existingNode.price += nodeToAdd.price;
-        } else {
-            this.list.push(nodeToAdd);
-        }
-    }
-}
-
-class IndustryNode {
-    price = Infinity;
-    quantity: number;
-    acquireMethod?: AcquireMethod;
-    product: IUniverseTypeData;
-    totalIndustryCost = 0;
-    producePrice = Infinity;
-    children: IndustryNode[] = [];
-
-
-    constructor(product: IUniverseTypeData, quantity: number) {
-        this.product = product;
-        this.quantity = quantity;
-    }
-}
-
-enum AcquireMethod {
-    PURCHASE,
-    PRODUCE,
-}
+import { IndustryNode } from '../../models/industry/industry-node.model';
+import { AcquireMethod } from '../../models/industry/acquire-method.enum';
+import { ShoppingList } from '../../models/industry/shopping-list.model';
 
 interface IInput {
     data?: IUniverseNamesDataUnit;
@@ -62,6 +27,17 @@ interface IInput {
 })
 export class BlueprintCalculatorComponent implements OnInit {
 
+    constructor(
+        private blueprintsService: BlueprintsService,
+        private industryService: IndustryService,
+        private marketService: MarketService,
+        private namesService: NamesService,
+        private searchService: SearchService,
+        private typesService: TypesService,
+        private route: ActivatedRoute,
+        private router: Router,
+    ) { }
+
     public calculating?: boolean;
 
     public currentMaterial?: string;
@@ -69,10 +45,10 @@ export class BlueprintCalculatorComponent implements OnInit {
     public item: IInput = {};
     @ViewChild('input_item') inputItemElement!: ElementRef<HTMLInputElement>;
 
-    public tax: number = 0;
+    public tax = 0;
     @ViewChild('input_tax') inputTaxElement!: ElementRef<HTMLInputElement>;
 
-    public quantity: number = 1;
+    public quantity = 1;
     @ViewChild('input_quantity') inputQuantityElement!: ElementRef<HTMLInputElement>;
 
     public productionSystem: IInput = {};
@@ -88,23 +64,14 @@ export class BlueprintCalculatorComponent implements OnInit {
     public profit = 0;
     public chain?: IndustryNode;
 
-    public shoppingList = new ShoppingList2();
+    public shoppingList = new ShoppingList();
     public shoppingVolume = 0;
 
     public usedBlueprints: ICharacterBlueprintsDataUnit[] = [];
 
     public message?: string;
 
-    constructor(
-        private blueprintsService: BlueprintsService,
-        private industryService: IndustryService,
-        private marketService: MarketService,
-        private namesService: NamesService,
-        private searchService: SearchService,
-        private typesService: TypesService,
-        private route: ActivatedRoute,
-        private router: Router,
-    ) { }
+    public loggedIn = !!CharacterService.selectedCharacter;
 
     public getName(id: number) {
         return NamesService.getNameFromData(id);
@@ -119,11 +86,9 @@ export class BlueprintCalculatorComponent implements OnInit {
                 this.item.input = params.get('item') || '';
                 this.quantity = Number(params.get('quantity')) || 1;
                 this.tax = Number(params.get('tax')) || 0;
-            })
+            }),
         ).toPromise().then();
     }
-
-    public loggedIn = !!CharacterService.selectedCharacter;
 
     public async adjustMaterialsNeededByBlueprintMaterialEfficiency(manufacturingData: IManufacturingData) {
         if (!CharacterService.selectedCharacter) {
@@ -143,8 +108,8 @@ export class BlueprintCalculatorComponent implements OnInit {
 
                 return {
                     id: material.id,
-                    quantity: Math.ceil(material.quantity - materialsToSubtract)
-                }
+                    quantity: Math.ceil(material.quantity - materialsToSubtract),
+                };
             });
 
         }
@@ -171,17 +136,15 @@ export class BlueprintCalculatorComponent implements OnInit {
         this.currentMaterial = info.name;
         const node = new IndustryNode(info, quantity);
 
-        let price;
-        if (initialPrice) {
-            price = initialPrice;
-        } else {
-            price = await this.marketService.getPriceForAmountInSystem(this.buySystem.data!.id, material, quantity, 'sell');
-        }
+        const price = initialPrice ?
+            initialPrice :
+            // tslint:disable-next-line:no-non-null-assertion
+            await this.marketService.getPriceForAmountInSystem(this.buySystem.data!.id, material, quantity, 'sell');
 
         const manufacturingData = await this.industryService.getManufacturingData(material);
 
         if (!manufacturingData && (!price || price === Infinity)) {
-            throw new Error(`Material ${info.name} can neither be bought nor built.`)
+            throw new Error(`Material ${info.name} can neither be bought nor built.`);
         }
 
         node.price = price || Infinity;
@@ -253,9 +216,9 @@ export class BlueprintCalculatorComponent implements OnInit {
                     quantity: this.quantity,
                     tax: this.tax,
                 },
-                queryParamsHandling: 'merge'
+                queryParamsHandling: 'merge',
             }).then();
-            this.recFun2();
+            this.runCalculation().then();
         }
     }
 
@@ -311,6 +274,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         return true;
     }
 
+    // tslint:disable-next-line:bool-param-default
     public setValidity(element: ElementRef<HTMLInputElement>, valid?: boolean) {
 
         const invalidClass = 'is-invalid';
@@ -330,7 +294,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         }
     }
 
-    public async recFun2() {
+    public async runCalculation() {
 
         if (this.quantity < 1 || !Number.isInteger(this.quantity)) {
             this.message = 'Quantity must be a positive integer.';
@@ -345,7 +309,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         this.chain = undefined;
         this.message = undefined;
         this.calculating = true;
-        this.shoppingList = new ShoppingList2();
+        this.shoppingList = new ShoppingList();
         this.shoppingVolume = 0;
         this.usedBlueprints = [];
         this.currentMaterial = 'Initializing';
