@@ -15,6 +15,27 @@ export class DataRouter extends BaseRouter {
     }
 
     @DataRouter.requestDecorator(DataRouter.checkAuthorizedClient)
+    private static async getEstimatedItemValue(request: Request, response: Response): Promise<Response> {
+        const typeId = DataRouter.getTypeId(request);
+
+        if (!typeId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
+        if (isNaN(typeId)) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+        }
+
+        const data = await DataController.getEstimatedItemValue(typeId);
+
+        if (!data) {
+            return DataRouter.sendResponse(response, httpStatus.NOT_FOUND, 'NotFound');
+        }
+
+        return DataRouter.sendSuccessResponse(response, data);
+    }
+
+    @DataRouter.requestDecorator(DataRouter.checkAuthorizedClient)
     private static async getManufacturingInfo(request: Request, response: Response): Promise<Response> {
         const typeId = DataRouter.getTypeId(request);
 
@@ -136,6 +157,7 @@ export class DataRouter extends BaseRouter {
         this.createRoute('get', '/market-types', DataRouter.getMarketTypes);
         this.createRoute('get', '/market-ids', DataRouter.getMarketIds);
         this.createRoute('get', '/manufacturing/:id', DataRouter.getManufacturingInfo);
+        this.createRoute('get', '/estimated-item-value/:id', DataRouter.getEstimatedItemValue);
         this.createRoute('get', '/refining/:id', DataRouter.getRefiningProducts);
         this.createRoute('get', '/industry/system/:id', DataRouter.getIndustrySystem);
     }

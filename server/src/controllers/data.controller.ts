@@ -3,10 +3,12 @@ import {
     IIndustryActivityData,
     IIndustryActivityMaterialsData,
     IIndustryActivityProductsData,
-    IIndustryActivitySkillsData, IIndustrySystemsData,
+    IIndustryActivitySkillsData,
+    IIndustrySystemsData,
     IIndustrySystemsDataUnit,
     IInvTypeMaterialsData,
     IMarketGroupData,
+    IMarketPricesData,
     IndustryActivity,
     IUniverseCategoryData,
     IUniverseGroupData,
@@ -204,5 +206,39 @@ export class DataController {
         }
 
         return type;
+    }
+
+    public static async getEstimatedItemValue(typeId: number): Promise<number | void> {
+        let value = 0;
+
+        const url = EVE.getMarketPricesUrl();
+        const response = await esiService.fetchESIData<IMarketPricesData>(url).catch(() => undefined);
+        if (!response) {
+            return;
+        }
+
+        const itemPrices = response.find((item) => item.type_id === typeId);
+
+        if (!itemPrices) {
+            return;
+        }
+
+        const manufacturingData = await DataController.getManufacturingInfo(typeId);
+
+        if (!manufacturingData) {
+            return itemPrices.adjusted_price;
+        }
+
+        for (const subMaterial of manufacturingData.materials) {
+            const subPrice = await this.getEstimatedItemValue(subMaterial.id);
+
+            if (!subPrice) {
+                return;
+            }
+
+            value += (subPrice * subMaterial.quantity);
+        }
+
+        return value;
     }
 }

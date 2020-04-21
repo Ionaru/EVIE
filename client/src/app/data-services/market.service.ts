@@ -1,11 +1,10 @@
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { generateNumbersArray, sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { EVE, IMarketOrdersData, IMarketPricesData } from '@ionaru/eve-utils';
+import { EVE, IMarketOrdersData } from '@ionaru/eve-utils';
 
-import { BaseService } from './base.service';
+import { BaseService, IServerResponse } from './base.service';
 import { ConstellationsService } from './constellations.service';
-import { IndustryService } from './industry.service';
 import { SystemsService } from './systems.service';
 
 @Injectable()
@@ -36,48 +35,21 @@ export class MarketService extends BaseService {
     constructor(
         protected http: HttpClient,
         private systemsService: SystemsService,
-        private industryService: IndustryService,
         private constellationsService: ConstellationsService,
     ) {
         super(http);
     }
 
-    // TODO: Move to server for caching
-
     public async getEstimatedItemValue(itemId: number): Promise<number | void> {
 
-        let value = 0;
-
-        const manufacturingData = await this.industryService.getManufacturingData(itemId);
-
-        const url = EVE.getMarketPricesUrl();
-        const response = await this.http.get<any>(url).toPromise<IMarketPricesData>()
+        const url = `data/estimated-item-value/${itemId}`;
+        const response = await this.http.get<any>(url).toPromise<IServerResponse<number>>()
             .catch(this.catchHandler);
         if (response instanceof HttpErrorResponse) {
             return;
         }
 
-        if (!manufacturingData) {
-            const itemPrices = response.find((item) => item.type_id === itemId);
-
-            if (!itemPrices) {
-                return;
-            }
-
-            return itemPrices.adjusted_price;
-        }
-
-        for (const subMaterial of manufacturingData.materials) {
-            const subPrice = await this.getEstimatedItemValue(subMaterial.id);
-
-            if (!subPrice) {
-                return;
-            }
-
-            value += (subPrice * subMaterial.quantity);
-        }
-
-        return value;
+        return response.data;
     }
 
     public async getPriceForAmountInSystem(systemId: number, typeId: number, amount: number, type: 'buy' | 'sell' = 'sell'):
