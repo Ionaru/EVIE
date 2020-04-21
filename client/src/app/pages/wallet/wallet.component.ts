@@ -25,6 +25,7 @@ export class WalletComponent extends DataPageComponent implements OnInit {
         pipe: 'date',
         sort: true,
         title: 'Timestamp',
+        sortAttribute: 'id',
     }, {
         attribute: 'amount',
         classFunction: (data) => (!data.amount || data.amount < 0) ? 'negative' : 'positive',
@@ -72,7 +73,26 @@ export class WalletComponent extends DataPageComponent implements OnInit {
 
     public async getJournalData() {
         if (CharacterService.selectedCharacter) {
-            this.journalData = await this.journalService.getWalletJournal(CharacterService.selectedCharacter);
+            const journalData = await this.journalService.getWalletJournal(CharacterService.selectedCharacter);
+
+            const journalDataWithTax: ICharacterWalletJournalData = [];
+
+            for (const journalEntry of journalData) {
+                if (journalEntry.tax) {
+                    journalDataWithTax.push({
+                        date: journalEntry.date,
+                        // Make sure this always appears after the initial transaction.
+                        id: journalEntry.id + 0.5,
+                        description: 'Corporation tax',
+                        ref_type: 'corporate_reward_tax',
+                        amount: -journalEntry.tax,
+                        balance: (journalEntry.balance || 0) - journalEntry.tax,
+                    });
+                }
+                journalDataWithTax.push(journalEntry);
+            }
+
+            this.journalData = journalDataWithTax;
         }
     }
 }
