@@ -17,6 +17,7 @@ interface IMineralData {
     profit: number;
     accurateData?: false;
     name: string;
+    index?: number;
 }
 
 @Component({

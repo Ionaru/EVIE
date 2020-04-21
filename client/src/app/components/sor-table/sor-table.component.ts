@@ -16,7 +16,7 @@ export interface ITableHeader<T extends ITableHeaderData> {
     prefix?: string;
     prefixFunction?: (value: T) => string;
     sort?: boolean;
-    sortAttribute?: string;
+    sortAttribute?: keyof T;
     suffix?: string;
     suffixFunction?: (value: T) => string;
     title?: string;
