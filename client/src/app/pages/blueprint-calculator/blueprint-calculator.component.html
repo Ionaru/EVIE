@@ -2,7 +2,11 @@
 
     <div class="input-container d-flex flex-row justify-content-evenly">
         <label>
-            Buying system
+            Buying system (
+            <a [routerLink]="" queryParamsHandling="preserve" (click)="buyUsingBuyOrders = !buyUsingBuyOrders">
+                using {{buyUsingBuyOrders ? 'buy' : 'sell'}} orders
+            </a>
+            )
             <input type="text" class="form-control" placeholder="Choose a system to buy material from"
                    [(ngModel)]="buySystem.input"
                    (ngModelChange)="setValidity(inputBuySystemElement)"
@@ -22,7 +26,11 @@
         </label>
 
         <label>
-            Selling system
+            Selling system (
+            <a [routerLink]="" queryParamsHandling="preserve" (click)="sellUsingSellOrders = !sellUsingSellOrders">
+                using {{sellUsingSellOrders ? 'sell' : 'buy'}} orders
+            </a>
+            )
             <input type="text" class="form-control" placeholder="Choose a system to sell the item in"
                    [(ngModel)]="sellSystem.input"
                    (ngModelChange)="setValidity(inputSellSystemElement)"
@@ -69,11 +77,18 @@
 
     <ng-container *ngIf="!loggedIn">
         <br>
-        <p class="text-center">Tip: Log in and provide the 'read blueprints' scope to use your blueprints in the calculations.</p>
+        <p class="text-center">
+            Tip: Log in and provide the 'read blueprints' scope to use your blueprints in the calculations.
+        </p>
     </ng-container>
     <br>
-    <p class="text-center">Note: This calculator does not factor in Structure Rigs, or the Structure Role Bonus of Engineering Complexes because this data is not available to Third-Party applications.</p>
-    <p class="text-center">This means the actual profit of production can differ a few percent from the value shown here.</p>
+    <p class="text-center">
+        Note: This calculator does not factor in Structure Rigs or the Structure Role Bonus of Engineering Complexes
+        because this information is not available to external applications.
+    </p>
+    <p class="text-center">
+        This means the actual profit of production can differ a few percent from the value shown here.
+    </p>
     <br>
 
     <div class="input-button-container d-flex flex-row justify-content-evenly">
@@ -89,7 +104,8 @@
         <ng-container *ngIf="!calculating; else calculating_message">
             <ng-container *ngIf="!message; else error_message">
 
-                <p>Producing this item will yield {{ profit | number: '1.2-2' }} ISK ({{ profitPercentage | number : '1.0-0' }} %) profits.</p>
+                <p>Producing this item will yield {{ profit | number: '1.2-2' }} ISK
+                    ({{ profitPercentage | number : '1.0-0' }} %) profits.</p>
                 <p>Suggestion:
                     <strong class="{{ profit <= 0 ? 'text-danger' : 'text-success' }}">
                         <span *ngIf="profit <= 0">do not</span>
@@ -111,7 +127,9 @@
                     <ul>
                         <li *ngFor="let item of usedBlueprints">
                             <p>
-                                <img src="https://images.evetech.net/types/{{ item.type_id }}/{{ item.runs === -1 ? 'bp' : 'bpc' }}?size=32" alt="blueprint image">
+                                <img
+                                    src="https://images.evetech.net/types/{{ item.type_id }}/{{ item.runs === -1 ? 'bp' : 'bpc' }}?size=32"
+                                    alt="blueprint image">
                                 {{ getName(item.type_id) }} ( -{{ item.material_efficiency }}% )
                             </p>
                         </li>
@@ -123,7 +141,8 @@
                     <ul>
                         <li *ngFor="let item of shoppingList.list">
                             <p>
-                                <img src="https://images.evetech.net/types/{{item.product.type_id}}/icon?size=32" alt="material image">
+                                <img src="https://images.evetech.net/types/{{item.product.type_id}}/icon?size=32"
+                                     alt="material image">
                                 {{ item.product.name }} x {{ item.quantity }} ({{ item.price  | number : '0.2-2'}} ISK)
                             </p>
                         </li>

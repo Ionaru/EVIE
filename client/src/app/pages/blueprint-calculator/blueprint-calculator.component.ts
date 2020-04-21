@@ -42,6 +42,9 @@ export class BlueprintCalculatorComponent implements OnInit {
 
     public currentMaterial?: string;
 
+    public sellUsingSellOrders = false;
+    public buyUsingBuyOrders = false;
+
     public item: IInput = {};
     @ViewChild('input_item') inputItemElement!: ElementRef<HTMLInputElement>;
 
@@ -86,6 +89,8 @@ export class BlueprintCalculatorComponent implements OnInit {
                 this.item.input = params.get('item') || '';
                 this.quantity = Number(params.get('quantity')) || 1;
                 this.tax = Number(params.get('tax')) || 0;
+                this.buyUsingBuyOrders = params.get('buyUsingBuyOrders') === 'true';
+                this.sellUsingSellOrders = params.get('sellUsingSellOrders') === 'true';
             }),
         ).toPromise().then();
     }
@@ -138,8 +143,10 @@ export class BlueprintCalculatorComponent implements OnInit {
 
         const price = initialPrice ?
             initialPrice :
-            // tslint:disable-next-line:no-non-null-assertion
-            await this.marketService.getPriceForAmountInSystem(this.buySystem.data!.id, material, quantity, 'sell');
+            await this.marketService.getPriceForAmountInSystem(
+                // tslint:disable-next-line:no-non-null-assertion
+                this.buySystem.data!.id, material, quantity, this.buyUsingBuyOrders ? 'buy' : 'sell',
+            );
 
         const manufacturingData = await this.industryService.getManufacturingData(material);
 
@@ -215,6 +222,8 @@ export class BlueprintCalculatorComponent implements OnInit {
                     productionSystem: this.productionSystem.input,
                     quantity: this.quantity,
                     tax: this.tax,
+                    buyUsingBuyOrders: this.buyUsingBuyOrders,
+                    sellUsingSellOrders: this.sellUsingSellOrders,
                 },
                 queryParamsHandling: 'merge',
             }).then();
@@ -314,8 +323,9 @@ export class BlueprintCalculatorComponent implements OnInit {
         this.usedBlueprints = [];
         this.currentMaterial = 'Initializing';
 
-        // NEW
-        const productPrice = await this.marketService.getPriceForAmountInSystem(this.sellSystem.data.id, this.item.data.id, this.quantity, 'buy');
+        const productPrice = await this.marketService.getPriceForAmountInSystem(
+            this.sellSystem.data.id, this.item.data.id, this.quantity, this.sellUsingSellOrders ? 'sell' : 'buy',
+        );
 
         if (!productPrice) {
             this.message = 'Unable to determine price for final product.';
