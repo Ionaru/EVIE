@@ -1,6 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { EVE, IUniverseCategoryData, IUniverseGroupData } from '@ionaru/eve-utils';
 
 import { BaseService } from './base.service';
@@ -26,8 +25,6 @@ export class SkillGroupsService extends BaseService {
                 skillInfo.push(group);
             }
         }));
-
-        sortArrayByObjectProperty(skillInfo, 'name');
 
         return skillInfo;
     }
