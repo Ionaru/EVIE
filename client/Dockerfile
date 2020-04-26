@@ -10,7 +10,7 @@ COPY ./browserslist ./.npmrc ./package.json ./package-lock.json ./angular.json .
 
 # Install dependencies
 ARG EVIE_FA_TOKEN
-RUN npm install
+RUN npm ci
 
 # Copy source files
 COPY ./src ./src

@@ -9,7 +9,7 @@ WORKDIR /app
 COPY ./package.json ./package-lock.json ./tsconfig.json ./ormconfig.js ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
 # Copy source files
 COPY ./src ./src
