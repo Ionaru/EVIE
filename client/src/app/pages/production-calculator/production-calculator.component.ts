@@ -180,7 +180,7 @@ export class ProductionCalculatorComponent implements OnInit {
         const industryCost = await this.getIndustryCost(material);
         node.totalIndustryCost += (industryCost * quantity);
 
-        node.producePrice = materialPrices;
+        node.materialPrice = materialPrices;
         if ((materialPrices + industryCost) < node.price) {
             node.acquireMethod = AcquireMethod.PRODUCE;
             node.price = materialPrices;
@@ -347,7 +347,7 @@ export class ProductionCalculatorComponent implements OnInit {
             this.message = `Cannot complete calculation, reason: ${error.message}`;
         });
 
-        if (chain && chain.producePrice === Infinity) {
+        if (chain && chain.materialPrice === Infinity) {
 
             this.message = 'There are not enough materials available in the chosen market to build this item.';
 
@@ -357,8 +357,9 @@ export class ProductionCalculatorComponent implements OnInit {
 
             this.chain = chain;
 
-            this.profit = chain.price - (chain.producePrice + chain.totalIndustryCost);
-            this.profitPercentage = Calc.profitPercentage(chain.producePrice, chain.price);
+            const producePrice = chain.materialPrice + chain.totalIndustryCost;
+            this.profit = chain.price - producePrice;
+            this.profitPercentage = Calc.profitPercentage(producePrice, chain.price);
 
             const flatChain = this.flatten([chain], (industryNode) => industryNode.children);
 

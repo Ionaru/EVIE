@@ -6,7 +6,7 @@ export class IndustryNode {
     public price = Infinity;
     public acquireMethod?: AcquireMethod;
     public totalIndustryCost = 0;
-    public producePrice = Infinity;
+    public materialPrice = Infinity;
     public children: IndustryNode[] = [];
 
 
