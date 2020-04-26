@@ -42,6 +42,7 @@
             )
             <input type="text" class="form-control" placeholder="Choose a system to buy material from"
                    [(ngModel)]="buySystem.input"
+                   (keyup.enter)="processInput()"
                    (ngModelChange)="setValidity(inputBuySystemElement)"
                    #input_buy_system
                    [required]="true"
@@ -52,6 +53,7 @@
             Item
             <input type="text" class="form-control" placeholder="Choose an item to produce"
                    [(ngModel)]="item.input"
+                   (keyup.enter)="processInput()"
                    (ngModelChange)="setValidity(inputItemElement)"
                    #input_item
                    [required]="true"
@@ -66,6 +68,7 @@
             )
             <input type="text" class="form-control" placeholder="Choose a system to sell the item in"
                    [(ngModel)]="sellSystem.input"
+                   (keyup.enter)="processInput()"
                    (ngModelChange)="setValidity(inputSellSystemElement)"
                    #input_sell_system
                    [required]="true"
@@ -77,6 +80,7 @@
             Production system
             <input type="text" class="form-control" placeholder="Choose where to produce this item"
                    [(ngModel)]="productionSystem.input"
+                   (keyup.enter)="processInput()"
                    (ngModelChange)="setValidity(inputProductionSystemElement)"
                    #input_production_system
                    [required]="true"
@@ -87,6 +91,7 @@
             Facility tax
             <input type="number" class="form-control" placeholder="Set the facility tax"
                    [(ngModel)]="tax"
+                   (keyup.enter)="processInput()"
                    (ngModelChange)="setValidity(inputTaxElement)"
                    #input_tax
                    [min]="0"
@@ -99,6 +104,7 @@
             Quantity
             <input type="number" class="form-control" placeholder="Set the quantity of items to produce"
                    [(ngModel)]="quantity"
+                   (keyup.enter)="processInput()"
                    (ngModelChange)="setValidity(inputQuantityElement)"
                    #input_quantity
                    [min]="1"
