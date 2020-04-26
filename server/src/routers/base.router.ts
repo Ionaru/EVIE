@@ -69,15 +69,6 @@ export class BaseRouter {
             return nextFunction;
         }
 
-        const requestOrigin = request.headers.origin;
-        const isAllowed = BaseRouter.allowedHosts.some((host) => requestOrigin && requestOrigin.includes(host));
-
-        if (!isAllowed) {
-            process.emitWarning(`Unknown host tried to connect, possible CORS: ${requestOrigin}`);
-            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadHost');
-            return;
-        }
-
         const serverToken = request.session!.token as unknown;
         const clientToken = request.headers['x-evie-token'] as unknown;
 
