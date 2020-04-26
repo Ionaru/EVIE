@@ -7,14 +7,14 @@ import { Calc } from '../../../shared/calc.helper';
 import { BlueprintsService } from '../../data-services/blueprints.service';
 import { IManufacturingData, IndustryService } from '../../data-services/industry.service';
 import { MarketService } from '../../data-services/market.service';
-import { TypesService } from '../../data-services/types.service';
-import { CharacterService } from '../../models/character/character.service';
 import { NamesService } from '../../data-services/names.service';
 import { SearchService, SearchType } from '../../data-services/search.service';
+import { TypesService } from '../../data-services/types.service';
+import { CharacterService } from '../../models/character/character.service';
+import { AcquireMethod } from '../../models/industry/acquire-method';
 import { IndustryGraph } from '../../models/industry/industry-graph';
 import { IndustryGraphLayout } from '../../models/industry/industry-graph-layout';
 import { IndustryNode } from '../../models/industry/industry-node';
-import { AcquireMethod } from '../../models/industry/acquire-method';
 import { ShoppingList } from '../../models/industry/shopping-list';
 
 interface IInput {
@@ -183,6 +183,7 @@ export class ProductionCalculatorComponent implements OnInit {
         node.producePrice = materialPrices;
         if ((materialPrices + industryCost) < node.price) {
             node.acquireMethod = AcquireMethod.PRODUCE;
+            node.price = materialPrices;
         } else {
             node.acquireMethod = AcquireMethod.PURCHASE;
             node.children = [];
@@ -376,7 +377,7 @@ export class ProductionCalculatorComponent implements OnInit {
 
     public buildGraph(node: IndustryNode) {
         this.industryGraphData.addNode(node.product.type_id, node.product.name, node.quantity);
-        if (node.children) {
+        if (node.children && node.acquireMethod === AcquireMethod.PRODUCE) {
             for (const child of node.children) {
                 this.industryGraphData.addLink(child.product.type_id, node.product.type_id, child.quantity);
                 this.buildGraph(child);
