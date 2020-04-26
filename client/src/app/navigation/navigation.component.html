@@ -2,7 +2,7 @@
     <a class="navbar-brand" routerLink="/">EVIE</a>
     <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"
             [attr.aria-expanded]="!isCollapsed" aria-controls="collapseExample">
-        <fa-icon [icon]="faChevronDown"></fa-icon>
+        <fa-icon [fixedWidth]="true" [icon]="faChevronDown"></fa-icon>
     </button>
 
     <div class="collapse navbar-collapse" id="collapseExample" [ngbCollapse]="!isCollapsed">
@@ -10,38 +10,37 @@
             <li class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="/" routerLinkActive="active"
                    [routerLinkActiveOptions]="{ exact: true }">
-                    <span class="nav-link-text"><fa-icon [icon]="homeIcon"></fa-icon></span>
+                    <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="homeIcon"></fa-icon></span>
                 </a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item" (click)="isCollapsed = !isCollapsed">
                 <a class="nav-link" routerLink="dashboard" routerLinkActive="active">
-                    <span class="nav-link-text"><fa-icon [icon]="dashboardIcon"></fa-icon></span>
+                    <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="dashboardIcon"></fa-icon></span>
                 </a>
             </li>
             <li class="nav-item dropdown" ngbDropdown>
                 <a class="nav-link dropdown-toggle" ngbDropdownToggle>
                     <span class="nav-link-text">
-                        <fa-icon [icon]="industryToolsIcon"></fa-icon>
+                        <fa-icon [fixedWidth]="true" [icon]="industryToolsIcon"></fa-icon>
                         Industry tools
                     </span>
                 </a>
                 <div class="dropdown-menu" ngbDropdownMenu>
                     <a class="dropdown-item" routerLink="ore" routerLinkActive="active">
-                        <fa-icon [icon]="orePricesIcon"></fa-icon>
-                        Ore prices
+                        <fa-icon [fixedWidth]="true" [icon]="orePricesIcon"></fa-icon>
+                        Ore Prices
                     </a>
                     <a class="dropdown-item" routerLink="gas" routerLinkActive="active">
-                        <fa-icon [icon]="orePricesIcon"></fa-icon>
-                        Gas prices
+                        <fa-icon [fixedWidth]="true" [icon]="orePricesIcon"></fa-icon>
+                        Gas Prices
                     </a>
-                    <a class="dropdown-item" routerLink="blueprint-calculator" routerLinkActive="active"
-                       *ngIf="devEnvironment">
-                        <fa-icon [icon]="orePricesIcon"></fa-icon>
-                        BP
+                    <a class="dropdown-item" routerLink="production-calculator" routerLinkActive="active">
+                        <fa-icon [fixedWidth]="true" [icon]="productionCalculatorIcon"></fa-icon>
+                        Production Calculator
                     </a>
                     <a class="dropdown-item" routerLink="refining-profit" routerLinkActive="active"
                        *ngIf="devEnvironment">
-                        <fa-icon [icon]="orePricesIcon"></fa-icon>
+                        <fa-icon [fixedWidth]="true" [icon]="orePricesIcon"></fa-icon>
                         Minerals
                     </a>
                     <!--<a class="dropdown-item" routerLink="ore" routerLinkActive="active">-->
@@ -60,24 +59,24 @@
                         <span id="eve-players"></span> players online
                     </span>
                     <span class="nav-link-text" [ngClass]="{'d-none': serverOnline}">
-                        <fa-icon [icon]="connectionIcon" class="text-danger"></fa-icon>
+                        <fa-icon [fixedWidth]="true" [icon]="connectionIcon" class="text-danger"></fa-icon>
                         API server is offline
                     </span>
                 </a>
             </li>
             <li *ngIf="isLoggedIn && (isAdmin || devEnvironment)" class="nav-item">
                 <a class="nav-link" routerLink="users" routerLinkActive="active">
-                    <span class="nav-link-text"><fa-icon [icon]="userAdminIcon"></fa-icon></span>
+                    <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="userAdminIcon"></fa-icon></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" routerLink="about" routerLinkActive="active">
-                    <span class="nav-link-text"><fa-icon [icon]="aboutIcon"></fa-icon></span>
+                    <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="aboutIcon"></fa-icon></span>
                 </a>
             </li>
             <li *ngIf="isLoggedIn" class="nav-item">
                 <a class="nav-link" (click)="logout()">
-                    <span class="nav-link-text"><fa-icon [icon]="logoutIcon"></fa-icon></span>
+                    <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="logoutIcon"></fa-icon></span>
                 </a>
             </li>
         </ul>

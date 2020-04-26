@@ -6,7 +6,7 @@ import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { AboutComponent } from './pages/about/about.component';
 import { AssetsComponent } from './pages/assets/assets.component';
-import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
+import { ProductionCalculatorComponent } from './pages/production-calculator/production-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
 import { HomeComponent } from './pages/home/home.component';
@@ -28,7 +28,7 @@ const routes: Routes = [
     // EVE data pages.
     {path: 'ore', component: OreComponent, resolve: [AppReadyGuard]},
     {path: 'gas', component: GasChartComponent, resolve: [AppReadyGuard]},
-    {path: 'blueprint-calculator', component: BlueprintCalculatorComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
+    {path: 'production-calculator', component: ProductionCalculatorComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
     {path: 'refining-profit', component: RefiningProfitComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
 
     // Character data pages.

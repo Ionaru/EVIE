@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {
     faAbacus,
+    faCalculator,
     faChevronDown,
     faColumns,
     faDollarSign,
@@ -42,6 +43,7 @@ export class NavigationComponent implements OnInit {
     public logoutIcon = faSignOut;
     public aboutIcon = faQuestion;
     public orePricesIcon = faDollarSign;
+    public productionCalculatorIcon = faCalculator;
 
     public hours = '00';
     public minutes = '00';

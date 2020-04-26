@@ -46,7 +46,7 @@ import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
 import { AboutComponent } from './pages/about/about.component';
 import { AssetsComponent } from './pages/assets/assets.component';
-import { BlueprintCalculatorComponent } from './pages/blueprint-calculator/blueprint-calculator.component';
+import { ProductionCalculatorComponent } from './pages/production-calculator/production-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
 import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
@@ -91,7 +91,7 @@ if (environment.production) {
         ScopesComponent,
         NoScopesMessageComponent,
         ApiOfflineMessageComponent,
-        BlueprintCalculatorComponent,
+        ProductionCalculatorComponent,
         RefiningProfitComponent,
         GasChartComponent,
         LoadingMessageComponent,

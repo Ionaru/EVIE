@@ -23,11 +23,11 @@ interface IInput {
 }
 
 @Component({
-    selector: 'app-blueprint-calculator',
-    styleUrls: ['./blueprint-calculator.component.scss'],
-    templateUrl: './blueprint-calculator.component.html',
+    selector: 'app-production-calculator',
+    styleUrls: ['./production-calculator.component.scss'],
+    templateUrl: './production-calculator.component.html',
 })
-export class BlueprintCalculatorComponent implements OnInit {
+export class ProductionCalculatorComponent implements OnInit {
 
     constructor(
         private blueprintsService: BlueprintsService,
