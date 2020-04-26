@@ -28,7 +28,7 @@ const routes: Routes = [
     // EVE data pages.
     {path: 'ore', component: OreComponent, resolve: [AppReadyGuard]},
     {path: 'gas', component: GasChartComponent, resolve: [AppReadyGuard]},
-    {path: 'production-calculator', component: ProductionCalculatorComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
+    {path: 'production-calculator', component: ProductionCalculatorComponent, resolve: [AppReadyGuard]},
     {path: 'refining-profit', component: RefiningProfitComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
 
     // Character data pages.
