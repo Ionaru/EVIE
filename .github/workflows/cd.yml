@@ -21,7 +21,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v1
               with:
-                  node-version: '12.x'
+                  node-version: '14.x'
 
             - name: Audit
               working-directory: client
@@ -51,7 +51,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v1
               with:
-                  node-version: '12.x'
+                  node-version: '14.x'
 
             - name: Audit
               working-directory: server
@@ -74,7 +74,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v1
               with:
-                  node-version: '12.x'
+                  node-version: '14.x'
 
             - name: Deploy to dev.spaceships.app
               if: startsWith(github.ref, 'refs/heads/')
