@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+import { BaseService } from '../data-services/base.service';
 import { ESIRequestCache } from '../shared/esi-request-cache';
 
 @Injectable()
@@ -18,6 +19,12 @@ export class ESICachingInterceptor implements HttpInterceptor {
         if (request.url.includes(EVE.ESIURL)) {
             request = request.clone({
                 setHeaders: {'X-User-Agent': `EVIE ${environment.VERSION}, by #Ionaru`},
+            });
+        }
+
+        if (request.url.startsWith('data/')) {
+            request = request.clone({
+                setHeaders: {'x-evie-token': BaseService.serverToken},
             });
         }
 
