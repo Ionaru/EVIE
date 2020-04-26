@@ -1,6 +1,6 @@
 import { IUniverseTypeData } from '@ionaru/eve-utils';
 
-import { AcquireMethod } from './acquire-method.enum';
+import { AcquireMethod } from './acquire-method';
 
 export class IndustryNode {
     public price = Infinity;

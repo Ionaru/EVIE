@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgxGraphModule } from '@swimlane/ngx-graph';
 
 import { environment } from '../environments/environment';
 import { AppReadyEventService } from './app-ready-event.service';
@@ -109,6 +110,7 @@ if (environment.production) {
         NgbModule,
         NgbTooltipModule,
         FontAwesomeModule,
+        NgxGraphModule,
     ],
     providers: [
         ...errorHandlers,

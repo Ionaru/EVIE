@@ -21,3 +21,12 @@
         }
     }
 }
+
+.industry-graph {
+    border: 1px solid $body-color;
+
+    #arrow {
+        stroke: $body-color;
+        fill: $body-color;
+    }
+}

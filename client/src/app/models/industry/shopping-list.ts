@@ -1,4 +1,4 @@
-import { IndustryNode } from './industry-node.model';
+import { IndustryNode } from './industry-node';
 
 export class ShoppingList {
     public readonly list: IndustryNode[] = [];

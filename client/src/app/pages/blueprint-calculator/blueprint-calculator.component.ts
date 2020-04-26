@@ -11,9 +11,11 @@ import { TypesService } from '../../data-services/types.service';
 import { CharacterService } from '../../models/character/character.service';
 import { NamesService } from '../../data-services/names.service';
 import { SearchService, SearchType } from '../../data-services/search.service';
-import { IndustryNode } from '../../models/industry/industry-node.model';
-import { AcquireMethod } from '../../models/industry/acquire-method.enum';
-import { ShoppingList } from '../../models/industry/shopping-list.model';
+import { IndustryGraph } from '../../models/industry/industry-graph';
+import { IndustryGraphLayout } from '../../models/industry/industry-graph-layout';
+import { IndustryNode } from '../../models/industry/industry-node';
+import { AcquireMethod } from '../../models/industry/acquire-method';
+import { ShoppingList } from '../../models/industry/shopping-list';
 
 interface IInput {
     data?: IUniverseNamesDataUnit;
@@ -75,6 +77,9 @@ export class BlueprintCalculatorComponent implements OnInit {
     public message?: string;
 
     public loggedIn = !!CharacterService.selectedCharacter;
+
+    public industryGraphData: IndustryGraph = new IndustryGraph();
+    public industryGraphLayout = new IndustryGraphLayout();
 
     public getName(id: number) {
         return NamesService.getNameFromData(id);
@@ -159,7 +164,7 @@ export class BlueprintCalculatorComponent implements OnInit {
         if (!manufacturingData) {
             // Item can not be produced.
             node.acquireMethod = AcquireMethod.PURCHASE;
-            delete node.children;
+            node.children = [];
             return node;
         }
 
@@ -180,7 +185,7 @@ export class BlueprintCalculatorComponent implements OnInit {
             node.acquireMethod = AcquireMethod.PRODUCE;
         } else {
             node.acquireMethod = AcquireMethod.PURCHASE;
-            delete node.children;
+            node.children = [];
         }
 
         return node;
@@ -248,7 +253,7 @@ export class BlueprintCalculatorComponent implements OnInit {
 
         if (this.tax < 0) {
             this.setValidity(element, false);
-            this.message = 'Industry tax must be 0 or higher';
+            this.message = 'Facility tax must be 0 or higher';
             this.calculating = false;
             return;
         }
@@ -274,6 +279,8 @@ export class BlueprintCalculatorComponent implements OnInit {
         const result = await this.searchService.search(thing.input, searchType);
         if (!result || !result.id) {
             this.setValidity(element, false);
+            this.message = `Unknown input: ${thing.input}`;
+            this.calculating = false;
             return;
         }
 
@@ -314,6 +321,8 @@ export class BlueprintCalculatorComponent implements OnInit {
         if (!this.item.data?.id || !this.sellSystem.data?.id || !this.buySystem.data?.id) {
             return;
         }
+
+        this.industryGraphData = new IndustryGraph();
 
         this.chain = undefined;
         this.message = undefined;
@@ -359,9 +368,19 @@ export class BlueprintCalculatorComponent implements OnInit {
             }
             this.shoppingVolume = this.shoppingList.list.reduce(
                 (accumulator, node) => accumulator + ((node.product.volume || 0) * node.quantity), 0);
-
+            this.buildGraph(chain);
         }
 
         this.calculating = false;
+    }
+
+    public buildGraph(node: IndustryNode) {
+        this.industryGraphData.addNode(node.product.type_id, node.product.name, node.quantity);
+        if (node.children) {
+            for (const child of node.children) {
+                this.industryGraphData.addLink(child.product.type_id, node.product.type_id, child.quantity);
+                this.buildGraph(child);
+            }
+        }
     }
 }

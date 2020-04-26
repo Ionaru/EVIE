@@ -1,3 +1,36 @@
+<!--suppress XmlUnboundNsPrefix -->
+
+<div class="title-box text-center container-fluid">
+
+    <h2>Production Calculator</h2>
+
+    <p>
+        <strong>
+            The purpose of this calculator is to determine if production of an item is profitable, and to find the
+            cheapest possible way of producing that item.
+        </strong>
+    </p>
+
+    <ng-container *ngIf="!loggedIn">
+        <br>
+        <p class="text-center">
+            Tip: Log in and provide the 'read blueprints' scope to use your blueprints in the calculations.
+        </p>
+    </ng-container>
+
+    <br>
+
+    <p>
+        Note: This calculator does not factor in Structure Rigs or the Structure Role Bonus of Engineering Complexes
+        because this information is not available to external applications.
+    </p>
+    <p>
+        This means the actual profit of production can differ a few percent from the value shown here.
+    </p>
+</div>
+
+<hr>
+
 <div class="input-fields container">
 
     <div class="input-container d-flex flex-row justify-content-evenly">
@@ -51,12 +84,12 @@
         </label>
 
         <label>
-            Industry tax
+            Facility tax
             <input type="number" class="form-control" placeholder="Set the facility tax"
                    [(ngModel)]="tax"
                    (ngModelChange)="setValidity(inputTaxElement)"
                    #input_tax
-                   [min]="1"
+                   [min]="0"
                    [step]="0.1"
                    [required]="true"
             />
@@ -75,20 +108,6 @@
         </label>
     </div>
 
-    <ng-container *ngIf="!loggedIn">
-        <br>
-        <p class="text-center">
-            Tip: Log in and provide the 'read blueprints' scope to use your blueprints in the calculations.
-        </p>
-    </ng-container>
-    <br>
-    <p class="text-center">
-        Note: This calculator does not factor in Structure Rigs or the Structure Role Bonus of Engineering Complexes
-        because this information is not available to external applications.
-    </p>
-    <p class="text-center">
-        This means the actual profit of production can differ a few percent from the value shown here.
-    </p>
     <br>
 
     <div class="input-button-container d-flex flex-row justify-content-evenly">
@@ -104,26 +123,36 @@
         <ng-container *ngIf="!calculating; else calculating_message">
             <ng-container *ngIf="!message; else error_message">
 
-                <p>Producing this item will yield {{ profit | number: '1.2-2' }} ISK
-                    ({{ profitPercentage | number : '1.0-0' }} %) profits.</p>
-                <p>Suggestion:
-                    <strong class="{{ profit <= 0 ? 'text-danger' : 'text-success' }}">
-                        <span *ngIf="profit <= 0">do not</span>
-                        produce this item!
+                <h4>Result</h4>
+
+                <p *ngIf="profit <= 0">
+                    <strong class="text-danger">
+                        The materials required for production of this item are more valuable than the finished product.
+                    </strong>
+                </p>
+
+                <p>
+                    <strong>
+                        Producing this item will yield
+                        <span class="{{ profit <= 0 ? 'text-danger' : 'text-success' }}">
+                            {{ profit | number: '1.2-2' }} ISK
+                            ({{ profitPercentage | number : '1.0-0' }} %)
+                        </span>
+                        profits.
                     </strong>
                 </p>
 
                 <br>
 
-                <p>Material buy price: {{ chain.producePrice | number: '1.2-2' }} ISK</p>
-                <p>Industry Cost: {{chain.totalIndustryCost | number: '1.2-2' }} ISK</p>
-                <p>-----</p>
+                <h4>Details</h4>
+                <p>Price of materials: {{ chain.producePrice | number: '1.2-2' }} ISK</p>
+                <p>Industry cost: {{chain.totalIndustryCost | number: '1.2-2' }} ISK</p>
                 <p>Item sell price: {{ chain.price | number: '1.2-2' }} ISK</p>
 
                 <br>
 
                 <div id="blueprints" *ngIf="usedBlueprints.length">
-                    <h2>Used blueprints</h2>
+                    <h4>Used blueprints</h4>
                     <ul>
                         <li *ngFor="let item of usedBlueprints">
                             <p>
@@ -137,17 +166,69 @@
                 </div>
 
                 <div id="shopping-list" *ngIf="profit > 0">
-                    <h2>Materials required</h2>
+                    <h4>Materials required ( {{shoppingVolume | number : '1.0-0'}}m³ )</h4>
                     <ul>
                         <li *ngFor="let item of shoppingList.list">
                             <p>
                                 <img src="https://images.evetech.net/types/{{item.product.type_id}}/icon?size=32"
                                      alt="material image">
-                                {{ item.product.name }} x {{ item.quantity }} ({{ item.price  | number : '0.2-2'}} ISK)
+                                {{ item.quantity | number:'1.0-0' }}
+                                x
+                                {{ item.product.name }}
+                                ({{ item.price  | number : '0.2-2'}} ISK)
                             </p>
                         </li>
                     </ul>
-                    <p>{{shoppingVolume | number : '1.0-0'}}m³</p>
+                </div>
+
+                <div *ngIf="profit > 0">
+                    <h4>Production chain</h4>
+                    <div style="height: 500px" class="industry-graph">
+                        <ngx-graph
+                            class="chart-container"
+                            [links]="industryGraphData.links"
+                            [nodes]="industryGraphData.nodes"
+                            [autoZoom]="true"
+                            [autoCenter]="true"
+                            [layout]="industryGraphLayout">
+                            <ng-template #defsTemplate>
+                                <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4"
+                                            markerHeight="4" orient="auto">
+                                    <svg:path d="M0,-5L10,0L0,5" class="arrow-head"/>
+                                </svg:marker>
+                            </ng-template>
+
+                            <ng-template #nodeTemplate let-node>
+                                <svg:g class="node">
+                                    <svg:rect
+                                        [attr.width]="node.dimension.width"
+                                        [attr.height]="node.dimension.height"
+                                        [attr.fill]="node.data.color"
+                                    />
+                                    <svg:text alignment-baseline="central"
+                                              [attr.x]="10" [attr.y]="node.dimension.height / 2">
+                                        {{node.label}} ( {{node.data.amount | number:'1.0-0'}} )
+                                    </svg:text>
+                                </svg:g>
+                            </ng-template>
+
+                            <ng-template #linkTemplate let-link>
+                                <svg:g class="edge">
+                                    <svg:path class="line" stroke-width="2" marker-end="url(#arrow)"></svg:path>
+                                    <svg:text class="edge-label" text-anchor="middle">
+                                        <textPath
+                                            class="text-path"
+                                            fill="#c2c4c5"
+                                            [attr.href]="'#' + link.id"
+                                            [style.dominant-baseline]="link.dominantBaseline"
+                                            startOffset="50%">
+                                            {{link.label | number:'1.0-0'}}
+                                        </textPath>
+                                    </svg:text>
+                                </svg:g>
+                            </ng-template>
+                        </ngx-graph>
+                    </div>
                 </div>
             </ng-container>
         </ng-container>
@@ -155,7 +236,7 @@
 </div>
 
 <ng-template #start_message>
-    <p class="text-center">Choose an item</p>
+    <p class="text-center">Standing by...</p>
 </ng-template>
 
 <ng-template #error_message>
