@@ -2,7 +2,7 @@
     To display the wallet page, you need to grant the "Read wallet balance" scope.
 </app-no-scopes-message>
 
-<div class="wallet-page-container container" [ngClass]="{'d-none': missingAllRequiredScopes}">
+<div class="wallet-page-container container-fluid" [ngClass]="{'d-none': missingAllRequiredScopes}">
     <h2><span id="wallet-balance"></span> ISK</h2>
     <app-sor-table *ngIf="journalData.length" [data]="journalData" [columns]="tableSettings"></app-sor-table>
 </div>
