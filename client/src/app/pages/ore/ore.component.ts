@@ -41,7 +41,7 @@ interface IOresData {
 export class OreComponent implements OnInit {
 
     public model = {
-        beltVariants: false,
+        beltVariants: true,
         highSecOres: true,
         lowSecOres: true,
         moonVariants: false,
