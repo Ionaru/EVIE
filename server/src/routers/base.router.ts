@@ -72,7 +72,7 @@ export class BaseRouter {
         const serverToken = request.session!.token as unknown;
         const clientToken = request.headers['x-evie-token'] as unknown;
 
-        // Only allow requests from a logged-in user, or with a valid and matching token.
+        // Only allow requests with a valid and matching token.
         if (!serverToken || !clientToken || serverToken !== clientToken) {
             process.emitWarning(`Unauthorized client: ${clientToken}, expected: ${serverToken}`);
             BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadClient');
@@ -125,10 +125,6 @@ export class BaseRouter {
     }
 
     protected static debug = debug.extend('router');
-
-    private static allowedHosts = [
-        'localhost', '0.0.0.0', '192.168.2.11', 'spaceships.app',
-    ];
 
     public router = Router();
 
