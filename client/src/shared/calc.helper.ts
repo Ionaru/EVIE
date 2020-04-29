@@ -21,5 +21,5 @@ export class Calc {
     public static readonly wholeWeeks = (duration: number) => Math.floor(duration / Calc.week);
 
     public static readonly secondsToMilliseconds = (seconds: number) => seconds * 1000;
-    public static readonly millisecondsToSeconds = (milliseconds: number) => Math.floor(milliseconds / 1000);
+    public static readonly millisecondsToSeconds = (milliseconds: number) => milliseconds / 1000;
 }
