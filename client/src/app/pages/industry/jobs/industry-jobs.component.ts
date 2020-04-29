@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { faLocation } from '@fortawesome/pro-regular-svg-icons';
 import { faCheck, faCog as faCogSolid } from '@fortawesome/pro-solid-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
@@ -12,6 +13,7 @@ import { NamesService } from '../../../data-services/names.service';
 import { StructuresService } from '../../../data-services/structures.service';
 import { CharacterService } from '../../../models/character/character.service';
 import { IBlueprints, IExtendedIndustryJobsData, IndustryComponent } from '../industry.component';
+import { createTitle } from '../../../shared/title';
 
 @Component({
     selector: 'app-industry-jobs',
@@ -31,9 +33,15 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
 
     public blueprints: IBlueprints = {};
 
-    constructor(private industryJobsService: IndustryJobsService, private blueprintsService: BlueprintsService,
-                private namesService: NamesService, private structuresService: StructuresService) {
+    constructor(
+        private industryJobsService: IndustryJobsService,
+        private blueprintsService: BlueprintsService,
+        private namesService: NamesService,
+        private structuresService: StructuresService,
+        private title: Title,
+    ) {
         super();
+        this.title.setTitle(createTitle('Industry: Jobs'));
         countdown.setLabels(
             '|s|m|h|d',
             '|s|m|h|d',

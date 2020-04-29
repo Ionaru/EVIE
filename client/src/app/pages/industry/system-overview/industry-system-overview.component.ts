@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faChevronDown } from '@fortawesome/pro-regular-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
@@ -17,6 +18,7 @@ import { CharacterService } from '../../../models/character/character.service';
 import { UserService } from '../../../models/user/user.service';
 import { Scope } from '../../scopes/scopes.component';
 import { IBlueprints, IExtendedIndustryJobsData, IndustryComponent } from '../industry.component';
+import { createTitle } from '../../../shared/title';
 
 interface ISystemOverviewSystem {
     readyJobs: number;
@@ -78,8 +80,10 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         private stationsService: StationsService,
         private structuresService: StructuresService,
         private systemService: SystemsService,
+        private title: Title,
     ) {
         super();
+        this.title.setTitle(createTitle('Industry: System Overview'));
         countdown.setLabels(
             '|s|m|h|d',
             '|s|m|h|d',

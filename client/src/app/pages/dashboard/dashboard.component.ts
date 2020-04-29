@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { faCheck, faSync, faTrash, faUserPlus } from '@fortawesome/pro-regular-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
@@ -18,6 +19,7 @@ import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { Scope } from '../scopes/scopes.component';
 import { SkillsComponent } from '../skills/skills.component';
+import { createTitle } from '../../shared/title';
 
 type sortOption = 'name' | 'birthday' | 'skillqueue' | 'ISK';
 type sortProperties = 'name' | 'birthday' | 'totalTrainingFinish' | 'balance';
@@ -59,7 +61,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
 
     constructor(private userService: UserService, private characterService: CharacterService, private shipService: ShipService,
                 private namesService: NamesService, private skillQueueService: SkillQueueService, private router: Router,
-                private walletService: WalletService) {
+                private walletService: WalletService, private title: Title) {
         super();
 
         this.selectedSortOption = localStorage.getItem('DashboardSorting') as sortOption || this.sortOptions[0];
@@ -74,6 +76,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
     // tslint:disable-next-line:cognitive-complexity
     public async ngOnInit() {
         super.ngOnInit();
+        this.title.setTitle(createTitle('Dashboard'));
         this.characters = this.charactersFiltered = UserService.user.characters;
         const names = this.characters.map((character) => character.name);
 

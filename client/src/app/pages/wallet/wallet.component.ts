@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ICharacterWalletJournalData, ICharacterWalletJournalDataUnit } from '@ionaru/eve-utils';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
@@ -8,6 +9,7 @@ import { CharacterService } from '../../models/character/character.service';
 import { CountUp } from '../../shared/count-up';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { Scope } from '../scopes/scopes.component';
+import { createTitle } from '../../shared/title';
 
 @Component({
     selector: 'app-wallet',
@@ -43,13 +45,18 @@ export class WalletComponent extends DataPageComponent implements OnInit {
 
     private balance!: number;
 
-    constructor(private walletService: WalletService, private journalService: WalletJournalService) {
+    constructor(
+        private walletService: WalletService,
+        private journalService: WalletJournalService,
+        private title: Title,
+    ) {
         super();
         this.requiredScopes = [Scope.WALLET];
     }
 
     public ngOnInit() {
         super.ngOnInit();
+        this.title.setTitle(createTitle('Wallet'));
         this.balanceCountUp = undefined;
         if (WalletComponent.hasWalletScope) {
             this.getBalanceData().then();

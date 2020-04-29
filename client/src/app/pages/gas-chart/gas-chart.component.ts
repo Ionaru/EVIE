@@ -8,6 +8,7 @@ import { EVE, IMarketOrdersData, IUniverseTypeData } from '@ionaru/eve-utils';
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
 import { TypesService } from '../../data-services/types.service';
+import { createTitle } from '../../shared/title';
 
 interface IGassesData {
     buy: number;
@@ -101,7 +102,7 @@ export class GasChartComponent implements OnInit {
                 private marketService: MarketService) { }
 
     public async ngOnInit() {
-        this.title.setTitle('EVIE - EVE Online Gas Chart');
+        this.title.setTitle(createTitle('EVE Online Gas Chart'));
         this.meta.addTag({
             description: 'EVIE\'s Gas chart for EVE Online is a live-updated overview of the different gasses available in EVE Online ' +
                 'and their current market prices.',

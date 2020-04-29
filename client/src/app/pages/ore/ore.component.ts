@@ -8,6 +8,7 @@ import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
+import { createTitle } from '../../shared/title';
 
 interface IOreTypesDict {
     [index: number]: IUniverseTypeData;
@@ -107,7 +108,7 @@ export class OreComponent implements OnInit {
 
     public async ngOnInit() {
 
-        this.title.setTitle('EVIE - EVE Online Ore Chart');
+        this.title.setTitle(createTitle('EVE Online Ore Chart'));
         this.meta.addTag({
             description: 'EVIE\'s Ore chart for EVE Online is a live-updated overview of the different ores available in EVE Online and ' +
                 'their current market prices.',

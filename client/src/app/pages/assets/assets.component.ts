@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ICharacterAssetsData, ICharacterBlueprintsDataUnit } from '@ionaru/eve-utils';
 
 import { Calc } from '../../../shared/calc.helper';
@@ -9,6 +10,7 @@ import { StructuresService } from '../../data-services/structures.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { Scope } from '../scopes/scopes.component';
+import { createTitle } from '../../shared/title';
 
 interface IExtendedCharacterBlueprintsDataUnit extends ICharacterBlueprintsDataUnit {
     location_name?: string;
@@ -26,6 +28,7 @@ export class AssetsComponent extends DataPageComponent implements OnInit, OnDest
     constructor(
         private assetsService: AssetsService,
         private blueprintsService: BlueprintsService,
+        private title: Title,
         private namesService: NamesService,
         private structuresService: StructuresService,
     ) {
@@ -35,6 +38,7 @@ export class AssetsComponent extends DataPageComponent implements OnInit, OnDest
 
     public ngOnInit() {
         super.ngOnInit();
+        this.title.setTitle(createTitle('Home'));
         this.getBlueprints().then();
     }
 

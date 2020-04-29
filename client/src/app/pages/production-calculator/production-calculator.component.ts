@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICharacterBlueprintsDataUnit, IUniverseNamesDataUnit } from '@ionaru/eve-utils';
 import { map } from 'rxjs/operators';
@@ -16,6 +17,7 @@ import { IndustryGraph } from '../../models/industry/industry-graph';
 import { IndustryGraphLayout } from '../../models/industry/industry-graph-layout';
 import { IndustryNode } from '../../models/industry/industry-node';
 import { ShoppingList } from '../../models/industry/shopping-list';
+import { createTitle } from '../../shared/title';
 
 interface IInput {
     data?: IUniverseNamesDataUnit;
@@ -38,6 +40,7 @@ export class ProductionCalculatorComponent implements OnInit {
         private typesService: TypesService,
         private route: ActivatedRoute,
         private router: Router,
+        private title: Title,
     ) { }
 
     public calculating?: boolean;
@@ -86,6 +89,7 @@ export class ProductionCalculatorComponent implements OnInit {
     }
 
     public async ngOnInit() {
+        this.title.setTitle(createTitle('Production Calculator'));
         this.route.queryParamMap.pipe(map(
             (params) => {
                 this.sellSystem.input = params.get('sellSystem') || 'Jita';

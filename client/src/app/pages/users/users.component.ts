@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { UsersService } from '../../data-services/users.service';
+import { createTitle } from '../../shared/title';
 
 interface IUserData {
     id: number;
@@ -44,9 +46,10 @@ export class UsersComponent implements OnInit {
         title: 'Last login',
     }];
 
-    constructor(private usersService: UsersService) { }
+    constructor(private usersService: UsersService, private title: Title) { }
 
     public ngOnInit() {
+        this.title.setTitle(createTitle('Users'));
         this.usersService.getUsers().then((users) => {
             if (users) {
                 this.users = users.map((user) => {

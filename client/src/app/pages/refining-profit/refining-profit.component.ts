@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { EVE } from '@ionaru/eve-utils';
 
@@ -8,6 +9,7 @@ import { IndustryService } from '../../data-services/industry.service';
 import { MarketService } from '../../data-services/market.service';
 import { NamesService } from '../../data-services/names.service';
 import { TypesService } from '../../data-services/types.service';
+import { createTitle } from '../../shared/title';
 
 interface IMineralData {
     id: number;
@@ -91,11 +93,17 @@ export class RefiningProfitComponent implements OnInit {
         title: 'Profit',
     }];
 
-    constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService,
-                private industryService: IndustryService) { }
+    constructor(
+        private namesService: NamesService,
+        private marketService: MarketService,
+        private typesService: TypesService,
+        private industryService: IndustryService,
+        private title: Title,
+    ) { }
 
     public async ngOnInit() {
 
+        this.title.setTitle(createTitle('Refining Profit'));
         this.visibleData = undefined;
 
         await this.namesService.getNames(...EVE.ores.all);

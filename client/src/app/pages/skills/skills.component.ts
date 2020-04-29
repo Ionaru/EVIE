@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import {
     faArrowAltRight,
@@ -30,6 +31,7 @@ import { SkillsService } from '../../data-services/skills.service';
 import { CharacterService } from '../../models/character/character.service';
 import { DataPageComponent } from '../data-page/data-page.component';
 import { Scope } from '../scopes/scopes.component';
+import { createTitle } from '../../shared/title';
 
 type skillStatus = 'training' | 'finished' | 'scheduled' | 'inactive';
 
@@ -123,14 +125,21 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         cd.hours = Calc.wholeHours(timeLeft) - (Calc.wholeDays(timeLeft) * 24);
     }
 
-    constructor(private skillQueueService: SkillQueueService, private skillsService: SkillsService, private namesService: NamesService,
-                private skillGroupsService: SkillGroupsService, private attributesService: AttributesService) {
+    constructor(
+        private skillQueueService: SkillQueueService,
+        private skillsService: SkillsService,
+        private namesService: NamesService,
+        private skillGroupsService: SkillGroupsService,
+        private attributesService: AttributesService,
+        private title: Title,
+    ) {
         super();
         this.requiredScopes = [Scope.SKILLS];
     }
 
     public ngOnInit() {
         super.ngOnInit();
+        this.title.setTitle(createTitle('Skills'));
 
         if (this.hasSkillsScope) {
             this.getAttributes().then();

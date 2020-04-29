@@ -1,11 +1,13 @@
 /* tslint:disable:no-duplicate-string */
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { faChevronDown, faChevronUp, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
 
 import { CharacterService } from '../../models/character/character.service';
 import { UserService } from '../../models/user/user.service';
 import { DataPageComponent } from '../data-page/data-page.component';
+import { createTitle } from '../../shared/title';
 
 export enum Scope {
     ASSETS = 'esi-assets.read_assets.v1',
@@ -127,12 +129,13 @@ export class ScopesComponent extends DataPageComponent implements OnInit {
         // },
     ];
 
-    constructor(private userService: UserService) {
+    constructor(private userService: UserService, private title: Title) {
         super();
     }
 
     public ngOnInit() {
         super.ngOnInit();
+        this.title.setTitle(createTitle('Scopes'));
         if (CharacterService.selectedCharacter) {
             for (const scope of this.scopes) {
                 scope.enabled = CharacterService.selectedCharacter.scopes.includes(scope.code);

@@ -20,7 +20,11 @@ export class AppComponent {
 
     public readonly version = environment.VERSION;
 
-    constructor(private appReadyEvent: AppReadyEventService, private http: HttpClient, private userService: UserService) {
+    constructor(
+        private appReadyEvent: AppReadyEventService,
+        private http: HttpClient,
+        private userService: UserService,
+    ) {
         this.boot().then().catch((error) => this.appReadyEvent.triggerFailure('Error during app startup', error));
     }
 
