@@ -1,0 +1,20 @@
+{
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "parserOptions": {
+        "project": "tsconfig.json",
+        "sourceType": "module"
+    },
+    "extends": [
+        "@ionaru"
+    ],
+    "rules": {
+        "import/no-unresolved": ["error", {
+            "ignore": [
+                "express-serve-static-core"
+            ]
+        }]
+    }
+}

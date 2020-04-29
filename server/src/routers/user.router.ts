@@ -3,9 +3,17 @@ import * as httpStatus from 'http-status-codes';
 
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
+
 import { BaseRouter } from './base.router';
 
 export class UserRouter extends BaseRouter {
+
+    public constructor() {
+        super();
+        this.createRoute('get', '/', UserRouter.getUsers);
+        this.createRoute('get', '/:uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', UserRouter.getUser);
+        this.createRoute('get', '/:id([0-9])', UserRouter.getUserById);
+    }
 
     @UserRouter.requestDecorator(UserRouter.checkAdmin)
     private static async getUsers(_request: Request, response: Response): Promise<Response> {
@@ -38,12 +46,5 @@ export class UserRouter extends BaseRouter {
         }
 
         return UserRouter.sendSuccessResponse(response, user);
-    }
-
-    constructor() {
-        super();
-        this.createRoute('get', '/', UserRouter.getUsers);
-        this.createRoute('get', '/:uuid([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})', UserRouter.getUser);
-        this.createRoute('get', '/:id([0-9])', UserRouter.getUserById);
     }
 }

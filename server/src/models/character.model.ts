@@ -8,17 +8,6 @@ import { User } from './user.model';
 @Entity()
 export class Character extends BaseModel {
 
-    public static doQuery(): SelectQueryBuilder<Character> {
-        return this.createQueryBuilder('character');
-    }
-
-    public static async getFromId(id: number) {
-        return Character.doQuery()
-            .innerJoinAndSelect('character.user', 'user')
-            .where('character.characterId = :id', {id})
-            .getOne();
-    }
-
     @Column({
         nullable: true,
     })
@@ -68,6 +57,17 @@ export class Character extends BaseModel {
         onDelete: 'CASCADE',
     })
     public user!: User;
+
+    public static doQuery(): SelectQueryBuilder<Character> {
+        return this.createQueryBuilder('character');
+    }
+
+    public static async getFromId(id: number) {
+        return Character.doQuery()
+            .innerJoinAndSelect('character.user', 'user')
+            .where('character.characterId = :id', {id})
+            .getOne();
+    }
 
     public get sanitizedCopy() {
         // Delete data that should not be sent to the client.

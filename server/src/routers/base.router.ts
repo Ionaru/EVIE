@@ -20,6 +20,13 @@ type Method = 'post' | 'put' | 'get' | 'delete' | 'all';
 
 export class BaseRouter {
 
+    protected static debug = debug.extend('router');
+    public router = Router();
+
+    public constructor() {
+        BaseRouter.debug(`New express router: ${this.constructor.name}`);
+    }
+
     public static sendResponse(response: Response, statusCode: number, message: string, data?: any): Response {
         const state = statusCode < 400 ? 'success' : 'error';
 
@@ -122,14 +129,6 @@ export class BaseRouter {
 
             return descriptor;
         };
-    }
-
-    protected static debug = debug.extend('router');
-
-    public router = Router();
-
-    constructor() {
-        BaseRouter.debug(`New express router: ${this.constructor.name}`);
     }
 
     public createRoute(method: Method, url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {

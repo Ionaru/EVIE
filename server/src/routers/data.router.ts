@@ -2,9 +2,23 @@ import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
 
 import { DataController } from '../controllers/data.controller';
+
 import { BaseRouter } from './base.router';
 
 export class DataRouter extends BaseRouter {
+
+    public constructor() {
+        super();
+        this.createRoute('post', '/types', DataRouter.getTypes);
+        this.createRoute('get', '/skill-types', DataRouter.getSkillTypes);
+        this.createRoute('get', '/skill-ids', DataRouter.getSkillIds);
+        this.createRoute('get', '/market-types', DataRouter.getMarketTypes);
+        this.createRoute('get', '/market-ids', DataRouter.getMarketIds);
+        this.createRoute('get', '/manufacturing/:id', DataRouter.getManufacturingInfo);
+        this.createRoute('get', '/estimated-item-value/:id', DataRouter.getEstimatedItemValue);
+        this.createRoute('get', '/refining/:id', DataRouter.getRefiningProducts);
+        this.createRoute('get', '/industry/system/:id', DataRouter.getIndustrySystem);
+    }
 
     private static getTypeId(request: Request) {
         if (!request.params || Array.isArray(request.params) || !request.params.id) {
@@ -147,18 +161,5 @@ export class DataRouter extends BaseRouter {
         const types = await DataController.getUniverseTypes(...typeIds);
 
         return DataRouter.sendSuccessResponse(response, types);
-    }
-
-    constructor() {
-        super();
-        this.createRoute('post', '/types', DataRouter.getTypes);
-        this.createRoute('get', '/skill-types', DataRouter.getSkillTypes);
-        this.createRoute('get', '/skill-ids', DataRouter.getSkillIds);
-        this.createRoute('get', '/market-types', DataRouter.getMarketTypes);
-        this.createRoute('get', '/market-ids', DataRouter.getMarketIds);
-        this.createRoute('get', '/manufacturing/:id', DataRouter.getManufacturingInfo);
-        this.createRoute('get', '/estimated-item-value/:id', DataRouter.getEstimatedItemValue);
-        this.createRoute('get', '/refining/:id', DataRouter.getRefiningProducts);
-        this.createRoute('get', '/industry/system/:id', DataRouter.getIndustrySystem);
     }
 }

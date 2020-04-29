@@ -7,17 +7,6 @@ import { Character } from './character.model';
 @Entity()
 export class User extends BaseModel {
 
-    public static doQuery(): SelectQueryBuilder<User> {
-        return this.createQueryBuilder('user');
-    }
-
-    public static async getFromId(id: number) {
-        return User.doQuery()
-            .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id})
-            .getOne();
-    }
-
     @Column({
         default: false,
     })
@@ -35,6 +24,17 @@ export class User extends BaseModel {
 
     @OneToMany(() => Character, (character) => character.user)
     public characters!: Character[];
+
+    public static doQuery(): SelectQueryBuilder<User> {
+        return this.createQueryBuilder('user');
+    }
+
+    public static async getFromId(id: number) {
+        return User.doQuery()
+            .leftJoinAndSelect('user.characters', 'character')
+            .where('user.id = :id', {id})
+            .getOne();
+    }
 
     public get sanitizedCopy() {
         // Delete data that should not be sent to the client.

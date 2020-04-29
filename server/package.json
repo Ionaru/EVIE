@@ -12,9 +12,7 @@
         "migrate": "npm run typeorm migration:run",
         "clean": "npx -q rimraf dist",
         "build": "npm run clean && tsc --project tsconfig.json",
-        "lint": "npm run lint:src && npm run lint:test",
-        "lint:src": "tslint --project tsconfig.json -c tslint.json --format stylish",
-        "lint:test": "tslint -c tslint.json src/**/*.spec.ts --format stylish",
+        "lint": "eslint --ext ts --max-warnings 0 src",
         "pretest": "npm run lint",
         "test": "echo \"Error: no test specified\" && exit 0",
         "posttest": "tsc --project tsconfig.json --noEmit",
@@ -51,6 +49,7 @@
         "typeorm": "^0.2.24"
     },
     "devDependencies": {
+        "@ionaru/eslint-config": "^1.0.3",
         "@types/app-root-path": "^1.2.4",
         "@types/bcryptjs": "^2.4.2",
         "@types/body-parser": "^1.19.0",
@@ -68,9 +67,16 @@
         "@types/on-finished": "^2.3.1",
         "@types/socket.io": "^2.1.4",
         "@types/source-map-support": "^0.5.1",
+        "@typescript-eslint/eslint-plugin": "^2.30.0",
+        "@typescript-eslint/eslint-plugin-tslint": "^2.30.0",
+        "eslint": "^6.8.0",
+        "eslint-plugin-import": "^2.20.2",
+        "eslint-plugin-jest": "^23.8.2",
+        "eslint-plugin-no-null": "^1.0.2",
+        "eslint-plugin-prefer-arrow": "^1.2.0",
+        "eslint-plugin-sonarjs": "^0.5.0",
         "ts-node": "^8.9.1",
         "tslint": "^6.1.2",
-        "tslint-sonarts": "^1.9.0",
         "typescript": "^3.8.3"
     },
     "license": "MIT"

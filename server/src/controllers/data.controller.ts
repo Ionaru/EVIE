@@ -19,18 +19,18 @@ import { esiCache, esiService } from '../index';
 
 interface IManufacturingData {
     blueprintId: number;
-    materials: {
-        id: number,
-        quantity: number,
-    }[];
-    skills: {
-        id: number,
-        level: number,
-    }[];
+    materials: Array<{
+        id: number;
+        quantity: number;
+    }>;
+    skills: Array<{
+        id: number;
+        level: number;
+    }>;
     time: number;
     result: {
-        id: number,
-        quantity: number,
+        id: number;
+        quantity: number;
     };
 }
 
@@ -45,7 +45,7 @@ export class DataController {
         return industrySystems.find((industrySystem) => industrySystem.solar_system_id === systemId);
     }
 
-    public static async getRefiningProducts(typeId: number): Promise<{ id: number, quantity: number }[]> {
+    public static async getRefiningProducts(typeId: number): Promise<Array<{ id: number; quantity: number }>> {
         const materials = await esiService.fetchESIData<IInvTypeMaterialsData>(EVE.getInvTypeMaterialsUrl());
         if (!materials) {
             return [];
@@ -55,7 +55,7 @@ export class DataController {
         return mt.map((material) => ({id: material.materialTypeID, quantity: material.quantity}));
     }
 
-    public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | undefined> {
+    public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | void> {
 
         const industryProducts = await esiService.fetchESIData<IIndustryActivityProductsData>(EVE.getIndustryActivityProductsUrl());
 
@@ -80,8 +80,6 @@ export class DataController {
 
         if (industryProducts && industryMaterials && industrySkills && industryActivities) {
 
-            let bpInfo: IManufacturingData;
-
             const bluePrint = industryProducts.find((product) =>
                 product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing);
 
@@ -96,18 +94,14 @@ export class DataController {
             const time = industryActivities.find((activity) =>
                 activity.typeID === bluePrint.typeID && activity.activityID === IndustryActivity.manufacturing);
 
-            bpInfo = {
+            return {
                 blueprintId: bluePrint.typeID,
                 materials: materials.map((mat) => ({id: mat.materialTypeID, quantity: mat.quantity})),
                 result: {id: typeId, quantity: bluePrint.quantity},
                 skills: skills.map((skill) => ({id: skill.skillID, level: skill.level})),
                 time: time!.time,
             };
-
-            return bpInfo;
         }
-
-        return;
     }
 
     public static async getUniverseCategory(categoryId: number) {

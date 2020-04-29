@@ -1,6 +1,7 @@
-// Create and export the debug instance so imported classes can create extensions of it.
+// Create and export the debug instance so imported files can create extensions of it.
+// eslint-disable-next-line import/order
 import Debug from 'debug';
-export let debug = Debug('evie');
+export const debug = Debug('evie');
 
 import { CacheController, IDefaultExpireTimes, PublicESIService } from '@ionaru/esi-service';
 import { EVE } from '@ionaru/eve-utils';
@@ -11,13 +12,14 @@ import 'reflect-metadata'; // Required by TypeORM.
 import * as sourceMapSupport from 'source-map-support';
 
 import { version } from '../package.json';
+
 import { Application } from './controllers/application.controller';
 
 export let esiService: PublicESIService;
 export let esiCache: CacheController;
 export let axiosInstance: AxiosInstance;
 
-function start() {
+const start = () => {
     sourceMapSupport.install();
 
     debug(`Initializing Sentry (enabled: ${process.env.NODE_ENV === 'production'})`);
@@ -80,7 +82,7 @@ function start() {
     });
 
     application.start().then().catch((error: Error) => application.stop(error));
-}
+};
 
 if (require.main === module) {
     start();

@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import { WebServer } from '@ionaru/web-server';
 import * as Sentry from '@sentry/node';
 import * as appRoot from 'app-root-path';
@@ -7,7 +9,6 @@ import * as cors from 'cors';
 import * as express from 'express';
 import * as MySQLStore from 'express-mysql-session';
 import * as es from 'express-session';
-import * as path from 'path';
 
 import { debug, esiCache } from '../index';
 import { RequestLogger } from '../loggers/request.logger';
@@ -18,21 +19,22 @@ import { ErrorRouter } from '../routers/error.router';
 import { GlobalRouter } from '../routers/global.router';
 import { SSORouter } from '../routers/sso.router';
 import { UserRouter } from '../routers/user.router';
+
 import { DatabaseConnection, db } from './database.controller';
 import { SocketServer } from './socket.controller';
 
 export class Application {
-
-    private static exit(exitCode: number) {
-        debug('Shutting down');
-        process.exit(exitCode);
-    }
 
     public sessionStore?: MySQLStore.MySQLStore;
     public sessionParser?: express.RequestHandler;
 
     private webServer?: WebServer;
     private socketServer?: SocketServer;
+
+    private static exit(exitCode: number) {
+        debug('Shutting down');
+        process.exit(exitCode);
+    }
 
     public async start() {
 

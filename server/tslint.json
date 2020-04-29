@@ -1,8 +1,0 @@
-{
-    "extends": [
-        "../tslint.json"
-    ],
-    "rules": {
-        "no-implicit-dependencies": [true, "dev", ["express-serve-static-core"]]
-    }
-}

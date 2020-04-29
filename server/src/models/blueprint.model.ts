@@ -29,7 +29,7 @@ export class Blueprint extends BaseModel {
     })
     public character!: Character;
 
-    constructor(id: number, typeId: number) {
+    public constructor(id: number, typeId: number) {
         super();
         this.id = id;
         this.typeId = typeId;

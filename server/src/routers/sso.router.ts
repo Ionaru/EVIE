@@ -1,16 +1,19 @@
-/* tslint:disable:no-duplicate-string */
+/* eslint-disable sonarjs/no-duplicate-string */
+// eslint-disable-next-line no-shadow
+import { URLSearchParams } from 'url';
+
 import { generateRandomString } from '@ionaru/random-string';
 import * as Sentry from '@sentry/node';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
-import { URLSearchParams } from 'url';
 
 import { SocketServer } from '../controllers/socket.controller';
 import { axiosInstance, esiService } from '../index';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
+
 import { BaseRouter } from './base.router';
 
 const protocol = 'https://';
@@ -22,6 +25,22 @@ const revokePath = '/v2/oauth/revoke';
 export class SSORouter extends BaseRouter {
 
     protected static debug = BaseRouter.debug.extend('sso');
+
+    public constructor() {
+        super();
+        this.createRoute('get', '/refresh', SSORouter.refreshToken);
+        this.createRoute('post', '/delete', SSORouter.deleteCharacter);
+        this.createRoute('post', '/activate', SSORouter.activateCharacter);
+        this.createRoute('post', '/log-route-warning', SSORouter.logDeprecation);
+
+        // SSO login
+        this.createRoute('get', '/login', SSORouter.SSOLogin);
+        this.createRoute('get', '/login-callback', SSORouter.SSOLoginCallback);
+
+        // SSO character auth
+        this.createRoute('get', '/auth', SSORouter.SSOAuth);
+        this.createRoute('get', '/auth-callback', SSORouter.SSOAuthCallback);
+    }
 
     private static async SSOLogin(request: Request, response: Response): Promise<Response> {
         // Generate a random string and set it as the state of the request, we will later verify the response of the
@@ -44,7 +63,7 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
     private static async SSOLoginCallback(
-        request: Request<{}, any, any, {code?: string, state?: string}>, response: Response,
+        request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
     ): Promise<Response> {
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
@@ -152,7 +171,7 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
     private static async SSOAuthCallback(
-        request: Request<{}, any, any, {code?: string, state?: string}>, response: Response,
+        request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
     ): Promise<Response> {
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
@@ -369,7 +388,7 @@ export class SSORouter extends BaseRouter {
     }
 
     private static extractJWTValues(token: IJWTToken):
-        { characterID: number, characterName: string, characterOwnerHash: string, characterScopes: string[] } {
+        { characterID: number; characterName: string; characterOwnerHash: string; characterScopes: string[] } {
         const characterID = Number(token.sub.split(':')[2]);
         const characterName = token.name;
         const characterOwnerHash = token.owner;
@@ -418,7 +437,6 @@ export class SSORouter extends BaseRouter {
                 process.stderr.write(`${JSON.stringify(error.response.data)}\n`);
             }
             Sentry.captureException(error);
-            return;
         });
     }
 
@@ -437,23 +455,6 @@ export class SSORouter extends BaseRouter {
         return axiosInstance.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
             process.stderr.write(`Request failed: ${revokeUrl}\n${error.message}\n`);
             Sentry.captureException(error);
-            return;
         });
-    }
-
-    constructor() {
-        super();
-        this.createRoute('get', '/refresh', SSORouter.refreshToken);
-        this.createRoute('post', '/delete', SSORouter.deleteCharacter);
-        this.createRoute('post', '/activate', SSORouter.activateCharacter);
-        this.createRoute('post', '/log-route-warning', SSORouter.logDeprecation);
-
-        // SSO login
-        this.createRoute('get', '/login', SSORouter.SSOLogin);
-        this.createRoute('get', '/login-callback', SSORouter.SSOLoginCallback);
-
-        // SSO character auth
-        this.createRoute('get', '/auth', SSORouter.SSOAuth);
-        this.createRoute('get', '/auth-callback', SSORouter.SSOAuthCallback);
     }
 }

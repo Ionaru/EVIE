@@ -1,3 +1,4 @@
+/* eslint-disable camelcase,no-undef */
 import Socket = SocketIO.Socket;
 import Session = Express.Session;
 

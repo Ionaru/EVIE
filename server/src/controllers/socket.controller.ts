@@ -13,7 +13,7 @@ export class SocketServer {
 
     public io: SocketIO.Server;
 
-    constructor(webServer: WebServer, sessionParser: express.RequestHandler) {
+    public constructor(webServer: WebServer, sessionParser: express.RequestHandler) {
 
         // Pass the HTTP server to SocketIO for configuration.
         this.io = SocketIO.listen(webServer.server, {

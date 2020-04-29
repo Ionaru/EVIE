@@ -11,14 +11,6 @@ import {
 @Entity()
 export class BaseModel extends BaseEntity {
 
-    // noinspection JSUnusedGlobalSymbols
-    public static async deleteAll(): Promise<void> {
-        await this.createQueryBuilder()
-            .delete()
-            .from(this)
-            .execute();
-    }
-
     @PrimaryGeneratedColumn()
     public id!: number;
 
@@ -35,4 +27,12 @@ export class BaseModel extends BaseEntity {
         select: false,
     })
     public updatedOn!: Date;
+
+    // noinspection JSUnusedGlobalSymbols
+    public static async deleteAll(): Promise<void> {
+        await this.createQueryBuilder()
+            .delete()
+            .from(this)
+            .execute();
+    }
 }

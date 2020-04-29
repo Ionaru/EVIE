@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+
 import { createPool, Pool, PoolConfig } from 'mysql';
 import { Connection, createConnection, getConnectionOptions } from 'typeorm';
 
@@ -16,7 +17,7 @@ export class DatabaseConnection {
 
     private readonly dbOptions: PoolConfig;
 
-    constructor() {
+    public constructor() {
         const database = process.env.EVIE_DB_NAME;
         const host = process.env.EVIE_DB_HOST;
         const password = process.env.EVIE_DB_PASS;

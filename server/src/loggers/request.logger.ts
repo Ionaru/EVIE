@@ -9,10 +9,11 @@ export class RequestLogger {
     public static ignoredUrls = ['/modules', '/images', '/fonts', '/stylesheets', '/scripts', '/favicon.ico'];
     public static ignoredExtension = ['.ico', '.js', '.css', '.png', '.jpg', '.svg', '.html'];
     public static arrow = chalk.white('->');
+    private static debug = debug.extend('request');
 
-    // tslint:disable-next-line:cognitive-complexity
     public static logRequest(): any {
-        return function log(request: Request, response: Response, next: NextFunction) {
+        // eslint-disable-next-line sonarjs/cognitive-complexity
+        return (request: Request, response: Response, next: NextFunction) => {
 
             const requestStartTime = Date.now();
 
@@ -76,8 +77,6 @@ export class RequestLogger {
             return chalk.whiteBright;
         }
     }
-
-    private static debug = debug.extend('request');
 
     private static getIp(request: Request) {
 

@@ -5,6 +5,11 @@ import { BaseRouter } from './base.router';
 
 export class GlobalRouter extends BaseRouter {
 
+    public constructor() {
+        super();
+        this.createRoute('all', '/', GlobalRouter.globalRoute);
+    }
+
     /**
      * All requests to the server go through this router (except when fetching static files).
      */
@@ -23,10 +28,5 @@ export class GlobalRouter extends BaseRouter {
         if (next) {
             next();
         }
-    }
-
-    constructor() {
-        super();
-        this.createRoute('all', '/', GlobalRouter.globalRoute);
     }
 }

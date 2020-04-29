@@ -3,9 +3,16 @@ import { Request, Response } from 'express';
 import * as httpStatus from 'http-status-codes';
 
 import { User } from '../models/user.model';
+
 import { BaseRouter } from './base.router';
 
 export class APIRouter extends BaseRouter {
+
+    public constructor() {
+        super();
+        this.createRoute('get', '/handshake', APIRouter.doHandShake);
+        this.createRoute('post', '/logout', APIRouter.logoutUser);
+    }
 
     /**
      * Request that will return the user session, this is used when the client first loads.
@@ -53,19 +60,13 @@ export class APIRouter extends BaseRouter {
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', {id: request.session!.user.id})
             .getOne().then((user) => {
-            if (user && (!user.characters || !user.characters.length)) {
-                user.remove().then();
-            }
-        });
+                if (user && (!user.characters || !user.characters.length)) {
+                    user.remove().then();
+                }
+            });
 
         request.session!.destroy(() => {
             response.end();
         });
-    }
-
-    constructor() {
-        super();
-        this.createRoute('get', '/handshake', APIRouter.doHandShake);
-        this.createRoute('post', '/logout', APIRouter.logoutUser);
     }
 }
