@@ -11,7 +11,7 @@
         "ng": "ng",
         "ts": "tsc -v",
         "start": "ng serve --host=0.0.0.0 --proxy-config proxy.conf.ts --source-map --port 4200 --watch --aot",
-        "lint": "ng lint client --type-check --format stylish",
+        "lint": "tslint --project tsconfig.json -c tslint.json --format stylish",
         "pretest": "npm run lint",
         "test": "echo \"Error: no test specified\" && exit 0",
         "posttest": "ng build --prod",
