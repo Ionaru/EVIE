@@ -36,7 +36,7 @@
         "@fortawesome/pro-regular-svg-icons": "^5.13.0",
         "@fortawesome/pro-solid-svg-icons": "^5.13.0",
         "@ionaru/array-utils": "^3.0.0",
-        "@ionaru/eve-utils": "^5.1.0",
+        "@ionaru/eve-utils": "^6.0.0",
         "@ionaru/romanize": "^2.0.0",
         "@ng-bootstrap/ng-bootstrap": "^6.1.0",
         "@sentry/browser": "^5.15.5",

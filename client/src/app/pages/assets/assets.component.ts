@@ -58,9 +58,9 @@ export class AssetsComponent extends DataPageComponent implements OnInit, OnDest
             const types = blueprints.map((blueprint) => blueprint.type_id);
             this.namesService.getNames(...types).then();
 
-            (blueprints as IExtendedCharacterBlueprintsDataUnit[]).forEach((async (blueprint) => {
-                blueprint.location_name = await this.getBlueprintLocation(blueprint, assets);
-            }));
+            for (const blueprint of blueprints) {
+                (blueprint as IExtendedCharacterBlueprintsDataUnit).location_name = await this.getBlueprintLocation(blueprint, assets);
+            }
 
             this.blueprints = blueprints;
         }
@@ -84,9 +84,7 @@ export class AssetsComponent extends DataPageComponent implements OnInit, OnDest
             if (blueprint.location_id > Calc.maxIntegerValue && CharacterService.selectedCharacter) {
                 const character = CharacterService.selectedCharacter;
                 const structureInfo = await this.structuresService.getStructureInfo(character, blueprint.location_id);
-                if (structureInfo) {
-                    return structureInfo.name;
-                }
+                return structureInfo ? structureInfo.name : 'Unknown structure'
             }
 
             await this.namesService.getNames(blueprint.location_id);
