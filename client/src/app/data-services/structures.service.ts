@@ -13,7 +13,7 @@ interface IStructureCache {
 @Injectable()
 export class StructuresService extends BaseService {
 
-    private structureCache: IStructureCache = {}
+    private structureCache: IStructureCache = {};
 
     public async getStructureInfo(character: Character, structureId: number): Promise<IUniverseStructureData | void> {
         BaseService.confirmRequiredScope(character, Scope.STRUCTURES, 'getStructureInfo');

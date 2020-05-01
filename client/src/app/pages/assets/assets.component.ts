@@ -84,7 +84,7 @@ export class AssetsComponent extends DataPageComponent implements OnInit, OnDest
             if (blueprint.location_id > Calc.maxIntegerValue && CharacterService.selectedCharacter) {
                 const character = CharacterService.selectedCharacter;
                 const structureInfo = await this.structuresService.getStructureInfo(character, blueprint.location_id);
-                return structureInfo ? structureInfo.name : 'Unknown structure'
+                return structureInfo ? structureInfo.name : 'Unknown structure';
             }
 
             await this.namesService.getNames(blueprint.location_id);
