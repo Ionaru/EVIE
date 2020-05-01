@@ -1,5 +1,5 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { EVE, IMarketOrdersData, IUniverseTypeData } from '@ionaru/eve-utils';
@@ -103,24 +103,17 @@ export class OreComponent implements OnInit {
         title: 'Sell price / Venture',
     }];
 
-    constructor(private namesService: NamesService, private marketService: MarketService, private typesService: TypesService,
-                private ngZone: NgZone, private title: Title, private meta: Meta) { }
+    constructor(
+        private namesService: NamesService,
+        private marketService: MarketService,
+        private typesService: TypesService,
+        private ngZone: NgZone,
+        private title: Title
+    ) { }
 
     public async ngOnInit() {
 
         this.title.setTitle(createTitle('EVE Online Ore Chart'));
-        this.meta.addTag({
-            description: 'EVIE\'s Ore chart for EVE Online is a live-updated overview of the different ores available in EVE Online and ' +
-                'their current market prices.',
-            keywords: [
-                'EVE Online', 'EVIE',
-                'Ore Table', 'Ore Chart', 'Overview',
-                'Market', 'Mining', 'Miner', 'Refining', 'ISK', 'Ore', 'Ice', 'Asteroids',
-                'Highsec', 'Lowsec', 'Nullsec',
-                'Exhumer', 'Hulk', 'Mackinaw', 'Skiff', 'Mining Barge', 'Covetor', 'Retriever', 'Procurer', 'Venture',
-                ...Object.keys(EVE.ore), ...Object.keys(EVE.mineral),
-            ].join(', '),
-        });
 
         await this.namesService.getNames(...EVE.ores.all);
 
