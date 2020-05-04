@@ -9,7 +9,7 @@ import { BaseService } from '../data-services/base.service';
 import { ESIRequestCache } from '../shared/esi-request-cache';
 
 @Injectable()
-export class ESICachingInterceptor implements HttpInterceptor {
+export class EsiCachingInterceptor implements HttpInterceptor {
 
     constructor(private http: HttpClient) { }
 

@@ -3,6 +3,7 @@ import {
     faAbacus,
     faCalculator,
     faChevronDown,
+    faCircle as faSolidCircle,
     faColumns,
     faDollarSign,
     faHome,
@@ -21,6 +22,7 @@ import { LogoutModalComponent } from '../modals/logout/logout-modal.component';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
 import { CountUp } from '../shared/count-up';
+import { faCircle } from '@fortawesome/pro-regular-svg-icons';
 
 @Component({
     selector: 'app-navigation',
@@ -31,8 +33,8 @@ export class NavigationComponent implements OnInit {
 
     public static serverOnline = true;
 
-    private static _serverStatusEvent = new Subject<boolean>();
-    public static get serverStatusEvent() { return this._serverStatusEvent; }
+    public static readonly serverStatusEvent = new Subject<boolean>();
+    public static readonly requestCounterUpdateEvent = new Subject<number>();
 
     public industryToolsIcon = faAbacus;
     public faChevronDown = faChevronDown;
@@ -45,6 +47,9 @@ export class NavigationComponent implements OnInit {
     public orePricesIcon = faDollarSign;
     public productionCalculatorIcon = faCalculator;
 
+    public requestsActiveIcon = faSolidCircle;
+    public requestsInactiveIcon = faCircle;
+
     public hours = '00';
     public minutes = '00';
     public char = 1;
@@ -55,9 +60,15 @@ export class NavigationComponent implements OnInit {
     public isCollapsed!: boolean;
     public playersCountUp!: CountUp;
 
+    public requestsActive = false;
+
     constructor(private statusService: StatusService, private modalService: NgbModal, private characterService: CharacterService) { }
 
     public ngOnInit(): void {
+        NavigationComponent.requestCounterUpdateEvent.subscribe((count) => {
+            this.requestsActive = (count > 0);
+        });
+
         CharacterService.characterChangeEvent.subscribe((character) => {
             if (character) {
                 this.char = character.characterId;

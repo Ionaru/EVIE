@@ -128,6 +128,11 @@
            [ngClass]="{'disabled': !activatedCharacter}">
             <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/industry.svg" alt="Industry icon">
         </a>
+        <a class="navbar-item time" style="bottom: 30px"
+           [ngClass]="{'disabled': true}">
+            <fa-icon *ngIf="requestsActive" [fixedWidth]="true" [icon]="requestsActiveIcon"></fa-icon>
+            <fa-icon *ngIf="!requestsActive" [fixedWidth]="true" [icon]="requestsInactiveIcon"></fa-icon>
+        </a>
         <a class="navbar-item time"
            [ngClass]="{'disabled': true}">
             <span id="EVETime_Hours">{{ hours }}</span>:<span id="EVETime_Minutes">{{ minutes }}</span>
