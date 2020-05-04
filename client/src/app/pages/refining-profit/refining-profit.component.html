@@ -1,41 +1,21 @@
-<div class="d-flex justify-content-between">
-    <div class="btn-group btn-group-toggle">
-        <label class="btn-outline-success" ngbButtonLabel>
-            <input type="checkbox" ngbButton [(ngModel)]="model.highSecOres" (ngModelChange)="changeVisibleOres()">
-            <fa-icon [icon]="model.highSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
-            Highsec
-        </label>
-        <label class="btn-outline-primary" ngbButtonLabel>
-            <input type="checkbox" ngbButton [(ngModel)]="model.lowSecOres" (ngModelChange)="changeVisibleOres()">
-            <fa-icon [icon]="model.lowSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
-            Lowsec
-        </label>
-        <label class="btn-outline-danger" ngbButtonLabel>
-            <input type="checkbox" ngbButton [(ngModel)]="model.nullSecOres" (ngModelChange)="changeVisibleOres()">
-            <fa-icon [icon]="model.nullSecOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
-            Nullsec
-        </label>
-    </div>
-
-    <div class="btn-group btn-group-toggle">
-        <label class="btn-outline-primary" ngbButtonLabel>
-            <input type="checkbox" ngbButton [(ngModel)]="model.regularOres" (ngModelChange)="changeVisibleOres()">
-            <fa-icon [icon]="model.regularOres ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
-            Regular ores
-        </label>
-        <label class="btn-outline-primary" ngbButtonLabel>
-            <input type="checkbox" ngbButton [(ngModel)]="model.beltVariants" (ngModelChange)="changeVisibleOres()">
-            <fa-icon [icon]="model.beltVariants ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
-            Belt variants
-        </label>
-        <label class="btn-outline-primary" ngbButtonLabel>
-            <input type="checkbox" ngbButton [(ngModel)]="model.moonVariants" (ngModelChange)="changeVisibleOres()">
-            <fa-icon [icon]="model.moonVariants ? variantsVisibleIcon : variantsHiddenIcon"></fa-icon>
-            Moon variants
-        </label>
+<div class="d-flex justify-content-center">
+    <div class="text-center">
+        <div class="btn-group" role="group">
+            <button routerLink="/refining-profit/belt" routerLinkActive="active" type="button" class="btn btn-outline-primary">
+                Belt
+            </button>
+            <button routerLink="/refining-profit/moon" routerLinkActive="active" type="button" class="btn btn-outline-primary">
+                Moon
+            </button>
+            <button routerLink="/refining-profit/triglavian" routerLinkActive="active" type="button" class="btn btn-outline-primary">
+                Triglavian
+            </button>
+        </div>
     </div>
 </div>
+
 <hr>
+
 <label>
     Refining yield
     <input type="number" [(ngModel)]="refiningYield">
@@ -48,5 +28,5 @@
 </ng-container>
 
 <ng-template #ore_loading_message>
-    <app-loading-message [small]="true">Calculating profit...</app-loading-message>
+    <app-loading-message>Calculating profit...</app-loading-message>
 </ng-template>

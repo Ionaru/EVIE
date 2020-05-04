@@ -92,15 +92,15 @@ export class IndustryComponent extends DataPageComponent {
 
     public getIndustryActivityName(activity: number) {
         switch (activity) {
-            case IndustryActivity.research_material_efficiency:
+            case IndustryActivity.RESEARCH_MATERIAL_EFFICIENCY:
                 return 'Material efficiency research';
-            case IndustryActivity.research_time_efficiency:
+            case IndustryActivity.RESEARCH_TIME_EFFICIENCY:
                 return 'Time efficiency research';
-            case IndustryActivity.copying:
+            case IndustryActivity.COPYING:
                 return 'Copying';
-            case IndustryActivity.invention:
+            case IndustryActivity.INVENTION:
                 return 'Invention';
-            case IndustryActivity.manufacturing:
+            case IndustryActivity.MANUFACTURING:
             default:
                 return 'Manufacturing';
         }
@@ -108,15 +108,15 @@ export class IndustryComponent extends DataPageComponent {
 
     public getIconForIndustryActivity(activity: number) {
         switch (activity) {
-            case IndustryActivity.research_material_efficiency:
+            case IndustryActivity.RESEARCH_MATERIAL_EFFICIENCY:
                 return this.materialResearchIcon;
-            case IndustryActivity.research_time_efficiency:
+            case IndustryActivity.RESEARCH_TIME_EFFICIENCY:
                 return this.timeResearchIcon;
-            case IndustryActivity.copying:
+            case IndustryActivity.COPYING:
                 return this.copyIcon;
-            case IndustryActivity.invention:
+            case IndustryActivity.INVENTION:
                 return this.inventionIcon;
-            case IndustryActivity.manufacturing:
+            case IndustryActivity.MANUFACTURING:
             default:
                 return this.manufacturingIcon;
         }
@@ -157,9 +157,9 @@ export class IndustryComponent extends DataPageComponent {
         // tslint:disable-next-line:no-non-null-assertion
         job.inputImageType = blueprints[job.blueprint_id] && blueprints[job.blueprint_id]!.runs !== -1 ? 'bpc' : 'bp';
 
-        if ([IndustryActivity.copying, IndustryActivity.invention].includes(job.activity_id)) {
+        if ([IndustryActivity.COPYING, IndustryActivity.INVENTION].includes(job.activity_id)) {
             job.outputImageType = 'bpc';
-        } else if ([IndustryActivity.research_material_efficiency, IndustryActivity.research_time_efficiency].includes(job.activity_id)) {
+        } else if ([IndustryActivity.RESEARCH_MATERIAL_EFFICIENCY, IndustryActivity.RESEARCH_TIME_EFFICIENCY].includes(job.activity_id)) {
             job.outputImageType = 'bp';
         } else {
             job.outputImageType = 'icon';

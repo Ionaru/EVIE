@@ -63,6 +63,12 @@ import { WalletComponent } from './pages/wallet/wallet.component';
 import { SentryErrorHandler } from './sentry.error-handler';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
+import { OreBeltComponent } from './pages/ore/ore-belt.component';
+import { OreMoonComponent } from './pages/ore/ore-moon.component';
+import { OreTrigComponent } from './pages/ore/ore-trig.component';
+import { RefiningProfitBeltComponent } from './pages/refining-profit/refining-profit-belt.component';
+import { RefiningProfitMoonComponent } from './pages/refining-profit/refining-profit-moon.component';
+import { RefiningProfitTrigComponent } from './pages/refining-profit/refining-profit-trig.component';
 
 const errorHandlers = [];
 if (environment.production) {
@@ -87,12 +93,18 @@ if (environment.production) {
         IndustrySystemOverviewComponent,
         UsersComponent,
         OreComponent,
+        OreBeltComponent,
+        OreMoonComponent,
+        OreTrigComponent,
         SorTableComponent,
         ScopesComponent,
         NoScopesMessageComponent,
         ApiOfflineMessageComponent,
         ProductionCalculatorComponent,
         RefiningProfitComponent,
+        RefiningProfitBeltComponent,
+        RefiningProfitMoonComponent,
+        RefiningProfitTrigComponent,
         GasChartComponent,
         LoadingMessageComponent,
         AssetsComponent,

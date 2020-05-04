@@ -1,9 +1,9 @@
 /* tslint:disable:no-duplicate-string */
 import { Component, NgZone, OnInit } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
+import { Title } from '@angular/platform-browser';
 import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { objectsArrayToObject, sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { EVE, IMarketOrdersData, IUniverseTypeData } from '@ionaru/eve-utils';
+import { EVE, Gas, IMarketOrdersData, IUniverseTypeData } from '@ionaru/eve-utils';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
@@ -98,28 +98,19 @@ export class GasChartComponent implements OnInit {
         sell: {},
     };
 
-    constructor(private title: Title, private meta: Meta, private ngZone: NgZone, private typesService: TypesService,
-                private marketService: MarketService) { }
+    constructor(
+        private title: Title,
+        private ngZone: NgZone,
+        private typesService: TypesService,
+        private marketService: MarketService,
+    ) { }
 
     public async ngOnInit() {
         this.title.setTitle(createTitle('EVE Online Gas Chart'));
-        this.meta.addTag({
-            description: 'EVIE\'s Gas chart for EVE Online is a live-updated overview of the different gasses available in EVE Online ' +
-                'and their current market prices.',
-            keywords: [
-                'EVE Online', 'EVIE',
-                'Gas Table', 'Gas Chart', 'Overview', 'Prices',
-                'Market', 'Mining', 'Miner', 'Boosters', 'ISK', 'Gas', 'Clouds', 'Gas Clouds', 'Fullerite', 'Harvesting', 'Harvester',
-                'Highsec', 'Lowsec', 'Nullsec', 'Wormholes',
-                'Mining Barge', 'Exhumer', 'Hulk', 'Mackinaw', 'Skiff', 'Covetor', 'Retriever', 'Procurer',
-                'Mining Frigate', 'Venture', 'Prospect', 'Endurance',
-                ...Object.keys(EVE.gas),
-            ].join(', '),
-        });
 
         await this.fetchGasTypeInformation();
 
-        await Promise.all(EVE.gasses.all.map(async (gas) => {
+        await Promise.all([...EVE.gasses.fullerenes, ...EVE.gasses.boosterGasClouds].map(async (gas) => {
             const orders = await this.marketService.getMarketOrders(10000002, gas);
             if (orders) {
                 const jitaOrders = orders.filter((order) => order.location_id === 60003760);
@@ -128,7 +119,7 @@ export class GasChartComponent implements OnInit {
             }
         }));
 
-        this.data = EVE.gasses.all.map((gas) => {
+        this.data = [...EVE.gasses.fullerenes, ...EVE.gasses.boosterGasClouds].map((gas) => {
             return {
                 buy: this.gasPrices.buy[gas],
                 id: gas,
@@ -154,11 +145,6 @@ export class GasChartComponent implements OnInit {
 
         if (this.visibleGroups['Booster Gas Clouds']) {
             visibleGasses.push(...EVE.gasses.boosterGasClouds);
-        }
-
-        if (this.visibleGroups.Other) {
-            const otherGasses = EVE.gasses.all.filter((gas) => ![...EVE.gasses.fullerenes, ...EVE.gasses.boosterGasClouds].includes(gas));
-            visibleGasses.push(...otherGasses);
         }
 
         if (visibleGasses.length === this.data.length) {
@@ -207,12 +193,11 @@ export class GasChartComponent implements OnInit {
     }
 
     private async fetchGasTypeInformation() {
-        const types = await this.typesService.getTypes(...EVE.gasses.all) || [];
+        const types = await this.typesService.getTypes(...EVE.gasses.fullerenes, ...EVE.gasses.boosterGasClouds) || [];
         this.gasTypes = objectsArrayToObject(types, 'type_id');
     }
 
     private getGasName(gas: number) {
-        const keys = Object.keys as <T>(o: T) => Extract<keyof T, string>[];
-        return keys(EVE.gas).find((name) => EVE.gas[name] === gas) || 'Unknown gas';
+        return Gas[gas];
     }
 }

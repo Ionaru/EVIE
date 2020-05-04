@@ -96,7 +96,7 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
 
     public async setProductNames(industryJobs: IExtendedIndustryJobsData[]) {
         const namesToGet = industryJobs.map((job) => {
-            if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
+            if (job.product_type_id && job.activity_id === IndustryActivity.MANUFACTURING) {
                 return job.product_type_id;
             }
             return 0;
@@ -104,7 +104,7 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
 
         await this.namesService.getNames(...namesToGet);
         for (const job of industryJobs) {
-            if (job.product_type_id && job.activity_id === IndustryActivity.manufacturing) {
+            if (job.product_type_id && job.activity_id === IndustryActivity.MANUFACTURING) {
                 job.productName = NamesService.getNameFromData(job.product_type_id);
             }
         }

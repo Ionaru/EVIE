@@ -10,15 +10,19 @@ import { ProductionCalculatorComponent } from './pages/production-calculator/pro
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
 import { HomeComponent } from './pages/home/home.component';
-import { IndustryComponent } from './pages/industry/industry.component';
 import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
 import { IndustrySystemOverviewComponent } from './pages/industry/system-overview/industry-system-overview.component';
-import { OreComponent } from './pages/ore/ore.component';
-import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
+import { OreBeltComponent } from './pages/ore/ore-belt.component';
+import { OreMoonComponent } from './pages/ore/ore-moon.component';
+import { OreTrigComponent } from './pages/ore/ore-trig.component';
+import { IndustryComponent } from './pages/industry/industry.component';
+import { RefiningProfitBeltComponent } from './pages/refining-profit/refining-profit-belt.component';
+import { RefiningProfitMoonComponent } from './pages/refining-profit/refining-profit-moon.component';
+import { RefiningProfitTrigComponent } from './pages/refining-profit/refining-profit-trig.component';
 
 const routes: Routes = [
     // Public pages
@@ -26,16 +30,31 @@ const routes: Routes = [
     {path: 'about', component: AboutComponent, resolve: [AppReadyGuard]},
 
     // EVE data pages.
-    {path: 'ore', component: OreComponent, resolve: [AppReadyGuard]},
+    {
+        path: 'ore', resolve: [AppReadyGuard],
+        children: [
+            {path: '', redirectTo: 'belt', pathMatch: 'full'},
+            {path: 'belt', component: OreBeltComponent},
+            {path: 'moon', component: OreMoonComponent},
+            {path: 'triglavian', component: OreTrigComponent},
+        ],
+    },
     {path: 'gas', component: GasChartComponent, resolve: [AppReadyGuard]},
     {path: 'production-calculator', component: ProductionCalculatorComponent, resolve: [AppReadyGuard]},
-    {path: 'refining-profit', component: RefiningProfitComponent, resolve: [AppReadyGuard], canActivate: [AdminGuard]},
+    {
+        path: 'refining-profit', resolve: [AppReadyGuard], canActivate: [AdminGuard],
+        children: [
+            {path: '', redirectTo: 'belt', pathMatch: 'full'},
+            {path: 'belt', component: RefiningProfitBeltComponent},
+            {path: 'moon', component: RefiningProfitMoonComponent},
+            {path: 'triglavian', component: RefiningProfitTrigComponent},
+        ],
+    },
 
     // Character data pages.
     {path: 'dashboard', component: DashboardComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {path: 'scopes', component: ScopesComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
     {
-        // tslint:disable-next-line:object-literal-sort-keys
         path: 'industry', component: IndustryComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard],
         children: [
             {path: '', redirectTo: 'jobs', pathMatch: 'full'},

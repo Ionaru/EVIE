@@ -1,8 +1,7 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { faEye, faEyeSlash } from '@fortawesome/pro-regular-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { EVE, IMarketOrdersData, IUniverseTypeData } from '@ionaru/eve-utils';
+import { IMarketOrdersData, IUniverseTypeData, Ore } from '@ionaru/eve-utils';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
@@ -41,25 +40,12 @@ interface IOresData {
 })
 export class OreComponent implements OnInit {
 
-    public model = {
-        beltVariants: true,
-        highSecOres: true,
-        lowSecOres: true,
-        moonVariants: false,
-        nullSecOres: true,
-        regularOres: true,
-    };
-
-    public variantsVisibleIcon = faEye;
-    public variantsHiddenIcon = faEyeSlash;
-
     public oreTypes: IOreTypesDict = {};
     public orePrices: IOrePrices = {
         buy: {},
         sell: {},
     };
 
-    public data: IOresData[] = [];
     public visibleData?: IOresData[];
 
     public tableSettings: ITableHeader<IOresData>[] = [{
@@ -71,7 +57,7 @@ export class OreComponent implements OnInit {
         title: 'Type',
     }, {
         attribute: 'buy',
-        hint: 'Average for using buy orders to sell 5.000m³ of ore.',
+        hint: 'Average for using buy orders to sell 5.000m³ of product.',
         pipe: 'number',
         pipeVar: '0.2-2',
         sort: true,
@@ -79,7 +65,7 @@ export class OreComponent implements OnInit {
         title: 'Buy price / m³',
     }, {
         attribute: 'sell',
-        hint: 'Average for using sell orders to buy 5.000m³ of ore.',
+        hint: 'Average for using sell orders to buy 5.000m³ of product.',
         pipe: 'number',
         pipeVar: '0.2-2',
         sort: true,
@@ -103,49 +89,19 @@ export class OreComponent implements OnInit {
         title: 'Sell price / Venture',
     }];
 
+    public set: Ore[] = [];
+
     constructor(
         private namesService: NamesService,
         private marketService: MarketService,
         private typesService: TypesService,
-        private ngZone: NgZone,
-        private title: Title
+        private title: Title,
     ) { }
 
     public async ngOnInit() {
 
         this.title.setTitle(createTitle('EVE Online Ore Chart'));
-
-        await this.namesService.getNames(...EVE.ores.all);
-
-        const types = await this.typesService.getTypes(...EVE.ores.all) || [];
-        for (const ore of EVE.ores.all) {
-            // tslint:disable-next-line:no-non-null-assertion
-            this.oreTypes[ore] = types.find((type) => type.type_id === ore)!;
-        }
-
-        await Promise.all(EVE.ores.all.map(async (ore) => {
-            const orders = await this.marketService.getMarketOrders(10000002, ore);
-            if (orders) {
-                const jitaOrders = orders.filter((order) => order.location_id === 60003760);
-                this.getPriceForVolume(ore, jitaOrders, 5000).then();
-                this.getPriceForVolume(ore, jitaOrders, 5000, false).then();
-            }
-        }));
-
-        this.data = EVE.ores.all.map((ore, index) => {
-            return {
-                buy: this.orePrices.buy[ore],
-                id: ore,
-                index,
-                name: NamesService.getNameFromData(ore),
-                sell: this.orePrices.sell[ore],
-                spread: this.orePrices.sell[ore] - this.orePrices.buy[ore],
-                venture: this.orePrices.sell[ore] * 5000,
-                volume: this.oreTypes[ore] ? this.oreTypes[ore].volume : '?',
-            };
-        });
-
-        this.changeVisibleOres();
+        this.getOreInformation(this.set).then();
     }
 
     public async getPriceForVolume(ore: number, orders: IMarketOrdersData, volume: number, buy = true) {
@@ -184,52 +140,40 @@ export class OreComponent implements OnInit {
         this.orePrices[buySell][ore] = price / cargoCapacity;
     }
 
-    // tslint:disable-next-line:cognitive-complexity
-    public changeVisibleOres() {
-        const visibleOres: number[] = [];
+    public async getOreInformation(selectedOres: Ore[]) {
+        await this.namesService.getNames(...selectedOres);
 
-        if (this.model.highSecOres && this.model.regularOres) {
-            visibleOres.push(...EVE.ores.highSec.base);
+        const types = await this.typesService.getTypes(...selectedOres);
+
+        if (!types) {
+            throw new Error(`Could not fetch types: ${selectedOres}`);
         }
 
-        if (this.model.highSecOres && this.model.beltVariants) {
-            visibleOres.push(...EVE.ores.highSec.beltVariants);
+        for (const ore of selectedOres) {
+            // tslint:disable-next-line:no-non-null-assertion
+            this.oreTypes[ore] = types.find((type) => type.type_id === ore)!;
         }
 
-        if (this.model.highSecOres && this.model.moonVariants) {
-            visibleOres.push(...EVE.ores.highSec.moonVariants);
-        }
+        await Promise.all(selectedOres.map(async (ore) => {
+            const orders = await this.marketService.getMarketOrders(10000002, ore);
+            if (orders) {
+                const jitaOrders = orders.filter((order) => order.location_id === 60003760);
+                this.getPriceForVolume(ore, jitaOrders, 5000).then();
+                this.getPriceForVolume(ore, jitaOrders, 5000, false).then();
+            }
+        }));
 
-        if (this.model.lowSecOres && this.model.regularOres) {
-            visibleOres.push(...EVE.ores.lowSec.base);
-        }
-
-        if (this.model.lowSecOres && this.model.beltVariants) {
-            visibleOres.push(...EVE.ores.lowSec.beltVariants);
-        }
-
-        if (this.model.lowSecOres && this.model.moonVariants) {
-            visibleOres.push(...EVE.ores.lowSec.moonVariants);
-        }
-
-        if (this.model.nullSecOres && this.model.regularOres) {
-            visibleOres.push(...EVE.ores.nullSec.base);
-        }
-
-        if (this.model.nullSecOres && this.model.beltVariants) {
-            visibleOres.push(...EVE.ores.nullSec.beltVariants);
-        }
-
-        if (this.model.nullSecOres && this.model.moonVariants) {
-            visibleOres.push(...EVE.ores.nullSec.moonVariants);
-        }
-
-        if (visibleOres.length === this.data.length) {
-            this.visibleData = this.data;
-        }
-
-        this.ngZone.run(() => {
-            this.visibleData = [...this.data.filter((ore) => visibleOres.includes(ore.id))];
+        this.visibleData = selectedOres.map((ore, index) => {
+            return {
+                buy: this.orePrices.buy[ore],
+                id: ore,
+                index,
+                name: Ore[ore],
+                sell: this.orePrices.sell[ore],
+                spread: this.orePrices.sell[ore] - this.orePrices.buy[ore],
+                venture: this.orePrices.sell[ore] * 5000,
+                volume: this.oreTypes[ore].volume,
+            };
         });
     }
 }
