@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
-import { IMarketOrdersData, IUniverseTypeData, Ore } from '@ionaru/eve-utils';
+import { Gas, Ice, IMarketOrdersData, IUniverseTypeData, Ore } from '@ionaru/eve-utils';
 
 import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { MarketService } from '../../data-services/market.service';
@@ -35,10 +35,10 @@ interface IOresData {
 
 @Component({
     selector: 'app-ore',
-    styleUrls: ['./ore.component.scss'],
-    templateUrl: './ore.component.html',
+    styleUrls: ['./prices-chart.component.scss'],
+    templateUrl: './prices-chart.component.html',
 })
-export class OreComponent implements OnInit {
+export class PricesChartComponent implements OnInit {
 
     public oreTypes: IOreTypesDict = {};
     public orePrices: IOrePrices = {
@@ -89,7 +89,7 @@ export class OreComponent implements OnInit {
         title: 'Sell price / Venture',
     }];
 
-    public set: Ore[] = [];
+    public set: Ore[] | Gas[] | Ice[] = [];
 
     constructor(
         private namesService: NamesService,
@@ -100,7 +100,7 @@ export class OreComponent implements OnInit {
 
     public async ngOnInit() {
 
-        this.title.setTitle(createTitle('EVE Online Ore Chart'));
+        this.title.setTitle(createTitle('EVE Online Price Chart'));
         this.getOreInformation(this.set).then();
     }
 
@@ -140,7 +140,7 @@ export class OreComponent implements OnInit {
         this.orePrices[buySell][ore] = price / cargoCapacity;
     }
 
-    public async getOreInformation(selectedOres: Ore[]) {
+    public async getOreInformation(selectedOres: number[]) {
         await this.namesService.getNames(...selectedOres);
 
         const types = await this.typesService.getTypes(...selectedOres);
@@ -168,7 +168,7 @@ export class OreComponent implements OnInit {
                 buy: this.orePrices.buy[ore],
                 id: ore,
                 index,
-                name: Ore[ore],
+                name: NamesService.getNameFromData(ore),
                 sell: this.orePrices.sell[ore],
                 spread: this.orePrices.sell[ore] - this.orePrices.buy[ore],
                 venture: this.orePrices.sell[ore] * 5000,

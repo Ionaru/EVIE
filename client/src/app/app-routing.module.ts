@@ -6,9 +6,11 @@ import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { AboutComponent } from './pages/about/about.component';
 import { AssetsComponent } from './pages/assets/assets.component';
+import { GasBoosterGasCloudsComponent } from './pages/prices-chart/gas-bgc.component';
+import { GasFullerenesComponent } from './pages/prices-chart/gas-fullerenes.component';
+import { IceComponent } from './pages/prices-chart/ice.component';
 import { ProductionCalculatorComponent } from './pages/production-calculator/production-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
 import { IndustrySystemOverviewComponent } from './pages/industry/system-overview/industry-system-overview.component';
@@ -16,9 +18,9 @@ import { ScopesComponent } from './pages/scopes/scopes.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
 import { WalletComponent } from './pages/wallet/wallet.component';
-import { OreBeltComponent } from './pages/ore/ore-belt.component';
-import { OreMoonComponent } from './pages/ore/ore-moon.component';
-import { OreTrigComponent } from './pages/ore/ore-trig.component';
+import { OreBeltComponent } from './pages/prices-chart/ore-belt.component';
+import { OreMoonComponent } from './pages/prices-chart/ore-moon.component';
+import { OreTrigComponent } from './pages/prices-chart/ore-trig.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { RefiningProfitBeltComponent } from './pages/refining-profit/refining-profit-belt.component';
 import { RefiningProfitMoonComponent } from './pages/refining-profit/refining-profit-moon.component';
@@ -39,7 +41,15 @@ const routes: Routes = [
             {path: 'triglavian', component: OreTrigComponent},
         ],
     },
-    {path: 'gas', component: GasChartComponent, resolve: [AppReadyGuard]},
+    {
+        path: 'gas', resolve: [AppReadyGuard],
+        children: [
+            {path: '', redirectTo: 'fullerenes', pathMatch: 'full'},
+            {path: 'fullerenes', component: GasFullerenesComponent},
+            {path: 'booster-gas-clouds', component: GasBoosterGasCloudsComponent},
+        ],
+    },
+    {path: 'ice', component: IceComponent, resolve: [AppReadyGuard]},
     {path: 'production-calculator', component: ProductionCalculatorComponent, resolve: [AppReadyGuard]},
     {
         path: 'refining-profit', resolve: [AppReadyGuard], canActivate: [AdminGuard],

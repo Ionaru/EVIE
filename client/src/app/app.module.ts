@@ -46,15 +46,17 @@ import { UserService } from './models/user/user.service';
 import { NavigationComponent } from './navigation/navigation.component';
 import { AboutComponent } from './pages/about/about.component';
 import { AssetsComponent } from './pages/assets/assets.component';
+import { GasBoosterGasCloudsComponent } from './pages/prices-chart/gas-bgc.component';
+import { GasFullerenesComponent } from './pages/prices-chart/gas-fullerenes.component';
+import { IceComponent } from './pages/prices-chart/ice.component';
 import { ProductionCalculatorComponent } from './pages/production-calculator/production-calculator.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { DataPageComponent } from './pages/data-page/data-page.component';
-import { GasChartComponent } from './pages/gas-chart/gas-chart.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryComponent } from './pages/industry/industry.component';
 import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
 import { IndustrySystemOverviewComponent } from './pages/industry/system-overview/industry-system-overview.component';
-import { OreComponent } from './pages/ore/ore.component';
+import { PricesChartComponent } from './pages/prices-chart/prices-chart.component';
 import { RefiningProfitComponent } from './pages/refining-profit/refining-profit.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
 import { SkillsComponent } from './pages/skills/skills.component';
@@ -63,9 +65,9 @@ import { WalletComponent } from './pages/wallet/wallet.component';
 import { SentryErrorHandler } from './sentry.error-handler';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
-import { OreBeltComponent } from './pages/ore/ore-belt.component';
-import { OreMoonComponent } from './pages/ore/ore-moon.component';
-import { OreTrigComponent } from './pages/ore/ore-trig.component';
+import { OreBeltComponent } from './pages/prices-chart/ore-belt.component';
+import { OreMoonComponent } from './pages/prices-chart/ore-moon.component';
+import { OreTrigComponent } from './pages/prices-chart/ore-trig.component';
 import { RefiningProfitBeltComponent } from './pages/refining-profit/refining-profit-belt.component';
 import { RefiningProfitMoonComponent } from './pages/refining-profit/refining-profit-moon.component';
 import { RefiningProfitTrigComponent } from './pages/refining-profit/refining-profit-trig.component';
@@ -92,7 +94,10 @@ if (environment.production) {
         IndustryJobsComponent,
         IndustrySystemOverviewComponent,
         UsersComponent,
-        OreComponent,
+        PricesChartComponent,
+        IceComponent,
+        GasBoosterGasCloudsComponent,
+        GasFullerenesComponent,
         OreBeltComponent,
         OreMoonComponent,
         OreTrigComponent,
@@ -105,7 +110,6 @@ if (environment.production) {
         RefiningProfitBeltComponent,
         RefiningProfitMoonComponent,
         RefiningProfitTrigComponent,
-        GasChartComponent,
         LoadingMessageComponent,
         AssetsComponent,
         AboutComponent,

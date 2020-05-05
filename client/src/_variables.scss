@@ -47,4 +47,10 @@ $warning: $eve-text-yellow;
 $body-bg: $body-primary;
 $body-color: $eve-text-color;
 
+$theme-colors: (
+    "ore": #423F36,
+    "ice": #6B838D,
+    "gas": #54435B,
+);
+
 @import '../node_modules/bootswatch/dist/superhero/variables';

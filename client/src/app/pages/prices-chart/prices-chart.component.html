@@ -1,0 +1,39 @@
+<div class="d-flex justify-content-evenly">
+    <div class="btn-group" role="group">
+        <button routerLink="/ore/belt" routerLinkActive="active" type="button" class="btn btn-outline-ore text-white-50">
+            Belt ores
+        </button>
+        <button routerLink="/ore/moon" routerLinkActive="active" type="button" class="btn btn-outline-ore text-white-50">
+            Moon ores
+        </button>
+        <button routerLink="/ore/triglavian" routerLinkActive="active" type="button" class="btn btn-outline-ore text-white-50">
+            Triglavian ores
+        </button>
+    </div>
+
+    <div class="btn-group" role="group">
+        <button routerLink="/ice" routerLinkActive="active" type="button" class="btn btn-outline-ice text-white-50">
+            Ice
+        </button>
+    </div>
+
+    <div class="btn-group" role="group">
+        <button routerLink="/gas/fullerenes" routerLinkActive="active" type="button" class="btn btn-outline-gas text-white-50">
+            Fullerenes
+        </button>
+        <button routerLink="/gas/booster-gas-clouds" routerLinkActive="active" type="button" class="btn btn-outline-gas text-white-50">
+            Booster Gas Clouds
+        </button>
+    </div>
+</div>
+
+<hr>
+
+<ng-container *ngIf="visibleData; else ore_loading_message">
+    <p>Prices are based on buying/selling 5.000m³ of product in Jita.</p>
+    <app-sor-table [data]="visibleData" [columns]="tableSettings"></app-sor-table>
+</ng-container>
+
+<ng-template #ore_loading_message>
+    <app-loading-message>Loading...</app-loading-message>
+</ng-template>

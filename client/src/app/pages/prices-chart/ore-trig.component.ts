@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { OreComponent } from './ore.component';
+import { PricesChartComponent } from './prices-chart.component';
 import { EVE } from '@ionaru/eve-utils';
 
 @Component({
     selector: 'app-ore',
-    styleUrls: ['./ore.component.scss'],
-    templateUrl: './ore.component.html',
+    styleUrls: ['./prices-chart.component.scss'],
+    templateUrl: './prices-chart.component.html',
 })
-export class OreTrigComponent extends OreComponent implements OnInit {
+export class OreTrigComponent extends PricesChartComponent implements OnInit {
     public async ngOnInit() {
         this.set = [
             ...EVE.ores.abyssal,
