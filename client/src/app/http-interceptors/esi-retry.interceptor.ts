@@ -23,6 +23,9 @@ export const genericRetryStrategy = () => (attempts: Observable<any>) => {
     );
 };
 
+/**
+ * Interceptor to retry an ESI request when it fails with a 5XX error.
+ */
 @Injectable()
 export class EsiRetryInterceptor implements HttpInterceptor {
 

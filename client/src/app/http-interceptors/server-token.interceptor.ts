@@ -3,6 +3,9 @@ import { Injectable } from '@angular/core';
 
 import { BaseService } from '../data-services/base.service';
 
+/**
+ * Interceptor to add the x-evie-token header when communicating with the backend server.
+ */
 @Injectable()
 export class ServerTokenInterceptor implements HttpInterceptor {
 

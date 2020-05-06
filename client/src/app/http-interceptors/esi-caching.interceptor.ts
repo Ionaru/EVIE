@@ -5,6 +5,9 @@ import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ESIRequestCache } from '../shared/esi-request-cache';
 
+/**
+ * Interceptor to cache ESI requests.
+ */
 @Injectable()
 export class EsiCachingInterceptor implements HttpInterceptor {
 

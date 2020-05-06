@@ -2,6 +2,9 @@ import { HttpClient, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } f
 import { Injectable } from '@angular/core';
 import { tap } from 'rxjs/operators';
 
+/**
+ * Interceptor to communicate that an ESI route is giving a warning (usually deprecation).
+ */
 @Injectable()
 export class EsiWarningInterceptor implements HttpInterceptor {
 

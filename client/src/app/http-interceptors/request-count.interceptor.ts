@@ -4,6 +4,9 @@ import { tap } from 'rxjs/operators';
 
 import { NavigationComponent } from '../navigation/navigation.component';
 
+/**
+ * Interceptor to count the amount of requests currently running.
+ */
 @Injectable()
 export class RequestCountInterceptor implements HttpInterceptor {
 

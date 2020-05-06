@@ -4,6 +4,9 @@ import { EVE } from '@ionaru/eve-utils';
 
 import { environment } from '../../environments/environment';
 
+/**
+ * Interceptor to set a custom User Agent header when communicating with the ESI, for transparency.
+ */
 @Injectable()
 export class EsiUserAgentInterceptor implements HttpInterceptor {
 
