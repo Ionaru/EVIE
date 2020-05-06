@@ -4,7 +4,11 @@ import {
     faCalculator,
     faChevronDown,
     faCircle as faSolidCircle,
+    faCloud,
     faColumns,
+    faDiceD10,
+    faDiceD6,
+    faDiceD8,
     faDollarSign,
     faHome,
     faPlug,
@@ -44,7 +48,10 @@ export class NavigationComponent implements OnInit {
     public connectionIcon = faPlug;
     public logoutIcon = faSignOut;
     public aboutIcon = faQuestion;
-    public orePricesIcon = faDollarSign;
+    public orePricesIcon = faDiceD6;
+    public icePricesIcon = faDiceD8;
+    public gasPricesIcon = faCloud;
+    public mineralsIcon = faDiceD10;
     public productionCalculatorIcon = faCalculator;
 
     public requestsActiveIcon = faSolidCircle;

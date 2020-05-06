@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { faCloud, faDiceD6, faDiceD8 } from '@fortawesome/pro-regular-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { Gas, Ice, IMarketOrdersData, IUniverseTypeData, Ore } from '@ionaru/eve-utils';
 
@@ -39,6 +40,10 @@ interface IOresData {
     templateUrl: './prices-chart.component.html',
 })
 export class PricesChartComponent implements OnInit {
+
+    public oreIcon = faDiceD6;
+    public iceIcon = faDiceD8;
+    public gasIcon = faCloud;
 
     public oreTypes: IOreTypesDict = {};
     public orePrices: IOrePrices = {

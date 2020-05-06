@@ -30,8 +30,12 @@
                         <fa-icon [fixedWidth]="true" [icon]="orePricesIcon"></fa-icon>
                         Ore Prices
                     </a>
+                    <a class="dropdown-item" routerLink="ice" routerLinkActive="active">
+                        <fa-icon [fixedWidth]="true" [icon]="icePricesIcon"></fa-icon>
+                        Ice Prices
+                    </a>
                     <a class="dropdown-item" routerLink="gas" routerLinkActive="active">
-                        <fa-icon [fixedWidth]="true" [icon]="orePricesIcon"></fa-icon>
+                        <fa-icon [fixedWidth]="true" [icon]="gasPricesIcon"></fa-icon>
                         Gas Prices
                     </a>
                     <a class="dropdown-item" routerLink="production-calculator" routerLinkActive="active">
@@ -40,7 +44,7 @@
                     </a>
                     <a class="dropdown-item" routerLink="refining-profit" routerLinkActive="active"
                        *ngIf="devEnvironment">
-                        <fa-icon [fixedWidth]="true" [icon]="orePricesIcon"></fa-icon>
+                        <fa-icon [fixedWidth]="true" [icon]="mineralsIcon"></fa-icon>
                         Minerals
                     </a>
                     <!--<a class="dropdown-item" routerLink="ore" routerLinkActive="active">-->
