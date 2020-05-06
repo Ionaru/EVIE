@@ -9,7 +9,6 @@ import {
     faDiceD10,
     faDiceD6,
     faDiceD8,
-    faDollarSign,
     faHome,
     faPlug,
     faQuestion,
