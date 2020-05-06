@@ -52,25 +52,12 @@ export class MarketService extends BaseService {
         return response.data;
     }
 
-    public async getPriceForAmountInSystem(systemId: number, typeId: number, amount: number, type: 'buy' | 'sell' = 'sell'):
-        Promise<number | undefined> {
+    public async getPriceForAmountInSystem(systemId: number, typeId: number, amount: number, type: 'buy' | 'sell' = 'sell') {
 
-        const systemInfo = await this.systemsService.getSystemInfo(systemId);
-        if (!systemInfo) {
+        const systemOrders = await this.getMarketOrderInSystem(systemId, typeId, type);
+        if (!systemOrders) {
             return;
         }
-
-        const constellationInfo = await this.constellationsService.getConstellation(systemInfo.constellation_id);
-        if (!constellationInfo) {
-            return;
-        }
-
-        const orders = await this.getMarketOrders(constellationInfo.region_id, typeId, type);
-        if (!orders) {
-            return;
-        }
-
-        const systemOrders = orders.filter((order) => order.system_id === systemId);
 
         sortArrayByObjectProperty(systemOrders, 'price', type === 'buy');
         return MarketService.getPriceForOrderAmount(systemOrders, amount);
@@ -86,6 +73,25 @@ export class MarketService extends BaseService {
 
         sortArrayByObjectProperty(orders, 'price', type === 'buy');
         return MarketService.getPriceForOrderAmount(orders, amount);
+    }
+
+    public async getMarketOrderInSystem(systemId: number, typeId: number, type: 'buy' | 'sell' = 'sell') {
+        const systemInfo = await this.systemsService.getSystemInfo(systemId);
+        if (!systemInfo) {
+            return;
+        }
+
+        const constellationInfo = await this.constellationsService.getConstellation(systemInfo.constellation_id);
+        if (!constellationInfo) {
+            return;
+        }
+
+        const orders = await this.getMarketOrders(constellationInfo.region_id, typeId, type);
+        if (!orders) {
+            return;
+        }
+
+        return orders.filter((order) => order.system_id === systemId);
     }
 
     public async getMarketOrders(regionId: number, typeId: number, type: 'buy' | 'sell' | 'all' = 'all'):
