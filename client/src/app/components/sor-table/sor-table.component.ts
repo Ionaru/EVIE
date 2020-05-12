@@ -2,14 +2,14 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { faInfoCircle, faSort, faSortDown, faSortUp } from '@fortawesome/pro-solid-svg-icons';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 
-interface ITableHeaderData {
-    [key: string]: any;
+export interface ITableData {
+    [index: string]: any;
 }
 
-export interface ITableHeader<T extends ITableHeaderData> {
+export interface ITableHeader<T extends ITableData> {
     attribute: keyof T;
+    attributeFunction?: (value: T) => any;
     classFunction?: (value: T) => string;
-    dataFunction?: (value: T) => any;
     hint?: string;
     pipe?: 'number' | 'date';
     pipeVar?: string;
@@ -20,10 +20,6 @@ export interface ITableHeader<T extends ITableHeaderData> {
     suffix?: string;
     suffixFunction?: (value: T) => string;
     title?: string;
-}
-
-export interface ITableData {
-    [index: string]: any;
 }
 
 @Component({
@@ -45,9 +41,7 @@ export class SorTableComponent implements OnChanges {
     public hintIcon = faInfoCircle;
 
     public getData(column: ITableHeader<ITableData>, data: ITableData) {
-        const attribute = column.attribute;
-        const dataValue = attribute.toString().split('.').reduce((o, i) => o ? o[i] : o, data);
-        return column.dataFunction ? column.dataFunction(data) : dataValue;
+        return column.attributeFunction ? column.attributeFunction(data) : data[column.attribute];
     }
 
     public sort(column = this.currentSort) {
@@ -55,7 +49,7 @@ export class SorTableComponent implements OnChanges {
             return;
         }
 
-        const sortAttribute = (column.sortAttribute || column.attribute);
+        const sortAttribute = column.sortAttribute || column.attribute;
 
         this.invert = (this.currentSort && this.currentSort === column) ? !this.invert : false;
 
