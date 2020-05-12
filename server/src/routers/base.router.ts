@@ -89,7 +89,6 @@ export class BaseRouter {
         return nextFunction;
     }
 
-    @BaseRouter.requestDecorator(BaseRouter.checkAuthorizedClient)
     public static checkLogin(request: Request, response: Response, nextFunction: any) {
         if (!request.session!.user.id) {
             BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
