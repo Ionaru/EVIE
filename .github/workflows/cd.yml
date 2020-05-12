@@ -27,7 +27,7 @@ jobs:
               working-directory: client
               env:
                   EVIE_FA_TOKEN: ${{ secrets.FA_TOKEN }}
-              run: npm audit
+              run: npm audit --production
 
             - name: Install packages
               working-directory: client
