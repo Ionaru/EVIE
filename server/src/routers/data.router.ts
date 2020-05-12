@@ -18,6 +18,8 @@ export class DataRouter extends BaseRouter {
         this.createRoute('get', '/estimated-item-value/:id', DataRouter.getEstimatedItemValue);
         this.createRoute('get', '/refining/:id', DataRouter.getRefiningProducts);
         this.createRoute('get', '/industry/system/:id', DataRouter.getIndustrySystem);
+        this.createRoute('get', '/pi', DataRouter.getPIInfo);
+        this.createRoute('get', '/pi/:id', DataRouter.getPISchematic);
     }
 
     private static getTypeId(request: Request) {
@@ -89,6 +91,34 @@ export class DataRouter extends BaseRouter {
         }
 
         return DataRouter.sendSuccessResponse(response, data);
+    }
+
+    @DataRouter.requestDecorator(DataRouter.checkAuthorizedClient)
+    private static async getPISchematic(request: Request, response: Response): Promise<Response> {
+        const typeId = DataRouter.getTypeId(request);
+
+        if (!typeId) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+        }
+
+        if (isNaN(typeId)) {
+            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+        }
+
+        const data = await DataController.getPISchematic(typeId);
+
+        if (!data) {
+            return DataRouter.sendResponse(response, httpStatus.NOT_FOUND, 'NotFound');
+        }
+
+        return DataRouter.sendSuccessResponse(response, data);
+    }
+
+    @DataRouter.requestDecorator(DataRouter.checkAuthorizedClient)
+    private static async getPIInfo(_request: Request, response: Response): Promise<Response> {
+
+        const piInfo = await DataController.getPIInfo();
+        return DataRouter.sendSuccessResponse(response, piInfo);
     }
 
     // noinspection JSUnusedLocalSymbols

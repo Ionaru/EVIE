@@ -10,6 +10,7 @@ import {
     IMarketGroupData,
     IMarketPricesData,
     IndustryActivity,
+    IPlanetSchematicsTypeMapData,
     IUniverseCategoryData,
     IUniverseGroupData,
     IUniverseTypeData,
@@ -34,7 +35,62 @@ interface IManufacturingData {
     };
 }
 
+interface IPIInfo {
+    P1: number[];
+    P2: number[];
+    P3: number[];
+    P4: number[];
+}
+
+interface IPISchematic {
+    id: number;
+    quantity: number;
+}
+
 export class DataController {
+
+    public static async getPISchematic(typeId: number): Promise<IPISchematic[] | undefined> {
+        const planetSchematicsTypeMap = await esiService.fetchESIData<IPlanetSchematicsTypeMapData>(EVE.getPlanetSchematicsTypeMapUrl());
+        if (!planetSchematicsTypeMap) {
+            return;
+        }
+
+        const schematic = planetSchematicsTypeMap.find((x) => !x.isInput && x.typeID === typeId);
+        if (!schematic) {
+            return
+        }
+
+        const components = planetSchematicsTypeMap.filter((x) => x.isInput && x.schematicID === schematic.schematicID);
+
+        return components.map((component) => {
+            return {
+                id: component.typeID,
+                quantity: component.quantity,
+            }
+        })
+    }
+
+    public static async getPIInfo(): Promise<IPIInfo | undefined> {
+        // 1333
+        // 1334
+        // 1335
+        // 1336
+        // 1337
+
+        const [P1Group, P2Group, P3Group, P4Group] = await Promise.all([
+            esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(1334)),
+            esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(1335)),
+            esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(1336)),
+            esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(1337)),
+        ]);
+
+        return {
+            P1: P1Group.types,
+            P2: P2Group.types,
+            P3: P3Group.types,
+            P4: P4Group.types,
+        }
+    }
 
     public static async getIndustrySystem(systemId: number): Promise<IIndustrySystemsDataUnit | undefined> {
         const industrySystems = await esiService.fetchESIData<IIndustrySystemsData>(EVE.getIndustrySystemsUrl());
@@ -63,7 +119,7 @@ export class DataController {
 
         if (industryProducts) {
             blueprint = industryProducts.find((product) =>
-                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing);
+                product.productTypeID === typeId && product.activityID === IndustryActivity.MANUFACTURING);
         }
 
         if (!blueprint) {
@@ -81,18 +137,18 @@ export class DataController {
         if (industryProducts && industryMaterials && industrySkills && industryActivities) {
 
             const bluePrint = industryProducts.find((product) =>
-                product.productTypeID === typeId && product.activityID === IndustryActivity.manufacturing);
+                product.productTypeID === typeId && product.activityID === IndustryActivity.MANUFACTURING);
 
             if (!bluePrint) {
                 return;
             }
 
             const materials = industryMaterials.filter((material) =>
-                material.typeID === bluePrint.typeID && material.activityID === IndustryActivity.manufacturing);
+                material.typeID === bluePrint.typeID && material.activityID === IndustryActivity.MANUFACTURING);
             const skills = industrySkills.filter((skill) =>
-                skill.typeID === bluePrint.typeID && skill.activityID === IndustryActivity.manufacturing);
+                skill.typeID === bluePrint.typeID && skill.activityID === IndustryActivity.MANUFACTURING);
             const time = industryActivities.find((activity) =>
-                activity.typeID === bluePrint.typeID && activity.activityID === IndustryActivity.manufacturing);
+                activity.typeID === bluePrint.typeID && activity.activityID === IndustryActivity.MANUFACTURING);
 
             return {
                 blueprintId: bluePrint.typeID,
