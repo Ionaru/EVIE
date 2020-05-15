@@ -40,16 +40,22 @@ interface IPIInfo {
     P2: number[];
     P3: number[];
     P4: number[];
+    R0: number[];
 }
 
 interface IPISchematic {
+    input: IPISchematicItem[];
+    output: IPISchematicItem;
+}
+
+interface IPISchematicItem {
     id: number;
     quantity: number;
 }
 
 export class DataController {
 
-    public static async getPISchematic(typeId: number): Promise<IPISchematic[] | undefined> {
+    public static async getPISchematic(typeId: number): Promise<IPISchematic | undefined> {
         const planetSchematicsTypeMap = await esiService.fetchESIData<IPlanetSchematicsTypeMapData>(EVE.getPlanetSchematicsTypeMapUrl());
         if (!planetSchematicsTypeMap) {
             return;
@@ -57,17 +63,18 @@ export class DataController {
 
         const schematic = planetSchematicsTypeMap.find((x) => !x.isInput && x.typeID === typeId);
         if (!schematic) {
-            return
+            return;
         }
 
         const components = planetSchematicsTypeMap.filter((x) => x.isInput && x.schematicID === schematic.schematicID);
+        const input = components.map((component) => ({
+            id: component.typeID,
+            quantity: component.quantity,
+        }));
 
-        return components.map((component) => {
-            return {
-                id: component.typeID,
-                quantity: component.quantity,
-            }
-        })
+        const output = {id: schematic.typeID, quantity: schematic.quantity};
+
+        return {input, output};
     }
 
     public static async getPIInfo(): Promise<IPIInfo | undefined> {
@@ -77,7 +84,8 @@ export class DataController {
         // 1336
         // 1337
 
-        const [P1Group, P2Group, P3Group, P4Group] = await Promise.all([
+        const [R0Group, P1Group, P2Group, P3Group, P4Group] = await Promise.all([
+            esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(1333)),
             esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(1334)),
             esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(1335)),
             esiService.fetchESIData<IMarketGroupData>(EVE.getMarketGroupUrl(1336)),
@@ -89,7 +97,8 @@ export class DataController {
             P2: P2Group.types,
             P3: P3Group.types,
             P4: P4Group.types,
-        }
+            R0: R0Group.types,
+        };
     }
 
     public static async getIndustrySystem(systemId: number): Promise<IIndustrySystemsDataUnit | undefined> {
