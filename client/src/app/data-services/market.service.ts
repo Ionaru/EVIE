@@ -123,7 +123,7 @@ export class MarketService extends BaseService {
 
     private async getMarketOrdersPage(regionId: number, typeId: number, page: number, type: 'buy' | 'sell' | 'all' = 'all'):
         Promise<HttpResponse<IMarketOrdersData> | undefined> {
-        const url = EVE.getMarketOrdersUrl(regionId, typeId, page, type);
+        const url = EVE.getMarketOrdersUrl({regionId, typeId, page, orderType: type});
 
         const response = await this.http.get<any>(url, {observe: 'response'})
             .toPromise<HttpResponse<IMarketOrdersData>>()
