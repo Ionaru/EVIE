@@ -6,7 +6,7 @@ RUN mkdir /app
 WORKDIR /app
 
 # Copy needed build files
-COPY ./.browserslistrc ./.npmrc ./package.json ./package-lock.json ./angular.json ./tsconfig.json ./
+COPY ./.browserslistrc ./.npmrc ./package.json ./package-lock.json ./angular.json ./tsconfig.base.json ./
 
 # Install dependencies
 ARG EVIE_FA_TOKEN
