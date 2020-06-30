@@ -9,13 +9,15 @@ export class User extends BaseModel {
 
     @Column({
         default: false,
+        type: Boolean,
     })
-    public isAdmin: boolean = false;
+    public isAdmin = false;
 
     @Column({
         default: 1,
+        type: Number,
     })
-    public timesLogin: number = 1;
+    public timesLogin = 1;
 
     @Column({
         default: () => 'CURRENT_TIMESTAMP',
@@ -29,14 +31,14 @@ export class User extends BaseModel {
         return this.createQueryBuilder('user');
     }
 
-    public static async getFromId(id: number) {
+    public static async getFromId(id: number): Promise<User | undefined> {
         return User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', {id})
             .getOne();
     }
 
-    public get sanitizedCopy() {
+    public get sanitizedCopy(): this {
         // Delete data that should not be sent to the client.
         const copy = clone<this>(this, false);
         delete copy.id;
@@ -48,7 +50,7 @@ export class User extends BaseModel {
         return copy;
     }
 
-    public async merge(userToMerge: User) {
+    public async merge(userToMerge: User): Promise<void> {
         // Move Characters to new User
         await Character.doQuery()
             .update()

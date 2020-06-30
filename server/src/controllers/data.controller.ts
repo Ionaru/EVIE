@@ -169,15 +169,15 @@ export class DataController {
         }
     }
 
-    public static async getUniverseCategory(categoryId: number) {
+    public static async getUniverseCategory(categoryId: number): Promise<IUniverseCategoryData> {
         return esiService.fetchESIData<IUniverseCategoryData>(EVE.getUniverseCategoryUrl(categoryId));
     }
 
-    public static async getUniverseGroup(groupId: number) {
+    public static async getUniverseGroup(groupId: number): Promise<IUniverseGroupData> {
         return esiService.fetchESIData<IUniverseGroupData>(EVE.getUniverseGroupUrl(groupId));
     }
 
-    public static async getMarketIds() {
+    public static async getMarketIds(): Promise<number[]> {
         const marketGroups = await esiService.fetchESIData<number[]>(EVE.getMarketGroupsUrl());
 
         const marketIds: number[] = [];
@@ -195,7 +195,7 @@ export class DataController {
         return marketIds;
     }
 
-    public static async getMarketTypes() {
+    public static async getMarketTypes(): Promise<IUniverseTypeData[]> {
 
         const marketIds = await DataController.getMarketIds();
         const types = await DataController.getUniverseTypes(...marketIds);
@@ -203,7 +203,7 @@ export class DataController {
         return types.filter((type) => type.published);
     }
 
-    public static async getSkillIds() {
+    public static async getSkillIds(): Promise<number[]> {
         const skillsCategory = await DataController.getUniverseCategory(EVE.skillCategoryId);
 
         const skillIds: number[] = [];
@@ -221,7 +221,7 @@ export class DataController {
         return skillIds;
     }
 
-    public static async getSkillTypes() {
+    public static async getSkillTypes(): Promise<IUniverseTypeData[]> {
 
         const skillIds = await DataController.getSkillIds();
         const types = await DataController.getUniverseTypes(...skillIds);
@@ -229,7 +229,7 @@ export class DataController {
         return types.filter((type) => type.published);
     }
 
-    public static async getUniverseTypes(...typeIds: number[]) {
+    public static async getUniverseTypes(...typeIds: number[]): Promise<IUniverseTypeData[]> {
 
         const typeData: IUniverseTypeData[] = [];
 
@@ -241,7 +241,7 @@ export class DataController {
         return typeData;
     }
 
-    public static async getUniverseType(typeId: number) {
+    public static async getUniverseType(typeId: number): Promise<IUniverseTypeData> {
         let tries = 0;
 
         let type: IUniverseTypeData | undefined;

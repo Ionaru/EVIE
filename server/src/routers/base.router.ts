@@ -27,6 +27,7 @@ export class BaseRouter {
         BaseRouter.debug(`New express router: ${this.constructor.name}`);
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public static sendResponse(response: Response, statusCode: number, message: string, data?: any): Response {
         const state = statusCode < 400 ? 'success' : 'error';
 
@@ -44,6 +45,7 @@ export class BaseRouter {
         return response.json(responseData);
     }
 
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public static sendSuccessResponse(response: Response, data?: any): Response {
         return BaseRouter.sendResponse(response, httpStatus.OK, 'OK', data);
     }
@@ -52,24 +54,7 @@ export class BaseRouter {
         return BaseRouter.sendResponse(response, httpStatus.NOT_FOUND, message);
     }
 
-    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
-    public static async checkAdmin(request: Request, response: Response, nextFunction: NextFunction) {
-        if (process.env.NODE_ENV !== 'production') {
-            return nextFunction;
-        }
-
-        const user: User | undefined = await User.doQuery()
-            .select(['user.isAdmin'])
-            .where('user.id = :id', {id: request.session!.user.id})
-            .getOne();
-        if (!user || !user.isAdmin) {
-            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NoPermissions');
-            return;
-        }
-        return nextFunction;
-    }
-
-    public static checkAuthorizedClient(request: Request, response: Response, nextFunction: NextFunction) {
+    public static checkAuthorizedClient(request: Request, response: Response, nextFunction: NextFunction): NextFunction | undefined {
 
         if (process.env.NODE_ENV !== 'production') {
             // Allow all clients when running in debug mode, useful for working with Postman to test the API.
@@ -89,7 +74,8 @@ export class BaseRouter {
         return nextFunction;
     }
 
-    public static checkLogin(request: Request, response: Response, nextFunction: any) {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    public static checkLogin(request: Request, response: Response, nextFunction: any): NextFunction | undefined {
         if (!request.session!.user.id) {
             BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
             return;
@@ -97,7 +83,9 @@ export class BaseRouter {
         return nextFunction;
     }
 
-    public static checkBodyParameters(request: Request, response: Response, nextFunction: NextFunction, params: string[]) {
+    public static checkBodyParameters(
+        request: Request, response: Response, nextFunction: NextFunction, params: string[]
+    ): NextFunction | undefined {
         const missingParameters = params.filter((param) => !Object.keys(request.body).includes(param));
         if (missingParameters.length) {
             BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters', missingParameters);
@@ -106,7 +94,9 @@ export class BaseRouter {
         return nextFunction;
     }
 
-    public static checkQueryParameters(request: Request, response: Response, nextFunction: NextFunction, params: string[]) {
+    public static checkQueryParameters(
+        request: Request, response: Response, nextFunction: NextFunction, params: string[]
+    ): NextFunction | undefined {
         const missingParameters = params.filter((param) => !Object.keys(request.query).includes(param));
         if (missingParameters.length) {
             BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters', missingParameters);
@@ -116,6 +106,7 @@ export class BaseRouter {
     }
 
     public static requestDecorator(func: (x: Request, y: Response, z: any, a?: any) => any, ...extraArgs: any[]) {
+        // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
         return (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) => {
             const originalFunction = descriptor.value;
 
@@ -128,6 +119,23 @@ export class BaseRouter {
 
             return descriptor;
         };
+    }
+
+    @BaseRouter.requestDecorator(BaseRouter.checkLogin)
+    public static async checkAdmin(request: Request, response: Response, nextFunction: NextFunction): Promise<NextFunction | undefined> {
+        if (process.env.NODE_ENV !== 'production') {
+            return nextFunction;
+        }
+
+        const user: User | undefined = await User.doQuery()
+            .select(['user.isAdmin'])
+            .where('user.id = :id', {id: request.session!.user.id})
+            .getOne();
+        if (!user || !user.isAdmin) {
+            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NoPermissions');
+            return;
+        }
+        return nextFunction;
     }
 
     public createRoute(method: Method, url: PathParams, routeFunction: RequestHandler | RequestHandlerParams): void {

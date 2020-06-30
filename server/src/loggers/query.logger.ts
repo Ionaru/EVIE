@@ -52,7 +52,7 @@ export class QueryLogger implements Logger {
         return undefined;
     }
 
-    public log(_level: any, _message: any, _queryRunner?: QueryRunner): void {
+    public log(_level: 'log' | 'info' | 'warn', _message: string, _queryRunner?: QueryRunner): void {
         return undefined;
     }
 }

@@ -36,7 +36,7 @@ export class Application {
         process.exit(exitCode);
     }
 
-    public async start() {
+    public async start(): Promise<void> {
 
         debug('Creating database connection');
         await new DatabaseConnection().connect();

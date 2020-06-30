@@ -1,5 +1,5 @@
 {
-    "extends": "../tsconfig.json",
+    "extends": "../tsconfig.base.json",
     "angularCompilerOptions": {
         // The CLI will also output a warning, disable the Angular check so the compiler doesn't crash.
         "disableTypeScriptVersionCheck": true

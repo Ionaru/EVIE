@@ -9,6 +9,9 @@
         "codelyzer"
     ],
     "rules": {
+        "deprecation": {
+            "severity": "warning"
+        },
         "no-submodule-imports": [
             true,
             "rxjs",

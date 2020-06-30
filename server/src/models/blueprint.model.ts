@@ -11,18 +11,21 @@ export class Blueprint extends BaseModel {
 
     @Column({
         default: 0,
+        type: Number,
     })
-    public materialEfficiency: number = 0;
+    public materialEfficiency = 0;
 
     @Column({
         default: 0,
+        type: Number,
     })
-    public timeEfficiency: number = 0;
+    public timeEfficiency = 0;
 
     @Column({
         default: false,
+        type: Boolean,
     })
-    public isCopy: boolean = false;
+    public isCopy = false;
 
     @ManyToOne(() => Character, (character) => character.blueprints, {
         onDelete: 'CASCADE',

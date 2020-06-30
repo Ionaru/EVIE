@@ -42,6 +42,100 @@ export class SSORouter extends BaseRouter {
         this.createRoute('get', '/auth-callback', SSORouter.SSOAuthCallback);
     }
 
+    private static async logDeprecation(request: Request, response: Response): Promise<Response> {
+
+        const route = request.body.route as string;
+        const text = request.body.text as string;
+        esiService.logWarning(route, text);
+
+        return SSORouter.sendSuccessResponse(response);
+    }
+
+    /**
+     * Get a base64 string containing the client ID and secret key for SSO login.
+     */
+    private static getSSOLoginString() {
+        return Buffer.from(`${process.env.EVIE_SSO_LOGIN_CLIENT}:${process.env.EVIE_SSO_LOGIN_SECRET}`).toString('base64');
+    }
+
+    /**
+     * Get a base64 string containing the client ID and secret key for SSO auth.
+     */
+    private static getSSOAuthString() {
+        return Buffer.from(`${process.env.EVIE_SSO_AUTH_CLIENT}:${process.env.EVIE_SSO_AUTH_SECRET}`).toString('base64');
+    }
+
+    private static extractJWTValues(token: IJWTToken):
+        { characterID: number; characterName: string; characterOwnerHash: string; characterScopes: string[] } {
+        const characterID = Number(token.sub.split(':')[2]);
+        const characterName = token.name;
+        const characterOwnerHash = token.owner;
+        const characterScopes = typeof token.scp === 'string' ? [token.scp] : token.scp;
+
+        return {characterID, characterName, characterOwnerHash, characterScopes};
+    }
+
+    private static isJWTValid(token: IJWTToken): boolean {
+        const clientIds = [process.env.EVIE_SSO_LOGIN_CLIENT, process.env.EVIE_SSO_AUTH_CLIENT];
+        if (!clientIds.includes(token.azp)) {
+            process.emitWarning('Authorized party is not correct.', `Expected: ${clientIds}, got: ${token.azp}`);
+            return false;
+        }
+
+        if (![oauthHost, protocol + oauthHost].includes(token.iss)) {
+            process.emitWarning('Unknown token issuer.', `Expected: '${oauthHost}' or '${protocol + oauthHost}', got: '${token.iss}'`);
+            return false;
+        }
+
+        if (Date.now() > (token.exp * 1000)) {
+            process.emitWarning('Token is expired.', `Expiry was ${((token.exp * 1000) - Date.now()) / 1000}s ago.`);
+            return false;
+        }
+
+        return true;
+    }
+
+    private static async doAuthRequest(auth: string, code: string, refresh = false) {
+        const requestOptions: AxiosRequestConfig = {
+            headers: {
+                'Authorization': 'Basic ' + auth,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        };
+
+        const requestBody = refresh ?
+            new URLSearchParams({grant_type: 'refresh_token', refresh_token: code}) :
+            new URLSearchParams({grant_type: 'authorization_code', code});
+
+        const authUrl = `${protocol}${oauthHost}${tokenPath}`;
+        SSORouter.debug(`Requesting authorization: ${code} (refresh: ${refresh})`);
+        return axiosInstance.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+            process.stderr.write(`Request failed: ${authUrl}\n${error.message}\n`);
+            if (error.response) {
+                process.stderr.write(`${JSON.stringify(error.response.data)}\n`);
+            }
+            Sentry.captureException(error);
+        });
+    }
+
+    private static async revokeKey(key: string, keyType: 'access_token' | 'refresh_token') {
+        const requestOptions: AxiosRequestConfig = {
+            headers: {
+                'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        };
+
+        const requestBody = new URLSearchParams({token: key, token_type_hint: keyType});
+
+        const revokeUrl = `${protocol}${oauthHost}${revokePath}`;
+        SSORouter.debug(`Revoking token of type ${keyType}: ${key}`);
+        return axiosInstance.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
+            process.stderr.write(`Request failed: ${revokeUrl}\n${error.message}\n`);
+            Sentry.captureException(error);
+        });
+    }
+
     private static async SSOLogin(request: Request, response: Response): Promise<Response> {
         // Generate a random string and set it as the state of the request, we will later verify the response of the
         // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery (XSRF), see this link for details:
@@ -63,6 +157,7 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
     private static async SSOLoginCallback(
+        // eslint-disable-next-line @typescript-eslint/ban-types
         request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
     ): Promise<Response> {
 
@@ -171,6 +266,7 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
     private static async SSOAuthCallback(
+        // eslint-disable-next-line @typescript-eslint/ban-types
         request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
     ): Promise<Response> {
 
@@ -204,12 +300,6 @@ export class SSORouter extends BaseRouter {
         }
 
         let character = await Character.getFromId(characterID);
-
-        // Only revoke the token if the new one is different.
-        if (character && character.refreshToken && character.refreshToken !== authResponse.data.refresh_token) {
-            // Revoke old token
-            SSORouter.revokeKey(character.refreshToken, 'refresh_token').then();
-        }
 
         if (character && character.ownerHash !== characterOwnerHash) {
             // Character exists but has been transferred, delete the old one and create anew.
@@ -362,99 +452,5 @@ export class SSORouter extends BaseRouter {
         character.isActive = true;
         await character.save();
         return SSORouter.sendSuccessResponse(response);
-    }
-
-    private static async logDeprecation(request: Request, response: Response): Promise<Response> {
-
-        const route = request.body.route as string;
-        const text = request.body.text as string;
-        esiService.logWarning(route, text);
-
-        return SSORouter.sendSuccessResponse(response);
-    }
-
-    /**
-     * Get a base64 string containing the client ID and secret key for SSO login.
-     */
-    private static getSSOLoginString() {
-        return Buffer.from(`${process.env.EVIE_SSO_LOGIN_CLIENT}:${process.env.EVIE_SSO_LOGIN_SECRET}`).toString('base64');
-    }
-
-    /**
-     * Get a base64 string containing the client ID and secret key for SSO auth.
-     */
-    private static getSSOAuthString() {
-        return Buffer.from(`${process.env.EVIE_SSO_AUTH_CLIENT}:${process.env.EVIE_SSO_AUTH_SECRET}`).toString('base64');
-    }
-
-    private static extractJWTValues(token: IJWTToken):
-        { characterID: number; characterName: string; characterOwnerHash: string; characterScopes: string[] } {
-        const characterID = Number(token.sub.split(':')[2]);
-        const characterName = token.name;
-        const characterOwnerHash = token.owner;
-        const characterScopes = typeof token.scp === 'string' ? [token.scp] : token.scp;
-
-        return {characterID, characterName, characterOwnerHash, characterScopes};
-    }
-
-    private static isJWTValid(token: IJWTToken): boolean {
-        const clientIds = [process.env.EVIE_SSO_LOGIN_CLIENT, process.env.EVIE_SSO_AUTH_CLIENT];
-        if (!clientIds.includes(token.azp)) {
-            process.emitWarning('Authorized party is not correct.', `Expected: ${clientIds}, got: ${token.azp}`);
-            return false;
-        }
-
-        if (![oauthHost, protocol + oauthHost].includes(token.iss)) {
-            process.emitWarning('Unknown token issuer.', `Expected: '${oauthHost}' or '${protocol + oauthHost}', got: '${token.iss}'`);
-            return false;
-        }
-
-        if (Date.now() > (token.exp * 1000)) {
-            process.emitWarning('Token is expired.', `Expiry was ${((token.exp * 1000) - Date.now()) / 1000}s ago.`);
-            return false;
-        }
-
-        return true;
-    }
-
-    private static async doAuthRequest(auth: string, code: string, refresh = false) {
-        const requestOptions: AxiosRequestConfig = {
-            headers: {
-                'Authorization': 'Basic ' + auth,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        };
-
-        const requestBody = refresh ?
-            new URLSearchParams({grant_type: 'refresh_token', refresh_token: code}) :
-            new URLSearchParams({grant_type: 'authorization_code', code});
-
-        const authUrl = `${protocol}${oauthHost}${tokenPath}`;
-        SSORouter.debug(`Requesting authorization: ${code} (refresh: ${refresh})`);
-        return axiosInstance.post<IAuthResponseData>(authUrl, requestBody, requestOptions).catch((error: AxiosError) => {
-            process.stderr.write(`Request failed: ${authUrl}\n${error.message}\n`);
-            if (error.response) {
-                process.stderr.write(`${JSON.stringify(error.response.data)}\n`);
-            }
-            Sentry.captureException(error);
-        });
-    }
-
-    private static async revokeKey(key: string, keyType: 'access_token' | 'refresh_token') {
-        const requestOptions: AxiosRequestConfig = {
-            headers: {
-                'Authorization': 'Basic ' + SSORouter.getSSOAuthString(),
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        };
-
-        const requestBody = new URLSearchParams({token: key, token_type_hint: keyType});
-
-        const revokeUrl = `${protocol}${oauthHost}${revokePath}`;
-        SSORouter.debug(`Revoking token of type ${keyType}: ${key}`);
-        return axiosInstance.post<void>(revokeUrl, requestBody, requestOptions).catch((error: AxiosError) => {
-            process.stderr.write(`Request failed: ${revokeUrl}\n${error.message}\n`);
-            Sentry.captureException(error);
-        });
     }
 }

@@ -47,8 +47,9 @@ export class Character extends BaseModel {
 
     @Column({
         default: false,
+        type: Boolean,
     })
-    public isActive: boolean = false;
+    public isActive = false;
 
     @OneToMany(() => Blueprint, (blueprint) => blueprint.character)
     public blueprints!: Blueprint[];
@@ -62,14 +63,14 @@ export class Character extends BaseModel {
         return this.createQueryBuilder('character');
     }
 
-    public static async getFromId(id: number) {
+    public static async getFromId(id: number): Promise<Character | undefined> {
         return Character.doQuery()
             .innerJoinAndSelect('character.user', 'user')
             .where('character.characterId = :id', {id})
             .getOne();
     }
 
-    public get sanitizedCopy() {
+    public get sanitizedCopy(): this {
         // Delete data that should not be sent to the client.
         const copy = clone<this>(this);
         delete copy.id;
