@@ -1,6 +1,10 @@
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+interface ICache {
+    [identifier: string]: ICacheData | undefined;
+}
+
 interface ICacheData {
     data: any;
     expiry: string;
@@ -10,11 +14,13 @@ interface ICacheData {
 @Injectable()
 export class ESIRequestCache {
 
-    public static get(identifier: string): HttpResponse<any> | void {
-        const cachedDataString = sessionStorage.getItem(identifier) || localStorage.getItem(identifier);
-        if (cachedDataString) {
+    private static cache: ICache = {};
 
-            const cachedData = JSON.parse(cachedDataString) as ICacheData;
+    public static get(identifier: string): HttpResponse<any> | void {
+
+        const cachedData = ESIRequestCache.cache[identifier];
+
+        if (cachedData) {
 
             const expiryDate = new Date(cachedData.expiry);
             const now = new Date();
@@ -28,14 +34,11 @@ export class ESIRequestCache {
         }
     }
 
-    public static put(identifier: string, data: any, expiry: string, secureData: boolean, pages?: string) {
-        const cacheData: ICacheData = {
+    public static put(identifier: string, data: any, expiry: string, pages?: string) {
+        ESIRequestCache.cache[identifier] = {
             data,
             expiry,
             pages,
         };
-
-        const cachedDataString = JSON.stringify(cacheData);
-        secureData ? sessionStorage.setItem(identifier, cachedDataString) : localStorage.setItem(identifier, cachedDataString);
     }
 }

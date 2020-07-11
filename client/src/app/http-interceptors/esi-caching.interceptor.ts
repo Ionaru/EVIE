@@ -32,7 +32,6 @@ export class EsiCachingInterceptor implements HttpInterceptor {
                         request.urlWithParams,
                         event.body,
                         event.headers.get('expires') as string,
-                        request.headers.has('Authorization'),
                         event.headers.get('x-pages') || undefined,
                     );
                 }
