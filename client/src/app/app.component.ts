@@ -4,7 +4,6 @@ import { Component } from '@angular/core';
 import { environment } from '../environments/environment';
 import { AppReadyEventService } from './app-ready-event.service';
 import { BaseService, IServerResponse } from './data-services/base.service';
-import { NamesService } from './data-services/names.service';
 import { BaseGuard } from './guards/base.guard';
 import { IUserApiData } from './models/user/user.model';
 import { UserService } from './models/user/user.service';
@@ -32,7 +31,6 @@ export class AppComponent {
         localStorage.removeItem(BaseGuard.redirectKey);
         await this.shakeHands();
         new SocketService();
-        NamesService.getNamesFromStore();
         SocketService.socket.on('STOP', (): void => {
             // The server will send STOP upon shutting down.
             // Reloading the window ensures nobody keeps using the site while the server is down.

@@ -13,10 +13,7 @@ export interface INames {
 @Injectable()
 export class NamesService extends BaseService {
 
-    private static names: INames;
-    private static namesExpiry: number;
-    private static namesMaxAge = 7 * Calc.day;
-    private static namesStoreTag = 'names';
+    private static names: INames = {};
 
     public static getNameFromData(id: number, unknownMessage = 'Unknown'): string {
         if (!NamesService.names || !Object.entries(NamesService.names).length) {
@@ -28,38 +25,6 @@ export class NamesService extends BaseService {
         } else {
             return unknownMessage;
         }
-    }
-
-    public static getNamesFromStore(): void {
-
-        const storeData = localStorage.getItem(NamesService.namesStoreTag);
-        if (!storeData) {
-            return NamesService.resetNames();
-        }
-
-        try {
-            const storeJSON = JSON.parse(storeData);
-            if (storeJSON.expiry < (Date.now() - NamesService.namesMaxAge)) {
-                return NamesService.resetNames();
-            }
-            NamesService.namesExpiry = storeJSON.expiry;
-            NamesService.names = storeJSON.names;
-        } catch (error) {
-            // An error happened while getting the Names from localStorage, this can have a number of reasons but a reset will fix all.
-            return NamesService.resetNames();
-        }
-    }
-
-    private static resetNames(): void {
-        NamesService.namesExpiry = 0;
-        NamesService.names = {};
-    }
-
-    private static setNames() {
-        if (!NamesService.namesExpiry) {
-            NamesService.namesExpiry = Date.now() + NamesService.namesMaxAge;
-        }
-        localStorage.setItem(NamesService.namesStoreTag, JSON.stringify({expiry: NamesService.namesExpiry, names: NamesService.names}));
     }
 
     public async getNames(...ids: (string | number)[]): Promise<void> {
@@ -102,8 +67,6 @@ export class NamesService extends BaseService {
                 break;
             }
         }
-
-        NamesService.setNames();
     }
 
     private async getNamesFromAPI(ids: string[]): Promise<void> {
