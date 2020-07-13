@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { faCircle } from '@fortawesome/pro-regular-svg-icons';
 import {
     faAbacus,
     faCalculator,
@@ -9,6 +10,7 @@ import {
     faDiceD10,
     faDiceD6,
     faDiceD8,
+    faHexagon,
     faHome,
     faPlug,
     faQuestion,
@@ -25,7 +27,6 @@ import { LogoutModalComponent } from '../modals/logout/logout-modal.component';
 import { CharacterService } from '../models/character/character.service';
 import { UserService } from '../models/user/user.service';
 import { CountUp } from '../shared/count-up';
-import { faCircle } from '@fortawesome/pro-regular-svg-icons';
 
 @Component({
     selector: 'app-navigation',
@@ -53,6 +54,8 @@ export class NavigationComponent implements OnInit {
     public mineralsIcon = faDiceD10;
     public productionCalculatorIcon = faCalculator;
 
+    public iskIconBase = faHexagon;
+
     public requestsActiveIcon = faSolidCircle;
     public requestsInactiveIcon = faCircle;
 
@@ -69,6 +72,16 @@ export class NavigationComponent implements OnInit {
     public requestsActive = false;
 
     constructor(private statusService: StatusService, private modalService: NgbModal, private characterService: CharacterService) { }
+
+    // noinspection JSMethodCanBeStatic
+    public get serverOnline() {
+        return NavigationComponent.serverOnline;
+    }
+
+    // noinspection JSMethodCanBeStatic
+    public get devEnvironment(): boolean {
+        return !environment.production;
+    }
 
     public ngOnInit(): void {
         NavigationComponent.requestCounterUpdateEvent.subscribe((count) => {
@@ -121,16 +134,6 @@ export class NavigationComponent implements OnInit {
             nextCharacterIndex = UserService.user.characters.length > (currentCharacterIndex + 1) ? currentCharacterIndex + 1 : 0;
         }
         this.characterService.setActiveCharacter(UserService.user.characters[nextCharacterIndex]).then();
-    }
-
-    // noinspection JSMethodCanBeStatic
-    public get serverOnline() {
-        return NavigationComponent.serverOnline;
-    }
-
-    // noinspection JSMethodCanBeStatic
-    public get devEnvironment(): boolean {
-        return !environment.production;
     }
 
     public logout = () => this.modalService.open(LogoutModalComponent);

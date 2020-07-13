@@ -20,6 +20,7 @@ export interface ITableHeader<T extends ITableData> {
     suffix?: string;
     suffixFunction?: (value: T) => string;
     title?: string;
+    titleClass?: string;
 }
 
 @Component({
@@ -74,5 +75,10 @@ export class SorTableComponent implements OnChanges {
             this.invert = !this.invert;
             this.sort();
         }
+    }
+
+    public capitalize(key: keyof ITableData): string {
+        const name = key.toString();
+        return name.charAt(0).toUpperCase() + name.slice(1);
     }
 }

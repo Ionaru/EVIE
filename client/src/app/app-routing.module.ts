@@ -6,6 +6,7 @@ import { AppReadyGuard } from './guards/app-ready.guard';
 import { AuthGuard } from './guards/auth.guard';
 import { AboutComponent } from './pages/about/about.component';
 import { AssetsComponent } from './pages/assets/assets.component';
+import { OreContentsComponent } from './pages/ore-contents/ore-contents.component';
 import { GasBoosterGasCloudsComponent } from './pages/prices-chart/gas-bgc.component';
 import { GasFullerenesComponent } from './pages/prices-chart/gas-fullerenes.component';
 import { IceComponent } from './pages/prices-chart/ice.component';
@@ -33,23 +34,19 @@ const routes: Routes = [
 
     // EVE data pages.
     {
-        path: 'ore', resolve: [AppReadyGuard],
+        path: 'prices', resolve: [AppReadyGuard],
         children: [
             {path: '', redirectTo: 'belt', pathMatch: 'full'},
             {path: 'belt', component: OreBeltComponent},
             {path: 'moon', component: OreMoonComponent},
             {path: 'triglavian', component: OreTrigComponent},
-        ],
-    },
-    {
-        path: 'gas', resolve: [AppReadyGuard],
-        children: [
-            {path: '', redirectTo: 'fullerenes', pathMatch: 'full'},
             {path: 'fullerenes', component: GasFullerenesComponent},
             {path: 'booster-gas-clouds', component: GasBoosterGasCloudsComponent},
+            {path: 'ice', component: IceComponent},
+            {path: 'triglavian', component: OreTrigComponent},
         ],
     },
-    {path: 'ice', component: IceComponent, resolve: [AppReadyGuard]},
+    {path: 'ore', component: OreContentsComponent, resolve: [AppReadyGuard]},
     {path: 'production-calculator', component: ProductionCalculatorComponent, resolve: [AppReadyGuard]},
     {
         path: 'refining-profit', resolve: [AppReadyGuard], canActivate: [AdminGuard],

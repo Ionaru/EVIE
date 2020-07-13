@@ -1,7 +1,7 @@
 <table class="table table-sm">
     <thead>
     <tr>
-        <th [ngClass]="{sortable: header.sort}" *ngFor="let header of columns"
+        <th [ngClass]="{sortable: header.sort}" *ngFor="let header of columns" [class]="header.titleClass"
             (click)="header.sort ? sort(header) : null">
             <ng-container *ngIf="currentSort && currentSort === header">
                 <span *ngIf="!invert"><fa-icon [icon]="sortAscendingIcon"></fa-icon></span>
@@ -10,7 +10,9 @@
             <ng-container *ngIf="!(currentSort && currentSort === header) && header.sort">
                 <span><fa-icon [icon]="noSortIcon"></fa-icon></span>
             </ng-container>
-            {{ header.title ? header.title : (header.attribute.charAt(0).toUpperCase() + header.attribute.slice(1)) }}
+            &nbsp;
+            <span [innerHTML]="header.title ? header.title : capitalize(header.attribute)"></span>
+            &nbsp;
             <span class="hint-button" *ngIf="header.hint" placement="right" [ngbTooltip]="header.hint">
                 <fa-icon [icon]="hintIcon"></fa-icon>
             </span>

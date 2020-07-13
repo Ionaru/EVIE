@@ -18,42 +18,38 @@
                     <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="dashboardIcon"></fa-icon></span>
                 </a>
             </li>
-            <li class="nav-item dropdown" ngbDropdown>
-                <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-                    <span class="nav-link-text">
-                        <fa-icon [fixedWidth]="true" [icon]="industryToolsIcon"></fa-icon>
-                        Industry tools
-                    </span>
+            <li class="nav-item">
+                <a class="nav-link" routerLink="ore" routerLinkActive="active"
+                   [routerLinkActiveOptions]="{ exact: true }">
+                    <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="orePricesIcon"></fa-icon></span>
+                    Ores
                 </a>
-                <div class="dropdown-menu" ngbDropdownMenu>
-                    <a class="dropdown-item" routerLink="ore" routerLinkActive="active">
-                        <fa-icon [fixedWidth]="true" [icon]="orePricesIcon"></fa-icon>
-                        Ore Prices
-                    </a>
-                    <a class="dropdown-item" routerLink="ice" routerLinkActive="active">
-                        <fa-icon [fixedWidth]="true" [icon]="icePricesIcon"></fa-icon>
-                        Ice Prices
-                    </a>
-                    <a class="dropdown-item" routerLink="gas" routerLinkActive="active">
-                        <fa-icon [fixedWidth]="true" [icon]="gasPricesIcon"></fa-icon>
-                        Gas Prices
-                    </a>
-                    <a class="dropdown-item" routerLink="production-calculator" routerLinkActive="active">
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" routerLink="prices" routerLinkActive="active">
+                    <span class="nav-link-text">
+                        <fa-layers [fixedWidth]="true">
+                            <fa-icon [icon]="iskIconBase"></fa-icon>
+                            <fa-layers-text content="ISK" style="color: black; font-weight: bold"
+                                            transform="shrink-8"></fa-layers-text>
+                        </fa-layers>
+                    </span>
+                    Resource prices
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" routerLink="production-calculator" routerLinkActive="active">
+                    <span class="nav-link-text">
                         <fa-icon [fixedWidth]="true" [icon]="productionCalculatorIcon"></fa-icon>
-                        Production Calculator
-                    </a>
-                    <a class="dropdown-item" routerLink="refining-profit" routerLinkActive="active"
-                       *ngIf="devEnvironment">
-                        <fa-icon [fixedWidth]="true" [icon]="mineralsIcon"></fa-icon>
-                        Minerals
-                    </a>
-                    <!--<a class="dropdown-item" routerLink="ore" routerLinkActive="active">-->
-                        <!--<fa-icon [icon]="connectionIcon"></fa-icon>-->
-                        <!--Another action-->
-                    <!--</a>-->
-                    <!--<div class="dropdown-divider"></div>-->
-                    <!--<a class="dropdown-item" href="#">Something else here</a>-->
-                </div>
+                    </span>
+                    Production Calculator
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" routerLink="refining-profit" routerLinkActive="active" *ngIf="devEnvironment">
+                    <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="mineralsIcon"></fa-icon></span>
+                    Minerals
+                </a>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -94,11 +90,13 @@
         </a>
         <a routerLink="dashboard" routerLinkActive="active" class="navbar-item d-lg-none"
            [ngClass]="{'disabled': !activatedCharacter}">
-            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/recruitment.svg" alt="Dashboard sheet icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/recruitment.svg"
+                 alt="Dashboard sheet icon">
         </a>
         <a routerLink="charactersheet" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': true}">
-            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg" alt="Character sheet icon">
+            <img src="https://data.saturnserver.org/eve/Icons/UI/WindowIcons/charactersheet.svg"
+                 alt="Character sheet icon">
         </a>
         <a routerLink="skills" routerLinkActive="active" class="navbar-item"
            [ngClass]="{'disabled': !activatedCharacter}">

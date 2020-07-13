@@ -1,0 +1,17 @@
+<p>Value and refining products per m³ of ore.</p>
+
+<hr>
+
+<ng-container *ngIf="!message; else error_message">
+    <ng-container *ngIf="visibleData; else loading_message">
+        <app-sor-table [data]="visibleData" [columns]="tableSettings"></app-sor-table>
+    </ng-container>
+</ng-container>
+
+<ng-template #loading_message>
+    <app-loading-message>Loading...</app-loading-message>
+</ng-template>
+
+<ng-template #error_message>
+    <p class="text-danger">{{ message }}</p>
+</ng-template>

@@ -65,6 +65,7 @@ import { WalletComponent } from './pages/wallet/wallet.component';
 import { SentryErrorHandler } from './sentry.error-handler';
 import { ESIRequestCache } from './shared/esi-request-cache';
 import { SocketService } from './socket/socket.service';
+import { OreContentsComponent } from './pages/ore-contents/ore-contents.component';
 import { OreBeltComponent } from './pages/prices-chart/ore-belt.component';
 import { OreMoonComponent } from './pages/prices-chart/ore-moon.component';
 import { OreTrigComponent } from './pages/prices-chart/ore-trig.component';
@@ -113,6 +114,7 @@ if (environment.production) {
         LoadingMessageComponent,
         AssetsComponent,
         AboutComponent,
+        OreContentsComponent,
     ],
     entryComponents: [
         LogoutModalComponent,
