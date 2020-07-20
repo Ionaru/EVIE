@@ -104,8 +104,8 @@ export class MarketService extends BaseService {
 
         const orders = response.body || [];
 
-        if (response.headers.has('x-pages')) {
-            const pages = Number(response.headers.get('x-pages'));
+        if (response.headers.has(BaseService.pagesHeaderName)) {
+            const pages = Number(response.headers.get(BaseService.pagesHeaderName));
             if (pages > 1) {
                 const pageIterable = generateNumbersArray(pages, 2);
 

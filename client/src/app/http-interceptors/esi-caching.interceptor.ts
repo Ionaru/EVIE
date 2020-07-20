@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { EVE } from '@ionaru/eve-utils';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+
+import { BaseService } from '../data-services/base.service';
 import { ESIRequestCache } from '../shared/esi-request-cache';
 
 /**
@@ -32,7 +34,7 @@ export class EsiCachingInterceptor implements HttpInterceptor {
                         request.urlWithParams,
                         event.body,
                         event.headers.get('expires') as string,
-                        event.headers.get('x-pages') || undefined,
+                        event.headers.get(BaseService.pagesHeaderName) || undefined,
                     );
                 }
             }),

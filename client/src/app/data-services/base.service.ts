@@ -12,6 +12,7 @@ export interface IServerResponse<T = undefined> {
 @Injectable()
 export class BaseService {
 
+    public static readonly pagesHeaderName = 'x-pages';
     public static serverToken = '';
 
     protected static confirmRequiredScope(character: Character, scope: string, functionName: string) {

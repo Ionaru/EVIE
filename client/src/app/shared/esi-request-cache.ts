@@ -1,6 +1,8 @@
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { BaseService } from '../data-services/base.service';
+
 interface ICache {
     [identifier: string]: ICacheData | undefined;
 }
@@ -28,7 +30,7 @@ export class ESIRequestCache {
             if (expiryDate > now) {
                 return new HttpResponse({
                     body: cachedData.data,
-                    headers: new HttpHeaders({'x-pages': cachedData.pages || '1'}),
+                    headers: new HttpHeaders().set(BaseService.pagesHeaderName, cachedData.pages || '1'),
                 });
             }
         }
