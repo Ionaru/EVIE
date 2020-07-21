@@ -36,6 +36,9 @@ services:
             - EVIE_SSO_LOGIN_CALLBACK
             - EVIE_SSO_LOGIN_CLIENT
             - EVIE_SSO_LOGIN_SECRET
+            - EVIE_SSO_APP_CALLBACK
+            - EVIE_SSO_APP_CLIENT
+            - EVIE_SSO_APP_SECRET
         ports:
             - "${EVIE_SERVER_PORT:-3731}"
         restart: unless-stopped

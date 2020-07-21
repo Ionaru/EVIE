@@ -90,3 +90,6 @@ This is done so users can decide what scopes to grant for each of their characte
 - `EVIE_SSO_LOGIN_CALLBACK`: Callback URL of the SSO application that handles login.
 - `EVIE_SSO_LOGIN_CLIENT`: Client ID of the SSO application that handles login.
 - `EVIE_SSO_LOGIN_SECRET`: Secret Key of the SSO application that handles login.
+- `EVIE_SSO_APP_CALLBACK`: Callback URL of the SSO application that handles login for the app.
+- `EVIE_SSO_APP_SECRET`: Client ID of the SSO application that handles login for the app.
+- `EVIE_SSO_APP_SECRET`: Secret Key of the SSO application that handles auth for the app.

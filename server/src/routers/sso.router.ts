@@ -40,6 +40,10 @@ export class SSORouter extends BaseRouter {
         // SSO character auth
         this.createRoute('get', '/auth', SSORouter.SSOAuth);
         this.createRoute('get', '/auth-callback', SSORouter.SSOAuthCallback);
+
+        // SSO app auth
+        this.createRoute('get', '/app', SSORouter.appAuth);
+        this.createRoute('get', '/app-callback', SSORouter.appAuthCallback);
     }
 
     private static async logDeprecation(request: Request, response: Response): Promise<Response> {
@@ -55,14 +59,22 @@ export class SSORouter extends BaseRouter {
      * Get a base64 string containing the client ID and secret key for SSO login.
      */
     private static getSSOLoginString() {
-        return Buffer.from(`${process.env.EVIE_SSO_LOGIN_CLIENT}:${process.env.EVIE_SSO_LOGIN_SECRET}`).toString('base64');
+        return SSORouter.createSSOString(process.env.EVIE_SSO_LOGIN_CLIENT, process.env.EVIE_SSO_LOGIN_SECRET);
     }
 
     /**
      * Get a base64 string containing the client ID and secret key for SSO auth.
      */
     private static getSSOAuthString() {
-        return Buffer.from(`${process.env.EVIE_SSO_AUTH_CLIENT}:${process.env.EVIE_SSO_AUTH_SECRET}`).toString('base64');
+        return SSORouter.createSSOString(process.env.EVIE_SSO_AUTH_CLIENT, process.env.EVIE_SSO_AUTH_SECRET);
+    }
+
+    private static getAppAuthString() {
+        return this.createSSOString(process.env.EVIE_SSO_APP_CLIENT, process.env.EVIE_SSO_APP_SECRET);
+    }
+
+    private static createSSOString(client?: string, secret?: string) {
+        return Buffer.from(`${client}:${secret}`).toString('base64');
     }
 
     private static extractJWTValues(token: IJWTToken):
@@ -214,6 +226,39 @@ export class SSORouter extends BaseRouter {
         }
 
         return response.status(httpStatus.OK).send('<h2>You may now close this window.</h2>');
+    }
+
+    private static async appAuth(request: Request, response: Response): Promise<void> {
+        request.session!.state = generateRandomString(15);
+
+        const args = [
+            'response_type=code',
+            'redirect_uri=' + process.env.EVIE_SSO_APP_CLIENT,
+            'client_id=' + process.env.EVIE_SSO_APP_CLIENT,
+            'scope=' + request.query.scopes,
+            'state=' + request.session!.state,
+        ];
+        const finalUrl = protocol + oauthHost + authorizePath + args.join('&');
+
+        response.redirect(finalUrl);
+    }
+
+    private static async appAuthCallback(
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
+    ): Promise<void> {
+
+        const authResponse = await SSORouter.doAuthRequest(SSORouter.getAppAuthString(), request.query.code!);
+        if (!authResponse) {
+            throw new Error('Try again');
+        }
+
+        const params = new URLSearchParams({
+            access_token: authResponse.data.access_token,
+            refresh_token: authResponse.data.refresh_token,
+            expires_in: authResponse.data.expires_in.toString(),
+        })
+        response.redirect(`eveauth-epm://callback?${params.toString()}`);
     }
 
     /**
