@@ -165,6 +165,39 @@ export class SSORouter extends BaseRouter {
         return response.send();
     }
 
+    private static async appAuth(request: Request, response: Response): Promise<void> {
+        request.session!.state = generateRandomString(15);
+
+        const args = [
+            'response_type=code',
+            'redirect_uri=' + process.env.EVIE_SSO_APP_CLIENT,
+            'client_id=' + process.env.EVIE_SSO_APP_CLIENT,
+            'scope=' + request.query.scopes,
+            'state=' + request.session!.state,
+        ];
+        const finalUrl = protocol + oauthHost + authorizePath + args.join('&');
+
+        response.redirect(finalUrl);
+    }
+
+    private static async appAuthCallback(
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
+    ): Promise<void> {
+
+        const authResponse = await SSORouter.doAuthRequest(SSORouter.getAppAuthString(), request.query.code!);
+        if (!authResponse) {
+            throw new Error('Try again');
+        }
+
+        const params = new URLSearchParams({
+            access_token: authResponse.data.access_token,
+            expires_in: authResponse.data.expires_in.toString(),
+            refresh_token: authResponse.data.refresh_token,
+        });
+        response.redirect(`eveauth-epm://callback?${params.toString()}`);
+    }
+
     // If a request was somehow done without giving a state, then it probably didn't come from the SSO, possibly directly linked.
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'state')
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
@@ -226,39 +259,6 @@ export class SSORouter extends BaseRouter {
         }
 
         return response.status(httpStatus.OK).send('<h2>You may now close this window.</h2>');
-    }
-
-    private static async appAuth(request: Request, response: Response): Promise<void> {
-        request.session!.state = generateRandomString(15);
-
-        const args = [
-            'response_type=code',
-            'redirect_uri=' + process.env.EVIE_SSO_APP_CLIENT,
-            'client_id=' + process.env.EVIE_SSO_APP_CLIENT,
-            'scope=' + request.query.scopes,
-            'state=' + request.session!.state,
-        ];
-        const finalUrl = protocol + oauthHost + authorizePath + args.join('&');
-
-        response.redirect(finalUrl);
-    }
-
-    private static async appAuthCallback(
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
-    ): Promise<void> {
-
-        const authResponse = await SSORouter.doAuthRequest(SSORouter.getAppAuthString(), request.query.code!);
-        if (!authResponse) {
-            throw new Error('Try again');
-        }
-
-        const params = new URLSearchParams({
-            access_token: authResponse.data.access_token,
-            refresh_token: authResponse.data.refresh_token,
-            expires_in: authResponse.data.expires_in.toString(),
-        })
-        response.redirect(`eveauth-epm://callback?${params.toString()}`);
     }
 
     /**
