@@ -170,7 +170,7 @@ export class SSORouter extends BaseRouter {
 
         const args = [
             'response_type=code',
-            'redirect_uri=' + process.env.EVIE_SSO_APP_CLIENT,
+            'redirect_uri=' + process.env.EVIE_SSO_APP_CALLBACK,
             'client_id=' + process.env.EVIE_SSO_APP_CLIENT,
             'scope=' + request.query.scopes,
             'state=' + request.session!.state,
