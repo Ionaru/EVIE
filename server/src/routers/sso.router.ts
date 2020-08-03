@@ -1,6 +1,6 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 // eslint-disable-next-line no-shadow
-import { URLSearchParams } from 'url';
+import { URL, URLSearchParams } from 'url';
 
 import { generateRandomString } from '@ionaru/random-string';
 import * as Sentry from '@sentry/node';
@@ -148,36 +148,37 @@ export class SSORouter extends BaseRouter {
         });
     }
 
-    private static async SSOLogin(request: Request, response: Response): Promise<Response> {
+    private static async SSOLogin(request: Request, response: Response): Promise<void> {
         // Generate a random string and set it as the state of the request, we will later verify the response of the
         // EVE SSO service using the saved state. This is to prevent Cross Site Request Forgery (XSRF), see this link for details:
         // http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
         request.session!.state = generateRandomString(15);
-        const args = [
-            'response_type=code',
-            'redirect_uri=' + process.env.EVIE_SSO_LOGIN_CALLBACK,
-            'client_id=' + process.env.EVIE_SSO_LOGIN_CLIENT,
-            'state=' + request.session!.state,
-        ];
-        const authorizeURL = protocol + oauthHost + authorizePath + args.join('&');
 
-        response.redirect(authorizeURL);
-        return response.send();
+        const url = new URL(protocol + oauthHost + authorizePath);
+
+        url.searchParams.append('client_id', process.env.EVIE_SSO_LOGIN_CLIENT!);
+        url.searchParams.append('redirect_uri', process.env.EVIE_SSO_LOGIN_CALLBACK!);
+        url.searchParams.append('response_type', 'code');
+        url.searchParams.append('state', request.session!.state);
+
+        response.redirect(url.toString());
     }
 
-    private static async appAuth(request: Request, response: Response): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    private static async appAuth(request: Request<{}, any, any, {scopes?: string}>, response: Response): Promise<void> {
         request.session!.state = generateRandomString(15);
 
-        const args = [
-            'response_type=code',
-            'redirect_uri=' + process.env.EVIE_SSO_APP_CALLBACK,
-            'client_id=' + process.env.EVIE_SSO_APP_CLIENT,
-            'scope=' + request.query.scopes,
-            'state=' + request.session!.state,
-        ];
-        const finalUrl = protocol + oauthHost + authorizePath + args.join('&');
+        const url = new URL(protocol + oauthHost + authorizePath);
 
-        response.redirect(finalUrl);
+        url.searchParams.append('client_id', process.env.EVIE_SSO_APP_CLIENT!);
+        url.searchParams.append('redirect_uri', process.env.EVIE_SSO_APP_CALLBACK!);
+        url.searchParams.append('response_type', 'code');
+        if (request.query.scopes) {
+            url.searchParams.append('scope', request.query.scopes);
+        }
+        url.searchParams.append('state', request.session!.state);
+
+        response.redirect(url.toString());
     }
 
     private static async appAuthCallback(
@@ -267,7 +268,8 @@ export class SSORouter extends BaseRouter {
      *  scopes <optional>: A space-separated list of scope codes.
      */
     @SSORouter.requestDecorator(SSORouter.checkLogin)
-    private static async SSOAuth(request: Request, response: Response): Promise<Response> {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    private static async SSOAuth(request: Request<{}, any, any, {scopes?: string; uuid?: string}>, response: Response): Promise<void> {
 
         if (request.query.uuid) {
             // With a characterUUID provided in the request, we initiate the re-authorization process
@@ -287,17 +289,17 @@ export class SSORouter extends BaseRouter {
         // http://www.thread-safe.com/2014/05/the-correct-use-of-state-parameter-in.html
         request.session!.state = generateRandomString(15);
 
-        const args = [
-            'response_type=code',
-            'redirect_uri=' + process.env.EVIE_SSO_AUTH_CALLBACK,
-            'client_id=' + process.env.EVIE_SSO_AUTH_CLIENT,
-            'scope=' + request.query.scopes,
-            'state=' + request.session!.state,
-        ];
-        const finalUrl = protocol + oauthHost + authorizePath + args.join('&');
+        const url = new URL(protocol + oauthHost + authorizePath);
 
-        response.redirect(finalUrl);
-        return response.send();
+        url.searchParams.append('client_id', process.env.EVIE_SSO_AUTH_CLIENT!);
+        url.searchParams.append('redirect_uri', process.env.EVIE_SSO_AUTH_CALLBACK!);
+        url.searchParams.append('response_type', 'code');
+        if (request.query.scopes) {
+            url.searchParams.append('scope', request.query.scopes);
+        }
+        url.searchParams.append('state', request.session!.state);
+
+        response.redirect(url.toString());
     }
 
     /**
