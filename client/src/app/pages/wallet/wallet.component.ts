@@ -30,9 +30,9 @@ export class WalletComponent extends DataPageComponent implements OnInit {
         sortAttribute: 'id',
     }, {
         attribute: 'amount',
-        classFunction: (data) => (!data.amount || data.amount < 0) ? 'negative' : 'positive',
+        classFunction: (data) => this.getAmountClass(data.amount),
         pipe: 'number',
-        pipeVar: '0.0-2',
+        pipeVar: '0.2-2',
         suffix: ' ISK',
     }, {
         attribute: 'balance',
@@ -64,6 +64,18 @@ export class WalletComponent extends DataPageComponent implements OnInit {
         }
     }
 
+    public getAmountClass(amount?: number) {
+        if (amount && amount < 0) {
+            return 'negative';
+        }
+
+        if (amount && amount > 0) {
+            return 'positive';
+        }
+
+        return '';
+    }
+
     public static get hasWalletScope() {
         return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.WALLET);
     }
@@ -86,6 +98,8 @@ export class WalletComponent extends DataPageComponent implements OnInit {
 
             for (const journalEntry of journalData) {
                 if (journalEntry.tax) {
+                    journalEntry.balance = (journalEntry.balance || 0) + journalEntry.tax;
+                    journalEntry.amount = (journalEntry.amount || 0) + journalEntry.tax;
                     journalDataWithTax.push({
                         date: journalEntry.date,
                         // Make sure this always appears after the initial transaction.
