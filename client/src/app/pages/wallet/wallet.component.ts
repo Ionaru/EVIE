@@ -21,6 +21,8 @@ export class WalletComponent extends DataPageComponent implements OnInit {
     public journalData: ICharacterWalletJournalData = [];
     public balanceCountUp?: CountUp;
 
+    public taxAmount = 0;
+
     public tableSettings: ITableHeader<ICharacterWalletJournalDataUnit>[] = [{
         attribute: 'date',
         hint: 'In EVE-Time',
@@ -94,6 +96,8 @@ export class WalletComponent extends DataPageComponent implements OnInit {
         if (CharacterService.selectedCharacter) {
             const journalData = await this.journalService.getWalletJournal(CharacterService.selectedCharacter);
 
+            this.calculateTaxPaid(journalData);
+
             const journalDataWithTax: ICharacterWalletJournalData = [];
 
             for (const journalEntry of journalData) {
@@ -115,5 +119,10 @@ export class WalletComponent extends DataPageComponent implements OnInit {
 
             this.journalData = journalDataWithTax;
         }
+    }
+
+    public calculateTaxPaid(journalData: ICharacterWalletJournalData) {
+        const reducer = (previous: number, current: ICharacterWalletJournalDataUnit) => previous + (current.tax || 0);
+        this.taxAmount = journalData.reduce(reducer, 0);
     }
 }

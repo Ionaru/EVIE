@@ -4,5 +4,6 @@
 
 <div class="wallet-page-container container-fluid" [ngClass]="{'d-none': missingAllRequiredScopes}">
     <h2><span id="wallet-balance"></span> ISK</h2>
+    <p *ngIf="taxAmount">Tax paid: <span class="negative">-{{ taxAmount | number: '0.2-2' }} ISK</span></p>
     <app-sor-table *ngIf="journalData.length" [data]="journalData" [columns]="tableSettings"></app-sor-table>
 </div>

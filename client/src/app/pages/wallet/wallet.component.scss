@@ -1,5 +1,9 @@
 @import '../../../variables';
 
+.negative {
+    color: $danger;
+}
+
 app-sor-table ::ng-deep td.amount.negative {
     color: $danger;
 }
