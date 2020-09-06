@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as httpStatus from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
@@ -30,7 +30,7 @@ export class UserRouter extends BaseRouter {
 
         if (!user) {
             // No user with that username was found
-            return UserRouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
+            return UserRouter.sendResponse(response, StatusCodes.NOT_FOUND, 'UserNotFound');
         }
 
         return UserRouter.sendSuccessResponse(response, user);
@@ -42,7 +42,7 @@ export class UserRouter extends BaseRouter {
 
         if (!user) {
             // No user with that username was found
-            return UserRouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
+            return UserRouter.sendResponse(response, StatusCodes.NOT_FOUND, 'UserNotFound');
         }
 
         return UserRouter.sendSuccessResponse(response, user);

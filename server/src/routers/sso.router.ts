@@ -6,7 +6,7 @@ import { generateRandomString } from '@ionaru/random-string';
 import * as Sentry from '@sentry/node';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
-import * as httpStatus from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import * as jwt from 'jsonwebtoken';
 
 import { SocketServer } from '../controllers/socket.controller';
@@ -213,19 +213,19 @@ export class SSORouter extends BaseRouter {
             process.emitWarning(
                 `Invalid state from /login-callback request! Expected '${request.session!.state}' and got '${request.query.state!}'.`,
             );
-            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
+            return SSORouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'InvalidState');
         }
         delete request.session!.state;
 
         const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOLoginString(), request.query.code!);
 
-        if (!authResponse || authResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
+        if (!authResponse || authResponse.status !== StatusCodes.OK) {
+            return SSORouter.sendResponse(response, StatusCodes.BAD_GATEWAY, 'SSOTokenResponseError');
         }
 
         const token = jwt.decode(authResponse.data.access_token) as IJWTToken;
         if (!SSORouter.isJWTValid(token)) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'InvalidJWTToken');
+            return SSORouter.sendResponse(response, StatusCodes.BAD_GATEWAY, 'InvalidJWTToken');
         }
 
         const ownerHash = SSORouter.extractJWTValues(token).characterOwnerHash;
@@ -259,7 +259,7 @@ export class SSORouter extends BaseRouter {
             });
         }
 
-        return response.status(httpStatus.OK).send('<h2>You may now close this window.</h2>');
+        return response.status(StatusCodes.OK).send('<h2>You may now close this window.</h2>');
     }
 
     /**
@@ -323,19 +323,19 @@ export class SSORouter extends BaseRouter {
             process.emitWarning(
                 `Invalid state from /auth-callback request! Expected '${request.session!.state}' and got '${request.query.state!}'.`,
             );
-            return SSORouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidState');
+            return SSORouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'InvalidState');
         }
         delete request.session!.state;
 
         const authResponse = await SSORouter.doAuthRequest(SSORouter.getSSOAuthString(), request.query.code!);
 
-        if (!authResponse || authResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
+        if (!authResponse || authResponse.status !== StatusCodes.OK) {
+            return SSORouter.sendResponse(response, StatusCodes.BAD_GATEWAY, 'SSOTokenResponseError');
         }
 
         const token = jwt.decode(authResponse.data.access_token) as IJWTToken;
         if (!SSORouter.isJWTValid(token)) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'InvalidJWTToken');
+            return SSORouter.sendResponse(response, StatusCodes.BAD_GATEWAY, 'InvalidJWTToken');
         }
 
         const {characterID, characterName, characterOwnerHash, characterScopes} = SSORouter.extractJWTValues(token);
@@ -343,7 +343,7 @@ export class SSORouter extends BaseRouter {
         let user = await User.getFromId(request.session!.user.id);
 
         if (!user) {
-            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
+            return SSORouter.sendResponse(response, StatusCodes.NOT_FOUND, 'UserNotFound');
         }
 
         let character = await Character.getFromId(characterID);
@@ -392,7 +392,7 @@ export class SSORouter extends BaseRouter {
             });
         }
 
-        return response.status(httpStatus.OK).send('<h2>You may now close this window.</h2>');
+        return response.status(StatusCodes.OK).send('<h2>You may now close this window.</h2>');
     }
 
     /**
@@ -411,13 +411,13 @@ export class SSORouter extends BaseRouter {
 
         if (!character || !character.refreshToken) {
             // There was no Character found with a matching UUID and userId.
-            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'CharacterNotFound');
+            return SSORouter.sendResponse(response, StatusCodes.NOT_FOUND, 'CharacterNotFound');
         }
 
         const refreshResponse = await SSORouter.doAuthRequest(SSORouter.getSSOAuthString(), character.refreshToken, true);
 
-        if (!refreshResponse || refreshResponse.status !== httpStatus.OK) {
-            return SSORouter.sendResponse(response, httpStatus.BAD_GATEWAY, 'SSOTokenResponseError');
+        if (!refreshResponse || refreshResponse.status !== StatusCodes.OK) {
+            return SSORouter.sendResponse(response, StatusCodes.BAD_GATEWAY, 'SSOTokenResponseError');
         }
 
         character.refreshToken = refreshResponse.data.refresh_token;
@@ -447,14 +447,14 @@ export class SSORouter extends BaseRouter {
 
         if (!user) {
             // Missing parameters
-            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'UserNotFound');
+            return SSORouter.sendResponse(response, StatusCodes.NOT_FOUND, 'UserNotFound');
         }
 
         const characterToDelete = user.characters.find((character) => character.uuid === request.body.characterUUID);
 
         if (!characterToDelete) {
             // That character does not exist
-            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'NoCharacterFound');
+            return SSORouter.sendResponse(response, StatusCodes.NOT_FOUND, 'NoCharacterFound');
         }
 
         // Revoke token
@@ -493,7 +493,7 @@ export class SSORouter extends BaseRouter {
             .getOne();
 
         if (!character) {
-            return SSORouter.sendResponse(response, httpStatus.NOT_FOUND, 'NoCharacterFound');
+            return SSORouter.sendResponse(response, StatusCodes.NOT_FOUND, 'NoCharacterFound');
         }
 
         character.isActive = true;

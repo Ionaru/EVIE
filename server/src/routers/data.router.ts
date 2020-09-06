@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as httpStatus from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 
 import { DataController } from '../controllers/data.controller';
 
@@ -35,17 +35,17 @@ export class DataRouter extends BaseRouter {
         const typeId = DataRouter.getTypeId(request);
 
         if (!typeId) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'NoParam');
         }
 
         if (isNaN(typeId)) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'InvalidParam');
         }
 
         const data = await DataController.getEstimatedItemValue(typeId);
 
         if (!data) {
-            return DataRouter.sendResponse(response, httpStatus.NOT_FOUND, 'NotFound');
+            return DataRouter.sendResponse(response, StatusCodes.NOT_FOUND, 'NotFound');
         }
 
         return DataRouter.sendSuccessResponse(response, data);
@@ -56,17 +56,17 @@ export class DataRouter extends BaseRouter {
         const typeId = DataRouter.getTypeId(request);
 
         if (!typeId) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'NoParam');
         }
 
         if (isNaN(typeId)) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'InvalidParam');
         }
 
         const data = await DataController.getManufacturingInfo(typeId);
 
         if (!data) {
-            return DataRouter.sendResponse(response, httpStatus.NO_CONTENT, 'OK');
+            return DataRouter.sendResponse(response, StatusCodes.NO_CONTENT, 'OK');
         }
 
         return DataRouter.sendSuccessResponse(response, data);
@@ -77,17 +77,17 @@ export class DataRouter extends BaseRouter {
         const typeId = DataRouter.getTypeId(request);
 
         if (!typeId) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'NoParam');
         }
 
         if (isNaN(typeId)) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'InvalidParam');
         }
 
         const data = await DataController.getRefiningProducts(typeId);
 
         if (!data) {
-            return DataRouter.sendResponse(response, httpStatus.NO_CONTENT, 'OK');
+            return DataRouter.sendResponse(response, StatusCodes.NO_CONTENT, 'OK');
         }
 
         return DataRouter.sendSuccessResponse(response, data);
@@ -98,17 +98,17 @@ export class DataRouter extends BaseRouter {
         const typeId = DataRouter.getTypeId(request);
 
         if (!typeId) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'NoParam');
         }
 
         if (isNaN(typeId)) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'InvalidParam');
         }
 
         const data = await DataController.getPISchematic(typeId);
 
         if (!data) {
-            return DataRouter.sendResponse(response, httpStatus.NOT_FOUND, 'NotFound');
+            return DataRouter.sendResponse(response, StatusCodes.NOT_FOUND, 'NotFound');
         }
 
         return DataRouter.sendSuccessResponse(response, data);
@@ -159,11 +159,11 @@ export class DataRouter extends BaseRouter {
         const systemId = DataRouter.getTypeId(request);
 
         if (!systemId) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'NoParam');
         }
 
         if (isNaN(systemId)) {
-            return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidParam');
+            return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'InvalidParam');
         }
 
         const industrySystem = await DataController.getIndustrySystem(systemId);
@@ -184,7 +184,7 @@ export class DataRouter extends BaseRouter {
         if (typeIds instanceof Array) {
             const invalidTypeIds = typeIds.filter((item) => typeof item !== 'number' || item <= 0);
             if (invalidTypeIds.length) {
-                return DataRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'InvalidElements', invalidTypeIds);
+                return DataRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'InvalidElements', invalidTypeIds);
             }
         }
 

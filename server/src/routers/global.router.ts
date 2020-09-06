@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import * as httpStatus from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 
 import { BaseRouter } from './base.router';
 
@@ -16,7 +16,7 @@ export class GlobalRouter extends BaseRouter {
     private static globalRoute(request: Request, response: Response, next?: NextFunction): Response | void {
 
         if (!request.session) {
-            return GlobalRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'NoSession');
+            return GlobalRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'NoSession');
         }
 
         // Define the session user if it didn't exists already

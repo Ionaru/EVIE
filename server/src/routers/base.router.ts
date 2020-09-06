@@ -1,6 +1,6 @@
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express';
 import { PathParams, RequestHandlerParams } from 'express-serve-static-core';
-import * as httpStatus from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 
 import { debug } from '../index';
 import { User } from '../models/user.model';
@@ -47,11 +47,11 @@ export class BaseRouter {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public static sendSuccessResponse(response: Response, data?: any): Response {
-        return BaseRouter.sendResponse(response, httpStatus.OK, 'OK', data);
+        return BaseRouter.sendResponse(response, StatusCodes.OK, 'OK', data);
     }
 
     public static send404(response: Response, message = 'Not Found'): Response {
-        return BaseRouter.sendResponse(response, httpStatus.NOT_FOUND, message);
+        return BaseRouter.sendResponse(response, StatusCodes.NOT_FOUND, message);
     }
 
     public static checkAuthorizedClient(request: Request, response: Response, nextFunction: NextFunction): NextFunction | undefined {
@@ -67,7 +67,7 @@ export class BaseRouter {
         // Only allow requests with a valid and matching token.
         if (!serverToken || !clientToken || serverToken !== clientToken) {
             process.emitWarning(`Unauthorized client: ${clientToken}, expected: ${serverToken}`);
-            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'BadClient');
+            BaseRouter.sendResponse(response, StatusCodes.FORBIDDEN, 'BadClient');
             return;
         }
 
@@ -77,7 +77,7 @@ export class BaseRouter {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public static checkLogin(request: Request, response: Response, nextFunction: any): NextFunction | undefined {
         if (!request.session!.user.id) {
-            BaseRouter.sendResponse(response, httpStatus.UNAUTHORIZED, 'NotLoggedIn');
+            BaseRouter.sendResponse(response, StatusCodes.UNAUTHORIZED, 'NotLoggedIn');
             return;
         }
         return nextFunction;
@@ -88,7 +88,7 @@ export class BaseRouter {
     ): NextFunction | undefined {
         const missingParameters = params.filter((param) => !Object.keys(request.body).includes(param));
         if (missingParameters.length) {
-            BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters', missingParameters);
+            BaseRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'MissingParameters', missingParameters);
             return;
         }
         return nextFunction;
@@ -99,7 +99,7 @@ export class BaseRouter {
     ): NextFunction | undefined {
         const missingParameters = params.filter((param) => !Object.keys(request.query).includes(param));
         if (missingParameters.length) {
-            BaseRouter.sendResponse(response, httpStatus.BAD_REQUEST, 'MissingParameters', missingParameters);
+            BaseRouter.sendResponse(response, StatusCodes.BAD_REQUEST, 'MissingParameters', missingParameters);
             return;
         }
         return nextFunction;
@@ -132,7 +132,7 @@ export class BaseRouter {
             .where('user.id = :id', {id: request.session!.user.id})
             .getOne();
         if (!user || !user.isAdmin) {
-            BaseRouter.sendResponse(response, httpStatus.FORBIDDEN, 'NoPermissions');
+            BaseRouter.sendResponse(response, StatusCodes.FORBIDDEN, 'NoPermissions');
             return;
         }
         return nextFunction;

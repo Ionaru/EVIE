@@ -1,6 +1,6 @@
 import { generateRandomString } from '@ionaru/random-string';
 import { Request, Response } from 'express';
-import * as httpStatus from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 
 import { User } from '../models/user.model';
 
@@ -46,7 +46,7 @@ export class APIRouter extends BaseRouter {
         user.lastLogin = new Date();
         user.save().then();
 
-        return APIRouter.sendResponse(response, httpStatus.OK, 'LoggedIn', user.sanitizedCopy);
+        return APIRouter.sendResponse(response, StatusCodes.OK, 'LoggedIn', user.sanitizedCopy);
     }
 
     /**
