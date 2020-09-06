@@ -1,8 +1,13 @@
-import * as clone from 'clone';
 import { Column, Entity, OneToMany, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
-import { Character } from './character.model';
+import { Character, ISanitizedCharacter } from './character.model';
+
+interface ISanitizedUser {
+    characters: ISanitizedCharacter[];
+    isAdmin: boolean;
+    uuid: string;
+}
 
 @Entity()
 export class User extends BaseModel {
@@ -38,16 +43,15 @@ export class User extends BaseModel {
             .getOne();
     }
 
-    public get sanitizedCopy(): this {
-        // Delete data that should not be sent to the client.
-        const copy = clone<this>(this, false);
-        delete copy.id;
-        delete copy.timesLogin;
-        delete copy.lastLogin;
-        delete copy.createdOn;
-        delete copy.updatedOn;
-        copy.characters = this.characters ? this.characters.map((character) => character.sanitizedCopy) : [];
-        return copy;
+    public get sanitizedCopy(): ISanitizedUser {
+
+        const characters = this.characters ? this.characters.map((character) => character.sanitizedCopy) : [];
+
+        return {
+            characters,
+            isAdmin: this.isAdmin,
+            uuid: this.uuid,
+        };
     }
 
     public async merge(userToMerge: User): Promise<void> {

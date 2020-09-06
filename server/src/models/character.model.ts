@@ -1,9 +1,14 @@
-import * as clone from 'clone';
 import { Column, Entity, ManyToOne, OneToMany, SelectQueryBuilder } from 'typeorm';
 
 import { BaseModel } from './base.model';
 import { Blueprint } from './blueprint.model';
 import { User } from './user.model';
+
+export interface ISanitizedCharacter {
+    uuid: string;
+    isActive: boolean;
+    accessToken?: string;
+}
 
 @Entity()
 export class Character extends BaseModel {
@@ -70,19 +75,11 @@ export class Character extends BaseModel {
             .getOne();
     }
 
-    public get sanitizedCopy(): this {
-        // Delete data that should not be sent to the client.
-        const copy = clone<this>(this);
-        delete copy.id;
-        delete copy.refreshToken;
-        delete copy.user;
-        delete copy.createdOn;
-        delete copy.updatedOn;
-        delete copy.characterId;
-        delete copy.ownerHash;
-        delete copy.tokenExpiry;
-        delete copy.name;
-        delete copy.scopes;
-        return copy;
+    public get sanitizedCopy(): ISanitizedCharacter {
+        return {
+            accessToken: this.accessToken,
+            isActive: this.isActive,
+            uuid: this.uuid,
+        };
     }
 }
