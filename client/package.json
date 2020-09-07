@@ -32,7 +32,7 @@
         "@angular/platform-browser": "^10.0.3",
         "@angular/platform-browser-dynamic": "^10.0.3",
         "@angular/router": "^10.0.3",
-        "@fortawesome/angular-fontawesome": "^0.6.1",
+        "@fortawesome/angular-fontawesome": "^0.7.0",
         "@fortawesome/fontawesome-svg-core": "^1.2.29",
         "@fortawesome/pro-regular-svg-icons": "^5.13.1",
         "@fortawesome/pro-solid-svg-icons": "^5.13.1",
@@ -45,17 +45,17 @@
         "bootstrap": "^4.5.0",
         "bootswatch": "^4.5.0",
         "countdown": "^2.6.0",
-        "d3-dispatch": "^1.0.6",
-        "d3-drag": "^1.2.5",
-        "d3-timer": "^1.0.10",
+        "d3-dispatch": "^2.0.0",
+        "d3-drag": "^2.0.0",
+        "d3-timer": "^2.0.0",
         "jwt-decode": "^2.2.0",
         "rxjs": "^6.6.0",
         "socket.io-client": "^2.3.0",
         "tslib": "^2.0.0",
-        "zone.js": "^0.10.3"
+        "zone.js": "^0.11.1"
     },
     "devDependencies": {
-        "@angular-devkit/build-angular": "^0.1000.2",
+        "@angular-devkit/build-angular": "^0.1001.0",
         "@angular/cli": "^10.0.2",
         "@angular/compiler-cli": "^10.0.3",
         "@angular/language-service": "^10.0.3",
@@ -67,11 +67,11 @@
         "@types/plotly.js": "^1.50.15",
         "@types/socket.io-client": "^1.4.33",
         "codelyzer": "^6.0.0",
-        "ts-node": "^8.10.2",
+        "ts-node": "^9.0.0",
         "tslint": "~6.1.0",
         "tslint-angular": "^3.0.2",
         "tslint-sonarts": "^1.9.0",
-        "typescript": "^3.9.6"
+        "typescript": "^4.0.2"
     },
     "license": "MIT"
 }

@@ -34,7 +34,7 @@ export class CountUp {
     private paused!: boolean;
     private rAF: any;
     private remaining!: number;
-    private startTime!: number;
+    private startTime?: number;
     private startVal: number;
     private targetElement: HTMLElement;
 
