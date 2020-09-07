@@ -1,8 +1,20 @@
-table thead th {
-    user-select: none;
-    vertical-align: middle;
+@import '../../../variables';
 
-    &.sortable, .hint-button {
-        cursor: pointer;
+table {
+    position: relative;
+    border-collapse: collapse;
+
+    thead th {
+        user-select: none;
+        vertical-align: middle;
+
+        position: sticky;
+        top: $navbar-top-height;
+
+        background-color: $body-primary;
+
+        &.sortable, .hint-button {
+            cursor: pointer;
+        }
     }
 }
