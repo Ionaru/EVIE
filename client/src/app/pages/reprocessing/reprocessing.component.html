@@ -3,7 +3,7 @@
     <h4>Input</h4>
 
     <form>
-        <div class="form-group three-wide">
+        <div class="form-group four-wide">
             <div class="form-part">
                 <label for="type">Structure type</label>
                 <select class="form-control" name="type" id="type"  [(ngModel)]="structureType">
@@ -29,6 +29,16 @@
                     <option [ngValue]="'lowsec'">Lowsec</option>
                     <option [ngValue]="'nullsec'">Nullsec / W-Space</option>
                 </select>
+            </div>
+
+            <div class="form-part">
+                <label for="tax">Tax</label>
+                <div class="input-group mb-2 mr-sm-2">
+                    <input name="tax" type="number" class="form-control" id="tax" [(ngModel)]="tax" min="0">
+                    <div class="input-group-append">
+                        <div class="input-group-text">%</div>
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -26,6 +26,7 @@ export class ReprocessingComponent {
     public structureRigs = 't2';
     public structureLocation = 'nullsec';
     public implantLevel = 0;
+    public tax = 0;
 
     public skillValues = {
         reprocessing: 5,
@@ -137,6 +138,9 @@ export class ReprocessingComponent {
 
         // Implant
         efficiency += (efficiency * ((this.implantLevel) / 100));
+
+        // Tax
+        efficiency -= (efficiency * (this.tax / 100));
 
         return Math.floor(efficiency * 10) / 10;
     }

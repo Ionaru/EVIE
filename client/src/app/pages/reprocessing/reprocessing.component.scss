@@ -10,10 +10,6 @@ small.form-text {
 .form-group {
     display: grid;
 
-    &.three-wide {
-        grid-template-columns: repeat(3, auto);
-    }
-
     &.four-wide {
         grid-template-columns: repeat(4, auto);
     }
