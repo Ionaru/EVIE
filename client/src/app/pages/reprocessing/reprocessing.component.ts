@@ -108,7 +108,7 @@ export class ReprocessingComponent {
             const refiningProducts = await this.industryService.getRefiningProducts(type.id);
             for (const product of refiningProducts) {
 
-                product.quantity = product.quantity * amount;
+                product.quantity = (product.quantity * amount) / 100;
 
                 // TODO: Adjust for %
 
