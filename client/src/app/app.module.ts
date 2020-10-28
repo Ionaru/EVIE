@@ -72,6 +72,7 @@ import { OreTrigComponent } from './pages/prices-chart/ore-trig.component';
 import { RefiningProfitBeltComponent } from './pages/refining-profit/refining-profit-belt.component';
 import { RefiningProfitMoonComponent } from './pages/refining-profit/refining-profit-moon.component';
 import { RefiningProfitTrigComponent } from './pages/refining-profit/refining-profit-trig.component';
+import { ReprocessingComponent } from './pages/reprocessing/reprocessing.component';
 
 const errorHandlers = [];
 if (environment.production) {
@@ -115,6 +116,7 @@ if (environment.production) {
         AssetsComponent,
         AboutComponent,
         OreContentsComponent,
+        ReprocessingComponent,
     ],
     entryComponents: [
         LogoutModalComponent,

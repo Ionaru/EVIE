@@ -15,6 +15,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
 import { IndustryJobsComponent } from './pages/industry/jobs/industry-jobs.component';
 import { IndustrySystemOverviewComponent } from './pages/industry/system-overview/industry-system-overview.component';
+import { ReprocessingComponent } from './pages/reprocessing/reprocessing.component';
 import { ScopesComponent } from './pages/scopes/scopes.component';
 import { SkillsComponent } from './pages/skills/skills.component';
 import { UsersComponent } from './pages/users/users.component';
@@ -57,6 +58,7 @@ const routes: Routes = [
             {path: 'triglavian', component: RefiningProfitTrigComponent},
         ],
     },
+    {path: 'reprocessing', component: ReprocessingComponent, resolve: [AppReadyGuard]},
 
     // Character data pages.
     {path: 'dashboard', component: DashboardComponent, resolve: [AppReadyGuard], canActivate: [AuthGuard]},
