@@ -22,16 +22,15 @@ export class ReprocessingComponent {
 
     public buttonDisabled = false;
 
-    public refineryValues = {
-        base: 57,
-        tax: 0,
-        implants: 0,
-    };
+    public structureType = 'tatara';
+    public structureRigs = 't2';
+    public structureLocation = 'nullsec';
+    public implantLevel = 0;
 
     public skillValues = {
         reprocessing: 5,
         reprocessingEfficiency: 5,
-        averageOreProcessing: 5,
+        averageOreProcessing: 4,
     };
 
     public oreText = '';
@@ -89,6 +88,59 @@ export class ReprocessingComponent {
         return amounts;
     }
 
+    public getLocationEfficiencyBonus(): number {
+        switch (this.structureLocation) {
+            case 'highsec':
+                return 0;
+            case 'lowsec':
+                return 0.06;
+            case 'nullsec':
+                return 0.12;
+        }
+        return 0;
+    }
+
+    public getRigsEfficiencyBonus(): number {
+        switch (this.structureRigs) {
+            case 't0':
+                return 0;
+            case 't1':
+                return 1;
+            case 't2':
+                return 3;
+        }
+        return 0;
+    }
+
+    public getStructureEfficiencyBonus(): number {
+        switch (this.structureType) {
+            case 'citadel':
+                return 0;
+            case 'athanor':
+                return 0.02;
+            case 'tatara':
+                return 0.04;
+        }
+        return 0;
+    }
+
+    public getEfficiency(): number {
+        // Structure
+        let efficiency = 50 + this.getRigsEfficiencyBonus();
+        efficiency += efficiency * (this.getLocationEfficiencyBonus());
+        efficiency += efficiency * (this.getStructureEfficiencyBonus());
+
+        // Skills
+        efficiency += (efficiency * ((this.skillValues.reprocessing * 3) / 100));
+        efficiency += (efficiency * ((this.skillValues.reprocessingEfficiency * 2) / 100));
+        efficiency += (efficiency * ((this.skillValues.averageOreProcessing * 2) / 100));
+
+        // Implant
+        efficiency += (efficiency * ((this.implantLevel) / 100));
+
+        return Math.floor(efficiency * 10) / 10;
+    }
+
     public async run(): Promise<void> {
         this.buttonDisabled = true;
 
@@ -109,8 +161,7 @@ export class ReprocessingComponent {
             for (const product of refiningProducts) {
 
                 product.quantity = (product.quantity * amount) / 100;
-
-                // TODO: Adjust for %
+                product.quantity = product.quantity * (this.getEfficiency() / 100);
 
                 if (tempRefiningData[product.id]) {
                     tempRefiningData[product.id] += product.quantity;

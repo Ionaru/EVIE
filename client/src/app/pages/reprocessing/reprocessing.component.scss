@@ -7,9 +7,16 @@ small.form-text {
     padding-left: 5px;
 }
 
-.form-group.three-wide {
+.form-group {
     display: grid;
-    grid-template-columns: repeat(3, auto);
+
+    &.three-wide {
+        grid-template-columns: repeat(3, auto);
+    }
+
+    &.four-wide {
+        grid-template-columns: repeat(4, auto);
+    }
 
     .form-part {
         padding: 0 5px;

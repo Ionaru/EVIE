@@ -3,58 +3,61 @@
     <h4>Input</h4>
 
     <form>
-<!--        <div class="form-group three-wide">-->
-<!--            <div class="form-part">-->
-<!--                <label for="baseValue">Base value</label>-->
-<!--                <div class="input-group mb-2 mr-sm-2">-->
-<!--                    <input name="baseValue" type="number" class="form-control" id="baseValue"-->
-<!--                           [(ngModel)]="refineryValues.base">-->
-<!--                    <div class="input-group-append">-->
-<!--                        <div class="input-group-text">%</div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="form-part">-->
+        <div class="form-group three-wide">
+            <div class="form-part">
+                <label for="type">Structure type</label>
+                <select class="form-control" name="type" id="type"  [(ngModel)]="structureType">
+                    <option [ngValue]="'citadel'">Citadel</option>
+                    <option [ngValue]="'athanor'">Athanor</option>
+                    <option [ngValue]="'tatara'">Tatara</option>
+                </select>
+            </div>
 
-<!--                <label for="taxValue">Tax value</label>-->
-<!--                <div class="input-group mb-2 mr-sm-2">-->
-<!--                    <input name="taxValue" type="number" class="form-control" id="taxValue"-->
-<!--                           [(ngModel)]="refineryValues.tax">-->
-<!--                    <div class="input-group-append">-->
-<!--                        <div class="input-group-text">%</div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="form-part">-->
+            <div class="form-part">
+                <label for="rigs">Structure rigs</label>
+                <select class="form-control" name="rigs" id="rigs" [(ngModel)]="structureRigs">
+                    <option [ngValue]="'t0'">No rigs</option>
+                    <option [ngValue]="'t1'">T1 rigs</option>
+                    <option [ngValue]="'t2'">T2 rigs</option>
+                </select>
+            </div>
 
-<!--                <label for="implantValue">Implant value</label>-->
-<!--                <div class="input-group mb-2 mr-sm-2">-->
-<!--                    <input name="implantValue" type="number" class="form-control" id="implantValue"-->
-<!--                           [(ngModel)]="refineryValues.implants">-->
-<!--                    <div class="input-group-append">-->
-<!--                        <div class="input-group-text">%</div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+            <div class="form-part">
+                <label for="location">Structure location</label>
+                <select class="form-control" name="location" id="location" [(ngModel)]="structureLocation">
+                    <option [ngValue]="'highsec'">Highsec</option>
+                    <option [ngValue]="'lowsec'">Lowsec</option>
+                    <option [ngValue]="'nullsec'">Nullsec / W-Space</option>
+                </select>
+            </div>
+        </div>
 
-<!--        <div class="form-group three-wide">-->
-<!--            <div class="form-part">-->
-<!--                <label for="reprocessingSkill">Reprocessing skill level</label>-->
-<!--                <input name="reprocessingSkill" type="number" class="form-control" id="reprocessingSkill"-->
-<!--                       [(ngModel)]="skillValues.reprocessing">-->
-<!--            </div>-->
-<!--            <div class="form-part">-->
-<!--                <label for="reprocessingEfficiencySkill">Reprocessing Efficiency skill level</label>-->
-<!--                <input name="reprocessingEfficiencySkill" type="number" class="form-control"-->
-<!--                       id="reprocessingEfficiencySkill" [(ngModel)]="skillValues.reprocessingEfficiency">-->
-<!--            </div>-->
-<!--            <div class="form-part">-->
-<!--                <label for="oreProcessingSkill">Ore processing skill level</label>-->
-<!--                <input name="oreProcessingSkill" type="number" class="form-control" id="oreProcessingSkill"-->
-<!--                       [(ngModel)]="skillValues.averageOreProcessing">-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="form-group four-wide">
+            <div class="form-part">
+                <label for="reprocessingSkill">Reprocessing skill level</label>
+                <input name="reprocessingSkill" type="number" class="form-control" id="reprocessingSkill" max="5" min="0"
+                       [(ngModel)]="skillValues.reprocessing">
+            </div>
+            <div class="form-part">
+                <label for="reprocessingEfficiencySkill">Reprocessing Efficiency skill level</label>
+                <input name="reprocessingEfficiencySkill" type="number" class="form-control" max="5" min="0"
+                       id="reprocessingEfficiencySkill" [(ngModel)]="skillValues.reprocessingEfficiency">
+            </div>
+            <div class="form-part">
+                <label for="oreProcessingSkill">Ore processing skill level</label>
+                <input name="oreProcessingSkill" type="number" class="form-control" id="oreProcessingSkill" max="5" min="0"
+                       [(ngModel)]="skillValues.averageOreProcessing">
+            </div>
+            <div class="form-part">
+                <label for="implantValue">Implant bonus</label>
+                <select class="form-control" name="implant" id="implantValue" [(ngModel)]="implantLevel">
+                    <option [ngValue]="0">0%</option>
+                    <option [ngValue]="1">1%</option>
+                    <option [ngValue]="2">2%</option>
+                    <option [ngValue]="4">4%</option>
+                </select>
+            </div>
+        </div>
 
         <div class="form-group">
             <label for="oreText">Paste ores here, compatible with inventory and assets page.</label>
