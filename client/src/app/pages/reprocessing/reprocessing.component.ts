@@ -35,6 +35,8 @@ export class ReprocessingComponent {
         averageOreProcessing: 4,
     };
 
+    public efficiency = 0;
+
     public oreText = '';
 
     public constructor(
@@ -139,6 +141,7 @@ export class ReprocessingComponent {
         // Tax
         efficiency -= (efficiency * (this.tax / 100));
 
+        this.efficiency = efficiency;
         return efficiency;
     }
 

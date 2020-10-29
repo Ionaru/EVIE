@@ -85,7 +85,7 @@
     </app-loading-message>
 
     <div *ngIf="isNotEmpty()">
-        <h4>Results</h4>
+        <h4>Results ( {{efficiency | number: '1.0-2'}}% )</h4>
         <div *ngFor="let item of refiningData | keyvalue">
             <img src="https://images.evetech.net/types/{{item.key}}/icon?size=32" alt="{{getName(item.key)}}">
             {{getName(item.key)}} {{item.value | number: '1.0-0'}}
