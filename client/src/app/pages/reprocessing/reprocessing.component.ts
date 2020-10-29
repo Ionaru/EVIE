@@ -139,7 +139,7 @@ export class ReprocessingComponent {
         // Tax
         efficiency -= (efficiency * (this.tax / 100));
 
-        return Math.floor(efficiency * 100) / 100;
+        return efficiency;
     }
 
     public async run(): Promise<void> {
