@@ -4,7 +4,8 @@ import { NamesService } from '../../data-services/names.service';
 import { SearchService } from '../../data-services/search.service';
 
 interface IOreAmount {
-    [key: string]: number;
+    0: string;
+    1: number;
 }
 
 interface IReprocessingData {
@@ -69,9 +70,9 @@ export class ReprocessingComponent {
             .filter((line) => line !== '');
     }
 
-    public inputToAmounts(input: string[]): IOreAmount {
+    public inputToAmounts(input: string[]): IOreAmount[] {
 
-        const amounts: IOreAmount = {};
+        const amounts: IOreAmount[] = [];
 
         for (const line of input) {
             const lineParts = line.split(' ');
@@ -79,11 +80,7 @@ export class ReprocessingComponent {
             const amount = isNaN(Number(amountText)) ? 0 : Number(amountText);
             const item = lineParts.join(' ');
 
-            if (amounts[item]) {
-                amounts[item] += amount;
-            } else {
-                amounts[item] = amount;
-            }
+            amounts.push([item, amount]);
         }
 
         return amounts;
@@ -142,7 +139,7 @@ export class ReprocessingComponent {
         // Tax
         efficiency -= (efficiency * (this.tax / 100));
 
-        return Math.floor(efficiency * 10) / 10;
+        return Math.floor(efficiency * 100) / 100;
     }
 
     public async run(): Promise<void> {
@@ -154,7 +151,9 @@ export class ReprocessingComponent {
         this.refiningData = {};
         const tempRefiningData: IReprocessingData = {};
 
-        for (const [name, amount] of Object.entries(amounts)) {
+        for (const amountsRow of amounts) {
+            const name = amountsRow[0];
+            const amount = amountsRow[1];
 
             const type = await this.searchService.search(name, 'type');
             if (!type) {
@@ -164,7 +163,12 @@ export class ReprocessingComponent {
             const refiningProducts = await this.industryService.getRefiningProducts(type.id);
             for (const product of refiningProducts) {
 
-                product.quantity = (product.quantity * amount) / 100;
+                product.quantity = (product.quantity * amount);
+
+                if (!name.toLowerCase().includes('compressed')) {
+                    product.quantity = product.quantity / 100;
+                }
+
                 product.quantity = product.quantity * (this.getEfficiency() / 100);
 
                 if (tempRefiningData[product.id]) {
@@ -172,6 +176,10 @@ export class ReprocessingComponent {
                 } else {
                     tempRefiningData[product.id] = product.quantity;
                 }
+            }
+
+            for (const id of Object.keys(tempRefiningData)) {
+                tempRefiningData[id] = Math.floor(tempRefiningData[id]);
             }
 
         }
