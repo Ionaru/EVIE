@@ -13,7 +13,7 @@ import {
     faHexagon,
     faHome,
     faPlug,
-    faQuestion,
+    faQuestion, faRecycle,
     faSignOut,
     faUsers,
 } from '@fortawesome/pro-solid-svg-icons';
@@ -53,6 +53,7 @@ export class NavigationComponent implements OnInit {
     public gasPricesIcon = faCloud;
     public mineralsIcon = faDiceD10;
     public productionCalculatorIcon = faCalculator;
+    public reprocessingIcon = faRecycle;
 
     public iskIconBase = faHexagon;
 

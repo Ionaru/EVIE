@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { IndustryService } from '../../data-services/industry.service';
 import { NamesService } from '../../data-services/names.service';
 import { SearchService } from '../../data-services/search.service';
+import { createTitle } from '../../shared/title';
 
 interface IOreAmount {
     0: string;
@@ -43,7 +45,10 @@ export class ReprocessingComponent {
         private readonly industryService: IndustryService,
         private namesService: NamesService,
         private searchService: SearchService,
-    ) { }
+        private title: Title,
+    ) {
+        this.title.setTitle(createTitle('Reprocessing'));
+    }
 
     public getName(id: string): string {
         return NamesService.getNameFromData(Number(id));

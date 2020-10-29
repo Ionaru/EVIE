@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { sortArrayByObjectProperty } from '@ionaru/array-utils';
 import { EVE, IUniverseTypeData, Mineral, Ore } from '@ionaru/eve-utils';
 
@@ -6,6 +7,7 @@ import { ITableHeader } from '../../components/sor-table/sor-table.component';
 import { IndustryService, IRefiningProducts } from '../../data-services/industry.service';
 import { MarketService } from '../../data-services/market.service';
 import { TypesService } from '../../data-services/types.service';
+import { createTitle } from '../../shared/title';
 
 interface IData {
     name: string;
@@ -111,10 +113,13 @@ export class OreContentsComponent implements OnInit {
     constructor(
         private readonly industryService: IndustryService,
         private readonly marketService: MarketService,
+        private title: Title,
         private readonly typesService: TypesService,
     ) {}
 
     public async ngOnInit() {
+        this.title.setTitle(createTitle('Ore Contents'));
+
         const ores = [
             ...EVE.ores.belt.highSec,
             ...EVE.ores.belt.lowSec,
