@@ -88,8 +88,7 @@
         <h4>Results</h4>
         <div *ngFor="let item of refiningData | keyvalue">
             <img src="https://images.evetech.net/types/{{item.key}}/icon?size=32" alt="{{getName(item.key)}}">
-<!--            {{getName(item.key)}} {{item.value | number: '1.0-0'}}-->
-            {{getName(item.key)}} {{item.value}}
+            {{getName(item.key)}} {{item.value | number: '1.0-0'}}
         </div>
     </div>
 
