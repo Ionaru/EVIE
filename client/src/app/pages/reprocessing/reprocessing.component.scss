@@ -1,3 +1,5 @@
+@import '../../../variables';
+
 img {
     user-select: none;
 }
@@ -11,7 +13,11 @@ small.form-text {
     display: grid;
 
     &.four-wide {
-        grid-template-columns: repeat(4, auto);
+        grid-template-columns: repeat(4, 25%);
+    }
+
+    &.five-wide {
+        grid-template-columns: repeat(5, 20%);
     }
 
     .form-part {

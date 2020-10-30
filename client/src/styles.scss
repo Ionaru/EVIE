@@ -36,6 +36,12 @@ html {
 
     body {
 
+        .no-text-overflow {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
         table.table * {
             border-color: $text-muted;
         }

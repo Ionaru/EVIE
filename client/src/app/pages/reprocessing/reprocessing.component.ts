@@ -1,9 +1,17 @@
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { faEyeSlash, faUserLock, faUserSlash } from '@fortawesome/pro-regular-svg-icons';
+import { faUser } from '@fortawesome/pro-solid-svg-icons';
+
 import { IndustryService } from '../../data-services/industry.service';
 import { NamesService } from '../../data-services/names.service';
 import { SearchService } from '../../data-services/search.service';
+import { SkillsService } from '../../data-services/skills.service';
+import { TypesService } from '../../data-services/types.service';
+import { CharacterService } from '../../models/character/character.service';
+import { getAffectingSkillId } from '../../shared/ore-skill-map';
 import { createTitle } from '../../shared/title';
+import { Scope } from '../scopes/scopes.component';
 
 interface IOreAmount {
     0: string;
@@ -25,6 +33,13 @@ export class ReprocessingComponent {
 
     public buttonDisabled = false;
 
+    public useCharacterSkills = false;
+
+    public characterIcon = faUser;
+    public characterDisabledIcon = faUserSlash;
+    public missingScopeIcon = faEyeSlash;
+    public notLoggedInIcon = faUserLock;
+
     public structureType = 'tatara';
     public structureRigs = 't2';
     public structureLocation = 'nullsec';
@@ -38,6 +53,7 @@ export class ReprocessingComponent {
     };
 
     public efficiency = 0;
+    public efficiencyList: number[] = [];
 
     public oreText = '';
 
@@ -45,9 +61,26 @@ export class ReprocessingComponent {
         private readonly industryService: IndustryService,
         private namesService: NamesService,
         private searchService: SearchService,
+        private skillsService: SkillsService,
         private title: Title,
+        private typesService: TypesService,
     ) {
         this.title.setTitle(createTitle('Reprocessing'));
+        CharacterService.characterChangeEvent.subscribe(() => {
+            this.useCharacterSkills = false;
+        });
+    }
+
+    public getCharacterName() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.name;
+    }
+
+    public isLoggedIn() {
+        return !!CharacterService.selectedCharacter;
+    }
+
+    public hasScopes() {
+        return CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.SKILLS);
     }
 
     public getName(id: string): string {
@@ -67,10 +100,7 @@ export class ReprocessingComponent {
             // Split into lines.
             .split('\n')
             // Remove everything after first digits (amount).
-            .map((line) => {
-                const match = line.match(/^[A-z ]* [\d,]*/);
-                return match ? match[0] : '';
-            })
+            .map((line) => line.replace(/(?: \d+ ).*/g, ''))
             // Trim leading / trailing spaces.
             .map((line) => line.trim())
             // Remove blank lines.
@@ -83,6 +113,11 @@ export class ReprocessingComponent {
 
         for (const line of input) {
             const lineParts = line.split(' ');
+            if (lineParts.length === 1) {
+                amounts.push([lineParts[0], 1]);
+                continue;
+            }
+
             const amountText = (lineParts.pop() || '0').replace(/,/g, '');
             const amount = isNaN(Number(amountText)) ? 0 : Number(amountText);
             const item = lineParts.join(' ');
@@ -129,13 +164,27 @@ export class ReprocessingComponent {
         return 0;
     }
 
-    public getEfficiency(): number {
+    public async getOreEfficiency(affectingSkill: number): Promise<number> {
+
         // Structure
         let efficiency = 50 + this.getRigsEfficiencyBonus();
         efficiency += efficiency * (this.getLocationEfficiencyBonus());
         efficiency += efficiency * (this.getStructureEfficiencyBonus());
 
         // Skills
+        if (this.useCharacterSkills && CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.SKILLS)) {
+            const skills = await this.skillsService.getSkillsData(CharacterService.selectedCharacter);
+            if (skills?.skills) {
+                const processingSkill = skills.skills.find((skill) => skill.skill_id === 3385);
+                const efficiencySkill = skills.skills.find((skill) => skill.skill_id === 3389);
+                const oreSkill = skills.skills.find((skill) => skill.skill_id === affectingSkill);
+
+                this.skillValues.reprocessing = processingSkill?.active_skill_level || 0;
+                this.skillValues.reprocessingEfficiency = efficiencySkill?.active_skill_level || 0;
+                this.skillValues.averageOreProcessing = oreSkill?.active_skill_level || 0;
+            }
+        }
+
         efficiency += (efficiency * ((this.skillValues.reprocessing * 3) / 100));
         efficiency += (efficiency * ((this.skillValues.reprocessingEfficiency * 2) / 100));
         efficiency += (efficiency * ((this.skillValues.averageOreProcessing * 2) / 100));
@@ -143,10 +192,37 @@ export class ReprocessingComponent {
         // Implant
         efficiency += (efficiency * ((this.implantLevel) / 100));
 
+        return efficiency;
+    }
+
+    public async getScrapMetalEfficiency() {
+
+        // Structure
+        let efficiency = 50;
+
+        // Skills
+        if (this.useCharacterSkills && CharacterService.selectedCharacter && CharacterService.selectedCharacter.hasScope(Scope.SKILLS)) {
+            const skills = await this.skillsService.getSkillsData(CharacterService.selectedCharacter);
+            if (skills?.skills) {
+                const oreSkill = skills.skills.find((skill) => skill.skill_id === 12196);
+                this.skillValues.averageOreProcessing = oreSkill?.active_skill_level || 0;
+            }
+        }
+
+        efficiency += (efficiency * ((this.skillValues.averageOreProcessing * 2) / 100));
+
+        return efficiency;
+    }
+
+    public async getEfficiency(id: number): Promise<number> {
+
+        const affectingSkill = getAffectingSkillId(id);
+        let efficiency = affectingSkill === 12196 ? await this.getScrapMetalEfficiency() : await this.getOreEfficiency(affectingSkill);
+
         // Tax
         efficiency -= (efficiency * (this.tax / 100));
 
-        this.efficiency = efficiency;
+        this.efficiencyList.push(efficiency);
         return efficiency;
     }
 
@@ -154,17 +230,26 @@ export class ReprocessingComponent {
         this.buttonDisabled = true;
 
         const input = this.cleanInput(this.oreText);
+        console.log(input);
         const amounts = this.inputToAmounts(input);
+        console.log(amounts);
 
         this.refiningData = {};
+        this.efficiencyList = [];
+        const skillValuesBackup = {...this.skillValues};
         const tempRefiningData: IReprocessingData = {};
 
         for (const amountsRow of amounts) {
             const name = amountsRow[0];
-            const amount = amountsRow[1];
+            const amount = amountsRow[1] || 1;
 
             const type = await this.searchService.search(name, 'type');
             if (!type) {
+                continue;
+            }
+
+            const typeInformation = await this.typesService.getType(type.id);
+            if (!typeInformation) {
                 continue;
             }
 
@@ -172,12 +257,8 @@ export class ReprocessingComponent {
             for (const product of refiningProducts) {
 
                 product.quantity = (product.quantity * amount);
-
-                if (!name.toLowerCase().includes('compressed')) {
-                    product.quantity = product.quantity / 100;
-                }
-
-                product.quantity = product.quantity * (this.getEfficiency() / 100);
+                product.quantity = product.quantity / (typeInformation.portion_size || 1);
+                product.quantity = product.quantity * (await this.getEfficiency(type.id) / 100);
 
                 if (tempRefiningData[product.id]) {
                     tempRefiningData[product.id] += product.quantity;
@@ -196,6 +277,9 @@ export class ReprocessingComponent {
         await this.namesService.getNames(...mineralIds);
 
         this.refiningData = tempRefiningData;
+        const totalEfficiency = this.efficiencyList.reduce((acc, cv) => acc + cv, 0) / this.efficiencyList.length;
+        this.efficiency = Math.round(totalEfficiency * 100) / 100;
+        this.skillValues = {...skillValuesBackup};
 
         this.buttonDisabled = false;
     }

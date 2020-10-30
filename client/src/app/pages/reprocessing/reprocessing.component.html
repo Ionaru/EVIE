@@ -42,21 +42,44 @@
             </div>
         </div>
 
-        <div class="form-group four-wide">
+        <div class="form-group five-wide">
+
+            <div class="form-part">
+                <label for="reprocessingSkill">Apply character skills</label>
+                <div class="btn-group btn-group-toggle w-100">
+                    <label class="btn-outline-primary no-text-overflow" ngbButtonLabel *ngIf="isLoggedIn() && hasScopes()">
+                        <input type="checkbox" ngbButton [(ngModel)]="useCharacterSkills" name="useCharacterSkills">
+                        <fa-icon [icon]="useCharacterSkills ? characterIcon : characterDisabledIcon" [fixedWidth]="true"></fa-icon>
+                        {{getCharacterName()}}
+                    </label>
+                    <label class="btn-outline-primary no-text-overflow" ngbButtonLabel *ngIf="!isLoggedIn()" disabled>
+                        <input type="checkbox" ngbButton [(ngModel)]="useCharacterSkills" name="useCharacterSkills" disabled>
+                        <fa-icon [icon]="notLoggedInIcon" [fixedWidth]="true"></fa-icon>
+                        Not logged in
+                    </label>
+                    <label class="btn-outline-primary no-text-overflow" ngbButtonLabel *ngIf="isLoggedIn() && !hasScopes()" disabled>
+                        <input type="checkbox" ngbButton [(ngModel)]="useCharacterSkills" name="useCharacterSkills" disabled>
+                        <fa-icon [icon]="missingScopeIcon" [fixedWidth]="true"></fa-icon>
+                        Missing skills scope
+                    </label>
+                </div>
+            </div>
+
             <div class="form-part">
                 <label for="reprocessingSkill">Reprocessing skill level</label>
                 <input name="reprocessingSkill" type="number" class="form-control" id="reprocessingSkill" max="5" min="0"
-                       [(ngModel)]="skillValues.reprocessing">
+                       [(ngModel)]="skillValues.reprocessing" [disabled]="useCharacterSkills">
             </div>
             <div class="form-part">
                 <label for="reprocessingEfficiencySkill">Reprocessing Efficiency skill level</label>
                 <input name="reprocessingEfficiencySkill" type="number" class="form-control" max="5" min="0"
+                       [disabled]="useCharacterSkills"
                        id="reprocessingEfficiencySkill" [(ngModel)]="skillValues.reprocessingEfficiency">
             </div>
             <div class="form-part">
-                <label for="oreProcessingSkill">Ore processing skill level</label>
+                <label for="oreProcessingSkill">Avg. Processing skill level</label>
                 <input name="oreProcessingSkill" type="number" class="form-control" id="oreProcessingSkill" max="5" min="0"
-                       [(ngModel)]="skillValues.averageOreProcessing">
+                       [(ngModel)]="skillValues.averageOreProcessing" [disabled]="useCharacterSkills">
             </div>
             <div class="form-part">
                 <label for="implantValue">Implant bonus</label>
@@ -70,7 +93,7 @@
         </div>
 
         <div class="form-group">
-            <label for="oreText">Paste ores here, compatible with inventory and assets page.</label>
+            <label for="oreText">Paste ores, ice or items here, compatible with inventory and assets page.</label>
             <textarea name="oreText" class="form-control" id="oreText" rows="10" [(ngModel)]="oreText"></textarea>
         </div>
 
