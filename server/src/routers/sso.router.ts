@@ -1,5 +1,5 @@
 /* eslint-disable sonarjs/no-duplicate-string */
-// eslint-disable-next-line no-shadow
+// eslint-disable-next-line @typescript-eslint/no-shadow
 import { URL, URLSearchParams } from 'url';
 
 import { generateRandomString } from '@ionaru/random-string';
