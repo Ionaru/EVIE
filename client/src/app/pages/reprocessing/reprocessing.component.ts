@@ -230,9 +230,7 @@ export class ReprocessingComponent {
         this.buttonDisabled = true;
 
         const input = this.cleanInput(this.oreText);
-        console.log(input);
         const amounts = this.inputToAmounts(input);
-        console.log(amounts);
 
         this.refiningData = {};
         this.efficiencyList = [];
