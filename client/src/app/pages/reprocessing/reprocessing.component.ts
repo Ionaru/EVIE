@@ -29,6 +29,9 @@ interface IReprocessingData {
 })
 export class ReprocessingComponent {
 
+    private static readonly matchRegex = /(?: [\d,.]+ )(.*)/; // Not global!
+    private static readonly doubleSpacesRegex = / +(?= )/g;
+
     public refiningData: IReprocessingData = {};
 
     public buttonDisabled = false;
@@ -71,6 +74,15 @@ export class ReprocessingComponent {
         });
     }
 
+    private static removeDetails(line: string): string {
+        const match = ReprocessingComponent.matchRegex.exec(line);
+        if (!match || match.length < 2) {
+            return line;
+        }
+
+        return line.replace(match[1], '');
+    }
+
     public getCharacterName() {
         return CharacterService.selectedCharacter && CharacterService.selectedCharacter.name;
     }
@@ -95,12 +107,14 @@ export class ReprocessingComponent {
         return raw
             // Replace line breaks for cross-platform use.
             .replace(/\r\n/g, '\n')
-            // Replace tabs with spaces
+            // Replace tabs with spaces.
             .replace(/\t/g, ' ')
+            // Remove double spaces.
+            .replace(ReprocessingComponent.doubleSpacesRegex, '')
             // Split into lines.
             .split('\n')
             // Remove everything after first digits (amount).
-            .map((line) => line.replace(/(?: \d+ ).*/g, ''))
+            .map(ReprocessingComponent.removeDetails)
             // Trim leading / trailing spaces.
             .map((line) => line.trim())
             // Remove blank lines.
@@ -114,15 +128,19 @@ export class ReprocessingComponent {
         for (const line of input) {
             const lineParts = line.split(' ');
             if (lineParts.length === 1) {
-                amounts.push([lineParts[0], 1]);
+                amounts.push([line, 1]);
                 continue;
             }
 
             const amountText = (lineParts.pop() || '0').replace(/,/g, '');
-            const amount = isNaN(Number(amountText)) ? 0 : Number(amountText);
-            const item = lineParts.join(' ');
+            const amountNumber = Number(amountText);
+            if (isNaN(amountNumber)) {
+                amounts.push([line, 1]);
+                continue;
+            }
 
-            amounts.push([item, amount]);
+            const item = lineParts.join(' ');
+            amounts.push([item, amountNumber]);
         }
 
         return amounts;
