@@ -7,13 +7,13 @@
 
     <div class="collapse navbar-collapse" id="collapseExample" [ngbCollapse]="!isCollapsed">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item" (click)="isCollapsed = !isCollapsed">
+            <li class="nav-item">
                 <a class="nav-link" routerLink="/" routerLinkActive="active"
                    [routerLinkActiveOptions]="{ exact: true }">
                     <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="homeIcon"></fa-icon></span>
                 </a>
             </li>
-            <li *ngIf="isLoggedIn" class="nav-item" (click)="isCollapsed = !isCollapsed">
+            <li *ngIf="isLoggedIn" class="nav-item">
                 <a class="nav-link" routerLink="dashboard" routerLinkActive="active">
                     <span class="nav-link-text"><fa-icon [fixedWidth]="true" [icon]="dashboardIcon"></fa-icon></span>
                 </a>

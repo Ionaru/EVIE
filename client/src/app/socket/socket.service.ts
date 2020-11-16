@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as SocketIOClient from 'socket.io-client';
-import Socket = SocketIOClient.Socket;
+import { io, Socket } from 'socket.io-client';
 
 import { environment } from '../../environments/environment';
 
@@ -9,7 +8,7 @@ export class SocketService {
     public static socket: Socket;
 
     constructor() {
-        SocketService.socket = SocketIOClient.connect(environment.socketHost, {
+        SocketService.socket = io(environment.socketHost, {
             reconnection: true,
         });
     }

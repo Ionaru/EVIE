@@ -1,20 +1,4 @@
-/* eslint-disable camelcase,no-undef */
-import Socket = SocketIO.Socket;
-import Session = Express.Session;
-
-interface ISessionSocket extends Socket {
-    handshake: {
-        session: Session;
-        headers: any;
-        time: string;
-        address: string;
-        xdomain: boolean;
-        secure: boolean;
-        issued: number;
-        url: string;
-        query: any;
-    };
-}
+/* eslint-disable camelcase */
 
 interface IAuthResponseData {
     access_token: string;
@@ -33,4 +17,20 @@ interface IJWTToken {
     owner: string;
     exp: number;
     iss: string;
+}
+
+import 'express-session';
+
+declare module 'express-session' {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    interface SessionData {
+        characterUUID?: string;
+        token?: string;
+        socket?: string;
+        state?: string;
+        user: {
+            id?: number;
+        };
+        uuid?: string;
+    }
 }

@@ -1,9 +1,19 @@
 import { WebServer } from '@ionaru/web-server';
 import * as express from 'express';
-import * as SocketIO from 'socket.io';
+import { Session, SessionData } from 'express-session';
+import { Server, Socket } from 'socket.io';
 import * as SocketIOSession from 'socket.io-express-session';
+import { Handshake } from 'socket.io/dist/socket';
 
 import { debug } from '../index';
+
+interface IHandshake extends Handshake {
+    session: Session & SessionData;
+}
+
+interface ISessionSocket extends Socket {
+    handshake: IHandshake;
+}
 
 export class SocketServer {
 
@@ -11,12 +21,12 @@ export class SocketServer {
 
     private static debug = debug.extend('socket');
 
-    public io: SocketIO.Server;
+    public io: Server;
 
     public constructor(webServer: WebServer, sessionParser: express.RequestHandler) {
 
         // Pass the HTTP server to SocketIO for configuration.
-        this.io = SocketIO.listen(webServer.server, {
+        this.io = new Server(webServer.server, {
             // SocketIO cookie is unused: https://github.com/socketio/socket.io/issues/2276#issuecomment-147184662
             cookie: false,
         });

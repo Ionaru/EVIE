@@ -1,5 +1,5 @@
 import { ICharacterSkillQueueDataUnit } from '@ionaru/eve-utils';
-import * as jwt from 'jwt-decode';
+import jwtDecode, { JwtPayload } from 'jwt-decode';
 
 import { Calc } from '../../../shared/calc.helper';
 
@@ -52,7 +52,7 @@ export class Character {
         this.uuid = data.uuid;
 
         // Decode access token for information
-        const tokenData = jwt<IJWTToken>(data.accessToken);
+        const tokenData = jwtDecode<IJWTToken>(data.accessToken);
         this.tokenExpiry = new Date(Calc.secondsToMilliseconds(tokenData.exp));
         this.scopes = (typeof tokenData.scp === 'string' ? [tokenData.scp] : tokenData.scp) || [];
         this.ownerHash = tokenData.owner;
@@ -65,7 +65,7 @@ export class Character {
             return;
         }
 
-        const tokenData = jwt<IJWTToken>(token);
+        const tokenData = jwtDecode<IJWTToken>(token);
         this._accessToken = token;
         this.tokenExpiry = new Date(Calc.secondsToMilliseconds(tokenData.exp));
     }
@@ -121,14 +121,14 @@ export interface ISkillQueueDataWithName extends ICharacterSkillQueueDataUnit {
     name?: string;
 }
 
-interface IJWTToken {
-    scp: string[] | string;
-    jti: string;
-    kid: string;
-    sub: string;
+interface IJWTToken extends JwtPayload {
     azp: string;
-    name: string;
-    owner: string;
     exp: number;
     iss: string;
+    jti: string;
+    kid: string;
+    name: string;
+    owner: string;
+    scp: string[] | string;
+    sub: string;
 }

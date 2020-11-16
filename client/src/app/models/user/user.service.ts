@@ -95,12 +95,12 @@ export class UserService {
             SocketService.socket.once('SSO_LOGON_END', async (response: IServerResponse<IUserApiData>) => {
                 if (UserService.authWindow && !UserService.authWindow.closed) {
                     UserService.authWindow.close();
-                    if (response.state === 'success') {
-                        await this.storeUser(response.data);
-                        const afterLoginUrl = localStorage.getItem(BaseGuard.redirectKey) || '/dashboard';
-                        this.ngZone.run(() => this.router.navigate([afterLoginUrl])).then();
-                        localStorage.removeItem(BaseGuard.redirectKey);
-                    }
+                }
+                if (response.state === 'success') {
+                    await this.storeUser(response.data);
+                    const afterLoginUrl = localStorage.getItem(BaseGuard.redirectKey) || '/dashboard';
+                    this.ngZone.run(() => this.router.navigate([afterLoginUrl])).then();
+                    localStorage.removeItem(BaseGuard.redirectKey);
                 }
             });
         }

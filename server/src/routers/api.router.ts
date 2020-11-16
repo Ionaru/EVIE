@@ -24,21 +24,21 @@ export class APIRouter extends BaseRouter {
      */
     private static async doHandShake(request: Request, response: Response): Promise<Response> {
 
-        request.session!.token = generateRandomString(10);
-        response.setHeader('x-evie-token', request.session!.token);
+        request.session.token = generateRandomString(10);
+        response.setHeader('x-evie-token', request.session.token);
 
-        if (!request.session!.user.id) {
+        if (!request.session.user!.id) {
             return APIRouter.sendSuccessResponse(response);
         }
 
         const user: User | undefined = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session!.user.id})
+            .where('user.id = :id', {id: request.session.user!.id})
             .getOne();
 
         if (!user) {
             // No user found that matches the ID in the session.
-            delete request.session!.user.id;
+            delete request.session.user!.id;
             return APIRouter.sendSuccessResponse(response);
         }
 
@@ -58,14 +58,14 @@ export class APIRouter extends BaseRouter {
 
         User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session!.user.id})
+            .where('user.id = :id', {id: request.session.user!.id})
             .getOne().then((user) => {
                 if (user && (!user.characters || !user.characters.length)) {
                     user.remove().then();
                 }
             });
 
-        request.session!.destroy(() => {
+        request.session.destroy(() => {
             response.end();
         });
     }

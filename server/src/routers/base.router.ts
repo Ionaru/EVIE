@@ -61,7 +61,7 @@ export class BaseRouter {
             return nextFunction;
         }
 
-        const serverToken = request.session!.token as unknown;
+        const serverToken = request.session.token as unknown;
         const clientToken = request.headers['x-evie-token'] as unknown;
 
         // Only allow requests with a valid and matching token.
@@ -76,7 +76,7 @@ export class BaseRouter {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public static checkLogin(request: Request, response: Response, nextFunction: any): NextFunction | undefined {
-        if (!request.session!.user.id) {
+        if (!request.session.user!.id) {
             BaseRouter.sendResponse(response, StatusCodes.UNAUTHORIZED, 'NotLoggedIn');
             return;
         }
@@ -129,7 +129,7 @@ export class BaseRouter {
 
         const user: User | undefined = await User.doQuery()
             .select(['user.isAdmin'])
-            .where('user.id = :id', {id: request.session!.user.id})
+            .where('user.id = :id', {id: request.session.user!.id})
             .getOne();
         if (!user || !user.isAdmin) {
             BaseRouter.sendResponse(response, StatusCodes.FORBIDDEN, 'NoPermissions');
