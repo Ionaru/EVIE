@@ -165,10 +165,10 @@ export class Application {
             if (db && db.pool) {
                 db.pool.end(() => {
                     debug('DB pool closed');
-                    resolve();
+                    resolve(undefined);
                 });
             } else {
-                resolve();
+                resolve(undefined);
             }
         });
 

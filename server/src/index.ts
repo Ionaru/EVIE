@@ -48,12 +48,13 @@ const start = () => {
     debug('Creating CacheController instance');
     const defaultExpireTimes: IDefaultExpireTimes = {};
     defaultExpireTimes[EVE.SDEURL] = 7200000; // 2 hours
-    esiCache = new CacheController('data/responseCache.json', defaultExpireTimes);
+    esiCache = new CacheController('data/responseCache.json', defaultExpireTimes, debug);
 
     debug('Creating PublicESIService instance');
     esiService = new PublicESIService({
         axiosInstance,
         cacheController: esiCache,
+        debug,
         onRouteWarning: (route, text) => {
             Sentry.captureMessage(`${text}: ${route}`, Sentry.Severity.Warning);
         },
