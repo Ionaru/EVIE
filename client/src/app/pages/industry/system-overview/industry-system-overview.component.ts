@@ -110,7 +110,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         this.industryJobs = [];
         this.blueprints = {};
 
-        this.getAndProcessData();
+        this.getAndProcessData().then();
     }
 
     public async getAndProcessData() {
@@ -267,7 +267,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
     public async getBlueprints(character: Character) {
         if (character.hasScope(Scope.BLUEPRINTS)) {
             const blueprintData = await this.blueprintsService.getBlueprints(character);
-            const blueprints = objectsArrayToObject(blueprintData, 'item_id');
+            const blueprints = objectsArrayToObject(blueprintData, (bp) => bp.item_id);
             this.blueprints = {...this.blueprints, ...blueprints};
         }
     }
@@ -329,12 +329,12 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
 
                 locationInfo.jobs.push(job);
 
-                sortArrayByObjectProperty(systemOverview.locations, 'name');
-                sortArrayByObjectProperty(locationInfo.jobs, 'job_id', true);
-                sortArrayByObjectProperty(locationInfo.jobs, 'timeLeft');
+                sortArrayByObjectProperty(systemOverview.locations, (loc) => loc.name);
+                sortArrayByObjectProperty(locationInfo.jobs, (jb) => jb.job_id, true);
+                sortArrayByObjectProperty(locationInfo.jobs, (jb) => jb.timeLeft || 0);
             }
 
-            sortArrayByObjectProperty(overviewData, 'name');
+            sortArrayByObjectProperty(overviewData, (item) => item.name);
         }
 
         this.overview = overviewData;

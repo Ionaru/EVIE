@@ -70,7 +70,7 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
 
         if (CharacterService.selectedCharacter && IndustryJobsComponent.hasBlueprintScope) {
             const blueprintData = await this.blueprintsService.getBlueprints(CharacterService.selectedCharacter);
-            this.blueprints = objectsArrayToObject(blueprintData, 'item_id');
+            this.blueprints = objectsArrayToObject(blueprintData, (blueprint) => blueprint.item_id);
         }
 
         if (CharacterService.selectedCharacter && IndustryJobsComponent.hasIndustryJobsScope) {
@@ -83,8 +83,8 @@ export class IndustryJobsComponent extends IndustryComponent implements OnInit, 
 
             this.startIndustryJobsTimers(industryJobs);
 
-            sortArrayByObjectProperty(industryJobs, 'job_id', true);
-            sortArrayByObjectProperty(industryJobs, 'timeLeft');
+            sortArrayByObjectProperty(industryJobs, (job) => job.job_id, true);
+            sortArrayByObjectProperty(industryJobs, (job) => job.timeLeft || 0);
 
             this.setProductNames(industryJobs).then();
             this.getLocationNames(industryJobs).then();

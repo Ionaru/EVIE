@@ -195,7 +195,7 @@ export class DashboardComponent extends DataPageComponent implements OnInit, OnD
         const sortableCharacters = this.characters.filter((character) => character[property]);
         const unSortableCharacters = this.characters.filter((character) => !character[property]);
 
-        sortArrayByObjectProperty(sortableCharacters, property, this.sortInverted ? !inverse : inverse);
+        sortArrayByObjectProperty(sortableCharacters, () => property, this.sortInverted ? !inverse : inverse);
         this.characters = [...sortableCharacters, ...unSortableCharacters];
         this.filterCharacters();
         this.selectedSortOption = selectedSortOption;

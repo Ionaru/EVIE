@@ -59,7 +59,7 @@ export class MarketService extends BaseService {
             return;
         }
 
-        sortArrayByObjectProperty(systemOrders, 'price', type === 'buy');
+        sortArrayByObjectProperty(systemOrders, (order) => order.price, type === 'buy');
         return MarketService.getPriceForOrderAmount(systemOrders, amount);
     }
 
@@ -71,7 +71,7 @@ export class MarketService extends BaseService {
             return;
         }
 
-        sortArrayByObjectProperty(orders, 'price', type === 'buy');
+        sortArrayByObjectProperty(orders, (order) => order.price, type === 'buy');
         return MarketService.getPriceForOrderAmount(orders, amount);
     }
 

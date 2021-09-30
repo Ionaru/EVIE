@@ -111,7 +111,7 @@ export class PricesChartComponent implements OnInit {
 
     public async getPriceForVolume(ore: number, orders: IMarketOrdersData, volume: number, buy = true) {
         const buyOrders = orders.filter((order) => order.is_buy_order === buy);
-        sortArrayByObjectProperty(buyOrders, 'price', buy);
+        sortArrayByObjectProperty(buyOrders, (order) => order.price, buy);
         const buySell = buy ? 'buy' : 'sell';
 
         const type = this.oreTypes[ore];

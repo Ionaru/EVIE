@@ -37,7 +37,7 @@ export class UserService {
             const newWindow = window.open(url, '_blank', 'width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 
             // Puts focus on the newWindow
-            if (window.focus && newWindow) {
+            if (newWindow) {
                 newWindow.focus();
             }
 
@@ -78,7 +78,7 @@ export class UserService {
     public async addCharacter(data: IApiCharacterData): Promise<Character> {
         const character = await this.characterService.registerCharacter(data);
         UserService.user.characters.push(character);
-        sortArrayByObjectProperty(UserService.user.characters, 'name');
+        sortArrayByObjectProperty(UserService.user.characters, (char) => char.name);
         return character;
     }
 

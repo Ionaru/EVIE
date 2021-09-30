@@ -183,7 +183,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
     public getSkillsForGroup(group: IUniverseGroupData) {
         if (this.skills) {
             const skills = this.skills.skills.filter((skill) => group.types.includes(skill.skill_id));
-            return sortArrayByObjectProperty(skills, 'name');
+            return sortArrayByObjectProperty(skills, (skill) => skill.name || '');
         }
         return [];
     }
@@ -199,7 +199,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
             }
         }
 
-        return sortArrayByObjectProperty(skills, 'name');
+        return sortArrayByObjectProperty(skills, (skill) => skill.name);
     }
 
     public getSPInGroup(groupId: number) {
@@ -229,7 +229,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
 
     private async setSkillGroups() {
         const skillGroups = await this.skillGroupsService.getSkillGroupInformation();
-        this.skillGroups = sortArrayByObjectProperty(skillGroups, 'name');
+        this.skillGroups = sortArrayByObjectProperty(skillGroups, (group) => group.name);
     }
 
     private resetTimers() {
@@ -295,7 +295,7 @@ export class SkillsComponent extends DataPageComponent implements OnInit, OnDest
         }
 
         if (this.skills) {
-            this.trainedSkills = objectsArrayToObject(this.skills.skills, 'skill_id');
+            this.trainedSkills = objectsArrayToObject(this.skills.skills, (skill) => skill.skill_id);
         }
 
         if (!this.hasSkillQueueScope) {
