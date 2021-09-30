@@ -12,6 +12,7 @@
     ],
     "rules": {
         "@typescript-eslint/no-non-null-assertion": ["off"],
+        "import/extensions": "off",
         "import/no-unresolved": ["error", {
             "ignore": [
                 "express-serve-static-core"

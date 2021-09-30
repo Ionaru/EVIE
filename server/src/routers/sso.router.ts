@@ -118,7 +118,7 @@ export class SSORouter extends BaseRouter {
 
         const requestBody = refresh ?
             new URLSearchParams({grant_type: 'refresh_token', refresh_token: code}) :
-            new URLSearchParams({grant_type: 'authorization_code', code});
+            new URLSearchParams({code, grant_type: 'authorization_code'});
 
         const authUrl = `${protocol}${oauthHost}${tokenPath}`;
         SSORouter.debug(`Requesting authorization: ${code} (refresh: ${refresh})`);
@@ -387,7 +387,7 @@ export class SSORouter extends BaseRouter {
         if (userSocket) {
             SSORouter.debug(`Emitting to socket ${userSocket.id}, session ${userSocket.handshake.session.id}`);
             userSocket.emit('SSO_AUTH_END', {
-                data: {user: user!.sanitizedCopy, newCharacter: character.uuid},
+                data: {newCharacter: character.uuid, user: user!.sanitizedCopy},
                 message: 'SSOSuccessful',
                 state: 'success',
             });

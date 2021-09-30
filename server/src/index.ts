@@ -32,17 +32,17 @@ const start = () => {
 
     debug('Creating axios instance');
     axiosInstance = axios.create({
-        // 60 sec timeout
-        timeout: 60000,
-
         // keepAlive pools and reuses TCP connections, so it's faster
         httpsAgent: new HttpsAgent(),
+
+        // cap the maximum content length we'll accept to 50MBs, just in case
+        maxContentLength: 50 * 1000 * 1000,
 
         // follow up to 10 HTTP 3xx redirects
         maxRedirects: 10,
 
-        // cap the maximum content length we'll accept to 50MBs, just in case
-        maxContentLength: 50 * 1000 * 1000,
+        // 60 sec timeout
+        timeout: 60000,
     });
 
     debug('Creating CacheController instance');
