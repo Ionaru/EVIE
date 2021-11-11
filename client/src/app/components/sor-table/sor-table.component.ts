@@ -54,7 +54,7 @@ export class SorTableComponent implements OnChanges {
 
         this.invert = (this.currentSort && this.currentSort === column) ? !this.invert : false;
 
-        sortArrayByObjectProperty(this.data, () => sortAttribute.toString(), this.invert);
+        sortArrayByObjectProperty(this.data, (item) => item[sortAttribute], this.invert);
         this.currentSort = column;
     }
 
