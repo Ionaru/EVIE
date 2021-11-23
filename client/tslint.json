@@ -2,8 +2,7 @@
     "defaultSeverity": "error",
     "extends": [
         "tslint-angular",
-        "tslint:latest",
-        "tslint-sonarts"
+        "tslint:latest"
     ],
     "rulesDirectory": [
         "codelyzer"
