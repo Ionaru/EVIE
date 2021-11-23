@@ -32,17 +32,6 @@ export class User extends BaseModel {
     @OneToMany(() => Character, (character) => character.user)
     public characters!: Character[];
 
-    public static doQuery(): SelectQueryBuilder<User> {
-        return this.createQueryBuilder('user');
-    }
-
-    public static async getFromId(id: number): Promise<User | undefined> {
-        return User.doQuery()
-            .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id})
-            .getOne();
-    }
-
     public get sanitizedCopy(): ISanitizedUser {
 
         const characters = this.characters ? this.characters.map((character) => character.sanitizedCopy) : [];
@@ -52,6 +41,17 @@ export class User extends BaseModel {
             isAdmin: this.isAdmin,
             uuid: this.uuid,
         };
+    }
+
+    public static doQuery(): SelectQueryBuilder<User> {
+        return this.createQueryBuilder('user');
+    }
+
+    public static async getFromId(id: number): Promise<User | undefined> {
+        return User.doQuery()
+            .leftJoinAndSelect('user.characters', 'character')
+            .where('user.id = :id', {id})
+            .getOne();
     }
 
     public async merge(userToMerge: User): Promise<void> {

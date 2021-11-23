@@ -13,7 +13,7 @@ import { SocketServer } from '../controllers/socket.controller';
 import { axiosInstance, esiService } from '../index';
 import { Character } from '../models/character.model';
 import { User } from '../models/user.model';
-import { IAuthResponseData, IJWTToken } from '../typings';
+import { IAuthResponseData, IJWTToken } from '../typings.d';
 
 import { BaseRouter } from './base.router';
 
@@ -78,14 +78,15 @@ export class SSORouter extends BaseRouter {
         return Buffer.from(`${client}:${secret}`).toString('base64');
     }
 
-    private static extractJWTValues(token: IJWTToken):
-        { characterID: number; characterName: string; characterOwnerHash: string; characterScopes: string[] } {
+    private static extractJWTValues(
+        token: IJWTToken
+    ): { characterID: number; characterName: string; characterOwnerHash: string; characterScopes: string[] } {
         const characterID = Number(token.sub.split(':')[2]);
         const characterName = token.name;
         const characterOwnerHash = token.owner;
         const characterScopes = typeof token.scp === 'string' ? [token.scp] : token.scp;
 
-        return {characterID, characterName, characterOwnerHash, characterScopes};
+        return { characterID, characterName, characterOwnerHash, characterScopes };
     }
 
     private static isJWTValid(token: IJWTToken): boolean {
@@ -117,8 +118,8 @@ export class SSORouter extends BaseRouter {
         };
 
         const requestBody = refresh ?
-            new URLSearchParams({grant_type: 'refresh_token', refresh_token: code}) :
-            new URLSearchParams({code, grant_type: 'authorization_code'});
+            new URLSearchParams({ grant_type: 'refresh_token', refresh_token: code }) :
+            new URLSearchParams({ code, grant_type: 'authorization_code' });
 
         const authUrl = `${protocol}${oauthHost}${tokenPath}`;
         SSORouter.debug(`Requesting authorization: ${code} (refresh: ${refresh})`);
@@ -139,7 +140,7 @@ export class SSORouter extends BaseRouter {
             },
         };
 
-        const requestBody = new URLSearchParams({token: key, token_type_hint: keyType});
+        const requestBody = new URLSearchParams({ token: key, token_type_hint: keyType });
 
         const revokeUrl = `${protocol}${oauthHost}${revokePath}`;
         SSORouter.debug(`Revoking token of type ${keyType}: ${key}`);
@@ -166,7 +167,7 @@ export class SSORouter extends BaseRouter {
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-types
-    private static async appAuth(request: Request<{}, any, any, {scopes?: string}>, response: Response): Promise<void> {
+    private static async appAuth(request: Request<{}, any, any, { scopes?: string }>, response: Response): Promise<void> {
         request.session.state = generateRandomString(15);
 
         const url = new URL(protocol + oauthHost + authorizePath);
@@ -184,7 +185,7 @@ export class SSORouter extends BaseRouter {
 
     private static async appAuthCallback(
         // eslint-disable-next-line @typescript-eslint/ban-types
-        request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
+        request: Request<{}, any, any, { code?: string; state?: string }>, response: Response,
     ): Promise<void> {
 
         const authResponse = await SSORouter.doAuthRequest(SSORouter.getAppAuthString(), request.query.code!);
@@ -205,7 +206,7 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
     private static async SSOLoginCallback(
         // eslint-disable-next-line @typescript-eslint/ban-types
-        request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
+        request: Request<{}, any, any, { code?: string; state?: string }>, response: Response,
     ): Promise<Response> {
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
@@ -233,7 +234,7 @@ export class SSORouter extends BaseRouter {
 
         const characterSubQuery = Character.doQuery()
             .select('character.user')
-            .where('character.ownerHash = :ownerHash', {ownerHash});
+            .where('character.ownerHash = :ownerHash', { ownerHash });
 
         let user: User | undefined = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
@@ -270,14 +271,14 @@ export class SSORouter extends BaseRouter {
      */
     @SSORouter.requestDecorator(SSORouter.checkLogin)
     // eslint-disable-next-line @typescript-eslint/ban-types
-    private static async SSOAuth(request: Request<{}, any, any, {scopes?: string; uuid?: string}>, response: Response): Promise<void> {
+    private static async SSOAuth(request: Request<{}, any, any, { scopes?: string; uuid?: string }>, response: Response): Promise<void> {
 
         if (request.query.uuid) {
             // With a characterUUID provided in the request, we initiate the re-authorization process
 
             const character: Character | undefined = await Character.doQuery()
-                .where('character.uuid = :uuid', {uuid: request.query.uuid})
-                .andWhere('character.userId = :userId', {userId: request.session.user!.id})
+                .where('character.uuid = :uuid', { uuid: request.query.uuid })
+                .andWhere('character.userId = :userId', { userId: request.session.user!.id })
                 .getOne();
 
             if (character) {
@@ -315,7 +316,7 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkQueryParameters, 'code')
     private static async SSOAuthCallback(
         // eslint-disable-next-line @typescript-eslint/ban-types
-        request: Request<{}, any, any, {code?: string; state?: string}>, response: Response,
+        request: Request<{}, any, any, { code?: string; state?: string }>, response: Response,
     ): Promise<Response> {
 
         // We're verifying the state returned by the EVE SSO service with the state saved earlier.
@@ -339,7 +340,7 @@ export class SSORouter extends BaseRouter {
             return SSORouter.sendResponse(response, StatusCodes.BAD_GATEWAY, 'InvalidJWTToken');
         }
 
-        const {characterID, characterName, characterOwnerHash, characterScopes} = SSORouter.extractJWTValues(token);
+        const { characterID, characterName, characterOwnerHash, characterScopes } = SSORouter.extractJWTValues(token);
 
         let user = await User.getFromId(request.session.user!.id!);
 
@@ -387,7 +388,7 @@ export class SSORouter extends BaseRouter {
         if (userSocket) {
             SSORouter.debug(`Emitting to socket ${userSocket.id}, session ${userSocket.handshake.session.id}`);
             userSocket.emit('SSO_AUTH_END', {
-                data: {newCharacter: character.uuid, user: user!.sanitizedCopy},
+                data: { newCharacter: character.uuid, user: user!.sanitizedCopy },
                 message: 'SSOSuccessful',
                 state: 'success',
             });
@@ -407,7 +408,7 @@ export class SSORouter extends BaseRouter {
 
         // Fetch the Character who's accessToken we will refresh.
         const character = await Character.doQuery()
-            .where('character.uuid = :uuid', {uuid: request.query.uuid})
+            .where('character.uuid = :uuid', { uuid: request.query.uuid })
             .getOne();
 
         if (!character || !character.refreshToken) {
@@ -443,7 +444,7 @@ export class SSORouter extends BaseRouter {
         const user: User | undefined = await User.doQuery()
             .select(['user.id'])
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session.user!.id})
+            .where('user.id = :id', { id: request.session.user!.id })
             .getOne();
 
         if (!user) {
@@ -477,8 +478,8 @@ export class SSORouter extends BaseRouter {
 
         await Character.doQuery()
             .update(Character)
-            .set({isActive: false})
-            .where('character.userId = :id', {id: request.session.user!.id})
+            .set({ isActive: false })
+            .where('character.userId = :id', { id: request.session.user!.id })
             .execute();
 
         const characterUUID = request.body.characterUUID;
@@ -489,8 +490,8 @@ export class SSORouter extends BaseRouter {
 
         const character = await Character.doQuery()
             .select(['character.id', 'character.isActive', 'character.uuid', 'character.userId'])
-            .where('character.userId = :id', {id: request.session.user!.id})
-            .andWhere('character.uuid = :uuid', {uuid: characterUUID})
+            .where('character.userId = :id', { id: request.session.user!.id })
+            .andWhere('character.uuid = :uuid', { uuid: characterUUID })
             .getOne();
 
         if (!character) {

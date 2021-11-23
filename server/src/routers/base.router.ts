@@ -129,7 +129,7 @@ export class BaseRouter {
 
         const user: User | undefined = await User.doQuery()
             .select(['user.isAdmin'])
-            .where('user.id = :id', {id: request.session.user!.id})
+            .where('user.id = :id', { id: request.session.user!.id })
             .getOne();
         if (!user || !user.isAdmin) {
             BaseRouter.sendResponse(response, StatusCodes.FORBIDDEN, 'NoPermissions');

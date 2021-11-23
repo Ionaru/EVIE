@@ -72,9 +72,9 @@ export class DataController {
             quantity: component.quantity,
         }));
 
-        const output = {id: schematic.typeID, quantity: schematic.quantity};
+        const output = { id: schematic.typeID, quantity: schematic.quantity };
 
-        return {input, output};
+        return { input, output };
     }
 
     public static async getPIInfo(): Promise<IPIInfo | undefined> {
@@ -117,7 +117,7 @@ export class DataController {
         }
 
         const mt = materials.filter((material) => material.typeID === typeId);
-        return mt.map((material) => ({id: material.materialTypeID, quantity: material.quantity}));
+        return mt.map((material) => ({ id: material.materialTypeID, quantity: material.quantity }));
     }
 
     public static async getManufacturingInfo(typeId: number): Promise<IManufacturingData | void> {
@@ -161,9 +161,9 @@ export class DataController {
 
             return {
                 blueprintId: bluePrint.typeID,
-                materials: materials.map((mat) => ({id: mat.materialTypeID, quantity: mat.quantity})),
-                result: {id: typeId, quantity: bluePrint.quantity},
-                skills: skills.map((skill) => ({id: skill.skillID, level: skill.level})),
+                materials: materials.map((mat) => ({ id: mat.materialTypeID, quantity: mat.quantity })),
+                result: { id: typeId, quantity: bluePrint.quantity },
+                skills: skills.map((skill) => ({ id: skill.skillID, level: skill.level })),
                 time: time!.time,
             };
         }

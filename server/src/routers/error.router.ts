@@ -18,7 +18,7 @@ export class ErrorRouter extends BaseRouter {
         process.stderr.write(`Error on ${request.method} ${request.originalUrl} -> ${error.stack}\n`);
         Sentry.captureException(error);
 
-        const errorDetails = process.env.NODE_ENV === 'production' ? undefined : {error: error.stack};
+        const errorDetails = process.env.NODE_ENV === 'production' ? undefined : { error: error.stack };
         ErrorRouter.sendResponse(response, StatusCodes.INTERNAL_SERVER_ERROR, 'InternalServerError', errorDetails);
     }
 }

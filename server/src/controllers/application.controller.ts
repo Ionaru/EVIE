@@ -61,7 +61,7 @@ export class Application {
 
         // Setup bodyParser
         expressApplication.use(bodyParser.json() as any);
-        expressApplication.use(bodyParser.urlencoded({extended: true}) as any);
+        expressApplication.use(bodyParser.urlencoded({ extended: true }) as any);
 
         expressApplication.use(compression());
 

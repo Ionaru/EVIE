@@ -64,6 +64,14 @@ export class Character extends BaseModel {
     })
     public user!: User;
 
+    public get sanitizedCopy(): ISanitizedCharacter {
+        return {
+            accessToken: this.accessToken,
+            isActive: this.isActive,
+            uuid: this.uuid,
+        };
+    }
+
     public static doQuery(): SelectQueryBuilder<Character> {
         return this.createQueryBuilder('character');
     }
@@ -73,13 +81,5 @@ export class Character extends BaseModel {
             .innerJoinAndSelect('character.user', 'user')
             .where('character.characterId = :id', {id})
             .getOne();
-    }
-
-    public get sanitizedCopy(): ISanitizedCharacter {
-        return {
-            accessToken: this.accessToken,
-            isActive: this.isActive,
-            uuid: this.uuid,
-        };
     }
 }

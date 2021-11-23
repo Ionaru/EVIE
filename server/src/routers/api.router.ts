@@ -33,7 +33,7 @@ export class APIRouter extends BaseRouter {
 
         const user: User | undefined = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session.user!.id})
+            .where('user.id = :id', { id: request.session.user!.id })
             .getOne();
 
         if (!user) {
@@ -58,7 +58,7 @@ export class APIRouter extends BaseRouter {
 
         User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
-            .where('user.id = :id', {id: request.session.user!.id})
+            .where('user.id = :id', { id: request.session.user!.id })
             .getOne().then((user) => {
                 if (user && (!user.characters || !user.characters.length)) {
                     user.remove().then();
