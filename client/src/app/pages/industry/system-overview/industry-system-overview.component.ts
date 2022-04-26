@@ -130,7 +130,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
 
     public async addCharacterToOverview(character: Character, icon?: FaIconComponent) {
         if (icon) {
-            icon.icon = this.busyIcon;
+            icon.icon = this.busyIcon as any;
             icon.spin = true;
             icon.render();
         }
@@ -144,7 +144,7 @@ export class IndustrySystemOverviewComponent extends IndustryComponent implement
         this.countJobsForCharacter(character);
 
         if (icon) {
-            icon.icon = this.addIcon;
+            icon.icon = this.addIcon as any;
             icon.spin = false;
             icon.render();
         }
