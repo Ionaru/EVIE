@@ -157,7 +157,7 @@ export class Application {
         }
 
         if (db && db.orm) {
-            await db.orm.close();
+            await db.orm.destroy();
             debug('ORM connection closed');
         }
 

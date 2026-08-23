@@ -10,6 +10,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "resolveJsonModule": true,
+        "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
         "typeRoots": [
@@ -22,9 +23,8 @@
         "outDir": "./dist",
         "target": "es2019"
     },
-    "files": [
-        "src/index.ts",
-        "src/modules.d.ts",
-        "src/typings.d.ts"
+    "include": [
+        "src/**/*.ts",
+        "migrations/**/*.ts"
     ]
 }

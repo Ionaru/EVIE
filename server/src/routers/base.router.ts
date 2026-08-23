@@ -127,7 +127,7 @@ export class BaseRouter {
             return nextFunction;
         }
 
-        const user: User | undefined = await User.doQuery()
+        const user: User | null = await User.doQuery()
             .select(['user.isAdmin'])
             .where('user.id = :id', { id: request.session.user!.id })
             .getOne();

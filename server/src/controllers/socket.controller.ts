@@ -2,8 +2,8 @@ import { WebServer } from '@ionaru/web-server';
 import * as express from 'express';
 import { Session, SessionData } from 'express-session';
 import { Server, Socket } from 'socket.io';
+import { Handshake } from 'socket.io/dist/socket-types';
 import * as SocketIOSession from 'socket.io-express-session';
-import { Handshake } from 'socket.io/dist/socket';
 
 import { debug } from '../index';
 

@@ -31,7 +31,7 @@ export class APIRouter extends BaseRouter {
             return APIRouter.sendSuccessResponse(response);
         }
 
-        const user: User | undefined = await User.doQuery()
+        const user: User | null = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', { id: request.session.user!.id })
             .getOne();

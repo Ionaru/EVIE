@@ -1,0 +1,200 @@
+name: EVIE CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  NODE_VERSION: "24"
+  # The client is the one thing here that cannot use Node 24. Angular 11 ships
+  # webpack 4, whose hardcoded md4 hashing fails against the OpenSSL 3 that Node
+  # 17 and newer bundle. Lift this once the client is upgraded past Angular 11.
+  CLIENT_NODE_VERSION: "16"
+
+jobs:
+  audit:
+    name: Audit dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      # Reads package-lock.json directly, so no install is needed.
+      - run: npm audit --omit=dev
+        working-directory: server
+
+  audit-client:
+    name: Audit client dependencies
+    runs-on: ubuntu-latest
+    # Deliberately not a gate. The client is still on Angular 11, and 24 of its
+    # production advisories are @angular/* itself: the first non-vulnerable
+    # Angular is 20.3.26, so only the upgrade can clear them. This job keeps the
+    # list visible until then. See the known issue in CHANGELOG.md.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - run: npm audit --omit=dev
+        working-directory: client
+
+  get_sha:
+    name: Get short SHA for image tags
+    runs-on: ubuntu-latest
+    outputs:
+      sha_short: ${{ steps.get_sha.outputs.sha_short }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: get_sha
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+  test-server:
+    name: Lint and build the server
+    needs: [audit]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+        working-directory: server
+      # There is no test suite yet; `npm test` runs eslint through pretest and
+      # `tsc --noEmit` through posttest.
+      - run: npm test
+        working-directory: server
+      - run: npm run build
+        working-directory: server
+
+  test-client:
+    name: Build the client
+    needs: [audit]
+    runs-on: ubuntu-latest
+    env:
+      EVIE_FA_TOKEN: ${{ secrets.FA_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.CLIENT_NODE_VERSION }}
+      - run: npm ci
+        working-directory: client
+      # There is no test suite yet either; `npm test` runs a production build
+      # through its posttest hook.
+      - run: npm test
+        working-directory: client
+
+  build-image:
+    name: Build images
+    needs: [audit]
+    runs-on: ubuntu-latest
+    env:
+      EVIE_ENV: production
+      EVIE_FA_TOKEN: ${{ secrets.FA_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker compose build evie-server evie-client
+      - run: docker save -o evie-images.tar ghcr.io/ionaru/evie-server:latest ghcr.io/ionaru/evie-client:latest
+      - uses: actions/upload-artifact@v7
+        with:
+          name: evie-images
+          path: evie-images.tar
+          retention-days: 1
+
+  push-image:
+    name: Push images
+    if: github.event_name == 'push'
+    needs: [get_sha, test-server, test-client, build-image]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: evie-images
+      - run: docker load -i evie-images.tar
+      - run: docker tag ghcr.io/ionaru/evie-server:latest ghcr.io/ionaru/evie-server:${{ needs.get_sha.outputs.sha_short }}
+      - run: docker tag ghcr.io/ionaru/evie-client:latest ghcr.io/ionaru/evie-client:${{ needs.get_sha.outputs.sha_short }}
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - run: docker push -a ghcr.io/ionaru/evie-server
+      - run: docker push -a ghcr.io/ionaru/evie-client
+
+  deploy:
+    name: Deploy
+    needs: [get_sha, push-image]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
+    steps:
+      - uses: appleboy/ssh-action@v1.2.5
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          GIT_REVISION: ${{ needs.get_sha.outputs.sha_short }}
+        with:
+          command_timeout: 20m
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          envs: DEPLOY_PATH,GIT_REVISION
+          script: |
+            set -eu
+
+            cd "$DEPLOY_PATH"
+
+            # Match the checkout to the commit whose images were just published, so
+            # the compose file on disk and the running images always come from one
+            # commit.
+            git fetch --prune origin
+            git checkout --force "$GIT_REVISION"
+
+            # Shell environment beats the .env file, so this pins the image tag to
+            # the commit just checked out regardless of what .env says.
+            export EVIE_GIT_REVISION="$GIT_REVISION"
+
+            # No --file, --env-file or --project-name needed: compose.yaml sits in
+            # this directory, so Compose picks up ./.env on its own and takes the
+            # project name from the file.
+            docker compose pull
+
+            # Both services have a healthcheck, so --wait blocks until they report
+            # healthy rather than merely "running". The server runs its migrations
+            # before opening its port, so allow for a slow migration.
+            # "|| rc=$?" stops errexit aborting before the logs are printed.
+            rc=0
+            docker compose up --detach --pull=never --no-build --remove-orphans \
+              --wait --wait-timeout 300 || rc=$?
+
+            docker compose logs --tail=200
+
+            if [ "$rc" -ne 0 ]; then
+              exit "$rc"
+            fi
+
+            # Reclaim disk from superseded EVIE images only. Other stacks share this
+            # Docker daemon, so a global "docker system prune --all" would delete
+            # theirs.
+            for image in ghcr.io/ionaru/evie-server ghcr.io/ionaru/evie-client; do
+              stale="$(docker image ls --format '{{.Repository}}:{{.Tag}}' \
+                --filter "reference=${image}" \
+                | grep -vx "${image}:${GIT_REVISION}" || true)"
+              if [ -n "$stale" ]; then
+                echo "$stale" | xargs -r docker image rm --force || true
+              fi
+            done

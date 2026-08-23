@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/coverage
+**/.nyc_output
+.git
+.github
+.idea
+server/config
+server/data
+*.log
+.env

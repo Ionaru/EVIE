@@ -236,7 +236,7 @@ export class SSORouter extends BaseRouter {
             .select('character.user')
             .where('character.ownerHash = :ownerHash', { ownerHash });
 
-        let user: User | undefined = await User.doQuery()
+        let user: User | null = await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
             .where(`user.id IN (${characterSubQuery.getQuery()})`)
             .setParameters(characterSubQuery.getParameters())
@@ -276,7 +276,7 @@ export class SSORouter extends BaseRouter {
         if (request.query.uuid) {
             // With a characterUUID provided in the request, we initiate the re-authorization process
 
-            const character: Character | undefined = await Character.doQuery()
+            const character: Character | null = await Character.doQuery()
                 .where('character.uuid = :uuid', { uuid: request.query.uuid })
                 .andWhere('character.userId = :userId', { userId: request.session.user!.id })
                 .getOne();
@@ -441,7 +441,7 @@ export class SSORouter extends BaseRouter {
     @SSORouter.requestDecorator(SSORouter.checkBodyParameters, 'characterUUID')
     private static async deleteCharacter(request: Request, response: Response): Promise<Response> {
 
-        const user: User | undefined = await User.doQuery()
+        const user: User | null = await User.doQuery()
             .select(['user.id'])
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', { id: request.session.user!.id })

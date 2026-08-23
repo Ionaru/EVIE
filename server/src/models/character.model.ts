@@ -77,9 +77,9 @@ export class Character extends BaseModel {
     }
 
     public static async getFromId(id: number): Promise<Character | undefined> {
-        return Character.doQuery()
+        return await Character.doQuery()
             .innerJoinAndSelect('character.user', 'user')
             .where('character.characterId = :id', {id})
-            .getOne();
+            .getOne() ?? undefined;
     }
 }
