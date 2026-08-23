@@ -26,7 +26,7 @@ export class UserRouter extends BaseRouter {
 
     @UserRouter.requestDecorator(UserRouter.checkAdmin)
     private static async getUser(request: Request, response: Response): Promise<Response> {
-        const user: User | undefined = await User.findOne({uuid: request.params.uuid});
+        const user: User | null = await User.findOneBy({uuid: request.params.uuid});
 
         if (!user) {
             // No user with that username was found
@@ -38,7 +38,7 @@ export class UserRouter extends BaseRouter {
 
     @UserRouter.requestDecorator(UserRouter.checkAdmin)
     private static async getUserById(request: Request, response: Response): Promise<Response> {
-        const user: User | undefined = await User.findOne(request.params.id);
+        const user: User | null = await User.findOneBy({id: Number(request.params.id)});
 
         if (!user) {
             // No user with that username was found

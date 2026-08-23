@@ -48,10 +48,10 @@ export class User extends BaseModel {
     }
 
     public static async getFromId(id: number): Promise<User | undefined> {
-        return User.doQuery()
+        return await User.doQuery()
             .leftJoinAndSelect('user.characters', 'character')
             .where('user.id = :id', {id})
-            .getOne();
+            .getOne() ?? undefined;
     }
 
     public async merge(userToMerge: User): Promise<void> {

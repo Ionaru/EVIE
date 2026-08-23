@@ -7,7 +7,7 @@ import { CacheController, IDefaultExpireTimes, PublicESIService } from '@ionaru/
 import { EVE } from '@ionaru/eve-utils';
 import * as Sentry from '@sentry/node';
 import { HttpsAgent } from 'agentkeepalive';
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance, create as createAxiosInstance } from 'axios';
 import 'reflect-metadata'; // Required by TypeORM.
 import * as sourceMapSupport from 'source-map-support';
 
@@ -31,7 +31,7 @@ const start = () => {
     });
 
     debug('Creating axios instance');
-    axiosInstance = axios.create({
+    axiosInstance = createAxiosInstance({
         // keepAlive pools and reuses TCP connections, so it's faster
         httpsAgent: new HttpsAgent(),
 
@@ -56,7 +56,7 @@ const start = () => {
         cacheController: esiCache,
         debug,
         onRouteWarning: (route, text) => {
-            Sentry.captureMessage(`${text}: ${route}`, Sentry.Severity.Warning);
+            Sentry.captureMessage(`${text}: ${route}`, 'warning');
         },
     });
 
@@ -79,7 +79,7 @@ const start = () => {
     });
     // Promises that fail should not cause the application to stop, instead we log the error.
     process.on('unhandledRejection', (reason, p): void => {
-        Sentry.captureMessage(`Unhandled Rejection at: Promise ${p}, reason: ${reason}`, Sentry.Severity.Error);
+        Sentry.captureMessage(`Unhandled Rejection at: Promise ${p}, reason: ${reason}`, 'error');
     });
 
     application.start().then().catch((error: Error) => application.stop(error));
