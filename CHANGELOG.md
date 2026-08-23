@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - All known security advisories in the server's dependency tree
+- The client's nginx no longer overwrites `X-Forwarded-Proto` with its own `$scheme`. It is reached
+  over plain HTTP behind the reverse proxy, so it was reporting `http` upstream no matter what the
+  proxy saw. express-session runs with `proxy: true` and reads that header to decide whether it may
+  send a `Secure` cookie, so it silently sent none: every request started a new session, logging in
+  failed with `InvalidState` and `/data` calls failed with `BadClient`
 
 ### Removed
 - `server/ormconfig.js`, superseded by `server/src/data-source.ts`
