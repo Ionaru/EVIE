@@ -12,8 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A `migrate:dev` script, to run the migrations from source rather than from `dist/`
 
 ### Changed
-- Moved the Docker setup to `deploy/`, with a Compose v2 `compose.yaml` and one Dockerfile per
-  service
+- Replaced `docker-compose.yml` with a Compose v2 `compose.yaml` in the root of the repository, and
+  moved the Dockerfiles to `deploy/`, one per service. Keeping the Compose file in the root means the
+  project directory is the checkout, so `.env` is found automatically and `docker compose up -d`
+  needs no `--file`, `--env-file` or `--project-name`
 - Neither service publishes a host port any more. The client joins the external `edge` network and
   is reached at `evie-client:80` by a reverse proxy; the server joins the external `db` network to
   reach the database and is reached at `evie-server:3731` by the client's nginx. `EVIE_CLIENT_PORT`
@@ -30,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - `server/ormconfig.js`, superseded by `server/src/data-source.ts`
-- The root `docker-compose.yml`, superseded by `deploy/compose.yaml`
+- The root `docker-compose.yml`, superseded by `compose.yaml`
 
 ### Known issues
 - **The client still fails `npm audit --omit=dev`.** 24 of its 31 production advisories are

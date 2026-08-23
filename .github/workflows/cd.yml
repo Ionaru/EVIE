@@ -102,7 +102,7 @@ jobs:
       EVIE_FA_TOKEN: ${{ secrets.FA_TOKEN }}
     steps:
       - uses: actions/checkout@v7
-      - run: docker compose -f deploy/compose.yaml build evie-server evie-client
+      - run: docker compose build evie-server evie-client
       - run: docker save -o evie-images.tar ghcr.io/ionaru/evie-server:latest ghcr.io/ionaru/evie-client:latest
       - uses: actions/upload-artifact@v7
         with:
@@ -164,35 +164,24 @@ jobs:
             git fetch --prune origin
             git checkout --force "$GIT_REVISION"
 
+            # Shell environment beats the .env file, so this pins the image tag to
+            # the commit just checked out regardless of what .env says.
             export EVIE_GIT_REVISION="$GIT_REVISION"
 
-            # --env-file is not optional. Compose does not auto-discover a .env at the
-            # checkout root when the compose file lives in deploy/, so without it the
-            # stack silently runs :latest with no database credentials.
-            #
-            # This body must stay a SINGLE command. A shell function used as the left
-            # operand of || runs with errexit disabled, so a multi-command body would
-            # keep going after a failure and return the last command's status, losing
-            # the real exit code.
-            compose() {
-              docker compose \
-                --project-name evie \
-                --env-file "$DEPLOY_PATH/.env" \
-                --file "$DEPLOY_PATH/deploy/compose.yaml" \
-                "$@"
-            }
-
-            compose pull
+            # No --file, --env-file or --project-name needed: compose.yaml sits in
+            # this directory, so Compose picks up ./.env on its own and takes the
+            # project name from the file.
+            docker compose pull
 
             # Both services have a healthcheck, so --wait blocks until they report
             # healthy rather than merely "running". The server runs its migrations
             # before opening its port, so allow for a slow migration.
             # "|| rc=$?" stops errexit aborting before the logs are printed.
             rc=0
-            compose up --detach --pull=never --no-build --remove-orphans \
+            docker compose up --detach --pull=never --no-build --remove-orphans \
               --wait --wait-timeout 300 || rc=$?
 
-            compose logs --tail=200
+            docker compose logs --tail=200
 
             if [ "$rc" -ne 0 ]; then
               exit "$rc"

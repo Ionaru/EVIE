@@ -114,18 +114,17 @@ the migrations, which run automatically every time the server container starts.
 5. Start the stack:
 
    ```bash
-   docker compose --project-name evie --env-file "$PWD/.env" --file deploy/compose.yaml up -d
+   docker compose up -d
    ```
 
-   The `--env-file` flag is not optional. The Compose file lives in `deploy/`, so Compose looks for a
-   `.env` next to it and will **not** find the one in the root of the checkout. Without the flag the
-   stack runs `:latest` with no database credentials and writes its cache somewhere you did not
-   intend.
+   No flags are needed. `compose.yaml` lives in the root of the checkout, so Compose reads the `.env`
+   beside it and takes the project name from the file. Run the command from the root of the checkout,
+   or from anywhere inside it.
 
 6. Check that it came up:
 
    ```bash
-   docker compose --project-name evie --env-file "$PWD/.env" --file deploy/compose.yaml logs -f
+   docker compose logs -f
    ```
 
 Point your reverse proxy at `http://evie-client:80`. Compose registers the service name as a network
@@ -137,7 +136,7 @@ spaceships.app {
 }
 ```
 
-Run `docker compose ... config` instead of `up` at any point to print the fully resolved
+Run `docker compose config` instead of `up` at any point to print the fully resolved
 configuration. That is the quickest way to confirm your networks, credentials and image tags are what
 you expect.
 
@@ -186,8 +185,9 @@ client's nginx proxies to `http://evie-server:3731` from a static config file, s
 
 `EVIE_DATA_VOLUME` and `EVIE_CONFIG_VOLUME` must be either left unset, which uses the named volumes
 declared in the Compose file, or set to an **absolute** host path. A relative path such as `./data`
-resolves against `deploy/`, not the root of the checkout. The server container runs as the
-unprivileged `node` user, so a host directory needs to be writable by UID 1000.
+resolves against the root of the checkout, which is rarely what you want for data you intend to
+keep. The server container runs as the unprivileged `node` user, so a host directory needs to be
+writable by UID 1000.
 
 ### A note on architecture
 The prebuilt `ghcr.io/ionaru/evie-server` and `ghcr.io/ionaru/evie-client` images are `linux/amd64`
@@ -195,7 +195,7 @@ only. On other architectures the pull fails with a manifest error, and you will 
 images locally instead:
 
 ```bash
-docker compose --project-name evie --env-file "$PWD/.env" --file deploy/compose.yaml up -d --build
+docker compose up -d --build
 ```
 
 ## Developer information

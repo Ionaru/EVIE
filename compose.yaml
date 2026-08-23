@@ -1,8 +1,10 @@
+name: evie
+
 services:
   evie-server:
     image: ghcr.io/ionaru/evie-server:${EVIE_GIT_REVISION:-latest}
     build:
-      context: ../
+      context: .
       dockerfile: deploy/server.Dockerfile
     environment:
       - DEBUG
@@ -58,7 +60,7 @@ services:
   evie-client:
     image: ghcr.io/ionaru/evie-client:${EVIE_GIT_REVISION:-latest}
     build:
-      context: ../
+      context: .
       dockerfile: deploy/client.Dockerfile
       args:
         - EVIE_ENV
