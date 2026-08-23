@@ -136,6 +136,17 @@ spaceships.app {
 }
 ```
 
+**Your reverse proxy must send `X-Forwarded-Proto`.** EVIE is served over two proxies: yours
+terminates TLS, then the client's nginx forwards to the server. The session cookie is `Secure` by
+default, and express-session reads `X-Forwarded-Proto` to decide whether it is allowed to send one.
+If your proxy does not set that header, the whole chain looks like plain HTTP, no session cookie is
+ever set, and every request lands on a fresh session: logging in fails with `InvalidState` and API
+calls fail with `BadClient`. Caddy, Traefik and a stock nginx `proxy_set_header X-Forwarded-Proto
+$scheme` all set it correctly when they are the ones terminating TLS.
+
+The fix for that failure is the header, not `EVIE_SESSION_SECURE=false`. Turning off `Secure` would
+paper over it by letting the cookie travel unprotected.
+
 Run `docker compose config` instead of `up` at any point to print the fully resolved
 configuration. That is the quickest way to confirm your networks, credentials and image tags are what
 you expect.
@@ -156,7 +167,7 @@ you expect.
 | `EVIE_SERVER_PORT` | Yes | The port the server listens on. Must be `3731`, see the note below. |
 | `EVIE_SESSION_KEY` | Yes | Name of the session ID cookie. |
 | `EVIE_SESSION_SECRET` | Yes | Secret used to sign the session ID cookie. |
-| `EVIE_SESSION_SECURE` | No | Serve cookies over a secure connection only? Defaults to true, disable for local development. |
+| `EVIE_SESSION_SECURE` | No | Serve cookies over a secure connection only? Defaults to true, disable for local development. See the note on `X-Forwarded-Proto` below before turning this off to fix a login problem. |
 | `EVIE_PROXY_SETTING` | No | The setting Express' trust proxy should be set to. Defaults to 1. |
 | `EVIE_SSO_LOGIN_CLIENT` | Yes | Client ID of the SSO application that handles login. |
 | `EVIE_SSO_LOGIN_SECRET` | Yes | Secret Key of the SSO application that handles login. |
