@@ -11,28 +11,20 @@
         "@ionaru"
     ],
     "rules": {
-        "@typescript-eslint/no-non-null-assertion": [
-            "off"
-        ],
+        "@typescript-eslint/no-non-null-assertion": ["off"],
+        "@typescript-eslint/no-shadow": ["error", {
+            "allow": [
+                "Request",
+                "Response"
+            ],
+            "builtinGlobals": true,
+            "hoist": "all"
+        }],
         "import/extensions": "off",
-        "import/no-unresolved": [
-            "error",
-            {
-                "ignore": [
-                    "express-serve-static-core"
-                ]
-            }
-        ],
-        "@typescript-eslint/no-shadow": [
-            "error",
-            {
-                "allow": [
-                    "Request",
-                    "Response"
-                ],
-                "builtinGlobals": true,
-                "hoist": "all"
-            }
-        ]
+        "import/no-unresolved": ["error", {
+            "ignore": [
+                "express-serve-static-core"
+            ]
+        }]
     }
 }

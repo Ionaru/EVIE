@@ -1,0 +1,105 @@
+services:
+  evie-server:
+    image: ghcr.io/ionaru/evie-server:${EVIE_GIT_REVISION:-latest}
+    build:
+      context: ../
+      dockerfile: deploy/server.Dockerfile
+    environment:
+      - DEBUG
+      - EVIE_DB_HOST
+      - EVIE_DB_NAME
+      - EVIE_DB_PASS
+      - EVIE_DB_PORT
+      - EVIE_DB_SSL_CA
+      - EVIE_DB_SSL_CERT
+      - EVIE_DB_SSL_KEY
+      - EVIE_DB_SSL_REJECT
+      - EVIE_DB_USER
+      - EVIE_PROXY_SETTING
+      - EVIE_SERVER_PORT
+      - EVIE_SESSION_KEY
+      - EVIE_SESSION_SECRET
+      - EVIE_SESSION_SECURE
+      - EVIE_SSO_APP_CALLBACK
+      - EVIE_SSO_APP_CLIENT
+      - EVIE_SSO_APP_SECRET
+      - EVIE_SSO_AUTH_CALLBACK
+      - EVIE_SSO_AUTH_CLIENT
+      - EVIE_SSO_AUTH_SECRET
+      - EVIE_SSO_LOGIN_CALLBACK
+      - EVIE_SSO_LOGIN_CLIENT
+      - EVIE_SSO_LOGIN_SECRET
+    # No published ports. The database is reached over the external "db" network
+    # and the client's nginx reaches this service over "evie".
+    networks:
+      - db
+      - evie
+    volumes:
+      - ${EVIE_DATA_VOLUME:-data}:/app/data
+      - ${EVIE_CONFIG_VOLUME:-config}:/app/config
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      # A TCP probe rather than an HTTP one. `saveUninitialized` is on and every
+      # route passes through GlobalRouter, so an HTTP request would write a row
+      # to the session table on every check. This is still a real readiness
+      # signal: the port only opens after the migrations have run.
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('node:net').connect(Number(process.env.EVIE_SERVER_PORT || 3731), '127.0.0.1').on('connect', () => process.exit(0)).on('error', () => process.exit(1))"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+      start_interval: 5s
+
+  evie-client:
+    image: ghcr.io/ionaru/evie-client:${EVIE_GIT_REVISION:-latest}
+    build:
+      context: ../
+      dockerfile: deploy/client.Dockerfile
+      args:
+        - EVIE_ENV
+        - EVIE_FA_TOKEN
+    # nginx resolves the proxy_pass hostname once, at startup, and refuses to
+    # start if it cannot. So wait for the server rather than crash-looping.
+    depends_on:
+      evie-server:
+        condition: service_healthy
+    # No published ports. nginx listens on 80 and is reached over the "edge"
+    # network by the reverse proxy, as http://evie-client:80.
+    networks:
+      - edge
+      - evie
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      # Serving index.html touches nothing but the filesystem, so this is cheap.
+      test:
+        - CMD
+        - wget
+        - --spider
+        - --quiet
+        - http://127.0.0.1/
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+      start_interval: 5s
+
+networks:
+  # Shared with the reverse proxy; created outside this stack.
+  edge:
+    external: true
+  # Shared with the database; created outside this stack.
+  db:
+    external: true
+  # Private to this stack. The client's nginx proxies /api, /sso, /data and
+  # /socket.io to http://evie-server:3731 over it.
+  evie:
+
+volumes:
+  data:
+  config:
