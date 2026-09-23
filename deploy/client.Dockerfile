@@ -4,7 +4,7 @@
 # Angular 11 ships webpack 4, whose hardcoded md4 hashing fails against the
 # OpenSSL 3 that Node 17 and newer bundle. The pin can go once the client is
 # upgraded past Angular 11; see the known issue in CHANGELOG.md.
-FROM node:16-alpine AS build
+FROM node:25-alpine AS build
 
 WORKDIR /app
 
